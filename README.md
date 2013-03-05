@@ -1,2 +1,2 @@
-Whydah-SecurityTokenService
-===========================
+SecurityTokenService
+====================
