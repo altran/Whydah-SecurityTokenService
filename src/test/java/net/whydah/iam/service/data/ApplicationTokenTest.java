@@ -16,7 +16,7 @@ public class ApplicationTokenTest extends TestCase {
         cred.setApplicationPassord("dummy");
         ApplicationToken imp = new ApplicationToken(cred.toXML());
         //System.out.println(imp.toXML());
-        assertTrue("The generated application token is wrong.", imp.getApplicationID().equals(cred.getApplicationID()));
+        assertEquals("The generated application token is wrong.", cred.getApplicationID(), imp.getApplicationID());
         assertTrue(imp.getApplicationTokenId().length() > 12);
     }
 
@@ -26,7 +26,7 @@ public class ApplicationTokenTest extends TestCase {
         cred.setApplicationPassord("dummy");
         ApplicationToken imp = new ApplicationToken(cred.toXML());
         //System.out.println(imp.toXML());
-        assertTrue("The generated application token is wrong.", imp.getApplicationID().equals(cred.getApplicationID()));
+        assertEquals("The generated application token is wrong.", cred.getApplicationID(), imp.getApplicationID());
         assertTrue(imp.getApplicationTokenId().length() > 12);
     }
 }

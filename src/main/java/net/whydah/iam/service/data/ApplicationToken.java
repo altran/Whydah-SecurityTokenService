@@ -96,7 +96,7 @@ public class ApplicationToken {
 
 
     public String getApplicationID() {
-        return applicationSecret;
+        return applicationName;
     }
 
     private String getApplicationName(String applicationCredentialXML) {
