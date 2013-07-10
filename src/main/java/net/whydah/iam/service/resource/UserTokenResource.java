@@ -161,6 +161,9 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
         String userTokenId = (String)ticketmap.get(ticketId);
+        if (userTokenId == null) {
+        	return Response.status(Response.Status.GONE).build(); //410 
+        }
         logger.debug("Found tokenid: "+userTokenId);
         ticketmap.remove(ticketId);
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
@@ -168,7 +171,7 @@ public class UserTokenResource {
         if (userToken != null) {
             return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
         }
-        return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+        return Response.status(Response.Status.NOT_ACCEPTABLE).build(); //406
     }
 
     @Path("/{applicationtokenid}/releaseusertoken")

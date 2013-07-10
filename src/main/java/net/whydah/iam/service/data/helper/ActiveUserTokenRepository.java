@@ -19,6 +19,9 @@ public class ActiveUserTokenRepository {
      */
     public static UserToken getUserToken(String tokenId) {
         logger.debug("getUserToken with userTokenid=" + tokenId);
+        if (tokenId == null) {
+        	return null;
+        }
         UserToken resToken = tokens.get(tokenId);
         if (resToken != null && verifyUserToken(resToken)) {
             logger.info("Valid userToken found: " + resToken);
