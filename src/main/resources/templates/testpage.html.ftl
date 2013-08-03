@@ -15,7 +15,7 @@
 <div class="header">SecurityTokenService</div>
 
 <div style="margin-top: 5px;border-bottom: 1px solid black; margin-bottom: 10px;">
-This is the SSO token service for Yenka AS. Any misuse will be prosecuted.<br>
+This is the SSO token service for Whydah AS. Any misuse will be prosecuted.<br>
 The service description (WADL) is available <a href="application.wadl">here</a><br>
 </div>
 

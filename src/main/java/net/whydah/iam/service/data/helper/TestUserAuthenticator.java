@@ -220,7 +220,7 @@ public class TestUserAuthenticator implements UserAuthenticator {
                 "    <application ID=\"1\">\n" +
                 "        <applicationName>Brukeradmin</applicationName>\n" +
                 "        <organization ID=\"9999\">\n" +
-                "            <organizationName>Yenka</organizationName>\n" +
+                "            <organizationName>Whydah</organizationName>\n" +
                 "            <role name=\"Brukeradmin\" value=\"\"/>\n" +
                 "        </organization>\n" +
                 "    </application>\n" +
@@ -247,7 +247,7 @@ public class TestUserAuthenticator implements UserAuthenticator {
                 "            <organizationName>Test</organizationName>\n" +
                 "            <role name=\"FM\" value=\"2011-2013\"/>\n" +
                 "            <role name=\"DL\" value=\"2011-2013\"/>\n" +
-                "            <role name=\"Delegert Yenka gereralforsamling\" value=\"2011-2013\"/>\n" +
+                "            <role name=\"Delegert Whydah gereralforsamling\" value=\"2011-2013\"/>\n" +
                 "        </organization>\n" +
                 "    </application>\n" +
                 "    <application ID=\"101\">\n" +
