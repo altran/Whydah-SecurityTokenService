@@ -153,19 +153,19 @@ public class UserTokenResource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
-    public Response getUserTokenByTicketId(@PathParam("applicationtokenid") String applicationtokenid,
+    public Response getUserTokenByTicket(@PathParam("applicationtokenid") String applicationtokenid,
                                      @FormParam("apptoken") String appTokenXml,
-                                     @FormParam("ticketid") String ticketId) {
-        logger.debug("ticketid: {}", ticketId);
+                                     @FormParam("ticket") String ticket) {
+        logger.debug("ticket: {}", ticket);
         if (!verifyApptoken(applicationtokenid, appTokenXml)) {
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
-        String userTokenId = (String)ticketmap.get(ticketId);
+        String userTokenId = (String)ticketmap.get(ticket);
         if (userTokenId == null) {
         	return Response.status(Response.Status.GONE).build(); //410 
         }
         logger.debug("Found tokenid: "+userTokenId);
-        ticketmap.remove(ticketId);
+        ticketmap.remove(ticket);
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
 
         if (userToken != null) {
