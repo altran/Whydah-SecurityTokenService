@@ -149,7 +149,7 @@ public class UserTokenResource {
         return Response.status(Response.Status.NOT_ACCEPTABLE).build();
     }
 
-    @Path("/{applicationtokenid}/getusertokenbyticketid")
+    @Path("/{applicationtokenid}/getusertokenbyticket")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
