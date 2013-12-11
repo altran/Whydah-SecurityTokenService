@@ -68,6 +68,7 @@ public class UserTokenTest {
 
         UserToken copyToken = UserToken.createFromUserTokenXML(tokenxml);
         String copyxml = freemarkerProcessor.toXml(copyToken);
+        System.out.println(copyxml);
         assertEquals(tokenxml, copyxml);
     }
 
