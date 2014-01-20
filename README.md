@@ -4,6 +4,8 @@ SecurityTokenService
 The UserToken and ApplicationToken generator and security session manager for the Whydah system
 
 
+![Architectural Overview](https://raw2.github.com/altran/Whydah-SSOWebApplication/master/Whydah%20infrastructure.png)
+
 Installation
 ============
 
