@@ -6,6 +6,7 @@ dependency-reduced-pom.xml
 *.war
 *.ear
 /target
+/logs
 
 
 #IDE
@@ -13,3 +14,6 @@ dependency-reduced-pom.xml
 .project
 /.settings
 /*.log
+*.iml
+*.ipr
+*.iws
