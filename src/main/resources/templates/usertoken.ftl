@@ -3,6 +3,7 @@
     <uid>${it.uid!?xml}</uid>
     <securitylevel>${it.securityLevel!}</securitylevel>
     <personRef>${it.personRef!?xml}</personRef>
+    <username>${it.userName!?xml}</username>
     <firstname>${it.firstName!?xml}</firstname>
     <lastname>${it.lastName!?xml}</lastname>
     <email>${it.email!?xml}</email>

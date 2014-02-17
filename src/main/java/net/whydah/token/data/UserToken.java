@@ -27,6 +27,7 @@ public class UserToken implements  Serializable{
     private String tokenid;
     private String uid;
     private String personRef;
+    private String userName;
     private String firstName;
     private String lastName;
     private String email;
@@ -73,6 +74,7 @@ public class UserToken implements  Serializable{
             Document doc = documentBuilder.parse(new InputSource(new StringReader(userIdentityXML)));
             XPath xPath = XPathFactory.newInstance().newXPath();
             uid = (String) xPath.evaluate("//identity/UID", doc, XPathConstants.STRING);
+            userName = (String) xPath.evaluate("//identity/username", doc, XPathConstants.STRING);
             firstName = (String) xPath.evaluate("//identity/firstname", doc, XPathConstants.STRING);
             lastName = (String) xPath.evaluate("//lastname", doc, XPathConstants.STRING);
             email = (String) xPath.evaluate("//email", doc, XPathConstants.STRING);
@@ -109,6 +111,7 @@ public class UserToken implements  Serializable{
             tokenid = (String) xPath.evaluate("/token/@id", doc, XPathConstants.STRING);
             uid = (String) xPath.evaluate("/token/uid", doc, XPathConstants.STRING);
             personRef = (String) xPath.evaluate("/token/personRef", doc, XPathConstants.STRING);
+            userName = (String) xPath.evaluate("/token/username", doc, XPathConstants.STRING);
             firstName = (String) xPath.evaluate("/token/firstname", doc, XPathConstants.STRING);
             lastName = (String) xPath.evaluate("/token/lastname", doc, XPathConstants.STRING);
             email = (String) xPath.evaluate("//token/email", doc, XPathConstants.STRING);
@@ -243,6 +246,7 @@ public class UserToken implements  Serializable{
                 "tokenid='" + tokenid + '\'' +
                 ", uid='" + uid + '\'' +
                 ", personRef='" + personRef + '\'' +
+                ", userName='" + userName + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
@@ -265,6 +269,7 @@ public class UserToken implements  Serializable{
             return false;
         if (lastName != null ? !lastName.equals(userToken.lastName) : userToken.lastName != null) return false;
         if (firstName != null ? !firstName.equals(userToken.firstName) : userToken.firstName != null) return false;
+        if (userName != null ? !userName.equals(userToken.userName) : userToken.userName != null) return false;
         if (email != null ? !email.equals(userToken.email) : userToken.email != null) return false;
         if (uid != null ? !uid.equals(userToken.uid) : userToken.uid != null) return false;
         if (issuer != null ? !issuer.equals(userToken.issuer) : userToken.issuer != null) return false;
@@ -284,6 +289,7 @@ public class UserToken implements  Serializable{
         int salt = 31;
         result = salt * result + (uid != null ? uid.hashCode() : 0);
         result = salt * result + (personRef != null ? personRef.hashCode() : 0);
+        result = salt * result + (userName != null ? userName.hashCode() : 0);
         result = salt * result + (firstName != null ? firstName.hashCode() : 0);
         result = salt * result + (lastName != null ? lastName.hashCode() : 0);
         result = salt * result + (email != null ? email.hashCode() : 0);
@@ -326,6 +332,10 @@ public class UserToken implements  Serializable{
     public void setPersonRef(String personRef) {
         this.personRef = personRef;
     }
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -354,6 +364,9 @@ public class UserToken implements  Serializable{
     }
     public String getPersonRef() {
         return personRef;
+    }
+    public String getUserName() {
+        return userName;
     }
     public String getFirstName() {
         return firstName;
