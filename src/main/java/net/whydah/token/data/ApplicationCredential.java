@@ -1,16 +1,14 @@
 package net.whydah.token.data;
 
 /**
- * Created by IntelliJ IDEA.
  * User: totto
  * Date: Nov 4, 2010
  * Time: 8:53:39 AM
- * To change this template use File | Settings | File Templates.
  */
 public class ApplicationCredential {
 
     private String applicationID="1234";
-    private String applicationPassord="thePasswrd";
+    private String applicationPassword ="thePasswrd";
 
     public String getApplicationID() {
         return applicationID;
@@ -20,12 +18,12 @@ public class ApplicationCredential {
         this.applicationID = applicationID;
     }
 
-    public String getApplicationPassord() {
-        return applicationPassord;
+    public String getApplicationPassword() {
+        return applicationPassword;
     }
 
-    public void setApplicationPassord(String applicationPassord) {
-        this.applicationPassord = applicationPassord;
+    public void setApplicationPassword(String applicationPassword) {
+        this.applicationPassword = applicationPassword;
     }
 
     public String toXML(){
@@ -36,7 +34,7 @@ public class ApplicationCredential {
             "<applicationcredential>\n" +
             "    <params>\n" +
             "        <applicationID>"+ applicationID +"</applicationID>\n" +
-            "        <applicationSecret>"+ applicationPassord +"</applicationSecret>\n" +
+            "        <applicationSecret>"+ applicationPassword +"</applicationSecret>\n" +
             "    </params> \n" +
             "</applicationcredential>\n" ;
         }
@@ -47,7 +45,7 @@ public class ApplicationCredential {
             "    <applicationcredential>\n" +
             "        <params>\n" +
             "            <applicationID>"+ applicationID +"</applicationID>\n" +
-            "            <applicationSecret>"+ applicationPassord +"</applicationSecret>\n" +
+            "            <applicationSecret>"+ applicationPassword +"</applicationSecret>\n" +
             "        </params> \n" +
             "    </applicationcredential>\n" +
             "</template>";

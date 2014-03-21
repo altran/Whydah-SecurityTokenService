@@ -25,7 +25,7 @@ public class XPathTest extends TestCase {
     public void testCreateApplicationToken() throws Exception {
         ApplicationCredential cred = new ApplicationCredential();
         cred.setApplicationID("Styrerommet");
-        cred.setApplicationPassord("dummy");
+        cred.setApplicationPassword("dummy");
         ApplicationToken imp = new ApplicationToken(cred.toXML());
         System.out.println(imp.toXML());
         System.out.println(imp.getApplicationID());

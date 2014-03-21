@@ -21,6 +21,7 @@ public class AuthenticatedApplicationRepository {
 
     public static boolean verifyApplicationToken(String s) {
         try {
+            //TODO bli: Implement ApplicationTokenVerification
             String appid = s.substring(s.indexOf("<applicationtoken>") + "<applicationtoken>".length(), s.indexOf("</applicationtoken>"));
             return apptokens.get(appid) != null;
         } catch (StringIndexOutOfBoundsException e) {
