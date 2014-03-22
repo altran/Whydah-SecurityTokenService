@@ -1,6 +1,6 @@
 package net.whydah.token.data;
 
-import net.whydah.token.data.helper.ApplicationData;
+import net.whydah.token.data.application.ApplicationData;
 import net.whydah.token.data.helper.CompanyRoles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

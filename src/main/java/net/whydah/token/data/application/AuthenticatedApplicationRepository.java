@@ -1,6 +1,4 @@
-package net.whydah.token.data.helper;
-
-import net.whydah.token.data.ApplicationToken;
+package net.whydah.token.data.application;
 
 import java.util.HashMap;
 import java.util.Map;

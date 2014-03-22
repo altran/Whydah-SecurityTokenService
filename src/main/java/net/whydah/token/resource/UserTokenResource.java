@@ -2,8 +2,8 @@ package net.whydah.token.resource;
 
 import com.google.inject.Inject;
 import com.sun.jersey.api.view.Viewable;
-import net.whydah.token.data.helper.AuthenticatedApplicationRepository;
 import net.whydah.token.data.UserToken;
+import net.whydah.token.data.application.AuthenticatedApplicationRepository;
 import net.whydah.token.data.helper.ActiveUserTokenRepository;
 import net.whydah.token.data.helper.UserAuthenticator;
 import net.whydah.token.exception.AuthenticationFailedException;

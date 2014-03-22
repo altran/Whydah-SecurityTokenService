@@ -1,4 +1,4 @@
-package net.whydah.token.data;
+package net.whydah.token.data.application;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,6 +1,8 @@
 package net.whydah.token.data;
 
 import junit.framework.TestCase;
+import net.whydah.token.data.application.ApplicationCredential;
+import net.whydah.token.data.application.ApplicationToken;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
