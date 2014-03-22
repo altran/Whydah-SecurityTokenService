@@ -72,11 +72,12 @@ public class ApplicationAuthentication {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response logonApplication(@FormParam("applicationcredential") String appCredentialXml) {
-        logger.debug("applogon fikk: {}", appCredentialXml);
+        //TODO baardl Implement backend for Application Logon
+        logger.debug("applogon input: {}", appCredentialXml);
         ApplicationToken token = new ApplicationToken(appCredentialXml);
         token.setBaseuri(appConfig.getProperty("mybaseuri"));
         AuthenticatedApplicationRepository.addApplicationToken(token);
-        logger.debug("applogon returnerer {}", token.toXML());
+        logger.debug("applogon response {}", token.toXML());
         return Response.ok().entity(token.toXML()).build();
     }
 
