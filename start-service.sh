@@ -3,7 +3,7 @@
 export IAM_MODE=TEST
 
 A=SecurityTokenService
-V=0.5-SNAPSHOT
+V=LATEST
 JARFILE=$A-$V.jar
 
 pkill -f $A
