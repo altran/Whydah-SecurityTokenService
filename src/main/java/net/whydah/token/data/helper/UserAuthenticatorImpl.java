@@ -18,6 +18,7 @@ import java.net.URI;
 public class UserAuthenticatorImpl implements UserAuthenticator {
     private static final Logger logger = LoggerFactory.getLogger(UserAuthenticator.class);
     private static final String USER_TOKEN_URL = "usertoken";
+    private static final String USER_URL = "user";
 
     @Inject
     @Named("useridbackendUri")
@@ -40,10 +41,10 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
 
     @Override
-    public UserToken createAndLogonUser(String appTokenXml, String userCredentialXml, String fbUserXml) {
+    public UserToken createAndLogonUser(String appTokenXml, String userTokenId, String userCredentialXml, String fbUserXml) {
         logger.trace("Calling UserIdentityBackend at " + useridbackendUri);
 
-        WebResource webResource = restClient.resource(useridbackendUri).path("createandlogon");
+        WebResource webResource = restClient.resource(useridbackendUri).path(userTokenId).path(USER_URL);
         logger.debug("Calling createandlogon with fbUserXml= \n" + fbUserXml);
         ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, fbUserXml);
 

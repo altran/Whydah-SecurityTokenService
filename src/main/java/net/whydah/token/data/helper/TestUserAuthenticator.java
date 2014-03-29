@@ -64,7 +64,7 @@ public class TestUserAuthenticator implements UserAuthenticator {
     }
 
     @Override
-    public UserToken createAndLogonUser(String appTokenXml, String userCredentialXml, String fbUserXml) {
+    public UserToken createAndLogonUser(String appTokenXml, String userTokenId, String userCredentialXml, String fbUserXml) {
         throw new IllegalStateException("Not implemented.");
     }
 

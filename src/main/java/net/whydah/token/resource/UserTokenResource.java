@@ -90,7 +90,8 @@ public class UserTokenResource {
         }
 
         try {
-            UserToken token = userAuthenticator.createAndLogonUser(appTokenXml, userCredentialXml, fbUserXml);
+            String adminUserTokenId = "whydahuseradmin"; //FIXME
+            UserToken token = userAuthenticator.createAndLogonUser(appTokenXml, adminUserTokenId , userCredentialXml, fbUserXml);
             ticketmap.put(ticketid, token.getTokenid());
             return Response.ok(new Viewable("/usertoken.ftl", token)).build();
         } catch (AuthenticationFailedException ae) {
