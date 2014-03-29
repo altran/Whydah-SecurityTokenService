@@ -20,7 +20,7 @@ import java.util.UUID;
 public class TestUserAuthenticator implements UserAuthenticator {
     private final DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
 
-    public UserToken logonUser(String appTokenXml, String userCredentialXml) {
+    public UserToken logonUser(String applicationTokenId, String appTokenXml, String userCredentialXml) {
         String username;
         try {
             username = getUsername(userCredentialXml);

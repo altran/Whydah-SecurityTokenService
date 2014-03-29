@@ -17,6 +17,7 @@ import java.net.URI;
 
 public class UserAuthenticatorImpl implements UserAuthenticator {
     private static final Logger logger = LoggerFactory.getLogger(UserAuthenticator.class);
+    private static final String USER_TOKEN_URL = "usertoken";
 
     @Inject
     @Named("useridbackendUri")
@@ -27,10 +28,10 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         restClient = ApacheHttpClient.create();
     }
 
-    public final UserToken logonUser(final String appTokenXml, final String userCredentialXml) {
+    public final UserToken logonUser(final String applicationTokenId,final String appTokenXml, final String userCredentialXml) {
         logger.trace("Calling UserIdentityBackend at " + useridbackendUri);
 
-        WebResource webResource = restClient.resource(useridbackendUri).path("logon");
+        WebResource webResource = restClient.resource(useridbackendUri).path(applicationTokenId).path(USER_TOKEN_URL);
         ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, userCredentialXml);
 
         UserToken token = getUserToken(appTokenXml, response);

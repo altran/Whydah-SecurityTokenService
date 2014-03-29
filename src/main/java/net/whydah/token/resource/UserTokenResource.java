@@ -48,7 +48,7 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         try {
-            UserToken token = userAuthenticator.logonUser(appTokenXml, userCredentialXml);
+            UserToken token = userAuthenticator.logonUser(applicationtokenid,appTokenXml, userCredentialXml);
             return Response.ok(new Viewable("/usertoken.ftl", token)).build();
         } catch (AuthenticationFailedException ae) {
                 return Response.status(Response.Status.FORBIDDEN).entity("User authentication failed").build();
@@ -67,7 +67,7 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         try {
-            UserToken token = userAuthenticator.logonUser(appTokenXml, userCredentialXml);
+            UserToken token = userAuthenticator.logonUser(applicationtokenid,applicationtokenid, userCredentialXml);
             ticketmap.put(ticketid, token.getTokenid());
             return Response.ok(new Viewable("/usertoken.ftl", token)).build();
         } catch (AuthenticationFailedException ae) {
