@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.whydah.token</groupId>
     <artifactId>SecurityTokenService</artifactId>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.5</version>
     <name>SecurityTokenService</name>
     <url>https://wiki.cantara.no/display/iam/SecurityTokenService</url>
 
@@ -50,7 +50,8 @@
         <developerConnection>scm:git:ssh://git@github.com/altran/Whydah-SecurityTokenService.git</developerConnection>
         <connection>scm:git:https://github.com/altran/Whydah-SecurityTokenService.git</connection>
         <url>https://github.com/altran/Whydah-SecurityTokenService</url>
-    </scm>
+      <tag>SecurityTokenService-0.5</tag>
+  </scm>
 
     <properties>
         <jersey-version>1.6</jersey-version>
