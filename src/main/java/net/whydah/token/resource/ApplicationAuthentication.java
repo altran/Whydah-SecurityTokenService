@@ -3,10 +3,10 @@ package net.whydah.token.resource;
 import com.google.inject.Inject;
 import com.sun.jersey.api.view.Viewable;
 import net.whydah.token.config.AppConfig;
-import net.whydah.token.data.ApplicationCredential;
-import net.whydah.token.data.ApplicationToken;
 import net.whydah.token.data.UserCredential;
-import net.whydah.token.data.helper.AuthenticatedApplicationRepository;
+import net.whydah.token.data.application.ApplicationCredential;
+import net.whydah.token.data.application.ApplicationToken;
+import net.whydah.token.data.application.AuthenticatedApplicationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
