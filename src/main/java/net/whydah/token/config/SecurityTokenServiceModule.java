@@ -31,7 +31,7 @@ public class SecurityTokenServiceModule extends AbstractModule {
         bind(AppConfig.class).toInstance(appConfig);
         if(applicationmode.equals(ApplicationMode.DEV)) {
             logger.info("Using TestUserAuthenticator to handle usercredentials");
-            bind(UserAuthenticator.class).to(UserAuthenticator.class);
+            //bind(UserAuthenticator.class).to(UserAuthenticator.class);
         } else {
             bind(UserAuthenticator.class).to(UserAuthenticatorImpl.class);
             URI useridbackendUri = URI.create(appConfig.getProperty("useridbackendUri"));
