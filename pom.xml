@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.whydah.token</groupId>
     <artifactId>SecurityTokenService</artifactId>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.6-SNAPSHOT</version>
     <name>SecurityTokenService</name>
     <url>https://wiki.cantara.no/display/iam/SecurityTokenService</url>
 
@@ -27,6 +27,16 @@
             <organization>Altran Norge AS</organization>
             <organizationUrl>http://www.altran.no/</organizationUrl>
         </developer>
+        <developer>
+            <id>baardl</id>
+            <name>Bard Lind</name>
+            <email>bard.lind@gmail.com</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <organization>Altran Norge AS</organization>
+            <organizationUrl>http://www.altran.no/</organizationUrl>
+        </developer>
     </developers>
 
 
@@ -42,17 +52,6 @@
         <url>https://github.com/altran/Whydah-SecurityTokenService</url>
       <tag>HEAD</tag>
   </scm>
-
-    <distributionManagement>
-        <repository>
-            <id>altran-releases</id>
-            <url>http://mvnrepo.cantara.no/content/repositories/altran-releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>altran-snapshots</id>
-            <url>http://mvnrepo.cantara.no/content/repositories/altran-snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <properties>
         <jersey-version>1.6</jersey-version>

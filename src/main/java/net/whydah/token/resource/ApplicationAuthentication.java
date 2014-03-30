@@ -3,12 +3,10 @@ package net.whydah.token.resource;
 import com.google.inject.Inject;
 import com.sun.jersey.api.view.Viewable;
 import net.whydah.token.config.AppConfig;
-import net.whydah.token.config.ApplicationMode;
 import net.whydah.token.data.ApplicationCredential;
 import net.whydah.token.data.ApplicationToken;
 import net.whydah.token.data.UserCredential;
 import net.whydah.token.data.helper.AuthenticatedApplicationRepository;
-import net.whydah.token.data.helper.DevModeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,11 +72,6 @@ public class ApplicationAuthentication {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response logonApplication(@FormParam("applicationcredential") String appCredentialXml) {
-
-        if (ApplicationMode.getApplicationMode()==ApplicationMode.DEV ) {
-            return DevModeHelper.return_DEV_MODE_ExampleApplicationToken(1);
-        }
-
         logger.debug("applogon fikk: {}", appCredentialXml);
         ApplicationToken token = new ApplicationToken(appCredentialXml);
         token.setBaseuri(appConfig.getProperty("mybaseuri"));

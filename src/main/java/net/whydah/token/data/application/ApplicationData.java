@@ -1,4 +1,6 @@
-package net.whydah.token.data.helper;
+package net.whydah.token.data.application;
+
+import net.whydah.token.data.helper.CompanyRoles;
 
 import java.io.Serializable;
 import java.util.Collection;

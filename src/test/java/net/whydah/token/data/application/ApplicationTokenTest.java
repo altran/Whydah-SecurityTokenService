@@ -1,4 +1,4 @@
-package net.whydah.token.data;
+package net.whydah.token.data.application;
 
 import junit.framework.TestCase;
 
@@ -13,7 +13,7 @@ public class ApplicationTokenTest extends TestCase {
     public void testCreateApplicationCredential() {
         ApplicationCredential cred = new ApplicationCredential();
         cred.setApplicationID("Styrerommet");
-        cred.setApplicationPassord("dummy");
+        cred.setApplicationPassword("dummy");
         ApplicationToken imp = new ApplicationToken(cred.toXML());
         //System.out.println(imp.toXML());
         assertEquals("The generated application token is wrong.", cred.getApplicationID(), imp.getApplicationID());
@@ -23,7 +23,7 @@ public class ApplicationTokenTest extends TestCase {
     public void testCreateApplicationCredential2() {
         ApplicationCredential cred = new ApplicationCredential();
         cred.setApplicationID("Giftit");
-        cred.setApplicationPassord("dummy");
+        cred.setApplicationPassword("dummy");
         ApplicationToken imp = new ApplicationToken(cred.toXML());
         //System.out.println(imp.toXML());
         assertEquals("The generated application token is wrong.", cred.getApplicationID(), imp.getApplicationID());

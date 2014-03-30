@@ -20,7 +20,7 @@ import java.util.UUID;
 public class TestUserAuthenticator implements UserAuthenticator {
     private final DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
 
-    public UserToken logonUser(String appTokenXml, String userCredentialXml) {
+    public UserToken logonUser(String applicationTokenId, String appTokenXml, String userCredentialXml) {
         String username;
         try {
             username = getUsername(userCredentialXml);
@@ -64,7 +64,7 @@ public class TestUserAuthenticator implements UserAuthenticator {
     }
 
     @Override
-    public UserToken createAndLogonUser(String appTokenXml, String userCredentialXml, String fbUserXml) {
+    public UserToken createAndLogonUser(String appTokenXml, String userTokenId, String userCredentialXml, String fbUserXml) {
         throw new IllegalStateException("Not implemented.");
     }
 

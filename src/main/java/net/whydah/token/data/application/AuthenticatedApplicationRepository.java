@@ -1,6 +1,4 @@
-package net.whydah.token.data.helper;
-
-import net.whydah.token.data.ApplicationToken;
+package net.whydah.token.data.application;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +19,7 @@ public class AuthenticatedApplicationRepository {
 
     public static boolean verifyApplicationToken(String s) {
         try {
+            //TODO baardl: Implement ApplicationTokenVerification
             String appid = s.substring(s.indexOf("<applicationtoken>") + "<applicationtoken>".length(), s.indexOf("</applicationtoken>"));
             return apptokens.get(appid) != null;
         } catch (StringIndexOutOfBoundsException e) {

@@ -5,10 +5,9 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-import net.whydah.token.Main;
 import net.whydah.token.config.ApplicationMode;
-import net.whydah.token.data.ApplicationCredential;
 import net.whydah.token.data.UserCredential;
+import net.whydah.token.data.application.ApplicationCredential;
 import org.junit.*;
 
 import javax.ws.rs.core.MediaType;
@@ -74,7 +73,7 @@ public class PostTest {
     private String getAppToken() {
         ApplicationCredential acred = new ApplicationCredential();
         acred.setApplicationID("Whydah-TestWebApp");
-        acred.setApplicationPassord("dummy");
+        acred.setApplicationPassword("dummy");
         return logonApplication(acred.toXML());
     }
 

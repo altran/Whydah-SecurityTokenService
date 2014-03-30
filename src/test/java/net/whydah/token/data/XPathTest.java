@@ -1,6 +1,8 @@
 package net.whydah.token.data;
 
 import junit.framework.TestCase;
+import net.whydah.token.data.application.ApplicationCredential;
+import net.whydah.token.data.application.ApplicationToken;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -25,7 +27,7 @@ public class XPathTest extends TestCase {
     public void testCreateApplicationToken() throws Exception {
         ApplicationCredential cred = new ApplicationCredential();
         cred.setApplicationID("Styrerommet");
-        cred.setApplicationPassord("dummy");
+        cred.setApplicationPassword("dummy");
         ApplicationToken imp = new ApplicationToken(cred.toXML());
         System.out.println(imp.toXML());
         System.out.println(imp.getApplicationID());
