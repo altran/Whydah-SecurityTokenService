@@ -2,9 +2,11 @@ package net.whydah.token.resource;
 
 import com.google.inject.Inject;
 import com.sun.jersey.api.view.Viewable;
+import net.whydah.token.config.ApplicationMode;
 import net.whydah.token.data.helper.AuthenticatedApplicationRepository;
 import net.whydah.token.data.UserToken;
 import net.whydah.token.data.helper.ActiveUserTokenRepository;
+import net.whydah.token.data.helper.DevModeHelper;
 import net.whydah.token.data.helper.UserAuthenticator;
 import net.whydah.token.exception.AuthenticationFailedException;
 import org.slf4j.Logger;
@@ -63,6 +65,10 @@ public class UserTokenResource {
                                  @PathParam("ticketid") String ticketid,
                                  @FormParam("apptoken") String appTokenXml,
                                  @FormParam("usercredential") String userCredentialXml) {
+        if (ApplicationMode.getApplicationMode()==ApplicationMode.DEV ) {
+            return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
+        }
+
         if (!verifyApptoken(applicationtokenid, appTokenXml)) {
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
@@ -84,6 +90,10 @@ public class UserTokenResource {
                                  @FormParam("apptoken") String appTokenXml,
                                  @FormParam("usercredential") String userCredentialXml,
                                  @FormParam("fbuser") String fbUserXml) {
+
+        if (ApplicationMode.getApplicationMode()==ApplicationMode.DEV ) {
+            return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
+        }
 
         if (!verifyApptoken(applicationtokenid, appTokenXml)) {
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
@@ -139,9 +149,14 @@ public class UserTokenResource {
         logger.debug("applicationtokenid: {}", applicationtokenid);
         logger.debug("appTokenXml: {}", appTokenXml);
 
+        if (ApplicationMode.getApplicationMode()==ApplicationMode.DEV ) {
+            return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
+        }
+
         if (!verifyApptoken(applicationtokenid, appTokenXml)) {
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
+
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
         if (userToken != null) {
             return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
@@ -156,6 +171,12 @@ public class UserTokenResource {
     public Response getUserTokenByTicket(@PathParam("applicationtokenid") String applicationtokenid,
                                      @FormParam("apptoken") String appTokenXml,
                                      @FormParam("ticket") String ticket) {
+
+
+        if (ApplicationMode.getApplicationMode()==ApplicationMode.DEV ) {
+            return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
+        }
+
         logger.debug("ticket: {}", ticket);
         if (!verifyApptoken(applicationtokenid, appTokenXml)) {
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
@@ -196,6 +217,10 @@ public class UserTokenResource {
     public Response transformUserToken(@PathParam("applicationtokenid") String applicationtokenid,
                                        @FormParam("usertoken") String userTokenXml,
                                        @FormParam("tp_applicationtoken") String newAppToken) {
+        if (ApplicationMode.getApplicationMode()==ApplicationMode.DEV ) {
+            return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
+        }
+
         if(!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
