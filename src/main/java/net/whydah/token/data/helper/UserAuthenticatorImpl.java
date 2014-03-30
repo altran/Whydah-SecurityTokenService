@@ -19,6 +19,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     private static final Logger logger = LoggerFactory.getLogger(UserAuthenticator.class);
     private static final String USER_TOKEN_URL = "usertoken";
     private static final String USER_URL = "user";
+    private static final String AUTHENTICATE = "authenticate";
 
     @Inject
     @Named("useridbackendUri")
@@ -32,18 +33,26 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     public final UserToken logonUser(final String applicationTokenId,final String appTokenXml, final String userCredentialXml) {
         logger.trace("Calling UserIdentityBackend at " + useridbackendUri);
 
-        WebResource webResource = restClient.resource(useridbackendUri).path(applicationTokenId).path(USER_TOKEN_URL);
+        // /uib/{applicationTokenId}/authenticate/user
+        WebResource webResource = restClient.resource(useridbackendUri).path(applicationTokenId).path(AUTHENTICATE).path(USER_URL);
         ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, userCredentialXml);
 
         UserToken token = getUserToken(appTokenXml, response);
         return token;
     }
 
-
+    /**
+     * @deprecated TODO move this functionality to new UserAdminService
+     * @param appTokenXml
+     * @param userTokenId
+     * @param userCredentialXml
+     * @param fbUserXml
+     * @return
+     */
     @Override
     public UserToken createAndLogonUser(String appTokenXml, String userTokenId, String userCredentialXml, String fbUserXml) {
         logger.trace("Calling UserIdentityBackend at " + useridbackendUri);
-
+        // TODO /uib//{applicationTokenId}/{userTokenId}/user/
         WebResource webResource = restClient.resource(useridbackendUri).path(userTokenId).path(USER_URL);
         logger.debug("Calling createandlogon with fbUserXml= \n" + fbUserXml);
         ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, fbUserXml);
