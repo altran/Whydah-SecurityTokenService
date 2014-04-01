@@ -43,17 +43,17 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
     /**
      * @deprecated TODO move this functionality to new UserAdminService
+     * @param applicationtokenid
      * @param appTokenXml
-     * @param userTokenId
      * @param userCredentialXml
      * @param fbUserXml
      * @return
      */
     @Override
-    public UserToken createAndLogonUser(String appTokenXml, String userTokenId, String userCredentialXml, String fbUserXml) {
+    public UserToken createAndLogonUser(String applicationtokenid, String appTokenXml, String userCredentialXml, String fbUserXml) {
         logger.trace("Calling UserIdentityBackend at " + useridbackendUri);
         // TODO /uib//{applicationTokenId}/{userTokenId}/user/
-        WebResource webResource = restClient.resource(useridbackendUri).path(userTokenId).path(USER_URL);
+        WebResource webResource = restClient.resource(useridbackendUri).path(applicationtokenid).path("my dummy usertokenid").path(USER_URL);
         logger.debug("Calling createandlogon with fbUserXml= \n" + fbUserXml);
         ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, fbUserXml);
 
