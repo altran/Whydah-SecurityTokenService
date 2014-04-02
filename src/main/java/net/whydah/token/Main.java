@@ -20,6 +20,7 @@ public class Main {
     private final static Logger logger = LoggerFactory.getLogger(Main.class);
     private HttpServer httpServer;
     private int webappPort;
+    private final String contextpath="/tokenservice";
 
     protected void startServer() throws IOException {
         String appMode = ApplicationMode.getApplicationMode();
@@ -29,7 +30,7 @@ public class Main {
         logger.info("Starting grizzly...");
 
         ServletHandler adapter = new ServletHandler();
-        adapter.setContextPath("/tokenservice");
+        adapter.setContextPath(contextpath);
         adapter.addInitParameter("com.sun.jersey.config.property.packages", "net.whydah.token");
         adapter.setProperty(ServletHandler.LOAD_ON_STARTUP, "1");
 
@@ -47,6 +48,9 @@ public class Main {
         httpServer.addListener(listener);
         httpServer.start();
         logger.info("SecurityTokenService started on port {}", webappPort);
+        logger.info("IAM_MODE = {}",ApplicationMode.getApplicationMode());
+        logger.info("Status: http://localhost:{}{}",webappPort,contextpath);
+        logger.info("WADL:   http://localhost:{}{}/application.wadl",webappPort,contextpath);
     }
 
     public int getPort() {
