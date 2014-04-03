@@ -20,7 +20,7 @@ import javax.ws.rs.core.UriInfo;
 import java.util.HashMap;
 import java.util.Map;
 
-@Path("/tokenservice")
+@Path("/token")
 public class UserTokenResource {
     private final static Logger logger = LoggerFactory.getLogger(UserTokenResource.class);
 
