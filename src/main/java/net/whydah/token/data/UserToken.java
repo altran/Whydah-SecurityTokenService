@@ -168,7 +168,8 @@ public class UserToken implements  Serializable{
             for (ApplicationData app : applicationCompanyRoleValueMap.values()) {
                 m.update(app.getApplicationID().getBytes("UTF-8"));
                 for (CompanyRoles companyRoles : app.getCompaniesAndRolesMap().values()) {
-                    m.update(companyRoles.getCompanyNumber().getBytes("UTF-8"));
+                    // TODO: get Company Name instead
+                    // m.update(companyRoles.getCompanyNumber().getBytes("UTF-8"));
                     Map<String,String> roles = companyRoles.getRoleMap();
                     for (Map.Entry<String, String> roleEntry : roles.entrySet()) {
                         m.update(roleEntry.getKey().getBytes("UTF-8"));
