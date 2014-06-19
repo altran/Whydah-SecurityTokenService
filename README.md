@@ -66,7 +66,7 @@ Typical apache setup
 ```
 
 Verify instance:
-*  http://server:9998/tokenservice/tokenservice/application.wadl
+*  http://server:9998/tokenservice/application.wadl
 
 If you have enabled test-page in the properties, you can run and verify the key services from the testpage application (testpage=false)
 * http://server:9998/tokenservice/testpage
