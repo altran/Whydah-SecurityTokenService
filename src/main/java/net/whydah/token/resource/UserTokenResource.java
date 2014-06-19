@@ -65,12 +65,12 @@ public class UserTokenResource {
         }
     }
 
-    @Path("/{applicationtokenid}/{ticketid}/usertoken")
+    @Path("/{applicationtokenid}/{ticket}/usertoken")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response getUserToken(@PathParam("applicationtokenid") String applicationtokenid,
-                                 @PathParam("ticketid") String ticketid,
+                                 @PathParam("ticket") String ticket,
                                  @FormParam("apptoken") String appTokenXml,
                                  @FormParam("usercredential") String userCredentialXml) {
         if (ApplicationMode.getApplicationMode()==ApplicationMode.DEV ) {
@@ -82,19 +82,19 @@ public class UserTokenResource {
         }
         try {
             UserToken token = userAuthenticator.logonUser(applicationtokenid,appTokenXml, userCredentialXml);
-            ticketmap.put(ticketid, token.getTokenid());
+            ticketmap.put(ticket, token.getTokenid());
             return Response.ok(new Viewable("/usertoken.ftl", token)).build();
         } catch (AuthenticationFailedException ae) {
                 return Response.status(Response.Status.FORBIDDEN).entity("User authentication failed").build();
         }
     }
 
-    @Path("/{applicationtokenid}/{ticketid}/createuser")
+    @Path("/{applicationtokenid}/{ticket}/createuser")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response createAndLogOnUser(@PathParam("applicationtokenid") String applicationtokenid,
-                                 @PathParam("ticketid") String ticketid,
+                                 @PathParam("ticket") String ticket,
                                  @FormParam("apptoken") String appTokenXml,
                                  @FormParam("usercredential") String userCredentialXml,
                                  @FormParam("fbuser") String fbUserXml) {
@@ -109,7 +109,7 @@ public class UserTokenResource {
 
         try {
             UserToken token = userAuthenticator.createAndLogonUser(applicationtokenid,appTokenXml, userCredentialXml, fbUserXml);
-            ticketmap.put(ticketid, token.getTokenid());
+            ticketmap.put(ticket, token.getTokenid());
             return Response.ok(new Viewable("/usertoken.ftl", token)).build();
         } catch (AuthenticationFailedException ae) {
             return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").build();
