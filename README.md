@@ -68,8 +68,8 @@ Typical apache setup
 Verify instance:
 *  http://server:9998/tokenservice/application.wadl
 
-If you have enabled test-page in the properties, you can run and verify the key services from the testpage application (testpage=true)
-* http://server:9998/tokenservice/testpage
+If you have enabled test-page in the properties, you can run and verify the key services from the testpage application (testpage=enabled)
+* http://server:9998/tokenservice/
 
 
 Developer info

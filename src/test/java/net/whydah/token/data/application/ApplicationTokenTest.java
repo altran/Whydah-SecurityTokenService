@@ -2,17 +2,11 @@ package net.whydah.token.data.application;
 
 import junit.framework.TestCase;
 
-/**
- * Created by IntelliJ IDEA.
- * User: totto
- * Date: Nov 4, 2010
- * Time: 10:43:39 AM
- */
 public class ApplicationTokenTest extends TestCase {
 
     public void testCreateApplicationCredential() {
         ApplicationCredential cred = new ApplicationCredential();
-        cred.setApplicationID("Styrerommet");
+        cred.setApplicationID("TestApp");
         cred.setApplicationPassword("dummy");
         ApplicationToken imp = new ApplicationToken(cred.toXML());
         //System.out.println(imp.toXML());

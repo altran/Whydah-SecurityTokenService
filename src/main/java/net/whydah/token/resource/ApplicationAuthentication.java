@@ -31,7 +31,7 @@ public class ApplicationAuthentication {
         if("enabled".equals(appConfig.getProperty("testpage"))) {
             logger.debug("Showing test page");
             HashMap<String, Object> model = new HashMap<String, Object>();
-            UserCredential testUserCredential = new UserCredential("bentelongva@hotmail.com", "061073");
+            UserCredential testUserCredential = new UserCredential("test@hotmail.com", "061073");
             model.put("applicationcredential", new ApplicationCredential().toXML());
             model.put("testUserCredential", testUserCredential.toXML());
             return Response.ok().entity(new Viewable("/testpage.html.ftl", model)).build();
