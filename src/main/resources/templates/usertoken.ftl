@@ -14,8 +14,7 @@
     <application ID="${app.applicationID!?xml}">
         <applicationName>${app.applicationName!?xml}</applicationName>
         <#list app.companyRoles as role>
-        <#-- <organization ID="${role.companyNumber}"> -->
-        <organization name="${role.companyName!?xml}">
+            <organization ID="${role.companyNumber}">
             <organizationName>${role.companyName!?xml}</organizationName>
             <#list role.roleMap?keys as key>
             <role name="${key?xml}" value="${role.roleMap[key]!?xml}"/>
