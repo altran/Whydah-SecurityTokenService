@@ -208,7 +208,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptors>
-                        <descriptor>src/serviceStarter/assembly/winservice.xml</descriptor>
+                        <descriptor>src/main/assembly/winservice.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>
