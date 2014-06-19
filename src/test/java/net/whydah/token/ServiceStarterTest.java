@@ -48,7 +48,7 @@ public class ServiceStarterTest {
     public void getApplicationTokenTemplate() {
         WebResource webResource = restClient.resource(baseUri).path("/applicationtokentemplate");
         String responseMsg = webResource.get(String.class);
-        assertTrue(responseMsg.contains("<applicationtoken>"));
+        assertTrue(responseMsg.contains("<applicationtokenID>"));
     }
 
     @Test

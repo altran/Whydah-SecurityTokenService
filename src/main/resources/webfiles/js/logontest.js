@@ -17,7 +17,7 @@ function submitAppLogon(event) {
             var apptokenXMLString = apptokenXMLObjectResponse.xml ? apptokenXMLObjectResponse.xml : (new XMLSerializer()).serializeToString(apptokenXMLObjectResponse);
             $('textarea#apptoken1').val(apptokenXMLString);
             $('textarea#apptoken2').val(apptokenXMLString);
-            var apptokenid = $(apptokenXMLObjectResponse).contents().find("applicationtoken").text();
+            var apptokenid = $(apptokenXMLObjectResponse).contents().find("applicationtokenID").text();
             $("#apptokenid").html("Application tokenID: " + apptokenid);
             $("#userlogonform").attr("action", "iam/" + apptokenid + "/usertoken");
             $("#userlogonformurl").html("iam/" + apptokenid + "/usertoken");

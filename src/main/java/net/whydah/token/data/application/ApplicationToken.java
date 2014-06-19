@@ -61,7 +61,7 @@ public class ApplicationToken {
             return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \n " +
                     " <token>\n" +
                     "     <params>\n" +
-                    "         <applicationtoken>" + applicationTokenId + "</applicationtoken>\n" +
+                    "         <applicationtokenID>" + applicationTokenId + "</applicationtokenID>\n" +
                     "         <applicationid>" + "23" + "</applicationid>\n" +
                     "         <applicationname>" + applicationName + "</applicationname>\n" +
                     "         <expires>" + expires + "</expires>\n" +
@@ -76,7 +76,7 @@ public class ApplicationToken {
 
             "    <token>\n" +
             "        <params>\n" +
-            "            <applicationtoken>" + applicationTokenId + "</applicationtoken>\n" +
+            "            <applicationtokenID>" + applicationTokenId + "</applicationtokenID>\n" +
             "            <applicationid>" + "23" + "</applicationid>\n" +
             "            <applicationname>" + applicationName + "</applicationname>\n" +
             "            <expires>" + expires + "</expires>\n" +

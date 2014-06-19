@@ -22,7 +22,7 @@ public class ApplicationTokenTest extends TestCase {
 
     public void testCreateApplicationCredential2() {
         ApplicationCredential cred = new ApplicationCredential();
-        cred.setApplicationID("Giftit");
+        cred.setApplicationID("Whydah");
         cred.setApplicationPassword("dummy");
         ApplicationToken imp = new ApplicationToken(cred.toXML());
         //System.out.println(imp.toXML());
