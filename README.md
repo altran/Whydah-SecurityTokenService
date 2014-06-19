@@ -64,3 +64,6 @@ Typical apache setup
                 ProxyPass /test http://localhost:9990/test/
 </VirtualHost>
 ```
+
+Verify instance:
+*  http://server:9998/tokenservice/tokenservice/application.wadl
