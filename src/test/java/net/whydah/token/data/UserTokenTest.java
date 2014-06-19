@@ -86,7 +86,6 @@ public class UserTokenTest {
                 "        <personRef>436276390081408</personRef>\n" +
                 "        <UID>test@hotmail.com</UID>\n" +
                 "    </identity>\n" +
-                "    <applications>\n" +
                 "        <application>\n" +
                 "            <appId>Invoice</appId>\n" +
                 "            <applicationName>Contempus Invoice</applicationName>\n" +
@@ -101,8 +100,6 @@ public class UserTokenTest {
                 "            <roleName>NT</roleName>\n" +
                 "            <roleValue>2010 - 2011</roleValue>\n" +
                 "        </application>\n" +
-                "        </application>\n" +
-                "    </applications>\n" +
                 "</whydahuser>";
         String appXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \n " +
                     " <token>\n" +
