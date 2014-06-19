@@ -51,6 +51,8 @@ public class Main {
         logger.info("IAM_MODE = {}",ApplicationMode.getApplicationMode());
         logger.info("Status: http://localhost:{}{}",webappPort,contextpath);
         logger.info("WADL:   http://localhost:{}{}/application.wadl",webappPort,contextpath);
+        logger.info("testpage = {}",Integer.valueOf(appConfig.getProperty("testpage")));
+        logger.info("TestDriverWeb:   http://localhost:{}{}/testpage/",webappPort,contextpath);
     }
 
     public int getPort() {
