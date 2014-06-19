@@ -3,7 +3,6 @@ package net.whydah.token;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
-import net.whydah.token.Main;
 import net.whydah.token.config.ApplicationMode;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -15,17 +14,17 @@ import java.net.URI;
 
 import static org.junit.Assert.assertTrue;
 
-public class MainTest {
-    private static Main main;
+public class ServiceStarterTest {
+    private static ServiceStarter serviceStarter;
     private static URI baseUri;
     Client restClient;
 
     @BeforeClass
     public static void init() throws Exception {
         System.setProperty(ApplicationMode.IAM_MODE_KEY, ApplicationMode.DEV);
-        main = new Main();
-        main.startServer();
-        baseUri = UriBuilder.fromUri("http://localhost/tokenservice/").port(main.getPort()).build();
+        serviceStarter = new ServiceStarter();
+        serviceStarter.startServer();
+        baseUri = UriBuilder.fromUri("http://localhost/tokenservice/").port(serviceStarter.getPort()).build();
     }
 
     @Before
@@ -35,7 +34,7 @@ public class MainTest {
 
     @AfterClass
     public static void teardown() throws Exception {
-        main.stop();
+        serviceStarter.stop();
     }
 
     @Test

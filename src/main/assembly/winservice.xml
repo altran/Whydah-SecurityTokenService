@@ -8,7 +8,7 @@
     <baseDirectory>${project.name}</baseDirectory>
     <fileSets>
         <fileSet>
-            <directory>src/main/service</directory>
+            <directory>src/serviceStarter/service</directory>
             <outputDirectory>/</outputDirectory>
         </fileSet>
     </fileSets>

@@ -20,14 +20,14 @@ import static org.junit.Assert.assertTrue;
 public class PostTest {
     private static URI baseUri;
     Client restClient;
-    private static Main main;
+    private static ServiceStarter serviceStarter;
 
     @BeforeClass
     public static void init() throws Exception {
         System.setProperty(ApplicationMode.IAM_MODE_KEY, ApplicationMode.DEV);
-        main = new Main();
-        main.startServer();
-        baseUri = UriBuilder.fromUri("http://localhost/tokenservice/").port(main.getPort()).build();
+        serviceStarter = new ServiceStarter();
+        serviceStarter.startServer();
+        baseUri = UriBuilder.fromUri("http://localhost/tokenservice/").port(serviceStarter.getPort()).build();
     }
 
     @Before
@@ -37,7 +37,7 @@ public class PostTest {
 
     @AfterClass
     public static void teardown() throws Exception {
-        main.stop();
+        serviceStarter.stop();
     }
 
     @Test

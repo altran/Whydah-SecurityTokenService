@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class Main {
-    private final static Logger logger = LoggerFactory.getLogger(Main.class);
+public class ServiceStarter {
+    private final static Logger logger = LoggerFactory.getLogger(ServiceStarter.class);
     private HttpServer httpServer;
     private int webappPort;
     private final String contextpath="/tokenservice";
@@ -53,6 +53,7 @@ public class Main {
         logger.info("WADL:   http://localhost:{}{}/application.wadl",webappPort,contextpath);
         logger.info("testpage = {}",appConfig.getProperty("testpage"));
         logger.info("TestDriverWeb:   http://localhost:{}{}/testpage/",webappPort,contextpath);
+        logger.info("\n");
     }
 
     public int getPort() {
@@ -67,13 +68,13 @@ public class Main {
 
 
     public static void main(String[] args) throws IOException {
-        Main main = new Main();
-        main.startServer();
+        ServiceStarter serviceStarter = new ServiceStarter();
+        serviceStarter.startServer();
         try {
             // wait forever...
             Thread.currentThread().join();
         } catch (InterruptedException ie) {
         }
-        main.stop();
+        serviceStarter.stop();
     }
 }
