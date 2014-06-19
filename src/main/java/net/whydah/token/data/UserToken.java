@@ -85,7 +85,7 @@ public class UserToken implements  Serializable{
                 Node appNode = applicationNodes.item(i);
                 NodeList children = appNode.getChildNodes();
                 HashMap<String, String> values = getAppValues(children);
-                putApplicationCompanyRoleValue(values.get("appId"), values.get("applicationName"), values.get("orgID"), values.get("organizationName"), values.get("roleName"), values.get("roleValue"));
+                putApplicationCompanyRoleValue(values.get("appId"), values.get("applicationName"),  values.get("organizationName"), values.get("roleName"), values.get("roleValue"));
             }
         } catch (Exception e) {
             logger.error("Error parsing userIdentityXML " + userIdentityXML, e);
@@ -142,19 +142,15 @@ public class UserToken implements  Serializable{
         XPath xPath = XPathFactory.newInstance().newXPath();
         String appId = (String) xPath.evaluate("@ID", appNode, XPathConstants.STRING);
         String appName = (String) xPath.evaluate("./applicationName", appNode, XPathConstants.STRING);
-        NodeList orgs = (NodeList) xPath.evaluate("./organization", appNode, XPathConstants.NODESET);
-        for(int j=0; j<orgs.getLength(); j++) {
-            Node orgNode = orgs.item(j);
-            String organizationId = (String) xPath.evaluate("@ID", orgNode, XPathConstants.STRING);
-            String organizationName = (String) xPath.evaluate("./organizationName", orgNode, XPathConstants.STRING);
-            NodeList roles = (NodeList) xPath.evaluate("./role", orgNode, XPathConstants.NODESET);
+            String organizationName = (String) xPath.evaluate("./organizationName", appNode, XPathConstants.STRING);
+            NodeList roles = (NodeList) xPath.evaluate("./role", appNode, XPathConstants.NODESET);
             for(int k=0; k<roles.getLength(); k ++) {
                 Node roleNode = roles.item(k);
                 String roleName = (String) xPath.evaluate("@name", roleNode, XPathConstants.STRING);
                 String roleValue = (String) xPath.evaluate("@value", roleNode, XPathConstants.STRING);
-                putApplicationCompanyRoleValue(appId, appName, organizationId, organizationName, roleName, roleValue);
+                putApplicationCompanyRoleValue(appId, appName, organizationName, roleName, roleValue);
             }
-        }
+
     }
 
 
@@ -191,15 +187,14 @@ public class UserToken implements  Serializable{
         return value != null ? value : "";
     }
 
-    public void putApplicationCompanyRoleValue(String p_application_ID, String p_application_Name, String p_company_ID, String p_company_name, String p_role, String p_value) {
+    public void putApplicationCompanyRoleValue(String p_application_ID, String p_application_Name,  String p_company_name, String p_role, String p_value) {
         if (applicationCompanyRoleValueMap.containsKey(p_application_ID)) {
             ApplicationData application = applicationCompanyRoleValueMap.get(p_application_ID);
-            CompanyRoles company = application.getCompaniesAndRolesMap().get(p_company_ID);
+            CompanyRoles company = application.getCompaniesAndRolesMap().get(p_company_name);
             if (company != null) {  // Application and company exists, just update the rolemap
                 company.getRoleMap().put(p_role, p_value);
             } else {
                 company = new CompanyRoles();
-                company.setCompanyNumber(p_company_ID);
                 company.setCompanyName(p_company_name);
                 Map<String, String> rolemap = new HashMap<String, String>();
                 rolemap.put(p_role, p_value);
@@ -213,7 +208,6 @@ public class UserToken implements  Serializable{
             application.setApplicationID(p_application_ID);
             application.setApplicationName(p_application_Name);
             CompanyRoles company = new CompanyRoles();
-            company.setCompanyNumber(p_company_ID);
             company.setCompanyName(p_company_name);
             Map<String,String> rolemap = new HashMap<String, String>();
             rolemap.put(p_role, p_value);

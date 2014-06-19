@@ -60,15 +60,16 @@ public class UserTokenTest {
         utoken.setFirstName("Olav");
         utoken.setLastName("Nordmann");
         utoken.setTokenid(UUID.randomUUID().toString());
-        utoken.putApplicationCompanyRoleValue("2349785543", "Styrerommet", "2349785543", "Titutten boretslag", "styreleder", "Diktator");
-        utoken.putApplicationCompanyRoleValue("2349785543", "Styrerommet", "2349785543", "Titutten boretslag", "vaktmester", "ansatt");
-        utoken.putApplicationCompanyRoleValue("2349785543", "Styrerommet", "0078", "Marmorberget Borettslag", "styremedlem", "");
-        utoken.putApplicationCompanyRoleValue("appa", "App A", "1078", "Mormorberget Borettslag", "styremedlem", "Valla");
+        utoken.putApplicationCompanyRoleValue("2349785543", "Whydah.net",  "Kunde 1", "styreleder", "Diktator");
+        utoken.putApplicationCompanyRoleValue("2349785543", "Whydah.net",  "Kunde 2", "vaktmester", "ansatt");
+        utoken.putApplicationCompanyRoleValue("2349785543", "Whydah.net",  "Kunde 3", "styremedlem", "");
+        utoken.putApplicationCompanyRoleValue("appa", "whydag.org",  "Kunde 1", "styremedlem", "Valla");
         String tokenxml = freemarkerProcessor.toXml(utoken);
 
         UserToken copyToken = UserToken.createFromUserTokenXML(tokenxml);
         String copyxml = freemarkerProcessor.toXml(copyToken);
-        System.out.println(copyxml);
+        System.out.println("FROM: "+tokenxml);
+        System.out.println("TO: "+copyxml);
         assertEquals(tokenxml, copyxml);
     }
 
@@ -77,38 +78,29 @@ public class UserTokenTest {
         String identityXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
                 "<whydahuser>\n" +
                 "    <identity>\n" +
-                "        <username>bentelongva@hotmail.com</username>\n" +
+                "        <username>test@hotmail.com</username>\n" +
                 "        <cellPhone>90967400</cellPhone>\n" +
-                "        <email>bentelongva@hotmail.com</email>\n" +
-                "        <firstname>BENTE</firstname>\n" +
-                "        <lastname>LONGVA</lastname>\n" +
+                "        <email>test@hotmail.com</email>\n" +
+                "        <firstname>Test</firstname>\n" +
+                "        <lastname>Testesen</lastname>\n" +
                 "        <personRef>436276390081408</personRef>\n" +
-                "        <UID>bentelongva@hotmail.com</UID>\n" +
+                "        <UID>test@hotmail.com</UID>\n" +
                 "    </identity>\n" +
                 "    <applications>\n" +
                 "        <application>\n" +
                 "            <appId>Invoice</appId>\n" +
                 "            <applicationName>Contempus Invoice</applicationName>\n" +
-                "            <orgID>1</orgID>\n" +
-                "            <organizationName>Etterstad Brl</organizationName>\n" +
+                "            <organizationName>ABC AS</organizationName>\n" +
                 "            <roleName>VM</roleName>\n" +
                 "            <roleValue>2010 - 2011</roleValue>\n" +
                 "        </application>\n" +
                 "        <application>\n" +
                 "            <appId>Invoice</appId>\n" +
-                "            <applicationName>Contempus Invoice</applicationName>\n" +
-                "            <orgID>1</orgID>\n" +
-                "            <organizationName>Etterstad Brl</organizationName>\n" +
+                "            <applicationName>ABC AS</applicationName>\n" +
+                "            <organizationName>Etterstad</organizationName>\n" +
                 "            <roleName>NT</roleName>\n" +
                 "            <roleValue>2010 - 2011</roleValue>\n" +
                 "        </application>\n" +
-                "        <application>\n" +
-                "            <appId>theapp</appId>\n" +
-                "            <applicationName>Selveste Appen</applicationName>\n" +
-                "            <orgID>1</orgID>\n" +
-                "            <organizationName>Etterstad Brl</organizationName>\n" +
-                "            <roleName>AS</roleName>\n" +
-                "            <roleValue>2010 - 2015</roleValue>\n" +
                 "        </application>\n" +
                 "    </applications>\n" +
                 "</whydahuser>";
@@ -126,8 +118,8 @@ public class UserTokenTest {
         //String xml = freemarkerProcessor.toXml(userToken);
 
         assertEquals("436276390081408", userToken.getPersonRef());
-        assertEquals("BENTE", userToken.getFirstName());
-        assertEquals("LONGVA", userToken.getLastName());
-        assertEquals("bentelongva@hotmail.com", userToken.getEmail());
+        assertEquals("Test", userToken.getFirstName());
+        assertEquals("Testesen", userToken.getLastName());
+        assertEquals("test@hotmail.com", userToken.getEmail());
     }
 }
