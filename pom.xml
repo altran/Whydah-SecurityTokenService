@@ -167,7 +167,7 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>net.whydah.token.Main</mainClass>
+                    <mainClass>net.whydah.token.ServiceStarter</mainClass>
                 </configuration>
             </plugin>
             <plugin>
@@ -176,7 +176,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Main-Class>net.whydah.token.Main</Main-Class>
+                            <Main-Class>net.whydah.token.ServiceStarter</Main-Class>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -208,7 +208,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptors>
-                        <descriptor>src/main/assembly/winservice.xml</descriptor>
+                        <descriptor>src/serviceStarter/assembly/winservice.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>
