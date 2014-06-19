@@ -70,3 +70,11 @@ Verify instance:
 
 If you have enabled test-page in the properties, you can run and verify the key services from the testpage application (testpage=true)
 * http://server:9998/tokenservice/testpage
+
+
+Developer info
+==============
+
+* https://wiki.cantara.no/display/iam/Architecture+Overview
+* https://wiki.cantara.no/display/iam/Key+Whydah+Data+Structures
+* https://wiki.cantara.no/display/iam/Modules
