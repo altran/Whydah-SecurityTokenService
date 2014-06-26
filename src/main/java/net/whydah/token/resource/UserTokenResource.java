@@ -73,7 +73,7 @@ public class UserTokenResource {
                                  @PathParam("ticket") String ticket,
                                  @FormParam("apptoken") String appTokenXml,
                                  @FormParam("usercredential") String userCredentialXml) {
-        if (ApplicationMode.getApplicationMode()==ApplicationMode.DEV ) {
+        if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
 
@@ -157,7 +157,7 @@ public class UserTokenResource {
         logger.debug("applicationtokenid: {}", applicationtokenid);
         logger.debug("appTokenXml: {}", appTokenXml);
 
-        if (ApplicationMode.getApplicationMode()==ApplicationMode.DEV ) {
+        if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
 
@@ -180,7 +180,7 @@ public class UserTokenResource {
                                      @FormParam("ticket") String ticket) {
 
 
-        if (ApplicationMode.getApplicationMode()==ApplicationMode.DEV ) {
+        if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
 
@@ -224,7 +224,7 @@ public class UserTokenResource {
     public Response transformUserToken(@PathParam("applicationtokenid") String applicationtokenid,
                                        @FormParam("usertoken") String userTokenXml,
                                        @FormParam("tp_applicationtoken") String newAppToken) {
-        if (ApplicationMode.getApplicationMode()==ApplicationMode.DEV ) {
+        if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
 

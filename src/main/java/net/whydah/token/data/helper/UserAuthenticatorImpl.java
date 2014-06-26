@@ -34,11 +34,16 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         logger.trace("Calling UserIdentityBackend at " + useridbackendUri);
 
         // /uib/{applicationTokenId}/authenticate/user
-        WebResource webResource = restClient.resource(useridbackendUri).path(applicationTokenId).path(AUTHENTICATE).path(USER_URL);
-        ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, userCredentialXml);
+        try {
+            WebResource webResource = restClient.resource(useridbackendUri).path(applicationTokenId).path(AUTHENTICATE).path(USER_URL);
+            ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, userCredentialXml);
 
-        UserToken token = getUserToken(appTokenXml, response);
-        return token;
+            UserToken token = getUserToken(appTokenXml, response);
+            return token;
+        } catch (Exception e) {
+            logger.error("Problems connecting to {}", useridbackendUri);
+            throw e;
+        }
     }
 
     /**
