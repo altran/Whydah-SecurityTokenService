@@ -22,7 +22,7 @@
     </application>
 </#list>
 
-    <ns2:link type="application/xml" href="/${it.id!?xml}" rel="self"/>
+    <ns2:link type="application/xml" href="/${it.tokenid!?xml}" rel="self"/>
     <hash type="MD5">${it.MD5}</hash>
 </token>
 

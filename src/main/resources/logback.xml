@@ -21,7 +21,7 @@
 
 
     <logger name="net.whydah" additivity="false">
-        <level value="debug" />
+        <level value="TRACE" />
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
     </logger>

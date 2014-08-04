@@ -10,35 +10,32 @@ import java.util.Map;
  * Time: 1:48:25 PM
  */
 public class CompanyRoles  implements Serializable {
+    private String companyName;
+    private String companyNumber;
+    private Map<String,String> roleMap;
 
-    public String getCompanyNumber() {
-        return companyNumber;
-    }
 
     public void setCompanyNumber(String companyNumber) {
         this.companyNumber = companyNumber;
     }
-
-    public Map<String,String> getRoleMap() {
-        return roleMap;
-    }
-
     public void setRoleMap(Map<String,String> roleMap) {
         this.roleMap = roleMap;
     }
-
-    private String companyNumber;
-    private String companyName;
-
-    public String getCompanyName() {
-        return companyName;
-    }
-
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
     }
 
-    private Map<String,String> roleMap;
+
+    public String getCompanyName() {
+        return companyName;
+    }
+    public String getCompanyNumber() {
+        return companyNumber;
+    }
+    public Map<String, String> getRoleMap() {
+        return roleMap;
+    }
+
 
     @Override
     public String toString() {

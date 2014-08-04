@@ -14,36 +14,32 @@ import java.util.Map;
  * Time: 1:46:42 PM
  */
 public class ApplicationData implements Serializable{
-
+    private final Map<String, CompanyRoles> companiesAndRolesMap = new HashMap<>();
     private String applicationName;
     private String applicationID;
+
+
 
     public String getApplicationName() {
         return applicationName;
     }
-
-    public void setApplicationName(String applicationName) {
-        this.applicationName = applicationName;
-    }
-
     public String getApplicationID() {
         return applicationID;
     }
-
-    public void setApplicationID(String applicationID) {
-        this.applicationID = applicationID;
-    }
-
     public Map<String, CompanyRoles> getCompaniesAndRolesMap() {
         return companiesAndRolesMap;
     }
 
+
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
+    }
+    public void setApplicationID(String applicationID) {
+        this.applicationID = applicationID;
+    }
     public void addCompanyWithRoles(String company,CompanyRoles companiesAndRolesMap) {
         this.companiesAndRolesMap.put(company,companiesAndRolesMap);
     }
-
-    private final Map<String, CompanyRoles> companiesAndRolesMap = new HashMap<String, CompanyRoles>();
-
     public Collection<CompanyRoles> getCompanyRoles() {
         return companiesAndRolesMap.values();
     }

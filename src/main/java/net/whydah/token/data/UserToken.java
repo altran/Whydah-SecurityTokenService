@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class UserToken implements  Serializable{
+public class UserToken implements Serializable{
     private static final Logger logger = LoggerFactory.getLogger(UserToken.class);
     private final static DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -35,7 +35,7 @@ public class UserToken implements  Serializable{
     private String securityLevel = "0";
     private String lifespan = String.valueOf(60 * 60 * 1000); // 1 time
     private String issuer = "/token/issuer/tokenverifier";
-    private Map<String, ApplicationData> applicationCompanyRoleValueMap = new HashMap<String, ApplicationData>();
+    private Map<String, ApplicationData> applicationCompanyRoleValueMap = new HashMap<>();
 
     public UserToken() {
     }

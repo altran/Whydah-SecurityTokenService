@@ -22,6 +22,17 @@ public class ServiceStarter {
     private int webappPort;
     private final String contextpath="/tokenservice";
 
+    public static void main(String[] args) throws IOException {
+        ServiceStarter serviceStarter = new ServiceStarter();
+        serviceStarter.startServer();
+        try {
+            // wait forever...
+            Thread.currentThread().join();
+        } catch (InterruptedException ie) {
+        }
+        serviceStarter.stop();
+    }
+
     protected void startServer() throws IOException {
         String appMode = ApplicationMode.getApplicationMode();
         AppConfig appConfig = new AppConfig();
@@ -64,17 +75,5 @@ public class ServiceStarter {
         if(httpServer != null) {
             httpServer.stop();
         }
-    }
-
-
-    public static void main(String[] args) throws IOException {
-        ServiceStarter serviceStarter = new ServiceStarter();
-        serviceStarter.startServer();
-        try {
-            // wait forever...
-            Thread.currentThread().join();
-        } catch (InterruptedException ie) {
-        }
-        serviceStarter.stop();
     }
 }
