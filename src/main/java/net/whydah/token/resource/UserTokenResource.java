@@ -164,6 +164,7 @@ public class UserTokenResource {
         }
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
         if (userToken != null) {
+            logger.trace("getUserTokenByTokenID OK. Response={}", userToken.toString());
             return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
         }
         return Response.status(Response.Status.NOT_ACCEPTABLE).build();
