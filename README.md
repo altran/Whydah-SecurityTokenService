@@ -32,16 +32,23 @@ nohup java -jar -DIAM_CONFIG=securitytokenservice.TEST.properties $JARFILE &
 tail -f nohup.out
 ```
 
-* create securitytokenservice.TEST.properties
+* create securitytokenservice.TEST.properties (Or PROD.properties)
 
-```
-#myuri=http://myserver.net/tokenservice/
-myuri=http://localhost:9998/tokenservice/
-service.port=9998
-#useridbackendUri=http://nkk-test-02.cloudapp.net/uib/
-useridbackendUri=http://localhost:9995/uib/
-testpage=false
-```
+* create securitytokenservice.TEST.properties and configure as you find suitable for your needs
+
+||Property || Example values PROD || Comment ||
+|*myuri*|http://myserver.net/tokenservice/ | The URI to this instance of STS |
+|*service.port*|9998| Port for this service |
+|*useridbackendUri*| http://myservice/uib/ | URL to useridentity backend |
+|*testpage*|disabled| Whether or not to enable the testpage. The url is printed when you start the service with it enabled. |
+|*logourl*|http://stocklogos.com/somelogo.png | A logo to display for the kicks of it | 
+
+* Use the testpage provided
+The testpage (URL is printed when service is started), as accessible at *myuri* id enabled. 
+
+It is useful to test that application logon and user logon actually works.
+
+You may change the input before trying to log on to see the usertoken for different users.
 
 
 Typical apache setup
