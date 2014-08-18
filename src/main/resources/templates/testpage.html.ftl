@@ -1,74 +1,131 @@
 <!DOCTYPE html>
 <html>
 	<head>
-        <title>SecurityTokenService</title>
+        <title>SecurityTokenService testpage</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<meta http-equiv="cache-control" content="no-store, no-cache, must-revalidate">
 		<meta http-equiv="Pragma" content="no-store, no-cache">
 		<meta http-equiv="Expires" content="0">
         <script src="files/js/jquery.js"></script>
         <link rel="stylesheet" href="files/css/style.css" type="text/css" />
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     </head>
 <body>
+
 <script src="files/js/logontest.js"></script>
 
-<div class="header">SecurityTokenService</div>
+<h1>SecurityTokenService</h1>
 
-<div style="margin-top: 5px;border-bottom: 1px solid black; margin-bottom: 10px;">
-This is the SSO token service for Whydah AS. Any misuse will be prosecuted.<br>
-The service description (WADL) is available <a href="application.wadl">here</a><br>
+<p>
+This is the testpage for Security Token Service. Any misuse will be prosecuted.<br>
+The service description (WADL) is available <a href="application.wadl">here</a><br><br>
+<strong>Usage:</strong>1. Autenticate application, 2. Authenticate user, 3. Fetch usertoken<br>
+You may update the application credential or test user credential before pushing the button.
+</p>
+
+<h3>1. Application authentication</h3><br>
+<div class="row">
+    <div class="col-sm-8">
+        <FORM id="applicationlogonform" action="logon" method="post" role="form" class="form-horizontal">
+            <div class="form-group">
+                <label for="applicationcredential" class="col-sm-2">Applicationcredential:</label>
+                <div class="col-sm-10">
+                   <TEXTAREA id="applicationcredential" NAME="applicationcredential" COLS=80 ROWS=7>${applicationcredential?html}</TEXTAREA>
+               </div>
+            </div>
+            <div class="form-group">
+                <label for="applicationlogonformurl" class="col-sm-2">Url:</label> 
+                <div class="col-sm-10">
+                    <span id="applicationlogonformurl">logon</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-10 col-sm-offset-2">
+                    <input name="appsubmit" type="submit" value="1. Press here to logon application" class="btn btn-primary"> 
+                </div>
+            </div>
+        </FORM>
+    </div>
+    <div class="col-sm-4">
+        <div id="apptokenid">&nbsp;</div>
+    </div>
 </div>
-
-<b>Application authentication</b><br>
-<FORM id="applicationlogonform" action="logon" method="post">
-    <label for="applicationcredential">applicationcredential:</label><br>
-    <TEXTAREA id="applicationcredential" NAME="applicationcredential" COLS=60 ROWS=7>${applicationcredential?html}</TEXTAREA><br>
-    <input name="appsubmit" type="submit" value="Logon application">Url: <span id="applicationlogonformurl">logon</span>
-</FORM>
-<div id="apptokenid">&nbsp;</div>
-
 <hr>
-<b>User authentication</b><br>
-<FORM id="userlogonform" method="post" action=".">
-    <div id="d1">
-        <div id="d2">
-            <div id="uauth_user">
-                <label for="usercredential">Usercredential:</label><br>
-                <TEXTAREA id="usercredential" NAME="usercredential" COLS=55 ROWS=7>${testUserCredential?html}</TEXTAREA>
+<h3>2. User authentication</h3>
+<div class="row">
+    <div class="col-sm-8">
+        <FORM id="userlogonform" method="post" action="." role="form" class="form-horizontal">
+            <div class="form-group">
+                <label for="usercredential" class="col-sm-2">Usercredential:</label>
+                <div class="col-sm-10">
+                        <TEXTAREA id="usercredential" NAME="usercredential" COLS=80 ROWS=7>${testUserCredential?html}</TEXTAREA>
+                </div>
             </div>
-            <div id="uauth_app">
-                <label for="apptoken1">Apptoken:</label><br>
-                <TEXTAREA id="apptoken1" NAME="apptoken" COLS=80 ROWS=11 placeholder="apptokenxml inn her"></TEXTAREA>
+            <div class="form-group">
+                <label for="apptoken1" class="col-sm-2">Apptoken:</label>
+                <div class="col-sm-10">
+                    <TEXTAREA id="apptoken1" NAME="apptoken" COLS=80 ROWS=11 placeholder="apptokenxml inn her"></TEXTAREA>
+                </div>
             </div>
-        </div>
+            <div class="form-group">
+                <label for="userlogonformurl" class="col-sm-2">Url:</label> 
+                <div class="col-sm-10">
+                    <span id="userlogonformurl">logon</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-10 col-sm-offset-2">
+                        <input type="submit" value="2. Press here to logon user"/  class="btn btn-primary">
+                </div>
+            </div>
+        </FORM>
+    </div>
+    <div class="col-sm-4">
         <div id="usertokendiv1">
             <label for="usertoken1">UserToken:</label><br>
             <div id="usertoken1">Authenticating...</div>
-        </div>
-    <div class="submit">
-        <input type="submit" value="Logon user"/>Url: <span id="userlogonformurl"></span>
+        </div>        
     </div>
-</FORM><br/>
+</div>
 
 <hr>
-<b>Get usertoken</b><br>
-<FORM id="getusertokenform" method="post" action=".">
-    <div id="d21">
-        <div id="d22">
-            <label for="apptoken2">Apptoken:</label><br>
-            <TEXTAREA id="apptoken2" NAME="apptoken" COLS=60 ROWS=12 placeholder="apptokenxml inn her"></TEXTAREA><br>
-            <label for="usertokenidparam">Usertokenid:</label><br/>
-            <INPUT id="usertokenidparam" TYPE="text" NAME="usertokenid" placeholder="Usertokenid inn her"><br>
-        </div>
-    <div id="usertokendiv2">
-        <label for="usertoken1">UserToken:</label><br>
-        <div id="usertoken2">Fetching usertoken...</div>
+<h3>3. Get usertoken</h3>
+<div class="row">
+    <div class="col-sm-8">
+        <FORM id="getusertokenform" method="post" action="." role="form" class="form-horizontal">
+
+            <div class="form-group">
+                <label for="apptoken2"  class="col-sm-2">Apptoken:</label>
+                <div class="col-sm-10">
+                    <TEXTAREA id="apptoken2" NAME="apptoken" COLS=80 ROWS=11 placeholder="apptokenxml inn her"></TEXTAREA>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="usertokenidparam" class="col-sm-2">Usertokenid:</label>
+                <div class="col-sm-10">
+                    <INPUT id="usertokenidparam" TYPE="text" NAME="usertokenid" placeholder="Usertokenid inn her">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="applicationlogonformurl" class="col-sm-2">Url:</label> 
+                <div class="col-sm-10">
+                    <span id="getusertokenformurl">logon</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-10 col-sm-offset-2">
+                    <input type="submit" value="3. Fetch user token" class="btn btn-primary">
+                </div>
+            </div>
+        </FORM>
     </div>
+    <div class="col-sm-4">
+        <div id="usertokendiv2">
+                <label for="usertoken1">UserToken:</label><br>
+                <div id="usertoken2">Fetching usertoken...</div>
+            </div>
     </div>
-    <div class="submit">
-        <input type="submit"  value="Fetch">Url: <span id="getusertokenformurl"></span>
-    </div>
-</FORM>
+</div>
 
 </BODY>
 </html>

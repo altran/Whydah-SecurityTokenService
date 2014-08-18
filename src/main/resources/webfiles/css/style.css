@@ -1,40 +1,6 @@
-.header {
-    font-weight: bold;
-    font-size: larger;
-    border-bottom: 1px solid black;
-    margin-bottom: 10px;
-}
-
-#d1 {
-    padding: 5px;
-    width: 100%;
-    float: left;
-}
-
-#d2 {
-    float: left;
-}
-#d21 {
-    padding: 5px;
-    width: 100%;
-    float: left;
-}
-
-#d22 {
-    float: left;
-}
-#uauth_user {
-    float: left;
-}
-
-#uauth_app {
-    float: right;
-}
-
 #usertokendiv1 {
     background: #f0f0f0;
     display: none;
-    float: right;
     padding-left: 2px;
     margin-left: 12px;
     margin-right: 10px;
@@ -51,7 +17,6 @@
 #usertokendiv2 {
     background: #f0f0f0;
     display: none;
-    float: right;
     padding-left: 2px;
     margin-left: 12px;
     margin-right: 10px;
@@ -62,8 +27,4 @@
     font-size: 12px;
     white-space: pre;
     padding-left: 10px;
-}
-.submit {
-    position: static;
-    clear: both;
 }
