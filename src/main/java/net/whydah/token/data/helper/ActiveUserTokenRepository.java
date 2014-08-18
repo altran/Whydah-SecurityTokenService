@@ -71,7 +71,7 @@ public class ActiveUserTokenRepository {
         }
         UserToken copy = token.copy();
         tokens.put(copy.getTokenid(), copy);
-        logger.info("Added token with id {}", copy.getTokenid());
+        logger.info("Added token with id {}", copy.getTokenid()," content:"+copy);
     }
 
     public static void removeUserToken(String userTokenId) {
