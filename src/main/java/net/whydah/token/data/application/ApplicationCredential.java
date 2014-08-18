@@ -7,8 +7,8 @@ package net.whydah.token.data.application;
  */
 public class ApplicationCredential {
 
-    private String applicationID="1234";
-    private String applicationPassword ="thePasswrd";
+    private String applicationID="11";
+    private String applicationPassword ="theApplicationPasswrd";
 
     public String getApplicationID() {
         return applicationID;
