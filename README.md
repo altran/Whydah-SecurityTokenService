@@ -32,11 +32,10 @@ nohup java -jar -DIAM_CONFIG=securitytokenservice.TEST.properties $JARFILE &
 tail -f nohup.out
 ```
 
-* create securitytokenservice.TEST.properties (Or PROD.properties)
+* create securitytokenservice.TEST.properties (Or PROD.properties) and configure as you find suitable for your needs
 
-* create securitytokenservice.TEST.properties and configure as you find suitable for your needs
-
-||Property || Example values PROD || Comment ||
+|Property | Example values PROD | Comment |
+|-------- | -------------- | -----------| 
 |*myuri*|http://myserver.net/tokenservice/ | The URI to this instance of STS |
 |*service.port*|9998| Port for this service |
 |*useridbackendUri*| http://myservice/uib/ | URL to useridentity backend |
