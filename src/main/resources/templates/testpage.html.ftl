@@ -8,7 +8,7 @@
 		<meta http-equiv="Expires" content="0">
         <script src="files/js/jquery.js"></script>
         <link rel="stylesheet" href="files/css/style.css" type="text/css" />
-        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     </head>
 <body>
 
