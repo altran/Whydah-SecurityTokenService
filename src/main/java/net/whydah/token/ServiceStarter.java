@@ -60,10 +60,10 @@ public class ServiceStarter {
         httpServer.start();
         logger.info("SecurityTokenService started on port {}", webappPort);
         logger.info("IAM_MODE = {}",ApplicationMode.getApplicationMode());
-        logger.info("Status: http://localhost:{}{}",webappPort,contextpath);
-        logger.info("WADL:   http://localhost:{}{}/application.wadl",webappPort,contextpath);
-        logger.info("testpage = {}",appConfig.getProperty("testpage"));
+        logger.info("Status: http://localhost:{}{}/",webappPort,contextpath);
+        logger.info("Testpage = {}",appConfig.getProperty("testpage"));
         logger.info("TestDriverWeb:   http://localhost:{}{}/",webappPort,contextpath);
+        logger.info("WADL:   http://localhost:{}{}/application.wadl",webappPort,contextpath);
         logger.info("\n");
     }
 
