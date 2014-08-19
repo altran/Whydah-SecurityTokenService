@@ -25,6 +25,8 @@ public class UserTokenResource {
     private final static Logger logger = LoggerFactory.getLogger(UserTokenResource.class);
 
     private static Map ticketmap = new HashMap();
+    private static Map  applicationtokenidmap = new HashMap();
+
 
     @Inject
     private UserAuthenticator userAuthenticator;
@@ -111,6 +113,7 @@ public class UserTokenResource {
         try {
             UserToken token = userAuthenticator.createAndLogonUser(applicationtokenid,appTokenXml, userCredentialXml, fbUserXml);
             ticketmap.put(ticket, token.getTokenid());
+            applicationtokenidmap.put(applicationtokenid,applicationtokenid);
             return Response.ok(new Viewable("/usertoken.ftl", token)).build();
         } catch (AuthenticationFailedException ae) {
             return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").build();
@@ -167,6 +170,9 @@ public class UserTokenResource {
         if (userToken != null) {
             logger.trace("getUserTokenByTokenID OK. Response={}", userToken.toString());
             return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
+        }
+        if (applicationtokenidmap.get(userTokenId)!=null){
+            return Response.ok(new Viewable("/usertoken.ftl", new UserToken())).build();
         }
         return Response.status(Response.Status.NOT_ACCEPTABLE).build();
     }
