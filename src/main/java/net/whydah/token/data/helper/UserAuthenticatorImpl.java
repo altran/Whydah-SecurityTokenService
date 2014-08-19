@@ -59,7 +59,9 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     public UserToken createAndLogonUser(String applicationtokenid, String appTokenXml, String userCredentialXml, String fbUserXml) {
         logger.trace("createAndLogonUser - Calling UserIdentityBackend at with appTokenXml:\n"+appTokenXml+"userCredentialXml:\n"+userCredentialXml+"fbUserXml:\n"+fbUserXml);
         // TODO /uib//{applicationTokenId}/{applicationTokenId}/createandlogon/
-        WebResource webResource = restClient.resource(useridentitybackend).path(applicationtokenid).path(applicationtokenid).path(CREATEANDLOGON_URL);
+        // TODO /authenticate/user
+        WebResource webResource = restClient.resource(useridentitybackend).path(applicationtokenid).path("/authenticate/user").path(CREATEANDLOGON_URL);
+//        WebResource webResource = restClient.resource(useridentitybackend).path(applicationtokenid).path(applicationtokenid).path(CREATEANDLOGON_URL);
         logger.debug("createAndLogonUser - Calling createandlogon " + webResource.toString());
         ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, fbUserXml);
 
