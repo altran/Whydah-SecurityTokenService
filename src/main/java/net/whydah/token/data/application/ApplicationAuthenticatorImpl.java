@@ -34,11 +34,8 @@ public class ApplicationAuthenticatorImpl implements ApplicationAuthenticator {
         logger.trace("logonApplication - Calling UserIdentityBackend at " + useridbackendUri);
         if (applicationCredential != null) {
             WebResource webResource = restClient.resource(useridbackendUri).path("logon");
-
             ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, applicationCredential.toXML());
-
             token = buildApplictionToken(applicationCredential, response);
-
             logger.trace("Logged on Applicaton {}", token.toXML());
         }
 

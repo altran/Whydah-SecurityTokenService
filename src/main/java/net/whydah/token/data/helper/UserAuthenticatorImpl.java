@@ -32,7 +32,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     }
 
     public final UserToken logonUser(final String applicationTokenId,final String appTokenXml, final String userCredentialXml) {
-        logger.trace("logonUser - Calling UserIdentityBackend at " + useridentitybackend);
+        logger.trace("logonUser - Calling UserIdentityBackend at " + useridentitybackend+" appTokenXml:"+appTokenXml+" userCredentialXml:"+userCredentialXml);
 
         // /uib/{applicationTokenId}/authenticate/user
         try {
@@ -57,7 +57,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
      */
     @Override
     public UserToken createAndLogonUser(String applicationtokenid, String appTokenXml, String userCredentialXml, String fbUserXml) {
-        logger.trace("createAndLogonUser - Calling UserIdentityBackend at " + useridentitybackend);
+        logger.trace("createAndLogonUser - Calling UserIdentityBackend at " + useridentitybackend+"appTokenXml:\n"+appTokenXml+"userCredentialXml:\n"+userCredentialXml+"fbUserXml:\n"+fbUserXml);
         // TODO /uib//{applicationTokenId}/{applicationTokenId}/createandlogon/
         WebResource webResource = restClient.resource(useridentitybackend).path(applicationtokenid).path(applicationtokenid).path(CREATEANDLOGON_URL);
         logger.debug("createAndLogonUser - Calling createandlogon with fbUserXml= \n" + fbUserXml);
