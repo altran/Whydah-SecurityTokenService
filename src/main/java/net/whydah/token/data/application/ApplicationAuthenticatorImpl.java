@@ -31,7 +31,7 @@ public class ApplicationAuthenticatorImpl implements ApplicationAuthenticator {
     @Override
     public ApplicationToken logonApplication(ApplicationCredential applicationCredential) {
         ApplicationToken token = null;
-        logger.trace("Calling UserIdentityBackend at " + useridbackendUri);
+        logger.trace("logonApplication - Calling UserIdentityBackend at " + useridbackendUri);
         if (applicationCredential != null) {
             WebResource webResource = restClient.resource(useridbackendUri).path("logon");
 
