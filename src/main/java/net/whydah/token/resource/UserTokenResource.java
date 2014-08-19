@@ -111,9 +111,9 @@ public class UserTokenResource {
         }
 
         try {
+            applicationtokenidmap.put(applicationtokenid,applicationtokenid);
             UserToken token = userAuthenticator.createAndLogonUser(applicationtokenid,appTokenXml, userCredentialXml, fbUserXml);
             ticketmap.put(ticket, token.getTokenid());
-            applicationtokenidmap.put(applicationtokenid,applicationtokenid);
             return Response.ok(new Viewable("/usertoken.ftl", token)).build();
         } catch (AuthenticationFailedException ae) {
             return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").build();
@@ -174,7 +174,7 @@ public class UserTokenResource {
         if (applicationtokenidmap.get(userTokenId)!=null){
             UserToken netIQToken = new UserToken();
             netIQToken.putApplicationCompanyRoleValue("11","SecurityTokenService","Whydah","WhydahUserAdmin","1");
-
+            logger.trace("getUserTokenByTokenID OK. Response={}", netIQToken.toString());
             return Response.ok(new Viewable("/usertoken.ftl", netIQToken)).build();
         }
         return Response.status(Response.Status.NOT_ACCEPTABLE).build();
