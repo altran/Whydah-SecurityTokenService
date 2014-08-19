@@ -36,12 +36,12 @@ public class ApplicationCredential {
         this.applicationID = applicationID;
     }
 
-    public String getApplicationPassword() {
+    public String getApplicationSecret() {
         return applicationsecret;
     }
 
-    public void setApplicationPassword(String applicationPassword) {
-        this.applicationsecret = applicationPassword;
+    public void setApplicationSecret(String applicationsecret) {
+        this.applicationsecret = applicationsecret;
     }
 
     public String toXML(){
