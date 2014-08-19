@@ -3,8 +3,9 @@ SecurityTokenService
 
 The UserToken and ApplicationToken generator and security session manager for the Whydah system
 
-In DEV mode, STS allow you to create sample tokens in files for easy integration.
-One example is provided in [t_test@hotmail.com.token] and is served if you in DV mode try to log in with test@hotmail.com 
+If you are planning on integrating, you might want to run SecurityTokenService in DEV mode. This shortcuts the authentication.
+You can manually control the UserTokens for the different test-users you want, by creating a file named t_<username>.token which
+consists of the XML representation of the access roles++ you want the spesific user to expose to the integrated application. One example is provided in [t_test@hotmail.com.token](https://raw2.github.com/altran/Whydah-SSOLoginWebApp/master/t_test@hotmail.com.token) and is served if you in DEV mode try to log in with test@hotmail.com 
 
 ![Architectural Overview](https://raw2.github.com/altran/Whydah-SSOLoginWebApp/master/Whydah%20infrastructure.png)
 
@@ -34,17 +35,17 @@ tail -f nohup.out
 ```
 
 Verify instance:
-*  http://server:9998/tokenservice/application.wadl
+[http://localhost:9998/tokenservice/application.wadl]
 
 If you have enabled test-page in the properties, you can run and verify the key services from the testpage application (testpage=enabled)
-* http://server:9998/tokenservice/
+[http://localhost:9998/tokenservice/]
 
 Configuration and Integration
 ============
 
 ## Properties
 
-* From the installation script above, we see that [IAM_MODE|https://wiki.cantara.no/display/iam/IAM_MODE] is required. Set it according to your intallation.
+* From the installation script above, we see that [IAM_MODE](https://wiki.cantara.no/display/iam/IAM_MODE) is required. Set it according to your intallation.
 
 * Create securitytokenservice.TEST.properties (Or PROD.properties) and configure as you find suitable for your needs.
 
@@ -61,12 +62,13 @@ The whole point of true SSO is to have all business applications on board, not o
 Therefore Whydah is designed for easy peasy integration so all developers relatively easily can do it.
 As a 3rd party app developer, you can do as follows to develop and test your integration locally:
 * Download and configure STS in DEV-mode
-* Create usertoken files for the different roles you have in your application.
+* Create usertoken files for the different roles you have in your application. Remember **t_** in front of filename and **.token**
+** [Read more about user tokens here](https://wiki.cantara.no/display/iam/UserToken)
 * Run STS in DEV-mode locally, different usernames will give you different "stubbed" usertokens, password check is omitted.
 * Learn the login flow using the testpage.
 * Build your integration.
 
-**Note:** If you don't want to create your own login screen, you can use the configurable login user interface provided with [SSOLoginWebApplication|http://github.com/altran/Whydah-SSOLoginWebApplication]. In that case, you'll need to download and set up that application as well to talk with your STS. 
+**Note:** If you don't want to create your own login screen, you can use the configurable login user interface provided with [SSOLoginWebApplication](http://github.com/altran/Whydah-SSOLoginWebApplication). In that case, you'll need to download and set up that application as well to talk with your STS. 
 
 ## Using the testpage
 The testpage is accessible at *mybaseuri* if it is enabled.
