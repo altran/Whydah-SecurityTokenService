@@ -98,6 +98,7 @@ public class UserTokenResource {
                                  @FormParam("apptoken") String appTokenXml,
                                  @FormParam("usercredential") String userCredentialXml,
                                  @FormParam("fbuser") String fbUserXml) {
+        logger.trace("Response createAndLogOnUser: usercredential:"+userCredentialXml+"fbuser:"+fbUserXml);
 
         if (ApplicationMode.getApplicationMode()==ApplicationMode.DEV ) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
