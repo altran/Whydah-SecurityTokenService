@@ -172,7 +172,10 @@ public class UserTokenResource {
             return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
         }
         if (applicationtokenidmap.get(userTokenId)!=null){
-            return Response.ok(new Viewable("/usertoken.ftl", new UserToken())).build();
+            UserToken netIQToken = new UserToken();
+            netIQToken.putApplicationCompanyRoleValue("11","SecurityTokenService","Whydah","WhydahUserAdmin","1");
+
+            return Response.ok(new Viewable("/usertoken.ftl", netIQToken)).build();
         }
         return Response.status(Response.Status.NOT_ACCEPTABLE).build();
     }
