@@ -115,7 +115,7 @@ public class ApplicationToken {
         } catch (Exception e) {
             logger.error("Could not get applicationID from XML: " + applicationCredentialXML, e);
         }
-        return "</applicationID>";
+        return "";
     }
 
     private String getApplicationSecret(String applicationCredentialXML) {
@@ -134,7 +134,7 @@ public class ApplicationToken {
         } catch (Exception e) {
             logger.error("Could not get applicationID from XML: " + applicationCredentialXML, e);
         }
-        return "</applicationSecret>";
+        return "";
     }
 
     private String getApplicationToken(String appID) {
