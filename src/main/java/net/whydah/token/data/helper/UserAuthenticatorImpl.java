@@ -19,6 +19,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     private static final Logger logger = LoggerFactory.getLogger(UserAuthenticator.class);
     private static final String USER_TOKEN_URL = "usertoken";
     private static final String USER_URL = "user";
+    private static final String CREATEANDLOGON_URL = "createandlogon";
     private static final String AUTHENTICATE = "authenticate";
 
     @Inject
@@ -31,7 +32,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     }
 
     public final UserToken logonUser(final String applicationTokenId,final String appTokenXml, final String userCredentialXml) {
-        logger.trace("Calling UserIdentityBackend at " + useridentitybackend);
+        logger.trace("logonUser - Calling UserIdentityBackend at " + useridentitybackend+" appTokenXml:"+appTokenXml+" userCredentialXml:"+userCredentialXml);
 
         // /uib/{applicationTokenId}/authenticate/user
         try {
@@ -56,10 +57,12 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
      */
     @Override
     public UserToken createAndLogonUser(String applicationtokenid, String appTokenXml, String userCredentialXml, String fbUserXml) {
-        logger.trace("Calling UserIdentityBackend at " + useridentitybackend);
-        // TODO /uib//{applicationTokenId}/{userTokenId}/user/
-        WebResource webResource = restClient.resource(useridentitybackend).path(applicationtokenid).path("my dummy usertokenid").path(USER_URL);
-        logger.debug("Calling createandlogon with fbUserXml= \n" + fbUserXml);
+        logger.trace("createAndLogonUser - Calling UserIdentityBackend at with appTokenXml:\n"+appTokenXml+"userCredentialXml:\n"+userCredentialXml+"fbUserXml:\n"+fbUserXml);
+        // TODO /uib//{applicationTokenId}/{applicationTokenId}/createandlogon/
+        // TODO /authenticate/user
+        WebResource webResource = restClient.resource(useridentitybackend).path(applicationtokenid).path("/authenticate/user").path(CREATEANDLOGON_URL);
+//        WebResource webResource = restClient.resource(useridentitybackend).path(applicationtokenid).path(applicationtokenid).path(CREATEANDLOGON_URL);
+        logger.debug("createAndLogonUser - Calling createandlogon " + webResource.toString());
         ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, fbUserXml);
 
         UserToken token = getUserToken(appTokenXml, response);

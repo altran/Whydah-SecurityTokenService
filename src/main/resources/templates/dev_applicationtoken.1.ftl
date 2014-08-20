@@ -2,7 +2,7 @@
   <token>
      <params>
          <applicationtokenID>378d519c14b8acf068c4d7f020240f7e</applicationtokenID>
-         <applicationid>23</applicationid>
+         <applicationid>99</applicationid>
          <applicationname>SSOTestWebApp</applicationname>
          <expires>1396103291389</expires>
      </params>

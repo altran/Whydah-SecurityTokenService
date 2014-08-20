@@ -25,6 +25,8 @@ public class UserTokenResource {
     private final static Logger logger = LoggerFactory.getLogger(UserTokenResource.class);
 
     private static Map ticketmap = new HashMap();
+    private static Map  applicationtokenidmap = new HashMap();
+
 
     @Inject
     private UserAuthenticator userAuthenticator;
@@ -98,6 +100,7 @@ public class UserTokenResource {
                                  @FormParam("apptoken") String appTokenXml,
                                  @FormParam("usercredential") String userCredentialXml,
                                  @FormParam("fbuser") String fbUserXml) {
+        logger.trace("Response createAndLogOnUser: usercredential:"+userCredentialXml+"fbuser:"+fbUserXml);
 
         if (ApplicationMode.getApplicationMode()==ApplicationMode.DEV ) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
@@ -108,6 +111,7 @@ public class UserTokenResource {
         }
 
         try {
+            applicationtokenidmap.put(applicationtokenid,applicationtokenid);
             UserToken token = userAuthenticator.createAndLogonUser(applicationtokenid,appTokenXml, userCredentialXml, fbUserXml);
             ticketmap.put(ticket, token.getTokenid());
             return Response.ok(new Viewable("/usertoken.ftl", token)).build();
@@ -166,6 +170,12 @@ public class UserTokenResource {
         if (userToken != null) {
             logger.trace("getUserTokenByTokenID OK. Response={}", userToken.toString());
             return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
+        }
+        if (applicationtokenidmap.get(userTokenId)!=null){
+            UserToken netIQToken = new UserToken();
+            netIQToken.putApplicationCompanyRoleValue("11","SecurityTokenService","Whydah","WhydahUserAdmin","1");
+            logger.trace("getUserTokenByTokenID OK. Response={}", netIQToken.toString());
+            return Response.ok(new Viewable("/usertoken.ftl", netIQToken)).build();
         }
         return Response.status(Response.Status.NOT_ACCEPTABLE).build();
     }

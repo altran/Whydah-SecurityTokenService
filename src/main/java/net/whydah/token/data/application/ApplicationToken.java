@@ -1,5 +1,6 @@
 package net.whydah.token.data.application;
 
+import net.whydah.token.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -26,10 +27,23 @@ public class ApplicationToken {
     private final static Logger logger = LoggerFactory.getLogger(ApplicationToken.class);
 
     private String applicationTokenId = "";
-    private String applicationSecret = "test";
-    private String applicationName = "Whydah";
+    private String applicationSecret;
+    private String applicationName;
+    private String applicationID;
     private String expires = "";
     private String baseuri = "http://example.com//";
+
+    public void ApplicationToken(){
+        try {
+            AppConfig config = new AppConfig();
+            applicationID = config.getProperty("applicationid");
+            applicationSecret= config.getProperty("applicationsecret");
+            applicationName= config.getProperty("applicationname");
+        } catch (Exception e){
+            logger.warn("Unable to read application properties",e);
+        }
+
+    }
 
     public String getBaseuri() {
         return baseuri;
@@ -47,9 +61,9 @@ public class ApplicationToken {
     }
 
     public ApplicationToken(String xml) {
-        applicationTokenId = getApplicationToken(getApplicationName(xml));  // "ERST677hjS"
+        applicationTokenId = getApplicationToken(getApplicationID(xml));  // "ERST677hjS"
         applicationSecret = getApplicationSecret(xml);  // "ERST677hjS"
-        applicationName = getApplicationName(xml);
+        applicationID = getApplicationID(xml);
         expires = String.valueOf((System.currentTimeMillis() + 10000));
         template = false;
     }
@@ -62,7 +76,7 @@ public class ApplicationToken {
                     " <token>\n" +
                     "     <params>\n" +
                     "         <applicationtokenID>" + applicationTokenId + "</applicationtokenID>\n" +
-                    "         <applicationid>" + "23" + "</applicationid>\n" +
+                    "         <applicationid>" + applicationID + "</applicationid>\n" +
                     "         <applicationname>" + applicationName + "</applicationname>\n" +
                     "         <expires>" + expires + "</expires>\n" +
                     "     </params> \n" +
@@ -77,7 +91,7 @@ public class ApplicationToken {
             "    <token>\n" +
             "        <params>\n" +
             "            <applicationtokenID>" + applicationTokenId + "</applicationtokenID>\n" +
-            "            <applicationid>" + "23" + "</applicationid>\n" +
+            "            <applicationid>" + applicationID + "</applicationid>\n" +
             "            <applicationname>" + applicationName + "</applicationname>\n" +
             "            <expires>" + expires + "</expires>\n" +
             "        </params> \n" +
@@ -96,11 +110,11 @@ public class ApplicationToken {
 
 
     public String getApplicationID() {
-        return applicationName;
+        return applicationID;
     }
 
-    private String getApplicationName(String applicationCredentialXML) {
-        logger.debug("Her: {}", applicationCredentialXML);
+    private String getApplicationID(String applicationCredentialXML) {
+        logger.debug("applicationCredentialXML: {}", applicationCredentialXML);
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -110,7 +124,7 @@ public class ApplicationToken {
             String expression = "/applicationcredential/*/applicationID[1]";
             XPathExpression xPathExpression = xPath.compile(expression);
             String appId = xPathExpression.evaluate(doc);
-            logger.debug("XML parse: id = {}", appId);
+            logger.debug("XML parse: applicationid = {}", appId);
             return appId;
         } catch (Exception e) {
             logger.error("Could not get applicationID from XML: " + applicationCredentialXML, e);
@@ -119,7 +133,7 @@ public class ApplicationToken {
     }
 
     private String getApplicationSecret(String applicationCredentialXML) {
-        logger.debug("Her: {}", applicationCredentialXML);
+        logger.debug("applicationCredentialXML: {}", applicationCredentialXML);
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -129,7 +143,7 @@ public class ApplicationToken {
             String expression = "/applicationcredential/*/applicationSecret[1]";
             XPathExpression xPathExpression = xPath.compile(expression);
             String appId = xPathExpression.evaluate(doc);
-            logger.debug("XML parse: id = {}", appId);
+            logger.debug("XML parse: applicationSecret = {}", appId);
             return appId;
         } catch (Exception e) {
             logger.error("Could not get applicationID from XML: " + applicationCredentialXML, e);

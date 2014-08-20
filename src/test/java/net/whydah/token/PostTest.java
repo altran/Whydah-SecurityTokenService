@@ -73,7 +73,7 @@ public class PostTest {
     private String getAppToken() {
         ApplicationCredential acred = new ApplicationCredential();
         acred.setApplicationID("Whydah-TestWebApp");
-        acred.setApplicationPassword("dummy");
+        acred.setApplicationSecret("dummy");
         return logonApplication(acred.toXML());
     }
 
