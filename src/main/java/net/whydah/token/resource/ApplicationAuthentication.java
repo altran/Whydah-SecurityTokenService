@@ -3,6 +3,7 @@ package net.whydah.token.resource;
 import com.google.inject.Inject;
 import com.sun.jersey.api.view.Viewable;
 import net.whydah.token.config.AppConfig;
+import net.whydah.token.config.ApplicationMode;
 import net.whydah.token.data.UserCredential;
 import net.whydah.token.data.application.ApplicationCredential;
 import net.whydah.token.data.application.ApplicationToken;
@@ -22,7 +23,6 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import java.io.StringReader;
 import java.util.HashMap;
-import java.util.Properties;
 
 @Path("/")
 public class ApplicationAuthentication {
@@ -109,6 +109,9 @@ public class ApplicationAuthentication {
 
     private boolean verifyApplicationCredential(String appcreedential) {
 
+        if (ApplicationMode.getApplicationMode()==ApplicationMode.DEV ) {
+            return true;
+        }
 
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
