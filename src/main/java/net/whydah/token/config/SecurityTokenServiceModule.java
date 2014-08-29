@@ -29,7 +29,9 @@ public class SecurityTokenServiceModule extends AbstractModule {
             bind(UserAuthenticator.class).to(DummyUserAuthenticator.class);
         } else {
             bind(UserAuthenticator.class).to(UserAuthenticatorImpl.class);
-            URI useridbackendUri = URI.create(appConfig.getProperty("useridentitybackend"));
+            String useridentitybackend = appConfig.getProperty("useridentitybackend");
+            logger.info("Try to connect to UserIdentityBackenn on url{}", useridentitybackend);
+            URI useridbackendUri = URI.create(useridentitybackend);
             bind(URI.class).annotatedWith(Names.named("useridentitybackend")).toInstance(useridbackendUri);
         }
     }
