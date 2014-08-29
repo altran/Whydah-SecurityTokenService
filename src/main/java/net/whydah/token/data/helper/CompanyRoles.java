@@ -3,12 +3,6 @@ package net.whydah.token.data.helper;
 import java.io.Serializable;
 import java.util.Map;
 
-/**
- * Created by IntelliJ IDEA.
- * User: totto
- * Date: Nov 4, 2010
- * Time: 1:48:25 PM
- */
 public class CompanyRoles  implements Serializable {
     private String companyName;
     private String companyNumber;

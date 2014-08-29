@@ -15,13 +15,6 @@ import java.io.StringReader;
 import java.security.MessageDigest;
 import java.util.UUID;
 
-/**
- * Created by IntelliJ IDEA.
- * User: totto
- * Date: Nov 4, 2010
- * <p/>
- * Time: 8:54:00 AM
- */
 
 public class ApplicationToken {
     private final static Logger logger = LoggerFactory.getLogger(ApplicationToken.class);

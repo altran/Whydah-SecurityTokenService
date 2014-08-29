@@ -10,12 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 
-/**
- * Created by IntelliJ IDEA.
- * User: asbkar
- * Date: 2/15/11
- * Time: 10:58 AM
- */
 public class SecurityTokenServiceModule extends AbstractModule {
     private final static Logger logger = LoggerFactory.getLogger(SecurityTokenServiceModule.class);
 

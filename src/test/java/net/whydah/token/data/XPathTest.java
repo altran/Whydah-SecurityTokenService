@@ -15,13 +15,6 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import java.io.StringReader;
 
-/**
- * Created by IntelliJ IDEA.
- * User: totto
- * Date: Dec 2, 2010
- * Time: 1:29:44 PM
- * To change this template use File | Settings | File Templates.
- */
 public class XPathTest extends TestCase {
 
     public void testCreateApplicationToken() throws Exception {

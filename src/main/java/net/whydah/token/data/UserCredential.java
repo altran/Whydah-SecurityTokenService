@@ -1,11 +1,5 @@
 package net.whydah.token.data;
 
-/**
- * Created by IntelliJ IDEA.
- * User: totto
- * Date: Nov 4, 2010
- * Time: 8:53:26 AM
- */
 public class UserCredential {
 
     public UserCredential(String userName, String password) {

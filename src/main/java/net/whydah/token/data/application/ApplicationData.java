@@ -7,12 +7,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by IntelliJ IDEA.
- * User: totto
- * Date: Nov 4, 2010
- * Time: 1:46:42 PM
- */
 public class ApplicationData implements Serializable{
     private final Map<String, CompanyRoles> companiesAndRolesMap = new HashMap<>();
     private String applicationName;
