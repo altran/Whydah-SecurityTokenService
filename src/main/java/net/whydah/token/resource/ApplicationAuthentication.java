@@ -9,11 +9,20 @@ import net.whydah.token.data.application.ApplicationToken;
 import net.whydah.token.data.application.AuthenticatedApplicationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+import java.io.StringReader;
 import java.util.HashMap;
+import java.util.Properties;
 
 @Path("/")
 public class ApplicationAuthentication {
@@ -28,7 +37,7 @@ public class ApplicationAuthentication {
     @GET
     @Produces(MediaType.TEXT_HTML)
     public Response info() {
-        if("enabled".equals(appConfig.getProperty("testpage"))) {
+        if ("enabled".equals(appConfig.getProperty("testpage"))) {
             logger.debug("Showing test page");
             HashMap<String, Object> model = new HashMap<String, Object>();
             UserCredential testUserCredential = new UserCredential("ssouser", "dummypassword");
@@ -73,6 +82,9 @@ public class ApplicationAuthentication {
     @Produces(MediaType.APPLICATION_XML)
     public Response logonApplication(@FormParam("applicationcredential") String appCredentialXml) {
         logger.trace("logonApplication with appCredentialXml={}", appCredentialXml);
+        if (!verifyApplicationCredential(appCredentialXml)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
         ApplicationToken token = new ApplicationToken(appCredentialXml);
         token.setBaseuri(appConfig.getProperty("mybaseuri"));
         AuthenticatedApplicationRepository.addApplicationToken(token);
@@ -86,12 +98,46 @@ public class ApplicationAuthentication {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response validateApplicationtokenid(@PathParam("applicationtokenid") String applicationtokenid) {
         logger.debug("verify apptokenid {}", applicationtokenid);
-        if(AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
+        if (AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             logger.debug("Apptokenid valid");
             return Response.ok().build();
         } else {
             logger.debug("Apptokenid not valid");
-            return Response.status(Response.Status.CONFLICT).build();
+            return Response.status(Response.Status.FORBIDDEN).build();
         }
+    }
+
+    private boolean verifyApplicationCredential(String appcreedential) {
+
+
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.parse(new InputSource(new StringReader(appcreedential)));
+            XPath xPath = XPathFactory.newInstance().newXPath();
+
+
+            String secretxpath = "applicationcredential/params/applicationSecret";
+            String appidxpath = "applicationcredential/params/applicationID";
+            XPathExpression xPathExpression = xPath.compile(secretxpath);
+            String secret = (xPathExpression.evaluate(doc));
+            xPathExpression = xPath.compile(appidxpath);
+            String appid = (xPathExpression.evaluate(doc));
+
+            logger.info("Authenticating appid: {} matching {} got {}", appid, "", secret);
+
+            String expectedValue = appConfig.getProperty(appid);
+            if (expectedValue != null && expectedValue.length() > 1) {
+                if (secret.equalsIgnoreCase(expectedValue)) {
+                    logger.warn("Authenticating appid failed.");
+                    return false;
+                }
+            }
+        } catch (Exception e) {
+            logger.error("verifyApplicationCredential - exception", e);
+            return false;
+        }
+
+        return true;
     }
 }
