@@ -128,7 +128,7 @@ public class ApplicationAuthentication {
             String expectedValue = appConfig.getProperty(appid);
             logger.info("Authenticating appid: {} matching {} got {}", appid, expectedValue, secret);
             if (expectedValue != null && expectedValue.length() > 1) {
-                if (secret.equalsIgnoreCase(expectedValue)) {
+                if (!secret.equalsIgnoreCase(expectedValue)) {
                     logger.warn("Authenticating appid failed.");
                     return false;
                 }
