@@ -3,6 +3,9 @@ package net.whydah.token;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
+import com.hazelcast.config.Config;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
@@ -58,6 +61,7 @@ public class ServiceStarter {
         NetworkListener listener = new NetworkListener("grizzly", NetworkListener.DEFAULT_NETWORK_HOST, webappPort);
         httpServer.addListener(listener);
         httpServer.start();
+
         logger.info("SecurityTokenService started on port {}", webappPort);
         logger.info("IAM_MODE = {}",ApplicationMode.getApplicationMode());
         logger.info("Status: http://localhost:{}{}/",webappPort,contextpath);

@@ -1,5 +1,8 @@
 package net.whydah.token.data.helper;
 
+import com.hazelcast.config.Config;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
 import net.whydah.token.data.UserToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +13,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ActiveUserTokenRepository {
     private final static Logger logger = LoggerFactory.getLogger(ActiveUserTokenRepository.class);
 
-    private static final Map<String, UserToken> tokens = new ConcurrentHashMap<String, UserToken>(1024);
+    private static  Config configApp1 = new Config();
+    HazelcastInstance h1 = Hazelcast.newHazelcastInstance(configApp1);
+
+    private static HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(configApp1);
+    private static Map<String, UserToken> tokens = hazelcastInstance.getMap( "tokens" );
+    //private static final Map<String, UserToken> tokens = new ConcurrentHashMap<String, UserToken>(1024);
 
     /**
      * Get UserToken from UserTokenRepository. If token is not found or is not valid/timed out, null is returned.
