@@ -199,6 +199,7 @@ public class UserTokenResource {
         }
         String userTokenId = (String) ticketmap.get(ticket);
         if (userTokenId == null) {
+            logger.warn("Attempt to resolve non-existant ticket {}",ticket);
         	return Response.status(Response.Status.GONE).build(); //410 
         }
         logger.debug("Found tokenid: " + userTokenId);
