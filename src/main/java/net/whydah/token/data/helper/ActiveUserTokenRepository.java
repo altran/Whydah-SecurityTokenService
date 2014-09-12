@@ -57,7 +57,7 @@ public class ActiveUserTokenRepository {
         }
         logger.debug("UserToken from repo: {}", resToken);
         if (!token.equals(resToken)) {
-            logger.info("UserToken not valid: not the same as in repo.");
+            logger.info("UserToken not valid: not the same as in repo. token: {}  repotoken: {}",token,resToken);
             return false;
         }
         if (!resToken.isValid()) {
