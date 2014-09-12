@@ -56,16 +56,16 @@ public class ActiveUserTokenRepository {
             return false;
         }
         logger.debug("UserToken from repo: {}", resToken);
-        if (!token.equals(resToken)) {
-            logger.info("UserToken not valid: not the same as in repo. token: {}  repotoken: {}",token,resToken);
-            return false;
-        }
         if (!resToken.isValid()) {
+            logger.debug("resToken is not valid");
             tokens.remove(token.getTokenid());
             return false;
         }
-
-        return true;
+        if (token.toString().equals(resToken.toString())) {
+            return true;
+        }
+        logger.info("UserToken not valid: not the same as in repo. token: {}  repotoken: {}",token,resToken);
+        return false;
     }
 
     public static void addUserToken(UserToken token) {
