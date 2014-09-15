@@ -59,6 +59,7 @@ public class UserTokenResource {
                                  @FormParam("apptoken") String appTokenXml,
                                  @FormParam("usercredential") String userCredentialXml) {
         if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
+            logger.warn("getUserToken - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         try {
@@ -82,7 +83,7 @@ public class UserTokenResource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
-    public Response getUserToken(@PathParam("applicationtokenid") String applicationtokenid,
+    public Response getUserTokenAndStoreUserTicket(@PathParam("applicationtokenid") String applicationtokenid,
                                  @PathParam("userticket") String userticket,
                                  @FormParam("apptoken") String appTokenXml,
                                  @FormParam("usercredential") String userCredentialXml) {
@@ -91,6 +92,7 @@ public class UserTokenResource {
         }
 
         if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
+            logger.warn("getUserToken - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         try {
@@ -120,11 +122,13 @@ public class UserTokenResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response validateUserTokenXML(@PathParam("applicationtokenid") String applicationtokenid, @FormParam("usertoken") String userTokenXml) {
         if(!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
+            logger.warn("validateUserTokenXML - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         if (ActiveUserTokenRepository.verifyUserToken(UserToken.createFromUserTokenXML(userTokenXml))) {
             return Response.ok().build();
         }
+        logger.warn("validateUserTokenXML failed for usertoken {}", userTokenXml);
         return Response.status(Response.Status.CONFLICT).build();
     }
 
@@ -132,6 +136,7 @@ public class UserTokenResource {
     @GET
     public Response validateUserTokenID(@PathParam("applicationtokenid") String applicationtokenid, @PathParam("usertokenid") String usertokenid) {
         if(!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
+            logger.warn("validateUserTokenXML - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         if (ActiveUserTokenRepository.getUserToken(usertokenid) != null) {
@@ -164,6 +169,7 @@ public class UserTokenResource {
         }
 
         if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
+            logger.warn("getUserTokenById - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
@@ -205,11 +211,12 @@ public class UserTokenResource {
         }
 
         if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
+            logger.warn("getUserTokenByTicket - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
         String userTokenId = (String) ticketmap.get(userticket);
         if (userTokenId == null) {
-            logger.warn("Attempt to resolve non-existing ticket {}",userticket);
+            logger.warn("Attempt to resolve non-existing ticket {}", userticket);
         	return Response.status(Response.Status.GONE).build(); //410 
         }
         logger.debug("Found tokenid: " + userTokenId);
@@ -236,6 +243,7 @@ public class UserTokenResource {
     public Response releaseUserToken(@PathParam("applicationtokenid") String applicationtokenid,
                                      @FormParam("usertokenid") String userTokenID) {
         if(!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
+            logger.warn("releaseUserToken - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         if(userTokenID == null) {
@@ -298,6 +306,7 @@ public class UserTokenResource {
 
         if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
             // TODO:  Limit this operation to SSOLoginWebApplication ONLY
+            logger.warn("createAndLogOnUser - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
 
