@@ -66,6 +66,7 @@ public class UserTokenResource {
             UserToken token = userAuthenticator.logonUser(applicationtokenid, appTokenXml, userCredentialXml);
             return Response.ok(new Viewable("/usertoken.ftl", token)).build();
         } catch (AuthenticationFailedException ae) {
+            logger.warn("getUserToken - User authentication failed");
                 return Response.status(Response.Status.FORBIDDEN).entity("User authentication failed").build();
         }
     }
@@ -92,7 +93,7 @@ public class UserTokenResource {
         }
 
         if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
-            logger.warn("getUserToken - attempt to access from invalid application. ID: {}", applicationtokenid);
+            logger.warn("getUserTokenAndStoreUserTicket - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         try {
@@ -102,6 +103,7 @@ public class UserTokenResource {
             ticketmap.put(userticket, token.getTokenid());
             return Response.ok(new Viewable("/usertoken.ftl", token)).build();
         } catch (AuthenticationFailedException ae) {
+            logger.warn("getUserTokenAndStoreUserTicket - User authentication failed");
                 return Response.status(Response.Status.FORBIDDEN).entity("User authentication failed").build();
         }
     }
@@ -140,10 +142,10 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         if (ActiveUserTokenRepository.getUserToken(usertokenid) != null) {
-            logger.debug("Verified {}", usertokenid);
+            logger.trace("Verified {}", usertokenid);
             return Response.ok().build();
         }
-        logger.debug("Usertoken not ok: {}", usertokenid);
+        logger.warn("Usertoken not ok: {}", usertokenid);
         return Response.status(Response.Status.CONFLICT).build();
     }
 
@@ -159,30 +161,31 @@ public class UserTokenResource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
-    public Response getUserTokenById(@PathParam("applicationtokenid") String applicationtokenid,
+    public Response getUserTokenByUserTokenId(@PathParam("applicationtokenid") String applicationtokenid,
                                      @FormParam("apptoken") String appTokenXml,
                                      @FormParam("usertokenid") String userTokenId) {
-        logger.trace("getUserTokenById: applicationtokenid={}, usertokenid={}, appTokenXml={}", applicationtokenid, userTokenId, appTokenXml);
+        logger.trace("getUserTokenByUserTokenId: applicationtokenid={}, usertokenid={}, appTokenXml={}", applicationtokenid, userTokenId, appTokenXml);
 
         if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
 
         if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
-            logger.warn("getUserTokenById - attempt to access from invalid application. ID: {}", applicationtokenid);
+            logger.warn("getUserTokenByUserTokenId - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
         if (userToken != null) {
-            logger.trace("getUserTokenByTokenID OK. Response={}", userToken.toString());
+            logger.trace("getUserTokenByUserTokenId OK. Response={}", userToken.toString());
             return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
         }
         if (applicationtokenidmap.get(userTokenId)!=null){
             UserToken netIQToken = new UserToken();
             netIQToken.putApplicationCompanyRoleValue("11","SecurityTokenService","Whydah","WhydahUserAdmin","1");
-            logger.trace("getUserTokenByTokenID OK. Response={}", netIQToken.toString());
+            logger.trace("getUserTokenByUserTokenId OK. Response={}", netIQToken.toString());
             return Response.ok(new Viewable("/usertoken.ftl", netIQToken)).build();
         }
+        logger.warn("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid {}", userTokenId);
         return Response.status(Response.Status.NOT_ACCEPTABLE).build();
     }
 
@@ -200,33 +203,34 @@ public class UserTokenResource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
-    public Response getUserTokenByTicket(@PathParam("applicationtokenid") String applicationtokenid,
+    public Response getUserTokenByUserTicket(@PathParam("applicationtokenid") String applicationtokenid,
                                      @FormParam("apptoken") String appTokenXml,
                                      @FormParam("userticket") String userticket) {
 
-        logger.trace("getUserTokenByTicket: applicationtokenid={}, ticket={}, appTokenXml={}", applicationtokenid, userticket, appTokenXml);
+        logger.trace("getUserTokenByUserTicket: applicationtokenid={}, ticket={}, appTokenXml={}", applicationtokenid, userticket, appTokenXml);
 
         if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
 
         if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
-            logger.warn("getUserTokenByTicket - attempt to access from invalid application. ID: {}", applicationtokenid);
+            logger.warn("getUserTokenByUserTicket - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
         String userTokenId = (String) ticketmap.get(userticket);
         if (userTokenId == null) {
-            logger.warn("Attempt to resolve non-existing ticket {}", userticket);
-        	return Response.status(Response.Status.GONE).build(); //410 
+            logger.warn("getUserTokenByUserTicket - Attempt to resolve non-existing ticket {}", userticket);
+            return Response.status(Response.Status.GONE).build(); //410
         }
-        logger.debug("Found tokenid: " + userTokenId);
+        logger.trace("getUserTokenByUserTicket - Found tokenid: " + userTokenId);
         ticketmap.remove(userticket);
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
 
         if (userToken == null) {
+            logger.warn("getUserTokenByUserTicket - illegal/Null usertoken received ");
             return Response.status(Response.Status.NOT_ACCEPTABLE).build(); //406
         }
-        logger.trace("getUserTokenByTicket OK. Response={}", userToken.toString());
+        logger.trace("getUserTokenByUserTicket OK. Response={}", userToken.toString());
         return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
     }
 
@@ -247,6 +251,7 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         if(userTokenID == null) {
+            logger.warn("releaseUserToken - attempt with no userTokenID: Null");
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").build();
         }
         ActiveUserTokenRepository.removeUserToken(userTokenID);
@@ -273,6 +278,7 @@ public class UserTokenResource {
         }
 
         if(!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
+            logger.warn("transformUserToken - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         return Response.ok().language(userTokenXml).build();
@@ -289,16 +295,29 @@ public class UserTokenResource {
         return true; //FIXME bli validAppToken;
     }
 
-    @Path("/{applicationtokenid}/{ticket}/createuser")
+
+    /**
+     * The SSOLoginWebApplication backend for 3rd party UserTokens. Receive a new user, create a Whydah UserIdentity with
+     * the corresponding defaultroles (UAS|UIB) and create a new session with a one-time userticket for handover to receiving
+     * SSO applications
+     *
+     * @param applicationtokenid
+     * @param userticket
+     * @param appTokenXml
+     * @param userCredentialXml
+     * @param thirdPartyUserTokenXml typically facebook user-token or other oauth2 usertoken
+     * @return
+     */
+    @Path("/{applicationtokenid}/{userticket}/createuser")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response createAndLogOnUser(@PathParam("applicationtokenid") String applicationtokenid,
-                                       @PathParam("ticket") String ticket,
+                                       @PathParam("userticket") String userticket,
                                        @FormParam("apptoken") String appTokenXml,
                                        @FormParam("usercredential") String userCredentialXml,
-                                       @FormParam("fbuser") String fbUserXml) {
-        logger.trace("Response createAndLogOnUser: usercredential:"+userCredentialXml+"fbuser:"+fbUserXml);
+                                       @FormParam("fbuser") String thirdPartyUserTokenXml) {
+        logger.trace("Response createAndLogOnUser: usercredential:" + userCredentialXml + "fbuser:" + thirdPartyUserTokenXml);
 
         if (ApplicationMode.getApplicationMode()==ApplicationMode.DEV ) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
@@ -312,10 +331,11 @@ public class UserTokenResource {
 
         try {
             applicationtokenidmap.put(applicationtokenid,applicationtokenid);
-            UserToken token = userAuthenticator.createAndLogonUser(applicationtokenid,appTokenXml, userCredentialXml, fbUserXml);
-            ticketmap.put(ticket, token.getTokenid());
+            UserToken token = userAuthenticator.createAndLogonUser(applicationtokenid, appTokenXml, userCredentialXml, thirdPartyUserTokenXml);
+            ticketmap.put(userticket, token.getTokenid());
             return Response.ok(new Viewable("/usertoken.ftl", token)).build();
         } catch (AuthenticationFailedException ae) {
+            logger.warn("createAndLogOnUser - Error creating or authenticating user. Token: {}", thirdPartyUserTokenXml);
             return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").build();
         }
     }
