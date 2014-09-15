@@ -31,8 +31,6 @@ public class ApplicationAuthentication {
     @Inject
     private AppConfig appConfig;
 
-//    @Context
-//    private  UriInfo uriInfo;
 
     @GET
     @Produces(MediaType.TEXT_HTML)
@@ -40,7 +38,7 @@ public class ApplicationAuthentication {
         if ("enabled".equals(appConfig.getProperty("testpage"))) {
             logger.debug("Showing test page");
             HashMap<String, Object> model = new HashMap<String, Object>();
-            UserCredential testUserCredential = new UserCredential("ssouser", "dummypassword");
+            UserCredential testUserCredential = new UserCredential("whydah_user", "whydah_password");
             model.put("applicationcredential", new ApplicationCredential().toXML());
             model.put("testUserCredential", testUserCredential.toXML());
             return Response.ok().entity(new Viewable("/testpage.html.ftl", model)).build();
@@ -109,7 +107,7 @@ public class ApplicationAuthentication {
 
     private boolean verifyApplicationCredential(String appcreedential) {
 
-        if (ApplicationMode.getApplicationMode()==ApplicationMode.DEV ) {
+        if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
             return true;
         }
 
