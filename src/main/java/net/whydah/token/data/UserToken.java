@@ -73,12 +73,12 @@ public class UserToken implements Serializable{
             DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
             Document doc = documentBuilder.parse(new InputSource(new StringReader(userIdentityXML)));
             XPath xPath = XPathFactory.newInstance().newXPath();
-            uid = (String) xPath.evaluate("//identity/UID", doc, XPathConstants.STRING);
+            uid = (String) xPath.evaluate("//UID", doc, XPathConstants.STRING);
             userName = (String) xPath.evaluate("//identity/username", doc, XPathConstants.STRING);
             firstName = (String) xPath.evaluate("//identity/firstname", doc, XPathConstants.STRING);
-            lastName = (String) xPath.evaluate("//lastname", doc, XPathConstants.STRING);
-            email = (String) xPath.evaluate("//email", doc, XPathConstants.STRING);
-            personRef = (String) xPath.evaluate("//personRef", doc, XPathConstants.STRING);
+            lastName = (String) xPath.evaluate("//identity/lastname", doc, XPathConstants.STRING);
+            email = (String) xPath.evaluate("//identity/email", doc, XPathConstants.STRING);
+            personRef = (String) xPath.evaluate("//identity/personRef", doc, XPathConstants.STRING);
             securityLevel = "1";
             NodeList applicationNodes = (NodeList) xPath.evaluate("//application", doc, XPathConstants.NODESET);
             for(int i=0; i<applicationNodes.getLength(); i++) {

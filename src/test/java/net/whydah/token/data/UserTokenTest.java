@@ -78,29 +78,26 @@ public class UserTokenTest {
         String identityXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
                 "<whydahuser>\n" +
                 "    <identity>\n" +
-                "        <username>test@hotmail.com</username>\n" +
-                "        <cellPhone>90967400</cellPhone>\n" +
-                "        <email>test@hotmail.com</email>\n" +
-                "        <firstname>Test</firstname>\n" +
-                "        <lastname>Testesen</lastname>\n" +
-                "        <personRef>436276390081408</personRef>\n" +
-                "        <UID>test@hotmail.com</UID>\n" +
+                "        <username>admin</username>\n" +
+                "        <cellPhone>+1555406789</cellPhone>\n" +
+                "        <email>useradmin@getwhydah.com</email>\n" +
+                "        <firstname>User</firstname>\n" +
+                "        <lastname>Admin</lastname>\n" +
+                "        <personRef>0</personRef>\n" +
+                "        <UID>useradmin</UID>\n" +
                 "    </identity>\n" +
+                "    <applications>\n" +
                 "        <application>\n" +
-                "            <appId>Invoice</appId>\n" +
-                "            <applicationName>Contempus Invoice</applicationName>\n" +
-                "            <organizationName>ABC AS</organizationName>\n" +
-                "            <roleName>VM</roleName>\n" +
-                "            <roleValue>2010 - 2011</roleValue>\n" +
+                "            <appId>19</appId>\n" +
+                "            <applicationName>UserAdminWebApplication</applicationName>\n" +
+                "            <orgName>Support</orgName>\n" +
+                "            <roleName>WhydahUserAdmin</roleName>\n" +
+                "            <roleValue>1</roleValue>\n" +
                 "        </application>\n" +
-                "        <application>\n" +
-                "            <appId>Invoice</appId>\n" +
-                "            <applicationName>ABC AS</applicationName>\n" +
-                "            <organizationName>Etterstad</organizationName>\n" +
-                "            <roleName>NT</roleName>\n" +
-                "            <roleValue>2010 - 2011</roleValue>\n" +
-                "        </application>\n" +
-                "</whydahuser>";
+                "    </applications>\n" +
+                "</whydahuser>\n";
+
+
         String appXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \n " +
                     " <token>\n" +
                     "     <params>\n" +
@@ -112,11 +109,12 @@ public class UserTokenTest {
                     " </token>\n";
         UserToken userToken = UserToken.createUserIdentity(appXML, identityXML);
 
+        System.out.printf(userToken.toString());
         //String xml = freemarkerProcessor.toXml(userToken);
 
-        assertEquals("436276390081408", userToken.getPersonRef());
-        assertEquals("Test", userToken.getFirstName());
-        assertEquals("Testesen", userToken.getLastName());
-        assertEquals("test@hotmail.com", userToken.getEmail());
+        assertEquals("0", userToken.getPersonRef());
+        assertEquals("User", userToken.getFirstName());
+        assertEquals("Admin", userToken.getLastName());
+        assertEquals("useradmin@getwhydah.com", userToken.getEmail());
     }
 }
