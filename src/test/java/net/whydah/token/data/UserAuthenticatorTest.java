@@ -11,9 +11,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by totto on 6/20/14.
- */
+import static org.junit.Assert.assertNotNull;
+
+
 public class UserAuthenticatorTest {
 
 
@@ -22,7 +22,7 @@ public class UserAuthenticatorTest {
             "     <params>\n" +
             "         <applicationtokenID>81dc9bdb52d04dc20036dbd8313ed055</applicationtokenID>\n" +
             "         <applicationid>23</applicationid>\n" +
-            "         <applicationname>1234</applicationname>\n" +
+            "         <applicationname>TestApplication</applicationname>\n" +
             "         <expires>1403187368265</expires>\n" +
             "     </params> \n" +
             "     <Url type=\"application/xml\" method=\"POST\" template=\"http://localhost:9998/tokenservice/token/81dc9bdb52d04dc20036dbd8313ed055/getusertokenbytokenid\"/> \n" +
@@ -42,7 +42,8 @@ public class UserAuthenticatorTest {
         EnvHelper.setEnv(envs);
         UserAuthenticator ua = new DummyUserAuthenticator();
         UserToken ut = ua.logonUser(applicationTokenId,appTokenXml,userCredentialXml);
-        System.out.println(ut.toString());
+        // System.out.println(ut.toString());
+        assertNotNull(ut);
     }
 
 

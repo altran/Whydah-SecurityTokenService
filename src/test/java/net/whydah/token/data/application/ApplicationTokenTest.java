@@ -19,7 +19,7 @@ public class ApplicationTokenTest extends TestCase {
         cred.setApplicationID("1243");
         cred.setApplicationSecret("dummy");
         ApplicationToken imp = new ApplicationToken(cred.toXML());
-        System.out.println(imp.toXML());
+        //System.out.println(imp.toXML());
         assertEquals("The generated application token is wrong.", cred.getApplicationID(), imp.getApplicationID());
         assertTrue(imp.getApplicationTokenId().length() > 12);
     }
