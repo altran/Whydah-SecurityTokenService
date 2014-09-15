@@ -291,6 +291,7 @@ public class UserTokenResource {
             validAppToken = applicationtokenXml.contains(applicationtokenid) && AuthenticatedApplicationRepository.verifyApplicationToken(applicationtokenXml);
         } else {
             logger.debug("not expecting null values appTokenId {}, appTokenXml {}", applicationtokenid, applicationtokenXml);
+            return false;
         }
         return true; //FIXME bli validAppToken;
     }
