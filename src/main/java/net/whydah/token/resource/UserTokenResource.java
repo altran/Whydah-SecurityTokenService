@@ -70,7 +70,7 @@ public class UserTokenResource {
     }
 
     /**
-     * Login in user and register its ticket in the ticketmap
+     * Login in user by his/her usercredentials and register its ticket in the ticket-map for session handover
      *
      * @param applicationtokenid
      * @param userticket
@@ -91,14 +91,12 @@ public class UserTokenResource {
         }
 
         if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
-            // TODO:  Limit this operation to SSOLoginWebApplication ONLY
-
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         try {
             UserToken token = userAuthenticator.logonUser(applicationtokenid,appTokenXml, userCredentialXml);
 
-            // Add the user to the ticket-map with the ticket given from SSOLoginWebAPplication
+            // Add the user to the ticket-map with the ticket given from the caller
             ticketmap.put(userticket, token.getTokenid());
             return Response.ok(new Viewable("/usertoken.ftl", token)).build();
         } catch (AuthenticationFailedException ae) {
@@ -106,39 +104,17 @@ public class UserTokenResource {
         }
     }
 
-    @Path("/{applicationtokenid}/{ticket}/createuser")
-    @POST
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_XML)
-    public Response createAndLogOnUser(@PathParam("applicationtokenid") String applicationtokenid,
-                                 @PathParam("ticket") String ticket,
-                                 @FormParam("apptoken") String appTokenXml,
-                                 @FormParam("usercredential") String userCredentialXml,
-                                 @FormParam("fbuser") String fbUserXml) {
-        logger.trace("Response createAndLogOnUser: usercredential:"+userCredentialXml+"fbuser:"+fbUserXml);
-
-        if (ApplicationMode.getApplicationMode()==ApplicationMode.DEV ) {
-            return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
-        }
-
-        if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
-            // TODO:  Limit this operation to SSOLoginWebApplication ONLY
-            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
-        }
-
-        try {
-            applicationtokenidmap.put(applicationtokenid,applicationtokenid);
-            UserToken token = userAuthenticator.createAndLogonUser(applicationtokenid,appTokenXml, userCredentialXml, fbUserXml);
-            ticketmap.put(ticket, token.getTokenid());
-            return Response.ok(new Viewable("/usertoken.ftl", token)).build();
-        } catch (AuthenticationFailedException ae) {
-            return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").build();
-        }
-    }
 
 
-
-
+    /**
+     * Verify that a usertoken and a user session is still valid. Usually used for application re-entries and before allowing
+     * a user important and critical processes like monetary transactions
+     *
+     *
+     * @param applicationtokenid
+     * @param userTokenXml
+     * @return
+     */
     @Path("/{applicationtokenid}/validateusertoken")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -247,6 +223,13 @@ public class UserTokenResource {
         return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
     }
 
+    /**
+     * Force cross-applications/SSO session logout. Use with extreme care as the user's hate the resulting user experience..
+     *
+     * @param applicationtokenid
+     * @param userTokenID
+     * @return
+     */
     @Path("/{applicationtokenid}/releaseusertoken")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -262,6 +245,14 @@ public class UserTokenResource {
         return Response.ok().build();
     }
 
+    /**
+     * This method is for elevating user access to a higher level for the receiving end of a session handover between SSO applications
+     *
+     * @param applicationtokenid
+     * @param userTokenXml
+     * @param newAppToken
+     * @return
+     */
     @Path("/{applicationtokenid}/transformusertoken")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -279,6 +270,7 @@ public class UserTokenResource {
         return Response.ok().language(userTokenXml).build();
     }
 
+
     private boolean verifyApplicationToken(String applicationtokenid, String applicationtokenXml) {
         boolean validAppToken = false;
         if (applicationtokenXml != null && applicationtokenid != null) {
@@ -288,4 +280,35 @@ public class UserTokenResource {
         }
         return true; //FIXME bli validAppToken;
     }
+
+    @Path("/{applicationtokenid}/{ticket}/createuser")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_XML)
+    public Response createAndLogOnUser(@PathParam("applicationtokenid") String applicationtokenid,
+                                       @PathParam("ticket") String ticket,
+                                       @FormParam("apptoken") String appTokenXml,
+                                       @FormParam("usercredential") String userCredentialXml,
+                                       @FormParam("fbuser") String fbUserXml) {
+        logger.trace("Response createAndLogOnUser: usercredential:"+userCredentialXml+"fbuser:"+fbUserXml);
+
+        if (ApplicationMode.getApplicationMode()==ApplicationMode.DEV ) {
+            return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
+        }
+
+        if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
+            // TODO:  Limit this operation to SSOLoginWebApplication ONLY
+            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
+        }
+
+        try {
+            applicationtokenidmap.put(applicationtokenid,applicationtokenid);
+            UserToken token = userAuthenticator.createAndLogonUser(applicationtokenid,appTokenXml, userCredentialXml, fbUserXml);
+            ticketmap.put(ticket, token.getTokenid());
+            return Response.ok(new Viewable("/usertoken.ftl", token)).build();
+        } catch (AuthenticationFailedException ae) {
+            return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").build();
+        }
+    }
+
 }
