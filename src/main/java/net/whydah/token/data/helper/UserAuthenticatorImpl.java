@@ -31,8 +31,8 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         restClient = ApacheHttpClient.create();
     }
 
-    public final UserToken logonUser(final String applicationTokenId,final String appTokenXml, final String userCredentialXml) {
-        logger.trace("logonUser - Calling UserIdentityBackend at " + useridentitybackend+" appTokenXml:"+appTokenXml+" userCredentialXml:"+userCredentialXml);
+    public final UserToken logonUser(final String applicationTokenId, final String appTokenXml, final String userCredentialXml) {
+        logger.trace("logonUser - Calling UserIdentityBackend at " + useridentitybackend + " appTokenXml:" + appTokenXml + " userCredentialXml:" + userCredentialXml);
 
         // /uib/{applicationTokenId}/authenticate/user
         try {
@@ -48,16 +48,16 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     }
 
     /**
-     * @deprecated TODO move this functionality to new UserAdminService
      * @param applicationtokenid
      * @param appTokenXml
      * @param userCredentialXml
      * @param fbUserXml
      * @return
+     * @deprecated TODO move this functionality to new UserAdminService
      */
     @Override
     public UserToken createAndLogonUser(String applicationtokenid, String appTokenXml, String userCredentialXml, String fbUserXml) {
-        logger.trace("createAndLogonUser - Calling UserIdentityBackend at with appTokenXml:\n"+appTokenXml+"userCredentialXml:\n"+userCredentialXml+"fbUserXml:\n"+fbUserXml);
+        logger.trace("createAndLogonUser - Calling UserIdentityBackend at with appTokenXml:\n" + appTokenXml + "userCredentialXml:\n" + userCredentialXml + "fbUserXml:\n" + fbUserXml);
         // TODO /uib//{applicationTokenId}/{applicationTokenId}/createandlogon/
         // TODO /authenticate/user
         WebResource webResource = restClient.resource(useridentitybackend).path(applicationtokenid).path("/authenticate/user").path(CREATEANDLOGON_URL);
@@ -80,7 +80,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
             throw new AuthenticationFailedException("Authentication failed.");
         }
 
-        UserToken token = UserToken.createUserIdentity(appTokenXml, identityXML);
+        UserToken token = UserToken.createUserTokenFromUserAggregate(appTokenXml, identityXML);
         ActiveUserTokenRepository.addUserToken(token);
         return token;
     }

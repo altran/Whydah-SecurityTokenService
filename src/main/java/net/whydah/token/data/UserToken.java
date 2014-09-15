@@ -40,16 +40,16 @@ public class UserToken implements Serializable{
     public UserToken() {
     }
 
-    public static UserToken createFromUserTokenXML(String userTokenXml) {
+    public static UserToken createUserTokenFromUserTokenXML(String userTokenXml) {
         UserToken userToken = new UserToken();
         userToken.parseAndUpdatefromUserToken(userTokenXml);
         return userToken;
     }
 
-    public static UserToken createUserIdentity(String appTokenXml, String userIdentityXML) {
+    public static UserToken createUserTokenFromUserAggregate(String appTokenXml, String userAggregateXML) {
         UserToken userToken = new UserToken();
         userToken.parseAndUpdatefromAppToken(appTokenXml);
-        userToken.parseAndUpdatefromUserIdentity(userIdentityXML);
+        userToken.parseAndUpdatefromUserAggregate(userAggregateXML);
         userToken.tokenid = userToken.generateID();
         userToken.timestamp = String.valueOf(System.currentTimeMillis());
         return userToken;
@@ -68,7 +68,7 @@ public class UserToken implements Serializable{
         }
     }
 
-    private void parseAndUpdatefromUserIdentity(String userIdentityXML) {
+    private void parseAndUpdatefromUserAggregate(String userIdentityXML) {
         try {
             DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
             Document doc = documentBuilder.parse(new InputSource(new StringReader(userIdentityXML)));
@@ -142,7 +142,7 @@ public class UserToken implements Serializable{
         XPath xPath = XPathFactory.newInstance().newXPath();
         String appId = (String) xPath.evaluate("@ID", appNode, XPathConstants.STRING);
         String appName = (String) xPath.evaluate("./applicationName", appNode, XPathConstants.STRING);
-        String organizationName = (String) xPath.evaluate("./orgName", appNode, XPathConstants.STRING);
+        String organizationName = (String) xPath.evaluate("./organizationName", appNode, XPathConstants.STRING);
             NodeList roles = (NodeList) xPath.evaluate("./role", appNode, XPathConstants.NODESET);
             for(int k=0; k<roles.getLength(); k ++) {
                 Node roleNode = roles.item(k);

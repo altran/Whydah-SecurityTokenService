@@ -127,7 +127,7 @@ public class UserTokenResource {
             logger.warn("validateUserTokenXML - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
-        if (ActiveUserTokenRepository.verifyUserToken(UserToken.createFromUserTokenXML(userTokenXml))) {
+        if (ActiveUserTokenRepository.verifyUserToken(UserToken.createUserTokenFromUserTokenXML(userTokenXml))) {
             return Response.ok().build();
         }
         logger.warn("validateUserTokenXML failed for usertoken {}", userTokenXml);
