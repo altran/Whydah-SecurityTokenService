@@ -85,7 +85,7 @@ public class UserToken implements Serializable{
                 Node appNode = applicationNodes.item(i);
                 NodeList children = appNode.getChildNodes();
                 HashMap<String, String> values = getAppValues(children);
-                putApplicationCompanyRoleValue(values.get("appId"), values.get("applicationName"),  values.get("organizationName"), values.get("roleName"), values.get("roleValue"));
+                putApplicationCompanyRoleValue(values.get("appId"), values.get("applicationName"), values.get("orgName"), values.get("roleName"), values.get("roleValue"));
             }
         } catch (Exception e) {
             logger.error("Error parsing userIdentityXML " + userIdentityXML, e);

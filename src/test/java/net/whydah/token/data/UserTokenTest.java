@@ -111,6 +111,7 @@ public class UserTokenTest {
 
         System.out.printf(userToken.toString());
         //String xml = freemarkerProcessor.toXml(userToken);
+        System.out.println(freemarkerProcessor.toXml(userToken));
 
         assertEquals("0", userToken.getPersonRef());
         assertEquals("User", userToken.getFirstName());
