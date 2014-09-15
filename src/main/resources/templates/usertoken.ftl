@@ -10,11 +10,11 @@
     <lastname>${it.lastName!?xml}</lastname>
     <email>${it.email!?xml}</email>
     <personRef>${it.personRef!?xml}</personRef>
-<#list it.applications as app>
-    <application ID="${app.applicationID!?xml}">
+    <#list it.applications as app>
+        <application ID="${app.applicationID!?xml}">
         <applicationName>${app.applicationName!?xml}</applicationName>
         <#list app.companyRoles as role>
-            <organizationName>${role.companyName!?xml}</organizationName>
+            <organizationName>${role.organizationName!?xml}</organizationName>
             <#list role.roleMap?keys as key>
             <role name="${key?xml}" value="${role.roleMap[key]!?xml}"/>
             </#list>
