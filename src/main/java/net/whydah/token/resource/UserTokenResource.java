@@ -97,11 +97,11 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         try {
-            UserToken token = userAuthenticator.logonUser(applicationtokenid,appTokenXml, userCredentialXml);
+            UserToken usertoken = userAuthenticator.logonUser(applicationtokenid, appTokenXml, userCredentialXml);
 
             // Add the user to the ticket-map with the ticket given from the caller
-            ticketmap.put(userticket, token.getTokenid());
-            return Response.ok(new Viewable("/usertoken.ftl", token)).build();
+            ticketmap.put(userticket, usertoken.getTokenid());
+            return Response.ok(new Viewable("/usertoken.ftl", usertoken)).build();
         } catch (AuthenticationFailedException ae) {
             logger.warn("getUserTokenAndStoreUserTicket - User authentication failed");
                 return Response.status(Response.Status.FORBIDDEN).entity("User authentication failed").build();
@@ -148,6 +148,40 @@ public class UserTokenResource {
         logger.warn("Usertoken not ok: {}", usertokenid);
         return Response.status(Response.Status.CONFLICT).build();
     }
+
+    /**
+     * Used to create a userticket for a user to transfer a session between whydah SSO apps
+     *
+     * @param applicationtokenid
+     * @param appTokenXml
+     * @param userticket
+     * @param userTokenId
+     * @return
+     */
+    @Path("/{applicationtokenid}/createuserticketbyusertokenid")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response createUserTicketByUserTokenId(@PathParam("applicationtokenid") String applicationtokenid,
+                                                  @FormParam("apptoken") String appTokenXml,
+                                                  @FormParam("userticket") String userticket,
+                                                  @FormParam("usertokenid") String userTokenId) {
+        logger.trace("createUserTicketByUserTokenId: applicationtokenid={}, usertokenid={}, appTokenXml={}", applicationtokenid, userTokenId, appTokenXml);
+
+
+        if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
+            logger.warn("createUserTicketByUserTokenId - attempt to access from invalid application. ID: {}", applicationtokenid);
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
+        }
+        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
+        if (userToken != null) {
+            ticketmap.put(userticket, userToken.getTokenid());
+            logger.trace("createUserTicketByUserTokenId OK. Response={}", userToken.toString());
+            return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
+        }
+        logger.warn("createUserTicketByUserTokenId - attempt to access with non acceptable usertokenid {}", userTokenId);
+        return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+    }
+
 
     /**
      * Used to get the usertoken from a usertokenid, which the application usually stores in its secure cookie
