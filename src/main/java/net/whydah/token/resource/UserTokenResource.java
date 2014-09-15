@@ -43,6 +43,8 @@ public class UserTokenResource {
 
     /**
      *
+     *
+     *
      * TODO baardl: rename the param apptoken
      * @param applicationtokenid the current application wanting to authenticate the user.
      * @param appTokenXml the token representing the application the user want to access.
@@ -67,6 +69,15 @@ public class UserTokenResource {
         }
     }
 
+    /**
+     * Login in user and register its ticket in the ticketmap
+     *
+     * @param applicationtokenid
+     * @param userticket
+     * @param appTokenXml
+     * @param userCredentialXml
+     * @return
+     */
     @Path("/{applicationtokenid}/{userticket}/usertoken")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -80,10 +91,14 @@ public class UserTokenResource {
         }
 
         if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
+            // TODO:  Limit this operation to SSOLoginWebApplication ONLY
+
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         try {
             UserToken token = userAuthenticator.logonUser(applicationtokenid,appTokenXml, userCredentialXml);
+
+            // Add the user to the ticket-map with the ticket given from SSOLoginWebAPplication
             ticketmap.put(userticket, token.getTokenid());
             return Response.ok(new Viewable("/usertoken.ftl", token)).build();
         } catch (AuthenticationFailedException ae) {
@@ -107,6 +122,7 @@ public class UserTokenResource {
         }
 
         if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
+            // TODO:  Limit this operation to SSOLoginWebApplication ONLY
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
 
@@ -150,7 +166,15 @@ public class UserTokenResource {
         return Response.status(Response.Status.CONFLICT).build();
     }
 
-    @Path("/{applicationtokenid}/getusertokenbytokenid")
+    /**
+     * Used to get the usertoken from a usertokenid, which the application usually stores in its secure cookie
+     *
+     * @param applicationtokenid
+     * @param appTokenXml
+     * @param userTokenId
+     * @return
+     */
+    @Path("/{applicationtokenid}/getusertokenbyusertokenid")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
@@ -180,6 +204,16 @@ public class UserTokenResource {
         return Response.status(Response.Status.NOT_ACCEPTABLE).build();
     }
 
+    /**
+     * Lookup a user by a one-time userticket, usually the first thing we do after receiving a SSO redirect back to
+     * an application from SSOLoginWebApplication
+     *
+     *
+     * @param applicationtokenid
+     * @param appTokenXml
+     * @param userticket
+     * @return
+     */
     @Path("/{applicationtokenid}/getusertokenbyuserticket")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -199,7 +233,7 @@ public class UserTokenResource {
         }
         String userTokenId = (String) ticketmap.get(userticket);
         if (userTokenId == null) {
-            logger.warn("Attempt to resolve non-existant ticket {}",userticket);
+            logger.warn("Attempt to resolve non-existing ticket {}",userticket);
         	return Response.status(Response.Status.GONE).build(); //410 
         }
         logger.debug("Found tokenid: " + userTokenId);
