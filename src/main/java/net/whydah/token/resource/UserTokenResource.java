@@ -56,7 +56,7 @@ public class UserTokenResource {
     public Response getUserToken(@PathParam("applicationtokenid") String applicationtokenid,
                                  @FormParam("apptoken") String appTokenXml,
                                  @FormParam("usercredential") String userCredentialXml) {
-        if (!verifyApptoken(applicationtokenid, appTokenXml)) {
+        if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         try {
@@ -79,7 +79,7 @@ public class UserTokenResource {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
 
-        if (!verifyApptoken(applicationtokenid, appTokenXml)) {
+        if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         try {
@@ -106,7 +106,7 @@ public class UserTokenResource {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
 
-        if (!verifyApptoken(applicationtokenid, appTokenXml)) {
+        if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
 
@@ -163,7 +163,7 @@ public class UserTokenResource {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
 
-        if (!verifyApptoken(applicationtokenid, appTokenXml)) {
+        if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
@@ -194,7 +194,7 @@ public class UserTokenResource {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
 
-        if (!verifyApptoken(applicationtokenid, appTokenXml)) {
+        if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
         String userTokenId = (String) ticketmap.get(userticket);
@@ -245,12 +245,12 @@ public class UserTokenResource {
         return Response.ok().language(userTokenXml).build();
     }
 
-    private boolean verifyApptoken(String appTokenId, String appTokenXml) {
+    private boolean verifyApplicationToken(String applicationtokenid, String applicationtokenXml) {
         boolean validAppToken = false;
-        if (appTokenXml != null && appTokenId != null) {
-            validAppToken = appTokenXml.contains(appTokenId) && AuthenticatedApplicationRepository.verifyApplicationToken(appTokenXml);
+        if (applicationtokenXml != null && applicationtokenid != null) {
+            validAppToken = applicationtokenXml.contains(applicationtokenid) && AuthenticatedApplicationRepository.verifyApplicationToken(applicationtokenXml);
         } else {
-            logger.debug("not expecting null values appTokenId {}, appTokenXml {}", appTokenId, appTokenXml);
+            logger.debug("not expecting null values appTokenId {}, appTokenXml {}", applicationtokenid, applicationtokenXml);
         }
         return true; //FIXME bli validAppToken;
     }
