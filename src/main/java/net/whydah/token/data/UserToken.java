@@ -142,7 +142,7 @@ public class UserToken implements Serializable{
         XPath xPath = XPathFactory.newInstance().newXPath();
         String appId = (String) xPath.evaluate("@ID", appNode, XPathConstants.STRING);
         String appName = (String) xPath.evaluate("./applicationName", appNode, XPathConstants.STRING);
-            String organizationName = (String) xPath.evaluate("./organizationName", appNode, XPathConstants.STRING);
+        String organizationName = (String) xPath.evaluate("./orgName", appNode, XPathConstants.STRING);
             NodeList roles = (NodeList) xPath.evaluate("./role", appNode, XPathConstants.NODESET);
             for(int k=0; k<roles.getLength(); k ++) {
                 Node roleNode = roles.item(k);
