@@ -6,5 +6,5 @@
          <applicationname>SSOTestWebApp</applicationname>
          <expires>1396103291389</expires>
      </params>
-     <Url type="application/xml" method="POST"                 template="http://xxxxx.cloudapp.net/tokenservice/token/378d519c14b8acf068c4d7f020240f7e/getusertokenbytokenid"/>
+     <Url type="application/xml" method="POST"                 template="http://xxxxx.cloudapp.net/tokenservice/token/378d519c14b8acf068c4d7f020240f7e/getusertokenbyusertokenid"/>
  </token>
