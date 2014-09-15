@@ -67,12 +67,12 @@ public class UserTokenResource {
         }
     }
 
-    @Path("/{applicationtokenid}/{ticket}/usertoken")
+    @Path("/{applicationtokenid}/{userticket}/usertoken")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response getUserToken(@PathParam("applicationtokenid") String applicationtokenid,
-                                 @PathParam("ticket") String ticket,
+                                 @PathParam("userticket") String userticket,
                                  @FormParam("apptoken") String appTokenXml,
                                  @FormParam("usercredential") String userCredentialXml) {
         if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
@@ -84,7 +84,7 @@ public class UserTokenResource {
         }
         try {
             UserToken token = userAuthenticator.logonUser(applicationtokenid,appTokenXml, userCredentialXml);
-            ticketmap.put(ticket, token.getTokenid());
+            ticketmap.put(userticket, token.getTokenid());
             return Response.ok(new Viewable("/usertoken.ftl", token)).build();
         } catch (AuthenticationFailedException ae) {
                 return Response.status(Response.Status.FORBIDDEN).entity("User authentication failed").build();
@@ -180,15 +180,15 @@ public class UserTokenResource {
         return Response.status(Response.Status.NOT_ACCEPTABLE).build();
     }
 
-    @Path("/{applicationtokenid}/getusertokenbyticket")
+    @Path("/{applicationtokenid}/getusertokenbyuserticket")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response getUserTokenByTicket(@PathParam("applicationtokenid") String applicationtokenid,
                                      @FormParam("apptoken") String appTokenXml,
-                                     @FormParam("ticket") String ticket) {
+                                     @FormParam("userticket") String userticket) {
 
-        logger.trace("getUserTokenByTicket: applicationtokenid={}, ticket={}, appTokenXml={}", applicationtokenid, ticket, appTokenXml);
+        logger.trace("getUserTokenByTicket: applicationtokenid={}, ticket={}, appTokenXml={}", applicationtokenid, userticket, appTokenXml);
 
         if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
@@ -197,13 +197,13 @@ public class UserTokenResource {
         if (!verifyApptoken(applicationtokenid, appTokenXml)) {
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
-        String userTokenId = (String) ticketmap.get(ticket);
+        String userTokenId = (String) ticketmap.get(userticket);
         if (userTokenId == null) {
-            logger.warn("Attempt to resolve non-existant ticket {}",ticket);
+            logger.warn("Attempt to resolve non-existant ticket {}",userticket);
         	return Response.status(Response.Status.GONE).build(); //410 
         }
         logger.debug("Found tokenid: " + userTokenId);
-        ticketmap.remove(ticket);
+        ticketmap.remove(userticket);
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
 
         if (userToken == null) {
