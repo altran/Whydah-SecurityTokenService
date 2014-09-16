@@ -14,16 +14,16 @@ import java.io.IOException;
 public class ApplicationCredential {
 
     private String applicationID;
-    private String applicationsecret ;
+    private String applicationsecret;
     private static final Logger logger = LoggerFactory.getLogger(ApplicationCredential.class);
 
-    public void ApplicationCredential(){
+    public void ApplicationCredential() {
         try {
             AppConfig config = new AppConfig();
             applicationID = config.getProperty("applicationid");
-            applicationsecret= config.getProperty("applicationsecret");
-        } catch (Exception e){
-            logger.warn("Unable to read application properties",e);
+            applicationsecret = config.getProperty("applicationsecret");
+        } catch (Exception e) {
+            logger.warn("Unable to read application properties", e);
         }
 
     }
@@ -44,28 +44,25 @@ public class ApplicationCredential {
         this.applicationsecret = applicationsecret;
     }
 
-    public String toXML(){
-        if (applicationID == null){
+    public String toXML() {
+        if (applicationID == null) {
             return templateToken;
         } else {
             return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \n " +
-            "<applicationcredential>\n" +
-            "    <params>\n" +
-            "        <applicationID>"+ applicationID +"</applicationID>\n" +
-            "        <applicationSecret>"+ applicationsecret +"</applicationSecret>\n" +
-            "    </params> \n" +
-            "</applicationcredential>\n" ;
+                    "<applicationcredential>\n" +
+                    "    <params>\n" +
+                    "        <applicationID>" + applicationID + "</applicationID>\n" +
+                    "        <applicationSecret>" + applicationsecret + "</applicationSecret>\n" +
+                    "    </params> \n" +
+                    "</applicationcredential>\n";
         }
     }
 
     private final String templateToken = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \n " +
-            "<template>\n" +
             "    <applicationcredential>\n" +
             "        <params>\n" +
-            "            <applicationID>"+ applicationID +"</applicationID>\n" +
-            "            <applicationSecret>"+ applicationsecret +"</applicationSecret>\n" +
+            "            <applicationID>" + applicationID + "</applicationID>\n" +
+            "            <applicationSecret>" + applicationsecret + "</applicationSecret>\n" +
             "        </params> \n" +
-            "    </applicationcredential>\n" +
-            "</template>";
-
+            "    </applicationcredential>\n";
 }
