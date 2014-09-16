@@ -19,10 +19,10 @@ function submitAppLogon(event) {
             $('textarea#apptoken2').val(apptokenXMLString);
             var apptokenid = $(apptokenXMLObjectResponse).contents().find("applicationtokenID").text();
             $("#apptokenid").html("Application tokenID: " + apptokenid);
-            $("#userlogonform").attr("action", "token/" + apptokenid + "/usertoken");
-            $("#userlogonformurl").html("token/" + apptokenid + "/usertoken");
-            $("#getusertokenform").attr("action", "token/" + apptokenid + "/getusertokenbyusertokenid");
-            $("#getusertokenformurl").html("token/" + apptokenid + "/getusertokenbyusertokenid");
+            $("#userlogonform").attr("action", "user/" + apptokenid + "/usertoken");
+            $("#userlogonformurl").html("user/" + apptokenid + "/usertoken");
+            $("#getusertokenform").attr("action", "user/" + apptokenid + "/getusertoken_by_usertokenid");
+            $("#getusertokenformurl").html("token/" + apptokenid + "/get_usertoken_by_usertokenid");
         }, "xml");
 }
 
