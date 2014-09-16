@@ -20,7 +20,7 @@ import javax.ws.rs.core.UriInfo;
 import java.util.HashMap;
 import java.util.Map;
 
-@Path("/token")
+@Path("/user")
 public class UserTokenResource {
     private final static Logger logger = LoggerFactory.getLogger(UserTokenResource.class);
 
@@ -34,7 +34,7 @@ public class UserTokenResource {
     @Context
     UriInfo uriInfo;
 
-    @Path("/usertokentemplate")
+    @Path("/usertoken_template")
     @GET
     @Produces(MediaType.APPLICATION_XML)
     public Response getUserTokenTemplate() {
@@ -119,7 +119,7 @@ public class UserTokenResource {
      * @param userTokenXml
      * @return
      */
-    @Path("/{applicationtokenid}/validateusertoken")
+    @Path("/{applicationtokenid}/validate_usertoken")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response validateUserTokenXML(@PathParam("applicationtokenid") String applicationtokenid, @FormParam("usertoken") String userTokenXml) {
@@ -158,7 +158,7 @@ public class UserTokenResource {
      * @param userTokenId
      * @return
      */
-    @Path("/{applicationtokenid}/createuserticketbyusertokenid")
+    @Path("/{applicationtokenid}/create_userticket_by_usertokenid")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response createUserTicketByUserTokenId(@PathParam("applicationtokenid") String applicationtokenid,
@@ -191,7 +191,7 @@ public class UserTokenResource {
      * @param userTokenId
      * @return
      */
-    @Path("/{applicationtokenid}/getusertokenbyusertokenid")
+    @Path("/{applicationtokenid}/get_usertoken_by_usertokenid")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
@@ -233,7 +233,7 @@ public class UserTokenResource {
      * @param userticket
      * @return
      */
-    @Path("/{applicationtokenid}/getusertokenbyuserticket")
+    @Path("/{applicationtokenid}/get_usertoken_by_userticket")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
@@ -279,7 +279,7 @@ public class UserTokenResource {
      * @param userTokenID
      * @return
      */
-    @Path("/{applicationtokenid}/releaseusertoken")
+    @Path("/{applicationtokenid}/release_usertoken")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response releaseUserToken(@PathParam("applicationtokenid") String applicationtokenid,
@@ -304,7 +304,7 @@ public class UserTokenResource {
      * @param newAppToken
      * @return
      */
-    @Path("/{applicationtokenid}/transformusertoken")
+    @Path("/{applicationtokenid}/transform_usertoken")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
@@ -347,7 +347,7 @@ public class UserTokenResource {
      * @param thirdPartyUserTokenXml typically facebook user-token or other oauth2 usertoken
      * @return
      */
-    @Path("/{applicationtokenid}/{userticket}/createuser")
+    @Path("/{applicationtokenid}/{userticket}/create_user")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)

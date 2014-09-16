@@ -89,7 +89,7 @@ public class ApplicationToken {
             "            <expires>" + expires + "</expires>\n" +
             "        </params> \n" +
             "           <Url type=\"application/xml\"" +
-            "                template=\"http://example.com/token/{applicationtoken}/getusertokenbyusertokenid\"/>" +
+            "                template=\"http://example.com/user/{applicationtoken}/get_usertoken_by_usertokenid\"/>" +
             "    </token>\n";
 
     public String getApplicationTokenId() {

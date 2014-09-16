@@ -25,7 +25,7 @@ public class UserAuthenticatorTest {
             "         <applicationname>TestApplication</applicationname>\n" +
             "         <expires>1403187368265</expires>\n" +
             "     </params> \n" +
-            "     <Url type=\"application/xml\" method=\"POST\" template=\"http://localhost:9998/tokenservice/token/81dc9bdb52d04dc20036dbd8313ed055/getusertokenbytokenid\"/> \n" +
+            "     <Url type=\"application/xml\" method=\"POST\" template=\"http://localhost:9998/tokenservice/user/81dc9bdb52d04dc20036dbd8313ed055/get_usertoken_by_usertokenid\"/> \n" +
             " </token>";
     String userCredentialXml= "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \n" +
             " <usercredential>\n" +
