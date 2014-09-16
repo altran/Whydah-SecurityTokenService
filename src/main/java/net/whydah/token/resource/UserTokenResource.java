@@ -240,6 +240,9 @@ public class UserTokenResource {
     public Response getUserTokenByUserTicket(@PathParam("applicationtokenid") String applicationtokenid,
                                      @FormParam("apptoken") String appTokenXml,
                                      @FormParam("userticket") String userticket) {
+        if (isEmpty(appTokenXml) || isEmpty(userticket)) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Missing required parameters").build();
+        }
 
         logger.trace("getUserTokenByUserTicket: applicationtokenid={}, ticket={}, appTokenXml={}", applicationtokenid, userticket, appTokenXml);
 
@@ -267,6 +270,7 @@ public class UserTokenResource {
         logger.trace("getUserTokenByUserTicket OK. Response={}", userToken.toString());
         return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
     }
+
 
     /**
      * Force cross-applications/SSO session logout. Use with extreme care as the user's hate the resulting user experience..
@@ -373,6 +377,14 @@ public class UserTokenResource {
             logger.warn("createAndLogOnUser - Error creating or authenticating user. Token: {}", thirdPartyUserTokenXml);
             return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").build();
         }
+    }
+
+    boolean isEmpty(String userticket) {
+        boolean isEmpty = false;
+        if (userticket == null || userticket.isEmpty()){
+            isEmpty = true;
+        }
+        return isEmpty;
     }
 
 }
