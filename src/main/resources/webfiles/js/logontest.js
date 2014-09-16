@@ -21,7 +21,7 @@ function submitAppLogon(event) {
             $("#apptokenid").html("Application tokenID: " + apptokenid);
             $("#userlogonform").attr("action", "user/" + apptokenid + "/usertoken");
             $("#userlogonformurl").html("user/" + apptokenid + "/usertoken");
-            $("#getusertokenform").attr("action", "user/" + apptokenid + "/getusertoken_by_usertokenid");
+            $("#getusertokenform").attr("action", "user/" + apptokenid + "/get_usertoken_by_usertokenid");
             $("#getusertokenformurl").html("user/" + apptokenid + "/get_usertoken_by_usertokenid");
         }, "xml");
 }
