@@ -22,7 +22,7 @@ function submitAppLogon(event) {
             $("#userlogonform").attr("action", "user/" + apptokenid + "/usertoken");
             $("#userlogonformurl").html("user/" + apptokenid + "/usertoken");
             $("#getusertokenform").attr("action", "user/" + apptokenid + "/getusertoken_by_usertokenid");
-            $("#getusertokenformurl").html("token/" + apptokenid + "/get_usertoken_by_usertokenid");
+            $("#getusertokenformurl").html("user/" + apptokenid + "/get_usertoken_by_usertokenid");
         }, "xml");
 }
 

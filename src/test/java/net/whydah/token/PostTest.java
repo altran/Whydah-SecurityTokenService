@@ -57,7 +57,7 @@ public class PostTest {
         String applicationtokenid = getTokenIdFromAppToken(apptokenxml);
         UserCredential user = new UserCredential("nalle", "puh");
 
-        WebResource userTokenResource = restClient.resource(baseUri).path("token/" + applicationtokenid + "/usertoken");
+        WebResource userTokenResource = restClient.resource(baseUri).path("user/" + applicationtokenid + "/usertoken");
         MultivaluedMap<String,String> formData = new MultivaluedMapImpl();
         formData.add("apptoken", apptokenxml);
         formData.add("usercredential", user.toXML());
