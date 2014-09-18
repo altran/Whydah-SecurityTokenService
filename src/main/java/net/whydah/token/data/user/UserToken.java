@@ -1,5 +1,7 @@
 package net.whydah.token.data.user;
 
+import com.google.inject.Inject;
+import net.whydah.token.config.AppConfig;
 import net.whydah.token.data.application.ApplicationData;
 import net.whydah.token.data.helper.CompanyRoles;
 import org.slf4j.Logger;
@@ -20,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+
 public class UserToken implements Serializable{
     private static final Logger logger = LoggerFactory.getLogger(UserToken.class);
     private final static DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -32,22 +35,28 @@ public class UserToken implements Serializable{
     private String lastName;
     private String email;
     private String timestamp;
-    private String defcon = "5";
     private String securityLevel = "0";
     private String lifespan = String.valueOf(60 * 60 * 1000); // 1 time
     private String issuer = "/token/issuer/tokenverifier";
     private Map<String, ApplicationData> applicationCompanyRoleValueMap = new HashMap<>();
 
+    private static String defcon = "0";
+    private static AppConfig appConfig = new AppConfig();
+
+
     public UserToken() {
+        defcon = appConfig.getProperty("DEFCON");
     }
 
     public static UserToken createUserTokenFromUserTokenXML(String userTokenXml) {
+        defcon = appConfig.getProperty("DEFCON");
         UserToken userToken = new UserToken();
         userToken.parseAndUpdatefromUserToken(userTokenXml);
         return userToken;
     }
 
     public static UserToken createUserTokenFromUserAggregate(String appTokenXml, String userAggregateXML) {
+        defcon = appConfig.getProperty("DEFCON");
         UserToken userToken = new UserToken();
         userToken.parseAndUpdatefromAppToken(appTokenXml);
         userToken.parseAndUpdatefromUserAggregate(userAggregateXML);
