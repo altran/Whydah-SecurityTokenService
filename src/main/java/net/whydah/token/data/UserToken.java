@@ -68,10 +68,10 @@ public class UserToken implements Serializable{
         }
     }
 
-    private void parseAndUpdatefromUserAggregate(String userIdentityXML) {
+    private void parseAndUpdatefromUserAggregate(String userAggregateXML) {
         try {
             DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
-            Document doc = documentBuilder.parse(new InputSource(new StringReader(userIdentityXML)));
+            Document doc = documentBuilder.parse(new InputSource(new StringReader(userAggregateXML)));
             XPath xPath = XPathFactory.newInstance().newXPath();
             uid = (String) xPath.evaluate("//UID", doc, XPathConstants.STRING);
             userName = (String) xPath.evaluate("//identity/username", doc, XPathConstants.STRING);
@@ -88,7 +88,7 @@ public class UserToken implements Serializable{
                 putApplicationCompanyRoleValue(values.get("appId"), values.get("applicationName"), values.get("orgName"), values.get("roleName"), values.get("roleValue"));
             }
         } catch (Exception e) {
-            logger.error("Error parsing userIdentityXML " + userIdentityXML, e);
+            logger.error("Error parsing userAggregateXML " + userAggregateXML, e);
         }
     }
 
@@ -120,13 +120,13 @@ public class UserToken implements Serializable{
             lifespan = (String) xPath.evaluate("/token/lifespan", doc, XPathConstants.STRING);
             issuer = (String) xPath.evaluate("/token/issuer", doc, XPathConstants.STRING);
             applicationCompanyRoleValueMap = new HashMap<>();
-            parseAndUpdateRolemapfromUserToken(doc);
+            parseAndUpdateRolemapFromUserToken(doc);
         } catch (Exception e) {
             logger.error("Error parsing userTokenXml " + userTokenXml, e);
         }
     }
 
-    private void parseAndUpdateRolemapfromUserToken(Document doc) {
+    private void parseAndUpdateRolemapFromUserToken(Document doc) {
         try {
             XPath xPath = XPathFactory.newInstance().newXPath();
             NodeList applicationNodes = (NodeList) xPath.evaluate("//application", doc, XPathConstants.NODESET);
@@ -235,6 +235,24 @@ public class UserToken implements Serializable{
         return UUID.randomUUID().toString();
     }
 
+
+    public String toXML(String applicationID) {
+        return "UserToken{" +
+                "tokenid='" + tokenid + '\'' +
+                ", uid='" + uid + '\'' +
+                ", personRef='" + personRef + '\'' +
+                ", userName='" + userName + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", timestamp='" + timestamp + '\'' +
+                ", securityLevel='" + securityLevel + '\'' +
+                ", lifespan='" + lifespan + '\'' +
+                ", issuer='" + issuer + '\'' +
+                ", applicationCompanyRoleValueMap=" + getApplicationCompanyRoleMap(applicationID) +
+                '}';
+
+    }
     @Override
     public String toString() {
         return "UserToken{" +
@@ -249,9 +267,22 @@ public class UserToken implements Serializable{
                 ", securityLevel='" + securityLevel + '\'' +
                 ", lifespan='" + lifespan + '\'' +
                 ", issuer='" + issuer + '\'' +
-                ", applicationCompanyRoleValueMap=" + applicationCompanyRoleValueMap +
+                ", applicationCompanyRoleValueMap=" + getApplicationCompanyRoleMap(null) +
                 '}';
     }
+
+    private Map getApplicationCompanyRoleMap(String applicationID) {
+        if (applicationID == null) {
+            return applicationCompanyRoleValueMap;
+        }
+        if (applicationCompanyRoleValueMap.containsKey(applicationID)) {
+            Map<String, ApplicationData> returMap = new HashMap<>();
+            returMap.put(applicationID, applicationCompanyRoleValueMap.get(applicationID));
+            return returMap;
+        }
+        return applicationCompanyRoleValueMap;
+    }
+
 
     @Override
     public boolean equals(Object o) {
