@@ -1,7 +1,6 @@
-package net.whydah.token.data.helper;
+package net.whydah.token.data.user;
 
 import net.whydah.token.config.ApplicationMode;
-import net.whydah.token.data.UserToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

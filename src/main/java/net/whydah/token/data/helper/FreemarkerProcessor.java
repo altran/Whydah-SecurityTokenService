@@ -3,7 +3,7 @@ package net.whydah.token.data.helper;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import net.whydah.token.data.UserToken;
+import net.whydah.token.data.user.UserToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

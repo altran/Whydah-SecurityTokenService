@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.sun.jersey.api.view.Viewable;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
-import net.whydah.token.data.UserCredential;
+import net.whydah.token.data.user.UserCredential;
 import net.whydah.token.data.application.ApplicationCredential;
 import net.whydah.token.data.application.ApplicationToken;
 import net.whydah.token.data.application.AuthenticatedApplicationRepository;

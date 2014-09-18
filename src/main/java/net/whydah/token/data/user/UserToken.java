@@ -1,4 +1,4 @@
-package net.whydah.token.data;
+package net.whydah.token.data.user;
 
 import net.whydah.token.data.application.ApplicationData;
 import net.whydah.token.data.helper.CompanyRoles;

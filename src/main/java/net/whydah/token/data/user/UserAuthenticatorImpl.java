@@ -1,4 +1,4 @@
-package net.whydah.token.data.helper;
+package net.whydah.token.data.user;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -6,7 +6,6 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
-import net.whydah.token.data.UserToken;
 import net.whydah.token.exception.AuthenticationFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

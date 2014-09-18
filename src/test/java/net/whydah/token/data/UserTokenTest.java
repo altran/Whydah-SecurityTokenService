@@ -1,7 +1,8 @@
 package net.whydah.token.data;
 
-import net.whydah.token.data.helper.ActiveUserTokenRepository;
+import net.whydah.token.data.user.ActiveUserTokenRepository;
 import net.whydah.token.data.helper.FreemarkerProcessor;
+import net.whydah.token.data.user.UserToken;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -26,7 +27,7 @@ public class UserTokenTest {
     }
 
     @Test
-    public void testActiveUserTokenRepository(){
+    public void testActiveUserTokenRepository() {
         UserToken utoken = new UserToken();
         utoken.setFirstName("Ola");
         utoken.setLastName("Nordmann");
@@ -42,7 +43,7 @@ public class UserTokenTest {
     }
 
     @Test
-    public void testTimedOutActiveUserTokenRepository(){
+    public void testTimedOutActiveUserTokenRepository() {
         UserToken utoken = new UserToken();
         utoken.setTokenid(UUID.randomUUID().toString());
         utoken.setFirstName("Ola");
@@ -60,16 +61,16 @@ public class UserTokenTest {
         utoken.setFirstName("Olav");
         utoken.setLastName("Nordmann");
         utoken.setTokenid(UUID.randomUUID().toString());
-        utoken.putApplicationCompanyRoleValue("2349785543", "Whydah.net",  "Kunde 1", "styreleder", "Diktator");
-        utoken.putApplicationCompanyRoleValue("2349785543", "Whydah.net",  "Kunde 2", "vaktmester", "ansatt");
-        utoken.putApplicationCompanyRoleValue("2349785543", "Whydah.net",  "Kunde 3", "styremedlem", "");
-        utoken.putApplicationCompanyRoleValue("appa", "whydag.org",  "Kunde 1", "styremedlem", "Valla");
+        utoken.putApplicationCompanyRoleValue("2349785543", "Whydah.net", "Kunde 1", "styreleder", "Diktator");
+        utoken.putApplicationCompanyRoleValue("2349785543", "Whydah.net", "Kunde 2", "vaktmester", "ansatt");
+        utoken.putApplicationCompanyRoleValue("2349785543", "Whydah.net", "Kunde 3", "styremedlem", "");
+        utoken.putApplicationCompanyRoleValue("appa", "whydag.org", "Kunde 1", "styremedlem", "Valla");
         String tokenxml = freemarkerProcessor.toXml(utoken);
 
         UserToken copyToken = UserToken.createUserTokenFromUserTokenXML(tokenxml);
         String copyxml = freemarkerProcessor.toXml(copyToken);
-        System.out.println("FROM: "+tokenxml);
-        System.out.println("TO: "+copyxml);
+        System.out.println("FROM: " + tokenxml);
+        System.out.println("TO: " + copyxml);
         assertEquals(tokenxml, copyxml);
     }
 
@@ -99,14 +100,14 @@ public class UserTokenTest {
 
 
         String appXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \n " +
-                    " <token>\n" +
-                    "     <params>\n" +
-                    "         <applicationtoken>123123123123</applicationtoken>\n" +
-                    "         <applicationid>123</applicationid>\n" +
-                    "         <applicationname>faktura</applicationname>\n" +
-                    "         <expires>3213213212</expires>\n" +
-                    "     </params> \n" +
-                    " </token>\n";
+                " <token>\n" +
+                "     <params>\n" +
+                "         <applicationtoken>123123123123</applicationtoken>\n" +
+                "         <applicationid>123</applicationid>\n" +
+                "         <applicationname>faktura</applicationname>\n" +
+                "         <expires>3213213212</expires>\n" +
+                "     </params> \n" +
+                " </token>\n";
         UserToken userToken = UserToken.createUserTokenFromUserAggregate(appXML, identityXML);
 
         System.out.printf(userToken.toString());

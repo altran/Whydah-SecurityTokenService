@@ -1,4 +1,4 @@
-package net.whydah.token.data;
+package net.whydah.token.data.user;
 
 public class UserCredential {
 
