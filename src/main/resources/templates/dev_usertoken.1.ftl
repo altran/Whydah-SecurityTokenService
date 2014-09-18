@@ -6,6 +6,7 @@
         <lifespan>647832</lifespan>
         <issuer>Whydah</issuer>
         <securitylevel>0</securitylevel>
+        <DEFCON>5</DEFCON>
         <username>leon</username>
         <cellPhone>123456</cellPhone>
         <email>leon.ho@test.com</email>

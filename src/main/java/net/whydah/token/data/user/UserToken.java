@@ -32,6 +32,7 @@ public class UserToken implements Serializable{
     private String lastName;
     private String email;
     private String timestamp;
+    private String defcon = "5";
     private String securityLevel = "0";
     private String lifespan = String.valueOf(60 * 60 * 1000); // 1 time
     private String issuer = "/token/issuer/tokenverifier";
@@ -116,6 +117,7 @@ public class UserToken implements Serializable{
             lastName = (String) xPath.evaluate("/token/lastname", doc, XPathConstants.STRING);
             email = (String) xPath.evaluate("//token/email", doc, XPathConstants.STRING);
             timestamp = (String) xPath.evaluate("/token/timestamp", doc, XPathConstants.STRING);
+            defcon = (String) xPath.evaluate("/token/DEFCON", doc, XPathConstants.STRING);
             securityLevel = (String) xPath.evaluate("/token/securitylevel", doc, XPathConstants.STRING);
             lifespan = (String) xPath.evaluate("/token/lifespan", doc, XPathConstants.STRING);
             issuer = (String) xPath.evaluate("/token/issuer", doc, XPathConstants.STRING);
@@ -246,6 +248,7 @@ public class UserToken implements Serializable{
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", timestamp='" + timestamp + '\'' +
+                ", DEFCON='" + defcon + '\'' +
                 ", securityLevel='" + securityLevel + '\'' +
                 ", lifespan='" + lifespan + '\'' +
                 ", issuer='" + issuer + '\'' +
@@ -264,6 +267,7 @@ public class UserToken implements Serializable{
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", timestamp='" + timestamp + '\'' +
+                ", DEFCON =" + defcon + '\'' +
                 ", securityLevel='" + securityLevel + '\'' +
                 ", lifespan='" + lifespan + '\'' +
                 ", issuer='" + issuer + '\'' +
@@ -384,6 +388,10 @@ public class UserToken implements Serializable{
         this.issuer = issuer;
     }
 
+    public void setDefcon(String defcon) {
+        this.defcon = defcon;
+    }
+
 
     public String getSecurityLevel() {
         return securityLevel;
@@ -411,6 +419,10 @@ public class UserToken implements Serializable{
     }
     public String getIssuer() {
         return issuer;
+    }
+
+    public String getDefcon() {
+        return defcon;
     }
     public Collection<ApplicationData> getApplications() {
         return applicationCompanyRoleValueMap.values();
