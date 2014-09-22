@@ -1,8 +1,11 @@
 package net.whydah.token.data;
 
+import net.whydah.token.config.AppConfig;
+import net.whydah.token.config.ApplicationMode;
 import net.whydah.token.data.user.ActiveUserTokenRepository;
 import net.whydah.token.data.helper.FreemarkerProcessor;
 import net.whydah.token.data.user.UserToken;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -11,6 +14,13 @@ import static org.junit.Assert.*;
 
 public class UserTokenTest {
     private FreemarkerProcessor freemarkerProcessor = new FreemarkerProcessor();
+
+    @BeforeClass
+    public static void init() {
+        System.setProperty(ApplicationMode.IAM_MODE_KEY, ApplicationMode.TEST);
+        System.setProperty(AppConfig.IAM_CONFIG_KEY, "src/test/testconfig.properties");
+    }
+
 
     @Test
     public void testCreateUserToken() {

@@ -54,7 +54,7 @@ public class ApplicationToken {
     }
 
     public ApplicationToken(String xml) {
-        applicationTokenId = getApplicationToken(getApplicationID(xml));  // "ERST677hjS"
+        applicationTokenId = getApplicationTokenFromApplicationCredential(getApplicationID(xml));  // "ERST677hjS"
         applicationSecret = getApplicationSecret(xml);  // "ERST677hjS"
         applicationID = getApplicationID(xml);
         expires = String.valueOf((System.currentTimeMillis() + 10000));
@@ -66,7 +66,7 @@ public class ApplicationToken {
             return templateToken;
         } else {
             return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \n " +
-                    " <token>\n" +
+                    " <applicationtoken>\n" +
                     "     <params>\n" +
                     "         <applicationtokenID>" + applicationTokenId + "</applicationtokenID>\n" +
                     "         <applicationid>" + applicationID + "</applicationid>\n" +
@@ -75,13 +75,13 @@ public class ApplicationToken {
                     "     </params> \n" +
                     "     <Url type=\"application/xml\" method=\"POST\" " +
                     "                template=\"" + baseuri + "user/" + applicationTokenId + "/get_usertoken_by_usertokenid\"/> \n" +
-                    " </token>\n";
+                    " </applicationtoken>\n";
         }
     }
 
     private final String templateToken = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \n " +
 
-            "    <token>\n" +
+            "    <applicationtoken>\n" +
             "        <params>\n" +
             "            <applicationtokenID>" + applicationTokenId + "</applicationtokenID>\n" +
             "            <applicationid>" + applicationID + "</applicationid>\n" +
@@ -90,7 +90,7 @@ public class ApplicationToken {
             "        </params> \n" +
             "           <Url type=\"application/xml\"" +
             "                template=\"http://example.com/user/{applicationtoken}/get_usertoken_by_usertokenid\"/>" +
-            "    </token>\n";
+            "    </applicationtoken>\n";
 
     public String getApplicationTokenId() {
         return applicationTokenId;
@@ -144,7 +144,7 @@ public class ApplicationToken {
         return "";
     }
 
-    private String getApplicationToken(String appID) {
+    private String getApplicationTokenFromApplicationCredential(String appID) {
         return getMD5hash(appID + expires);
     }
 

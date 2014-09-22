@@ -1,69 +1,26 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<whydahuser>
-    <identity>
-        <UID>leon.ho@test.com</UID>
-        <timestamp>638726482</timestamp>
-        <lifespan>647832</lifespan>
-        <issuer>Whydah</issuer>
-        <securitylevel>0</securitylevel>
-        <DEFCON>5</DEFCON>
-        <username>leon</username>
-        <cellPhone>123456</cellPhone>
-        <email>leon.ho@test.com</email>
-        <firstname>Leon</firstname>
-        <lastname>Ho</lastname>
-        <personRef>1</personRef>
-        <UID>leon.ho@test.com</UID>
-    </identity>
-    <applications>
-        <application>
-            <appId>3</appId>
-            <applicationName>Whydah</applicationName>
-            <organizationName>Whydah.net</organizationName>
-            <roleName>developer</roleName>
-            <roleValue>20</roleValue>
-        </application>
-        <application>
-            <appId>1</appId>
-            <applicationName>UserAdmin</applicationName>
-            <organizationName>Whydah.net</organizationName>
-            <roleName>UserAdmin</roleName>
-            <roleValue></roleValue>
-        </application>
-        <application>
-            <appId>2</appId>
-            <applicationName>Mobilefirst</applicationName>
-            <organizationName>Whydah.net</organizationName>
-            <roleName>client</roleName>
-            <roleValue>10</roleValue>
-        </application>
-        <application>
-            <appId>4</appId>
-            <applicationName>ACS</applicationName>
-            <organizationName>Whydah.net</organizationName>
-            <roleName>Administrator</roleName>
-            <roleValue>true</roleValue>
-        </application>
-        <application>
-            <appId>3</appId>
-            <applicationName>Whydah</applicationName>
-            <organizationName>Whydah.net</organizationName>
-            <roleName>WhydahUserAdmin</roleName>
-            <roleValue>99</roleValue>
-        </application>
-        <application>
-            <appId>4</appId>
-            <applicationName>ACS</applicationName>
-           <organizationName>Whydah.net</organizationName>
-           <roleName>Manager</roleName>
-            <roleValue></roleValue>
-        </application>
-        <application>
-            <appId>4</appId>
-            <applicationName>ACS</applicationName>
-            <organizationName>Whydah.net</organizationName>
-            <roleName>Employee</roleName>
-            <roleValue>Leon.Ho@altran.com</roleValue>
-        </application>
-    </applications>
-</whydahuser>
+<usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="ca544816-cdec-4cde-b2c3-fee8d283ac30">
+    <uid></uid>
+    <timestamp></timestamp>
+    <lifespan>3600000</lifespan>
+    <issuer>/token/issuer/tokenverifier</issuer>
+    <securitylevel>0</securitylevel>
+    <DEFCON>5</DEFCON>
+    <username></username>
+    <firstname>Olav</firstname>
+    <lastname>Nordmann</lastname>
+    <email></email>
+    <personRef></personRef>
+    <application ID="2349785543">
+        <applicationName>Whydah.net</applicationName>
+        <organizationName>Kunde 3</organizationName>
+        <role name="styremedlem" value=""/>
+    </application>
+    <application ID="appa">
+        <applicationName>whydag.org</applicationName>
+        <organizationName>Kunde 1</organizationName>
+        <role name="styremedlem" value="Valla"/>
+    </application>
+
+    <ns2:link type="application/xml" href="/ca544816-cdec-4cde-b2c3-fee8d283ac30" rel="self"/>
+    <hash type="MD5">b64e372bfe8a2cc8cbca62f0ae95a25b</hash>
+</usertoken>
