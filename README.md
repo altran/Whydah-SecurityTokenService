@@ -51,7 +51,7 @@ Configuration and Integration
 
 |Property | Example values PROD | Comment |
 |-------- | -------------- | -----------| 
-|*mybaseuri*|http://myserver.net/tokenservice/ | The URI to this instance of STS |
+|*myuri*|http://myserver.net/tokenservice/ | The URI to this instance of STS |
 |*service.port*|9998| Port for this service |
 |*useridentitybackend*| http://myservice/uib/ | URL to useridentitybackend |
 |*testpage*|disabled| Whether or not to enable the testpage. The url is printed when you start the service with it enabled. |

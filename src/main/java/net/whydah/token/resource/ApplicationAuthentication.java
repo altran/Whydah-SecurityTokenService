@@ -84,7 +84,7 @@ public class ApplicationAuthentication {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         ApplicationToken token = new ApplicationToken(appCredentialXml);
-        token.setBaseuri(appConfig.getProperty("mybaseuri"));
+        token.setBaseuri(appConfig.getProperty("myuri"));
         AuthenticatedApplicationRepository.addApplicationToken(token);
         String applicationTokenXml = token.toXML();
         logger.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
