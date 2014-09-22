@@ -16,6 +16,7 @@ public class ActiveUserTokenRepository {
 
     static {
         String xmlFileName = System.getProperty("hazelcast.config");
+        logger.info("Loading hazelcast configuration from :" + xmlFileName);
         Config configApp1 = new Config();
         if (xmlFileName != null && xmlFileName.length() > 10) {
             try {
@@ -98,4 +99,9 @@ public class ActiveUserTokenRepository {
     public static void removeUserToken(String userTokenId) {
         activeusertokensmap.remove(userTokenId);
     }
+
+    public static void initializeDistributedMap() {
+    }
+
+    ;
 }

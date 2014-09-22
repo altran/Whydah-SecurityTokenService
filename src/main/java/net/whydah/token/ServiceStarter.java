@@ -10,6 +10,7 @@ import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
 import net.whydah.token.config.SecurityTokenServiceModule;
+import net.whydah.token.data.user.ActiveUserTokenRepository;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.grizzly.http.server.ServerConfiguration;
@@ -61,6 +62,8 @@ public class ServiceStarter {
         NetworkListener listener = new NetworkListener("grizzly", NetworkListener.DEFAULT_NETWORK_HOST, webappPort);
         httpServer.addListener(listener);
         httpServer.start();
+
+        ActiveUserTokenRepository.initializeDistributedMap();  // Kick-off hazelcast distributed map
 
         logger.info("SecurityTokenService started on port {}", webappPort);
         logger.info("IAM_MODE = {}",ApplicationMode.getApplicationMode());
