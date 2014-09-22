@@ -26,6 +26,13 @@
         <appender-ref ref="FILE" />
     </logger>
 
+    <logger name="com.hazelcast" additivity="false">
+        <level value="TRACE"/>
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+
     <root>
         <level value="INFO" />
         <appender-ref ref="STDOUT" />
