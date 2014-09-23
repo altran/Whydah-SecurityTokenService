@@ -47,6 +47,7 @@ public class UserTokenResource {
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         userticketmap = hazelcastInstance.getMap("userticketmap");
+        applicationtokenidmap = hazelcastInstance.getMap("applicationtokenidmap");
 
     }
 
