@@ -1,6 +1,10 @@
 package net.whydah.token.resource;
 
 import com.google.inject.Inject;
+import com.hazelcast.config.Config;
+import com.hazelcast.config.XmlConfigBuilder;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
 import com.sun.jersey.api.view.Viewable;
 import net.whydah.token.config.ApplicationMode;
 import net.whydah.token.data.user.UserToken;
@@ -17,6 +21,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +31,27 @@ public class UserTokenResource {
 
     private static Map ticketmap = new HashMap();
     private static Map  applicationtokenidmap = new HashMap();
+
+    static {
+        String xmlFileName = System.getProperty("hazelcast.config");
+        logger.info("Loading hazelcast configuration from :" + xmlFileName);
+        Config hazelcastConfig = new Config();
+        if (xmlFileName != null && xmlFileName.length() > 10) {
+            try {
+                hazelcastConfig = new XmlConfigBuilder(xmlFileName).build();
+                logger.info("Loading hazelcast configuration from :" + xmlFileName);
+            } catch (FileNotFoundException notFound) {
+                logger.error("Error - not able to load hazelcast.xml configuration.  Using embedded as fallback");
+            }
+        }
+        hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
+        HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
+        ticketmap = hazelcastInstance.getMap("ticketmap");
+
+    }
+
+    public static void initializeDistributedMap() {
+    }
 
 
     @Inject

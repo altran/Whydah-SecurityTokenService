@@ -11,6 +11,7 @@ import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
 import net.whydah.token.config.SecurityTokenServiceModule;
 import net.whydah.token.data.user.ActiveUserTokenRepository;
+import net.whydah.token.resource.UserTokenResource;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.grizzly.http.server.ServerConfiguration;
@@ -63,7 +64,8 @@ public class ServiceStarter {
         httpServer.addListener(listener);
         httpServer.start();
 
-        ActiveUserTokenRepository.initializeDistributedMap();  // Kick-off hazelcast distributed map
+        ActiveUserTokenRepository.initializeDistributedMap();  // Kick-off hazelcast distributed tokensessionmap
+        UserTokenResource.initializeDistributedMap();  // Kick-off hazelcast distributed ticketmap
 
         logger.info("SecurityTokenService started on port {}", webappPort);
         logger.info("IAM_MODE = {}",ApplicationMode.getApplicationMode());
