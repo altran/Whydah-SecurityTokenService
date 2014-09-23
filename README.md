@@ -14,24 +14,72 @@ Installation
 
 ## User, starting and logging
 * create a user for the service, typically SecurityTokenService
-* create start_service.sh
+* create update_service.sh
 
 ```
 #!/bin/sh
 
-export IAM_MODE=TEST
-
 A=SecurityTokenService
-V=LATEST
-JARFILE=$A-$V.jar
+V=SNAPSHOT
 
-pkill -f $A
 
-wget -O $JARFILE "http://mvnrepo.cantara.no/service/local/artifact/maven/content?r=snapshots&g=net.whydah.token&a=$A&v=$V&p=jar"
-nohup java -jar -DIAM_CONFIG=securitytokenservice.TEST.properties $JARFILE &
+if [[ $V == *SNAPSHOT* ]]; then
+   echo Note: If the artifact version contains "SNAPSHOT" - the artifact latest greates snapshot is downloaded, Irrelevent of version number!!!
+   path="http://mvnrepo.cantara.no/content/repositories/snapshots/net/whydah/token/$A"
+   version=`curl -s "$path/maven-metadata.xml" | grep "<version>" | sed "s/.*<version>\([^<]*\)<\/version>.*/\1/" | tail -n 1`
+   echo "Version $version"
+   build=`curl -s "$path/$version/maven-metadata.xml" | grep '<value>' | head -1 | sed "s/.*<value>\([^<]*\)<\/value>.*/\1/"`
+   JARFILE="$A-$build.jar"
+   url="$path/$version/$JARFILE"
+else #A specific Release version
+   path="http://mvnrepo.cantara.no/content/repositories/releases/net/whydah/token/$A"
+   url=$path/$V/$A-$V.jar
+   JARFILE=$A-$V.jar
+fi
 
-# The log is found in the logs directory, there is also a more detailed nohup:
-tail -f nohup.out
+# Download
+echo Downloading $url
+wget -O $JARFILE -q -N $url
+
+
+#Create symlink or replace existing sym link
+if [ -h $A.jar ]; then
+   unlink $A.jar
+fi
+ln -s $JARFILE $A.jar
+```
+
+
+* create securitytokenservice.PROD.properties
+
+```
+DEFCON=5
+# Normal operations
+applicationname=SecurityTokenService
+applicationid=11
+applicationsecret=secretq986Ep6By7B9J46m96D
+
+
+myuri=https://sso.whydah.net/tokenservice/
+service.port=9998
+useridentitybackend=https://sso.whydah.net/uib/
+testpage=enabled
+
+# Temporary provisioning of applications secret in wait for UAS/UIB support
+11=secretq986Ep6By7B9J46m96D
+12=secretA4t8dzz8mz7a5QQJ7Px
+15=secret36R6Jr47D4Hj5R6p9qT
+19=secretwJFKsUvJFmhypwK7j6D
+99=secret36R6Jr47D4Hj5R6p9qT
+100=secretnbKZ2wfC6RMmMuzXpk
+```
+
+
+* create start_service.sh
+
+```
+#!/bin/sh
+nohup /usr/bin/java -DIAM_MODE=PROD -Dhazelcast.config=hazelcast.xml -DIAM_CONFIG=/home/SecurityTokenService/securitytokenservice.PROD.properties -jar /home/SecurityTokenService/SecurityTokenService.jar
 ```
 
 Verify instance:
