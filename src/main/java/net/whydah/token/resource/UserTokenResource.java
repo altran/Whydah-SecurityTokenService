@@ -244,7 +244,7 @@ public class UserTokenResource {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing required parameters").build();
         }
 
-        logger.trace("getUserTokenByUserTicket: applicationtokenid={}, ticket={}, appTokenXml={}", applicationtokenid, userticket, appTokenXml);
+        logger.trace("getUserTokenByUserTicket: applicationtokenid={}, userticket={}, appTokenXml={}", applicationtokenid, userticket, appTokenXml);
 
         if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
@@ -259,12 +259,12 @@ public class UserTokenResource {
             logger.warn("getUserTokenByUserTicket - Attempt to resolve non-existing ticket {}", userticket);
             return Response.status(Response.Status.GONE).build(); //410
         }
-        logger.trace("getUserTokenByUserTicket - Found tokenid: " + userTokenId);
+        logger.trace("getUserTokenByUserTicket - Found usertokenid: " + userTokenId);
         ticketmap.remove(userticket);
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
 
         if (userToken == null) {
-            logger.warn("getUserTokenByUserTicket - illegal/Null usertoken received ");
+            logger.warn("getUserTokenByUserTicket - illegal/Null userticket received ");
             return Response.status(Response.Status.NOT_ACCEPTABLE).build(); //406
         }
         logger.trace("getUserTokenByUserTicket OK. Response={}", userToken.toString());
