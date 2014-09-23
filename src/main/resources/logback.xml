@@ -27,7 +27,7 @@
     </logger>
 
     <logger name="com.hazelcast" additivity="false">
-        <level value="TRACE"/>
+        <level value="INFO"/>
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </logger>
