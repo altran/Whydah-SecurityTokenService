@@ -29,7 +29,7 @@ import java.util.Map;
 public class UserTokenResource {
     private final static Logger logger = LoggerFactory.getLogger(UserTokenResource.class);
 
-    private static Map ticketmap = new HashMap();
+    private static Map userticketmap = new HashMap();
     private static Map  applicationtokenidmap = new HashMap();
 
     static {
@@ -46,7 +46,7 @@ public class UserTokenResource {
         }
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
-        ticketmap = hazelcastInstance.getMap("ticketmap");
+        userticketmap = hazelcastInstance.getMap("userticketmap");
 
     }
 
@@ -126,7 +126,7 @@ public class UserTokenResource {
             UserToken usertoken = userAuthenticator.logonUser(applicationtokenid, appTokenXml, userCredentialXml);
 
             // Add the user to the ticket-map with the ticket given from the caller
-            ticketmap.put(userticket, usertoken.getTokenid());
+            userticketmap.put(userticket, usertoken.getTokenid());
             return Response.ok(new Viewable("/usertoken.ftl", usertoken)).build();
         } catch (AuthenticationFailedException ae) {
             logger.warn("getUserTokenAndStoreUserTicket - User authentication failed");
@@ -200,7 +200,7 @@ public class UserTokenResource {
         }
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
         if (userToken != null) {
-            ticketmap.put(userticket, userToken.getTokenid());
+            userticketmap.put(userticket, userToken.getTokenid());
             logger.trace("createUserTicketByUserTokenId OK. Response={}", userToken.toString());
             return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
         }
@@ -280,13 +280,13 @@ public class UserTokenResource {
             logger.warn("getUserTokenByUserTicket - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
-        String userTokenId = (String) ticketmap.get(userticket);
+        String userTokenId = (String) userticketmap.get(userticket);
         if (userTokenId == null) {
             logger.warn("getUserTokenByUserTicket - Attempt to resolve non-existing ticket {}", userticket);
             return Response.status(Response.Status.GONE).build(); //410
         }
         logger.trace("getUserTokenByUserTicket - Found usertokenid: " + userTokenId);
-        ticketmap.remove(userticket);
+        userticketmap.remove(userticket);
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
 
         if (userToken == null) {
@@ -397,7 +397,7 @@ public class UserTokenResource {
         try {
             applicationtokenidmap.put(applicationtokenid,applicationtokenid);
             UserToken token = userAuthenticator.createAndLogonUser(applicationtokenid, appTokenXml, userCredentialXml, thirdPartyUserTokenXml);
-            ticketmap.put(userticket, token.getTokenid());
+            userticketmap.put(userticket, token.getTokenid());
             return Response.ok(new Viewable("/usertoken.ftl", token)).build();
         } catch (AuthenticationFailedException ae) {
             logger.warn("createAndLogOnUser - Error creating or authenticating user. Token: {}", thirdPartyUserTokenXml);
