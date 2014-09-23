@@ -4,13 +4,18 @@
            xmlns="http://www.hazelcast.com/schema/config">
     <network>
         <join>
+            <multicast enabled="true">
+                <multicast-group>224.2.2.3</multicast-group>
+                <multicast-port>54327</multicast-port>
+            </multicast>
+            <tcp-ip enabled="true">
+                <interface>192.168.1.2</interface>
+            </tcp-ip>
+
             <aws enabled="true">
                 <access-key>my-access-key</access-key>
                 <secret-key>my-secret-key</secret-key>
                 <region>us-east-1</region>
-                <security-group-name>peter</security-group-name>
-                <tag-key>type</tag-key>
-                <tag-value>hz-nodes</tag-value>
             </aws>
         </join>
     </network>
