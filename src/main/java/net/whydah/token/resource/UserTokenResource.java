@@ -192,7 +192,7 @@ public class UserTokenResource {
                                                   @FormParam("apptoken") String appTokenXml,
                                                   @FormParam("userticket") String userticket,
                                                   @FormParam("usertokenid") String userTokenId) {
-        logger.trace("createUserTicketByUserTokenId: applicationtokenid={}, usertokenid={}, appTokenXml={}", applicationtokenid, userTokenId, appTokenXml);
+        logger.trace("createUserTicketByUserTokenId: applicationtokenid={}, userticket={}, usertokenid={}, appTokenXml={}", applicationtokenid, userticket, userTokenId, appTokenXml);
 
 
         if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
