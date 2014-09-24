@@ -36,21 +36,21 @@ public class ActiveUserTokenRepository {
     /**
      * Get UserToken from UserTokenRepository. If token is not found or is not valid/timed out, null is returned.
      *
-     * @param tokenId userTokenId
+     * @param usertokenId userTokenId
      * @return UserToken if found and valid, null if not.
      */
-    public static UserToken getUserToken(String tokenId) {
-        logger.debug("getUserToken with userTokenid=" + tokenId);
-        if (tokenId == null) {
+    public static UserToken getUserToken(String usertokenId) {
+        logger.debug("getUserToken with userTokenid=" + usertokenId);
+        if (usertokenId == null) {
             return null;
         }
-        UserToken resToken = activeusertokensmap.get(tokenId);
+        UserToken resToken = activeusertokensmap.get(usertokenId);
         if (resToken != null && verifyUserToken(resToken)) {
             logger.info("Valid userToken found: " + resToken);
             logger.debug("userToken=" + resToken);
             return resToken;
         }
-        logger.debug("No usertoken found for tokenId=" + tokenId);
+        logger.debug("No usertoken found for usertokenId=" + usertokenId);
         return null;
     }
 

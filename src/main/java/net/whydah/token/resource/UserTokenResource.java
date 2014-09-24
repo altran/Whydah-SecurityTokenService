@@ -161,7 +161,7 @@ public class UserTokenResource {
         return Response.status(Response.Status.CONFLICT).build();
     }
 
-    @Path("/{applicationtokenid}/validateusertokenid/{usertokenid}")
+    @Path("/{applicationtokenid}/validate_usertokenid/{usertokenid}")
     @GET
     public Response validateUserTokenID(@PathParam("applicationtokenid") String applicationtokenid, @PathParam("usertokenid") String usertokenid) {
         if(!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
