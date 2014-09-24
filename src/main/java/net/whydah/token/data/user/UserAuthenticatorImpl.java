@@ -65,6 +65,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, fbUserXml);
 
         UserToken token = getUserToken(appTokenXml, response);
+        token.setSecurityLevel("0");  // 3rd party token as source = securitylevel=0
         return token;
     }
 
@@ -80,6 +81,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         }
 
         UserToken token = UserToken.createUserTokenFromUserAggregate(appTokenXml, identityXML);
+        token.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
         ActiveUserTokenRepository.addUserToken(token);
         return token;
     }
