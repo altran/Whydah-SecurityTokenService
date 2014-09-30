@@ -64,7 +64,7 @@ public class ServiceStarter {
         httpServer.addListener(listener);
         httpServer.start();
 
-        ActiveUserTokenRepository.initializeDistributedMap();  // Kick-off hazelcast distributed tokensessionmap
+        ActiveUserTokenRepository.initializeDistributedMap();  // Kick-off hazelcast distributed tokensession-map
         UserTokenResource.initializeDistributedMap();  // Kick-off hazelcast distributed ticketmap
 
         logger.info("SecurityTokenService started on port {}", webappPort);
