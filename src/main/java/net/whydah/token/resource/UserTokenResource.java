@@ -303,23 +303,25 @@ public class UserTokenResource {
      * Force cross-applications/SSO session logout. Use with extreme care as the user's hate the resulting user experience..
      *
      * @param applicationtokenid
-     * @param userTokenID
+     * @param usertokenid
      * @return
      */
     @Path("/{applicationtokenid}/release_usertoken")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response releaseUserToken(@PathParam("applicationtokenid") String applicationtokenid,
-                                     @FormParam("usertokenid") String userTokenID) {
+                                     @FormParam("usertokenid") String usertokenid) {
+        logger.trace("releaseUserToken - entry.  usertokenid={}", usertokenid);
         if(!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             logger.warn("releaseUserToken - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
-        if(userTokenID == null) {
-            logger.warn("releaseUserToken - attempt with no userTokenID: Null");
+        if (usertokenid == null) {
+            logger.warn("releaseUserToken - attempt with no usertokenid: Null");
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").build();
         }
-        ActiveUserTokenRepository.removeUserToken(userTokenID);
+        logger.trace("releaseUserToken - removed session, usertokenid={}", usertokenid);
+        ActiveUserTokenRepository.removeUserToken(usertokenid);
         return Response.ok().build();
     }
 
