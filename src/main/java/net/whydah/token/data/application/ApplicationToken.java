@@ -57,6 +57,7 @@ public class ApplicationToken {
         applicationTokenId = getApplicationTokenFromApplicationCredential(getApplicationID(xml));  // "ERST677hjS"
         applicationSecret = getApplicationSecret(xml);  // "ERST677hjS"
         applicationID = getApplicationID(xml);
+        applicationName = getApplicationName(xml);
         expires = String.valueOf((System.currentTimeMillis() + 10000));
         template = false;
     }
@@ -121,6 +122,25 @@ public class ApplicationToken {
             return appId;
         } catch (Exception e) {
             logger.error("Could not get applicationID from XML: " + applicationCredentialXML, e);
+        }
+        return "";
+    }
+
+    private String getApplicationName(String applicationCredentialXML) {
+        logger.debug("applicationCredentialXML: {}", applicationCredentialXML);
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.parse(new InputSource(new StringReader(applicationCredentialXML)));
+            XPath xPath = XPathFactory.newInstance().newXPath();
+
+            String expression = "/applicationcredential/*/applicationName[1]";
+            XPathExpression xPathExpression = xPath.compile(expression);
+            String appName = xPathExpression.evaluate(doc);
+            logger.debug("XML parse: applicationName = {}", appName);
+            return appName;
+        } catch (Exception e) {
+            logger.error("Could not get applicationName from XML: " + applicationCredentialXML, e);
         }
         return "";
     }
