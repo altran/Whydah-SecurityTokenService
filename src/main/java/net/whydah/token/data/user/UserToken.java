@@ -229,12 +229,14 @@ public class UserToken implements Serializable{
     }
 
     public boolean isValid() {
+        logger.trace("usertoken - isValid  timestamp={}  lifespan={}", timestamp, lifespan);
         if (timestamp == null || lifespan == null) {
             return false;
         }
 
         long now = System.currentTimeMillis();
         long timeout = Long.parseLong(timestamp) + Long.parseLong(lifespan);
+        logger.debug("usertoken - isValid timeout={} > now={}", timeout, now);
         boolean stillValid = (timeout > now);
         if (!stillValid) {
             logger.info ("SecurityToken timed out.");
