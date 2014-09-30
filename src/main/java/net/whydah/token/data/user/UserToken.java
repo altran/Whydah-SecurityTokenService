@@ -17,15 +17,17 @@ import javax.xml.xpath.*;
 import java.io.*;
 import java.math.BigInteger;
 import java.security.MessageDigest;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.sql.Time;
+import java.util.*;
 
 
 public class UserToken implements Serializable{
     private static final Logger logger = LoggerFactory.getLogger(UserToken.class);
     private final static DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    Random rand = new Random();
+
+    // nextInt is normally exclusive of the top value,
+    // so add 1 to make it inclusive
 
     private String tokenid;
     private String uid;
@@ -34,9 +36,9 @@ public class UserToken implements Serializable{
     private String firstName;
     private String lastName;
     private String email;
-    private String timestamp;
+    private String timestamp = Long.toString(System.currentTimeMillis());
     private String securityLevel = "0";
-    private String lifespan = String.valueOf(60 * 60 * 1000); // 1 time
+    private String lifespan = String.valueOf(60 * 60 * rand.nextInt(1000));
     private String issuer = "/token/issuer/tokenverifier";
     private Map<String, ApplicationData> applicationCompanyRoleValueMap = new HashMap<>();
 
@@ -46,6 +48,7 @@ public class UserToken implements Serializable{
 
     public UserToken() {
         defcon = appConfig.getProperty("DEFCON");
+        lifespan = String.valueOf(60 * 60 * rand.nextInt(1000));
     }
 
     public static UserToken createUserTokenFromUserTokenXML(String userTokenXml) {
