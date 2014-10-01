@@ -48,7 +48,7 @@ public class UserToken implements Serializable{
 
     public UserToken() {
         defcon = appConfig.getProperty("DEFCON");
-        lifespan = String.valueOf(60 * 60 * rand.nextInt(1000));
+        lifespan = String.valueOf(60 * 60 * rand.nextInt(100));
     }
 
     public static UserToken createUserTokenFromUserTokenXML(String userTokenXml) {
