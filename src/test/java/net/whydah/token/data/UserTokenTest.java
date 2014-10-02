@@ -105,6 +105,13 @@ public class UserTokenTest {
                 "            <roleName>WhydahUserAdmin</roleName>\n" +
                 "            <roleValue>1</roleValue>\n" +
                 "        </application>\n" +
+                "        <application>\n" +
+                "            <appId>19</appId>\n" +
+                "            <applicationName>UserAdminWebApplication</applicationName>\n" +
+                "            <orgName>Support</orgName>\n" +
+                "            <roleName>UserAdmin</roleName>\n" +
+                "            <roleValue>100</roleValue>\n" +
+                "        </application>\n" +
                 "    </applications>\n" +
                 "</whydahuser>\n";
 
@@ -128,5 +135,8 @@ public class UserTokenTest {
         assertEquals("User", userToken.getFirstName());
         assertEquals("Admin", userToken.getLastName());
         assertEquals("useradmin@getwhydah.com", userToken.getEmail());
+
+        assertTrue(freemarkerProcessor.toXml(userToken).indexOf("UserAdmin") > 0);
+        assertTrue(freemarkerProcessor.toXml(userToken).indexOf("WhydahUserAdmin") > 0);
     }
 }
