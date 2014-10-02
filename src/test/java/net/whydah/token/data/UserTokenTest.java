@@ -4,16 +4,31 @@ import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
 import net.whydah.token.data.user.ActiveUserTokenRepository;
 import net.whydah.token.data.helper.FreemarkerProcessor;
+import net.whydah.token.data.user.ApplicationRoleEntry;
 import net.whydah.token.data.user.UserToken;
+import net.whydah.token.data.user.UserToken2;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+import java.io.StringReader;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
 
 public class UserTokenTest {
     private FreemarkerProcessor freemarkerProcessor = new FreemarkerProcessor();
+    private final static DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+
 
     @BeforeClass
     public static void init() {
@@ -71,10 +86,10 @@ public class UserTokenTest {
         utoken.setFirstName("Olav");
         utoken.setLastName("Nordmann");
         utoken.setTokenid(UUID.randomUUID().toString());
-        utoken.putApplicationCompanyRoleValue("2349785543", "Whydah.net", "Kunde 1", "styreleder", "Diktator");
-        utoken.putApplicationCompanyRoleValue("2349785543", "Whydah.net", "Kunde 2", "vaktmester", "ansatt");
-        utoken.putApplicationCompanyRoleValue("2349785543", "Whydah.net", "Kunde 3", "styremedlem", "");
-        utoken.putApplicationCompanyRoleValue("appa", "whydag.org", "Kunde 1", "styremedlem", "Valla");
+        utoken.putApplicationCompanyRoleValue("2349785543", "Whydah.net", "Kunde 1", "Boardmember", "Diktator");
+        utoken.putApplicationCompanyRoleValue("2349785543", "Whydah.net", "Kunde 2", "tester", "ansatt");
+        utoken.putApplicationCompanyRoleValue("2349785543", "Whydah.net", "Kunde 3", "Boardmember", "");
+        utoken.putApplicationCompanyRoleValue("appa", "whydag.org", "Kunde 1", "President", "Valla");
         String tokenxml = freemarkerProcessor.toXml(utoken);
 
         UserToken copyToken = UserToken.createUserTokenFromUserTokenXML(tokenxml);
@@ -109,6 +124,27 @@ public class UserTokenTest {
                 "            <appId>19</appId>\n" +
                 "            <applicationName>UserAdminWebApplication</applicationName>\n" +
                 "            <orgName>Support</orgName>\n" +
+                "            <roleName>TEST</roleName>\n" +
+                "            <roleValue>13</roleValue>\n" +
+                "        </application>\n" +
+                "        <application>\n" +
+                "            <appId>19</appId>\n" +
+                "            <applicationName>UserAdminWebApplication</applicationName>\n" +
+                "            <orgName>ACS</orgName>\n" +
+                "            <roleName>TULL</roleName>\n" +
+                "            <roleValue>1</roleValue>\n" +
+                "        </application>\n" +
+                "        <application>\n" +
+                "            <appId>199</appId>\n" +
+                "            <applicationName>UserAdminWebApplication</applicationName>\n" +
+                "            <orgName>Support</orgName>\n" +
+                "            <roleName>WhydahUserAdmin</roleName>\n" +
+                "            <roleValue>1</roleValue>\n" +
+                "        </application>\n" +
+                "        <application>\n" +
+                "            <appId>19</appId>\n" +
+                "            <applicationName>UserAdminWebApplication</applicationName>\n" +
+                "            <orgName>Support</orgName>\n" +
                 "            <roleName>UserAdmin</roleName>\n" +
                 "            <roleValue>100</roleValue>\n" +
                 "        </application>\n" +
@@ -121,11 +157,11 @@ public class UserTokenTest {
                 "     <params>\n" +
                 "         <applicationtoken>123123123123</applicationtoken>\n" +
                 "         <applicationid>123</applicationid>\n" +
-                "         <applicationname>faktura</applicationname>\n" +
+                "         <applicationname>ACS</applicationname>\n" +
                 "         <expires>3213213212</expires>\n" +
                 "     </params> \n" +
                 " </token>\n";
-        UserToken userToken = UserToken.createUserTokenFromUserAggregate(appXML, identityXML);
+        UserToken2 userToken = UserToken2.createUserTokenFromUserAggregate(appXML, identityXML);
 
         System.out.printf(userToken.toString());
         //String xml = freemarkerProcessor.toXml(userToken);
@@ -138,5 +174,69 @@ public class UserTokenTest {
 
         assertTrue(freemarkerProcessor.toXml(userToken).indexOf("UserAdmin") > 0);
         assertTrue(freemarkerProcessor.toXml(userToken).indexOf("WhydahUserAdmin") > 0);
+    }
+
+    @Test
+    public void testUserAggregateParsing() throws Exception {
+        String identityXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+                "<whydahuser>\n" +
+                "    <identity>\n" +
+                "        <username>admin</username>\n" +
+                "        <cellPhone>+1555406789</cellPhone>\n" +
+                "        <email>useradmin@getwhydah.com</email>\n" +
+                "        <firstname>User</firstname>\n" +
+                "        <lastname>Admin</lastname>\n" +
+                "        <personRef>0</personRef>\n" +
+                "        <UID>useradmin</UID>\n" +
+                "    </identity>\n" +
+                "    <applications>\n" +
+                "        <application>\n" +
+                "            <appId>19</appId>\n" +
+                "            <applicationName>UserAdminWebApplication</applicationName>\n" +
+                "            <orgName>Support</orgName>\n" +
+                "            <roleName>WhydahUserAdmin</roleName>\n" +
+                "            <roleValue>1</roleValue>\n" +
+                "        </application>\n" +
+                "        <application>\n" +
+                "            <appId>19</appId>\n" +
+                "            <applicationName>UserAdminWebApplication</applicationName>\n" +
+                "            <orgName>Support</orgName>\n" +
+                "            <roleName>UserAdmin</roleName>\n" +
+                "            <roleValue>100</roleValue>\n" +
+                "        </application>\n" +
+                "        <application>\n" +
+                "            <appId>121</appId>\n" +
+                "            <applicationName>UserAdminWebApplication</applicationName>\n" +
+                "            <orgName>Support</orgName>\n" +
+                "            <roleName>UserAdmin</roleName>\n" +
+                "            <roleValue>100</roleValue>\n" +
+                "        </application>\n" +
+                "        <application>\n" +
+                "            <appId>19</appId>\n" +
+                "            <applicationName>UserAdminWebApplication</applicationName>\n" +
+                "            <orgName>Support</orgName>\n" +
+                "            <roleName>TEST</roleName>\n" +
+                "            <roleValue>3</roleValue>\n" +
+                "        </application>\n" +
+                "    </applications>\n" +
+                "</whydahuser>\n";
+        List<ApplicationRoleEntry> roleList = new LinkedList<>();
+
+        DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
+        Document doc = documentBuilder.parse(new InputSource(new StringReader(identityXML)));
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        NodeList applicationNodes = (NodeList) xPath.evaluate("/whydahuser/applications/application/appId", doc, XPathConstants.NODESET);
+        for (int i = 1; i < applicationNodes.getLength() + 1; i++) {
+            ApplicationRoleEntry role = new ApplicationRoleEntry();
+            role.setApplicationid((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/appId", doc, XPathConstants.STRING));
+            role.setOrganizationname((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/orgName", doc, XPathConstants.STRING));
+            role.setRolename((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/roleName", doc, XPathConstants.STRING));
+            role.setRolevalue((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/roleValue", doc, XPathConstants.STRING));
+            //System.out.println(role);
+            roleList.add(role);
+        }
+        //System.out.println(roleList);
+        assertTrue(roleList.size() == 4);
+
     }
 }

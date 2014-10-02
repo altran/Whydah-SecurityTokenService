@@ -4,6 +4,7 @@ import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import net.whydah.token.data.user.UserToken;
+import net.whydah.token.data.user.UserToken2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +30,20 @@ public class FreemarkerProcessor {
         model.put("it", userToken);
         try {
             Template template = freemarkerConfig.getTemplate("usertoken.ftl");
+            StringWriter writer = new StringWriter();
+            template.process(model, writer);
+            return writer.toString();
+        } catch (Exception e) {
+            logger.error("toXml failed for userToken=" + userToken.toString(), e);
+            return "XML conversion failed for userToken with id " + userToken.getTokenid();
+        }
+    }
+
+    public String toXml(UserToken2 userToken) {
+        HashMap<String, UserToken2> model = new HashMap<String, UserToken2>(1);
+        model.put("it", userToken);
+        try {
+            Template template = freemarkerConfig.getTemplate("usertoken2.ftl");
             StringWriter writer = new StringWriter();
             template.process(model, writer);
             return writer.toString();
