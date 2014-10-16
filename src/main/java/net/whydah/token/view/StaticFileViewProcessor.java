@@ -31,7 +31,7 @@ public class StaticFileViewProcessor implements ViewProcessor<String> {
         String path = WEBFILES_PATH + filepath;
         InputStream classpathStream = getClass().getResourceAsStream(path);
         if (classpathStream == null)
-            throw new IllegalArgumentException("Fant ikke " + path + " for " + filepath);
+            throw new IllegalArgumentException("Missing path " + path + " for " + filepath);
         BufferedReader reader = new BufferedReader(new InputStreamReader(classpathStream, CONTENT_ENCODING_UTF8));
         String line;
         while ((line = reader.readLine()) != null) {

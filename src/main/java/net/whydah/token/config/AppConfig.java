@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * Helper methods for reading configurration.
+ * Helper methods for reading configuration.
  */
 public class AppConfig {
     public final static String IAM_CONFIG_KEY = "IAM_CONFIG";

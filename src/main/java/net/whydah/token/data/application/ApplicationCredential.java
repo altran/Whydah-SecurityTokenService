@@ -6,11 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-/**
- * User: totto
- * Date: Nov 4, 2010
- * Time: 8:53:39 AM
- */
+
 public class ApplicationCredential {
 
     private String applicationID;

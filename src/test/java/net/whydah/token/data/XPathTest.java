@@ -53,5 +53,3 @@ public class XPathTest extends TestCase {
     }
 }
 
-
-// see http://www.whitebeam.org/library/guide/TechNotes/xpathtestbed.rhtm

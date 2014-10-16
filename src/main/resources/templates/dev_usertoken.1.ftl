@@ -12,13 +12,13 @@
     <personRef></personRef>
     <application ID="2349785543">
         <applicationName>Whydah.net</applicationName>
-        <organizationName>Kunde 3</organizationName>
-        <role name="styremedlem" value=""/>
+        <organizationName>Customer 3</organizationName>
+        <role name="CEO" value=""/>
     </application>
     <application ID="appa">
         <applicationName>whydag.org</applicationName>
-        <organizationName>Kunde 1</organizationName>
-        <role name="styremedlem" value="Valla"/>
+        <organizationName>Customer 1</organizationName>
+        <role name="COO" value="Valla"/>
     </application>
 
     <ns2:link type="application/xml" href="/ca544816-cdec-4cde-b2c3-fee8d283ac30" rel="self"/>

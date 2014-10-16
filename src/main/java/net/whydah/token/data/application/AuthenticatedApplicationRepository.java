@@ -3,9 +3,7 @@ package net.whydah.token.data.application;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Holder på tokens for autentiserte applikasjoner
- */
+
 public class AuthenticatedApplicationRepository {
     private static final Map<String, ApplicationToken> apptokens = new HashMap<String, ApplicationToken>();
 
