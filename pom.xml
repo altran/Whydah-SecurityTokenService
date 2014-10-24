@@ -151,7 +151,12 @@
             <version>4.3.5</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
+            <groupId>com.netflix.hystrix</groupId>
+            <artifactId>hystrix-core</artifactId>
+            <version>1.4.0-RC5</version>
+        </dependency>
+        <dependency>
+        <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.7</version>
         </dependency>
