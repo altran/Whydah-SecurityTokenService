@@ -8,7 +8,7 @@ public class CommandUIBAuth extends HystrixCommand<String> {
     private final String name;
 
     public CommandUIBAuth(String name) {
-        super(HystrixCommandGroupKey.Factory.asKey("ExampleGroup"));
+        super(HystrixCommandGroupKey.Factory.asKey("UIBUserGroup"));
         this.name = name;
     }
 
