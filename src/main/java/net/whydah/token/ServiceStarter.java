@@ -3,9 +3,6 @@ package net.whydah.token;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
-import com.hazelcast.config.Config;
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
@@ -67,13 +64,10 @@ public class ServiceStarter {
         ActiveUserTokenRepository.initializeDistributedMap();  // Kick-off hazelcast distributed tokensession-map
         UserTokenResource.initializeDistributedMap();  // Kick-off hazelcast distributed ticketmap
 
-        logger.info("SecurityTokenService started on port {}", webappPort);
-        logger.info("IAM_MODE = {}",ApplicationMode.getApplicationMode());
-        logger.info("Status: http://localhost:{}{}/",webappPort,contextpath);
-        logger.info("Testpage = {}",appConfig.getProperty("testpage"));
-        logger.info("TestDriverWeb:   http://localhost:{}{}/",webappPort,contextpath);
-        logger.info("WADL:   http://localhost:{}{}/application.wadl",webappPort,contextpath);
-        logger.info("\n");
+        logger.info("SecurityTokenService started on port {}, IAM_MODE = {}", webappPort, ApplicationMode.getApplicationMode());
+        logger.info("Status: http://localhost:{}{}/", webappPort, contextpath);
+        logger.info("WADL:   http://localhost:{}{}/application.wadl", webappPort, contextpath);
+        logger.info("Testpage = {}, TestDriverWeb:   http://localhost:{}{}/",appConfig.getProperty("testpage"), webappPort, contextpath);
     }
 
     public int getPort() {
