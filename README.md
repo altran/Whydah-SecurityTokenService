@@ -9,6 +9,34 @@ consists of the XML representation of the access roles++ you want the spesific u
 
 ![Architectural Overview](https://raw2.github.com/altran/Whydah-SSOLoginWebApp/master/Whydah%20infrastructure.png)
 
+
+Client code example
+===================
+
+```
+//  Execute a POST to authenticate my application
+String appToken = Request.Post("https://sso.whydah.net/sso/logon")
+        .bodyForm(Form.form().add("applicationcredential", myAppCredential).build())
+        .execute().returnContent().asBytes();
+
+//  authenticate with username and password (user credential)
+String usertoken = Request.Post("https://sso.whydah.net/sso/user/"+appTokenID+"/"+new UserTicket(UUID.randomUUID()).toString()+"/usertoken/")
+        .bodyForm(Form.form().add("apptoken", appToken)
+        .add("usercredential", new UserCredential(username,password).asXML()).build())
+        .execute().returnContent().asBytes();
+
+//  Execute a POST  to SecurityTokenService with userticket to get usertoken
+String usertoken = Request.Post("https://sso.whydah.net/sso/user/"+appTokenID+"/get_usertoken_by_userticket/")
+        .bodyForm(Form.form().add("apptoken", appToken)
+        .add("userticket", userTicket).build())
+        .execute().returnContent().asBytes();
+
+// That's all you need to get a full user database, IAM/SSO, Facebook/OAUTH support ++
+boolean hasEmployeeRoleInMyApp = $(usertoken).xpath("/usertoken/application[@ID="+myAppId+"]/role[@name=\"Employee\"");
+```
+(Example using Apache HTTP Components Fluent API and jOOX Fluent API)
+
+
 Installation
 ============
 
