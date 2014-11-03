@@ -2,7 +2,6 @@ package net.whydah.token.data.user;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
@@ -15,27 +14,30 @@ import javax.ws.rs.core.Response;
 import java.net.URI;
 
 public class UserAuthenticatorImpl implements UserAuthenticator {
-    private static final Logger logger = LoggerFactory.getLogger(UserAuthenticator.class);
-    private static final String USER_TOKEN_URL = "usertoken";
-    private static final String USER_URL = "user";
-    private static final String CREATEANDLOGON_URL = "createandlogon";
-    private static final String AUTHENTICATE = "authenticate";
+    private static final Logger logger = LoggerFactory.getLogger(UserAuthenticatorImpl.class);
+    private static final String USER_AUTHENTICATION_PATH = "/authenticate/user";
+    private static final String CREATE_AND_LOGON_PATH = "createandlogon";
+    //private static final String USER_TOKEN_URL = "usertoken";
+    //private static final String AUTHENTICATE = "authenticate";
+    //private static final String USER_URL = "user";
+
+
+    //@Named("useridentitybackend")
+    private URI useridentitybackend;
+    private final WebResource uibResource;
 
     @Inject
-    @Named("useridentitybackend")
-    private URI useridentitybackend;
-    private final Client restClient;
-
-    public UserAuthenticatorImpl() {
-        restClient = ApacheHttpClient.create();
+    public UserAuthenticatorImpl(@Named("useridentitybackend") URI useridentitybackend) {
+        this.useridentitybackend = useridentitybackend;
+        uibResource = ApacheHttpClient.create().resource(useridentitybackend);
     }
 
-    public final UserToken logonUser(final String applicationTokenId, final String appTokenXml, final String userCredentialXml) {
+    @Override
+    public UserToken logonUser(final String applicationTokenId, final String appTokenXml, final String userCredentialXml) {
         logger.trace("logonUser - Calling UserIdentityBackend at " + useridentitybackend + " appTokenXml:" + appTokenXml + " userCredentialXml:" + userCredentialXml);
-
-        // /uib/{applicationTokenId}/authenticate/user
         try {
-            WebResource webResource = restClient.resource(useridentitybackend).path(applicationTokenId).path(AUTHENTICATE).path(USER_URL);
+            // /uib/{applicationTokenId}/authenticate/user
+            WebResource webResource = uibResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH);
             ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, userCredentialXml);
 
             UserToken token = getUserToken(appTokenXml, response);
@@ -46,21 +48,13 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         }
     }
 
-    /**
-     * @param applicationtokenid
-     * @param appTokenXml
-     * @param userCredentialXml
-     * @param fbUserXml
-     * @return
-     * @deprecated TODO move this functionality to new UserAdminService
-     */
+    @Deprecated     //TODO move this functionality to new UserAdminService
     @Override
     public UserToken createAndLogonUser(String applicationtokenid, String appTokenXml, String userCredentialXml, String fbUserXml) {
         logger.trace("createAndLogonUser - Calling UserIdentityBackend at with appTokenXml:\n" + appTokenXml + "userCredentialXml:\n" + userCredentialXml + "fbUserXml:\n" + fbUserXml);
         // TODO /uib//{applicationTokenId}/{applicationTokenId}/createandlogon/
         // TODO /authenticate/user
-        WebResource webResource = restClient.resource(useridentitybackend).path(applicationtokenid).path("/authenticate/user").path(CREATEANDLOGON_URL);
-//        WebResource webResource = restClient.resource(useridentitybackend).path(applicationtokenid).path(applicationtokenid).path(CREATEANDLOGON_URL);
+        WebResource webResource = uibResource.path(applicationtokenid).path(USER_AUTHENTICATION_PATH).path(CREATE_AND_LOGON_PATH);
         logger.debug("createAndLogonUser - Calling createandlogon " + webResource.toString());
         ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, fbUserXml);
 
@@ -68,6 +62,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         token.setSecurityLevel("0");  // 3rd party token as source = securitylevel=0
         return token;
     }
+
 
     private UserToken getUserToken(String appTokenXml, ClientResponse response) {
         if (response.getStatus() != Response.Status.OK.getStatusCode()) {
