@@ -24,27 +24,31 @@ import java.util.UUID;
 
 public class UserToken2 implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(UserToken2.class);
-    private final static DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-    Random rand = new Random();
+    private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    private final Random rand = new Random();
+
+    private static String defcon = "0";
+    private static AppConfig appConfig = new AppConfig();
 
     // nextInt is normally exclusive of the top value,
     // so add 1 to make it inclusive
 
     private String tokenid;
+
+    //From UIB
     private String uid;
     private String personRef;
     private String userName;
     private String firstName;
     private String lastName;
     private String email;
+
     private String timestamp = Long.toString(System.currentTimeMillis());
     private String securityLevel = "0";
     private String lifespan = String.valueOf(60 * 60 * rand.nextInt(1000));
     private String issuer = "/token/issuer/tokenverifier";
     private List<ApplicationRoleEntry> roleList;
-
-    private static String defcon = "0";
-    private static AppConfig appConfig = new AppConfig();
+    //Ignored properties: cellPhone,
 
 
     public UserToken2() {

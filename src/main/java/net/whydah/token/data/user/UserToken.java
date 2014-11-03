@@ -1,6 +1,5 @@
 package net.whydah.token.data.user;
 
-import com.google.inject.Inject;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.data.application.ApplicationData;
 import net.whydah.token.data.helper.CompanyRoles;
@@ -17,7 +16,6 @@ import javax.xml.xpath.*;
 import java.io.*;
 import java.math.BigInteger;
 import java.security.MessageDigest;
-import java.sql.Time;
 import java.util.*;
 
 
