@@ -1,4 +1,4 @@
-package net.whydah.token.view;
+package net.whydah.token.file;
 
 import com.sun.jersey.api.view.Viewable;
 import com.sun.jersey.spi.template.ViewProcessor;

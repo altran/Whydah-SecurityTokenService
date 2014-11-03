@@ -2,7 +2,6 @@ package net.whydah.token.user;
 
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
-import net.whydah.token.view.FreemarkerProcessor;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;

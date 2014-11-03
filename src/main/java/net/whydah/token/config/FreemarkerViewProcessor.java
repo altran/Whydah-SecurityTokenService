@@ -1,4 +1,4 @@
-package net.whydah.token.view;
+package net.whydah.token.config;
 
 import com.sun.jersey.api.view.Viewable;
 import com.sun.jersey.spi.template.ViewProcessor;
@@ -9,7 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.ext.Provider;
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -99,12 +102,11 @@ public class FreemarkerViewProcessor implements ViewProcessor<Template> {
     }
 
     @SuppressWarnings("unchecked")
-    public void writeTo(Template template, Viewable viewable, OutputStream out)
-            throws IOException {
+    public void writeTo(Template template, Viewable viewable, OutputStream out) throws IOException {
         out.flush(); // send status + headers
 
         Object model = viewable.getModel();
-        final Map<String, Object> vars = new HashMap<String, Object>();
+        final Map<String, Object> vars = new HashMap<>();
         if (model instanceof Map<?, ?>) {
             vars.putAll((Map<String, Object>) model);
         } else {
