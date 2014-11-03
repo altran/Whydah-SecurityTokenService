@@ -7,12 +7,12 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.sun.jersey.api.view.Viewable;
 import net.whydah.token.config.ApplicationMode;
-import net.whydah.token.data.user.UserToken;
 import net.whydah.token.data.application.AuthenticatedApplicationRepository;
-import net.whydah.token.data.user.ActiveUserTokenRepository;
 import net.whydah.token.data.helper.DevModeHelper;
+import net.whydah.token.data.user.ActiveUserTokenRepository;
+import net.whydah.token.data.user.AuthenticationFailedException;
 import net.whydah.token.data.user.UserAuthenticator;
-import net.whydah.token.exception.AuthenticationFailedException;
+import net.whydah.token.data.user.UserToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

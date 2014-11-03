@@ -1,4 +1,4 @@
-package net.whydah.token.exception;
+package net.whydah.token.data.user;
 
 /**
  * Thrown when authentication fails.
