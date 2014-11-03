@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 
 /**
  * Handling static files, like css and js.
+ * Used by testpage.html.ftl
  */
 @Path("/files")
 public class StaticFiles {
