@@ -5,9 +5,9 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+import net.whydah.token.application.ApplicationCredential;
 import net.whydah.token.config.ApplicationMode;
-import net.whydah.token.data.user.UserCredential;
-import net.whydah.token.data.application.ApplicationCredential;
+import net.whydah.token.user.UserCredential;
 import org.junit.*;
 
 import javax.ws.rs.core.MediaType;

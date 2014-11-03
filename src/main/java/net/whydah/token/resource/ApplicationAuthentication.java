@@ -2,12 +2,12 @@ package net.whydah.token.resource;
 
 import com.google.inject.Inject;
 import com.sun.jersey.api.view.Viewable;
+import net.whydah.token.application.ApplicationCredential;
+import net.whydah.token.application.ApplicationToken;
+import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
-import net.whydah.token.data.user.UserCredential;
-import net.whydah.token.data.application.ApplicationCredential;
-import net.whydah.token.data.application.ApplicationToken;
-import net.whydah.token.data.application.AuthenticatedApplicationRepository;
+import net.whydah.token.user.UserCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;

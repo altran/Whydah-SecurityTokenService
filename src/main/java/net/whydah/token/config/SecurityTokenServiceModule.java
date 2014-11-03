@@ -2,9 +2,9 @@ package net.whydah.token.config;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
-import net.whydah.token.data.user.DummyUserAuthenticator;
-import net.whydah.token.data.user.UserAuthenticator;
-import net.whydah.token.data.user.UserAuthenticatorImpl;
+import net.whydah.token.user.DummyUserAuthenticator;
+import net.whydah.token.user.UserAuthenticator;
+import net.whydah.token.user.UserAuthenticatorImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
