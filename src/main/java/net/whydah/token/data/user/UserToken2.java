@@ -1,12 +1,9 @@
 package net.whydah.token.data.user;
 
 import net.whydah.token.config.AppConfig;
-import net.whydah.token.data.application.ApplicationData;
-import net.whydah.token.data.helper.CompanyRoles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
@@ -20,7 +17,10 @@ import java.io.Serializable;
 import java.io.StringReader;
 import java.math.BigInteger;
 import java.security.MessageDigest;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 public class UserToken2 implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(UserToken2.class);
@@ -31,108 +31,6 @@ public class UserToken2 implements Serializable {
     // so add 1 to make it inclusive
 
     private String tokenid;
-
-    public String getPersonRef() {
-        return personRef;
-    }
-
-    public void setPersonRef(String personRef) {
-        this.personRef = personRef;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public String getSecurityLevel() {
-        return securityLevel;
-    }
-
-    public void setSecurityLevel(String securityLevel) {
-        this.securityLevel = securityLevel;
-    }
-
-    public String getLifespan() {
-        return lifespan;
-    }
-
-    public void setLifespan(String lifespan) {
-        this.lifespan = lifespan;
-    }
-
-    public String getIssuer() {
-        return issuer;
-    }
-
-    public void setIssuer(String issuer) {
-        this.issuer = issuer;
-    }
-
-    public static String getDefcon() {
-        return defcon;
-    }
-
-    public static void setDefcon(String defcon) {
-        UserToken2.defcon = defcon;
-    }
-
-    public List<ApplicationRoleEntry> getRoleList() {
-        return roleList;
-    }
-
-    public void setRoleList(List<ApplicationRoleEntry> roleList) {
-        this.roleList = roleList;
-    }
-
-    public String getUid() {
-        return uid;
-    }
-
-
-    public String getTokenid() {
-        return tokenid;
-    }
-
-    public void setTokenid(String tokenid) {
-        this.tokenid = tokenid;
-    }
-
     private String uid;
     private String personRef;
     private String userName;
@@ -258,4 +156,84 @@ public class UserToken2 implements Serializable {
     }
 
 
+    public void setTokenid(String tokenid) {
+        this.tokenid = tokenid;
+    }
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+    public void setPersonRef(String personRef) {
+        this.personRef = personRef;
+    }
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+    public void setSecurityLevel(String securityLevel) {
+        this.securityLevel = securityLevel;
+    }
+    public void setLifespan(String lifespan) {
+        this.lifespan = lifespan;
+    }
+    public void setIssuer(String issuer) {
+        this.issuer = issuer;
+    }
+    public void setRoleList(List<ApplicationRoleEntry> roleList) {
+        this.roleList = roleList;
+    }
+    public static void setDefcon(String defcon) {
+        UserToken2.defcon = defcon;
+    }
+
+
+    public String getTokenid() {
+        return tokenid;
+    }
+    public String getUid() {
+        return uid;
+    }
+    public String getPersonRef() {
+        return personRef;
+    }
+    public String getUserName() {
+        return userName;
+    }
+    public String getFirstName() {
+        return firstName;
+    }
+    public String getLastName() {
+        return lastName;
+    }
+    public String getEmail() {
+        return email;
+    }
+    public String getTimestamp() {
+        return timestamp;
+    }
+    public String getSecurityLevel() {
+        return securityLevel;
+    }
+    public String getLifespan() {
+        return lifespan;
+    }
+    public String getIssuer() {
+        return issuer;
+    }
+    public List<ApplicationRoleEntry> getRoleList() {
+        return roleList;
+    }
+    public static String getDefcon() {
+        return defcon;
+    }
 }
