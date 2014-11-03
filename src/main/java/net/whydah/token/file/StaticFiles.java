@@ -1,4 +1,4 @@
-package net.whydah.token.resource;
+package net.whydah.token.file;
 
 import com.sun.jersey.api.view.Viewable;
 import org.slf4j.Logger;

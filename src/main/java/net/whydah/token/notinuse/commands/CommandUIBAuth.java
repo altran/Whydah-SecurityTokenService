@@ -1,4 +1,4 @@
-package net.whydah.token.user.commands;
+package net.whydah.token.notinuse.commands;
 
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;

@@ -7,8 +7,8 @@ import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
 import net.whydah.token.config.SecurityTokenServiceModule;
-import net.whydah.token.resource.UserTokenResource;
 import net.whydah.token.user.ActiveUserTokenRepository;
+import net.whydah.token.user.UserTokenResource;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.grizzly.http.server.ServerConfiguration;
@@ -40,7 +40,7 @@ public class ServiceStarter {
         AppConfig appConfig = new AppConfig();
         Injector injector = Guice.createInjector(new SecurityTokenServiceModule(appConfig, appMode));
 
-        logger.info("Starting grizzly...");
+        logger.info("Starting SecurityTokenService...");
 
         ServletHandler adapter = new ServletHandler();
         adapter.setContextPath(contextpath);

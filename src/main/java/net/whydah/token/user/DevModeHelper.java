@@ -1,4 +1,4 @@
-package net.whydah.token.resource;
+package net.whydah.token.user;
 
 import com.sun.jersey.api.view.Viewable;
 

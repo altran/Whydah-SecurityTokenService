@@ -1,6 +1,5 @@
-package net.whydah.token.helper;
+package net.whydah.token.notinuse.commands;
 
-import net.whydah.token.user.commands.CommandUIBAuth;
 import org.junit.Test;
 import rx.Observable;
 

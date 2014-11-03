@@ -1,4 +1,4 @@
-package net.whydah.token.resource;
+package net.whydah.token.user;
 
 import com.google.inject.Inject;
 import com.hazelcast.config.Config;
@@ -8,10 +8,6 @@ import com.hazelcast.core.HazelcastInstance;
 import com.sun.jersey.api.view.Viewable;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.ApplicationMode;
-import net.whydah.token.user.ActiveUserTokenRepository;
-import net.whydah.token.user.AuthenticationFailedException;
-import net.whydah.token.user.UserAuthenticator;
-import net.whydah.token.user.UserToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
