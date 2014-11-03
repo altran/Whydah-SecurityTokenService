@@ -2,8 +2,8 @@ package net.whydah.token.data;
 
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
-import net.whydah.token.data.user.ActiveUserTokenRepository;
 import net.whydah.token.data.helper.FreemarkerProcessor;
+import net.whydah.token.data.user.ActiveUserTokenRepository;
 import net.whydah.token.data.user.ApplicationRoleEntry;
 import net.whydah.token.data.user.UserToken;
 import net.whydah.token.data.user.UserToken2;
@@ -94,8 +94,8 @@ public class UserTokenTest {
 
         UserToken copyToken = UserToken.createUserTokenFromUserTokenXML(tokenxml);
         String copyxml = freemarkerProcessor.toXml(copyToken);
-        System.out.println("FROM: " + tokenxml);
-        System.out.println("TO: " + copyxml);
+        //System.out.println("FROM: " + tokenxml);
+        //System.out.println("TO: " + copyxml);
         assertEquals(tokenxml, copyxml);
     }
 
@@ -163,9 +163,9 @@ public class UserTokenTest {
                 " </token>\n";
         UserToken2 userToken = UserToken2.createUserTokenFromUserAggregate(appXML, identityXML);
 
-        System.out.printf(userToken.toString());
+        //System.out.printf(userToken.toString());
         //String xml = freemarkerProcessor.toXml(userToken);
-        System.out.println(freemarkerProcessor.toXml(userToken));
+        //System.out.println(freemarkerProcessor.toXml(userToken));
 
         assertEquals("0", userToken.getPersonRef());
         assertEquals("User", userToken.getFirstName());

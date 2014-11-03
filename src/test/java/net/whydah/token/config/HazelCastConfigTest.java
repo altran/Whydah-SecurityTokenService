@@ -4,11 +4,9 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Map;
-import java.util.Queue;
 import java.util.Random;
 import java.util.UUID;
 
@@ -30,8 +28,8 @@ public class HazelCastConfigTest {
         startProcess();
         Thread.sleep(2000);
 
-        System.out.println("queueCustomers size: " + mapCustomers.size());
-        System.out.println("queueCustomers values: " + mapCustomers.values());
+        //System.out.println("queueCustomers size: " + mapCustomers.size());
+        //System.out.println("queueCustomers values: " + mapCustomers.values());
     }
 
     private void startProcess() {
@@ -44,9 +42,7 @@ public class HazelCastConfigTest {
         mapCustomers.put(new Random().nextInt(), "Bravo-" + UUID.randomUUID().toString());
         mapCustomers.put(new Random().nextInt(), "Charlie-" + UUID.randomUUID().toString());
 
-        System.out.println("Map size: " + mapCustomers.size());
-
-
+        //System.out.println("Map size: " + mapCustomers.size());
     }
 
     @Test

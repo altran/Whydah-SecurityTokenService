@@ -22,9 +22,9 @@ public class XPathTest extends TestCase {
         cred.setApplicationID("12345678");
         cred.setApplicationSecret("dummy");
         ApplicationToken imp = new ApplicationToken(cred.toXML());
-        System.out.println(imp.toXML());
-        System.out.println(imp.getApplicationID());
-        System.out.println(cred.getApplicationID());
+        //System.out.println(imp.toXML());
+        //System.out.println(imp.getApplicationID());
+        //System.out.println(cred.getApplicationID());
         assertTrue("The generated application token is wrong.", imp.getApplicationID().equals(cred.getApplicationID()));
         assertTrue(imp.getApplicationTokenId().length() > 12);
         xpathParseAppToken(imp.toXML());
