@@ -52,7 +52,7 @@ public class UserToken2Factory {
             String email = (String) xPath.evaluate("/usertoken/email", doc, XPathConstants.STRING);
             String securityLevel = (String) xPath.evaluate("/usertoken/securitylevel", doc, XPathConstants.STRING);
 
-            String tokenid = (String) xPath.evaluate("/usertoken/@id", doc, XPathConstants.STRING);
+            String tokenId = (String) xPath.evaluate("/usertoken/@id", doc, XPathConstants.STRING);
             String timestamp = (String) xPath.evaluate("/usertoken/timestamp", doc, XPathConstants.STRING);
 
             String defcon = (String) xPath.evaluate("/usertoken/DEFCON", doc, XPathConstants.STRING);   //TODO Should DEFCON be overridden by factory?
@@ -73,6 +73,7 @@ public class UserToken2Factory {
                     Node roleNode = roles.item(k);
                     String roleName = (String) xPath.evaluate("@name", roleNode, XPathConstants.STRING);
                     String roleValue = (String) xPath.evaluate("@value", roleNode, XPathConstants.STRING);
+
                     ApplicationRoleEntry role = new ApplicationRoleEntry();
                     role.setApplicationId(appId);
                     role.setApplicationName(appName);
@@ -94,7 +95,7 @@ public class UserToken2Factory {
             userToken.setSecurityLevel(securityLevel);
             userToken.setRoleList(roleList);
 
-            userToken.setTokenid(tokenid);
+            userToken.setTokenid(tokenId);
             userToken.setTimestamp(timestamp);
             UserToken2.setDefcon(defcon);
             userToken.setLifespan(lifespan);
