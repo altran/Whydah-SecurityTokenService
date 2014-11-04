@@ -50,7 +50,6 @@
         <developerConnection>scm:git:ssh://git@github.com/altran/Whydah-SecurityTokenService.git</developerConnection>
         <connection>scm:git:https://github.com/altran/Whydah-SecurityTokenService.git</connection>
         <url>https://github.com/altran/Whydah-SecurityTokenService</url>
-      <tag>HEAD</tag>
   </scm>
 
     <properties>
@@ -60,6 +59,7 @@
     </properties>
 
     <repositories>
+	<!--
         <repository>
             <id>glassfish-repository.dev.java.net</id>
             <name>Java.net Glassfish Repository</name>
@@ -72,7 +72,7 @@
             <url>http://download.java.net/maven/2/</url>
             <layout>default</layout>
         </repository>
-
+	-->
         <!-- Needed for parent  -->
         <repository>
             <id>cantara-releases</id>
