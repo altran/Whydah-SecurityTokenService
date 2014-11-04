@@ -24,10 +24,10 @@ import java.util.UUID;
  * @author <a href="mailto:erik-dev@fjas.no">Erik Drolshammer</a> 03.11.14
  */
 @Singleton
-public class UserToken2Factory {
+public class UserTokenFactory {
     static final String TOKEN_ISSUER = "/token/TOKEN_ISSUER/tokenverifier";
 
-    private static final Logger logger = LoggerFactory.getLogger(UserToken2Factory.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserTokenFactory.class);
     private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     private static Random rand = new Random();
     private static String defcon = "0";
@@ -38,12 +38,12 @@ public class UserToken2Factory {
     private static AppConfig appConfig = new AppConfig();
 
     @Deprecated
-    public UserToken2Factory() {
+    public UserTokenFactory() {
         this(appConfig.getProperty("DEFCON"));
     }
 
-    public UserToken2Factory(String defcon) {
-        UserToken2Factory.defcon = defcon;
+    public UserTokenFactory(String defcon) {
+        UserTokenFactory.defcon = defcon;
         lifespan = String.valueOf(60 * 60 * rand.nextInt(100));
     }
 
@@ -206,6 +206,6 @@ public class UserToken2Factory {
     }
 
     public static void setDefcon(String defcon) {
-        UserToken2Factory.defcon = defcon;
+        UserTokenFactory.defcon = defcon;
     }
 }

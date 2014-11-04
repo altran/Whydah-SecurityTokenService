@@ -24,12 +24,12 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     //@Named("useridentitybackend")
     private URI useridentitybackend;
     private final WebResource uibResource;
-    private final UserToken2Factory userTokenFactory;
+    private final UserTokenFactory userTokenFactory;
 
 
 
     @Inject
-    public UserAuthenticatorImpl(@Named("useridentitybackend") URI useridentitybackend, UserToken2Factory userTokenFactory) {
+    public UserAuthenticatorImpl(@Named("useridentitybackend") URI useridentitybackend, UserTokenFactory userTokenFactory) {
         this.useridentitybackend = useridentitybackend;
         this.uibResource = ApacheHttpClient.create().resource(useridentitybackend);
         this.userTokenFactory = userTokenFactory;

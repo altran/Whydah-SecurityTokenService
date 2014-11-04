@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author <a href="mailto:erik-dev@fjas.no">Erik Drolshammer</a> 2014-11-04
  */
-public class UserToken2FactoryTest {
+public class UserTokenFactoryTest {
     private final String userTokenXml1 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"+
             "<usertoken xmlns:ns2=\"http://www.w3.org/1999/xhtml\" id=\"6f04e78e-bb75-4214-a786-2be7657bb38a\">\n"+
             "    <uid>uid1</uid>\n"+
@@ -79,7 +79,7 @@ public class UserToken2FactoryTest {
             "    <ns2:link type=\"application/xml\" href=\"/8e4020b6-ea61-44f1-8b31-ecdd84869784\" rel=\"self\"/>\n" +
             "    <hash type=\"MD5\">88e4a2db17733f371e8f78e123108d13</hash>\n" +
             "</usertoken>";
-    private static UserToken2Factory factory;
+    private static UserTokenFactory factory;
 
 
     @BeforeClass
@@ -88,7 +88,7 @@ public class UserToken2FactoryTest {
         envs.put(ApplicationMode.IAM_MODE_KEY, ApplicationMode.DEV);
         EnvHelper.setEnv(envs);
 
-        factory = new UserToken2Factory("1");
+        factory = new UserTokenFactory("1");
     }
 
 

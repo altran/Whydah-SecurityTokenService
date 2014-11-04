@@ -91,7 +91,7 @@ public class UserTokenResource {
         }
         try {
             UserToken2 userToken = userAuthenticator.logonUser(applicationtokenid, appTokenXml, userCredentialXml);
-            return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
+            return Response.ok(new Viewable("/usertoken2.ftl", userToken)).build();
         } catch (AuthenticationFailedException ae) {
             logger.warn("getUserToken - User authentication failed");
                 return Response.status(Response.Status.FORBIDDEN).entity("User authentication failed").build();
@@ -128,7 +128,7 @@ public class UserTokenResource {
 
             // Add the user to the ticket-map with the ticket given from the caller
             userticketmap.put(userticket, usertoken.getTokenid());
-            return Response.ok(new Viewable("/usertoken.ftl", usertoken)).build();
+            return Response.ok(new Viewable("/usertoken2.ftl", usertoken)).build();
         } catch (AuthenticationFailedException ae) {
             logger.warn("getUserTokenAndStoreUserTicket - User authentication failed");
                 return Response.status(Response.Status.FORBIDDEN).entity("User authentication failed").build();
@@ -155,7 +155,7 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         //UserToken userToken = UserToken.createFromUserTokenXML(userTokenXml);
-        UserToken2 userToken = UserToken2Factory.fromXml(userTokenXml);
+        UserToken2 userToken = UserTokenFactory.fromXml(userTokenXml);
         if (ActiveUserTokenRepository.verifyUserToken(userToken)) {
             return Response.ok().build();
         }
@@ -205,7 +205,7 @@ public class UserTokenResource {
         if (userToken != null) {
             userticketmap.put(userticket, userToken.getTokenid());
             logger.trace("createUserTicketByUserTokenId OK. Response={}", userToken.toString());
-            return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
+            return Response.ok(new Viewable("/usertoken2.ftl", userToken)).build();
         }
         logger.warn("createUserTicketByUserTokenId - attempt to access with non acceptable usertokenid {}", userTokenId);
         return Response.status(Response.Status.NOT_ACCEPTABLE).build();
@@ -245,7 +245,7 @@ public class UserTokenResource {
         if (applicationtokenidmap.get(userTokenId) != null){
             //UserToken netIQToken = new UserToken();
             //netIQToken.putApplicationCompanyRoleValue("11","SecurityTokenService","Whydah","WhydahUserAdmin","1");
-            UserToken2 netIQToken = UserToken2Factory.createNetIQToken();
+            UserToken2 netIQToken = UserTokenFactory.createNetIQToken();
             logger.trace("getUserTokenByUserTokenId OK. Response={}", netIQToken.toString());
             return Response.ok(new Viewable("/usertoken2.ftl", netIQToken)).build();
         }
@@ -298,7 +298,7 @@ public class UserTokenResource {
             return Response.status(Response.Status.NOT_ACCEPTABLE).build(); //406
         }
         logger.trace("getUserTokenByUserTicket OK. Response={}", userToken.toString());
-        return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
+        return Response.ok(new Viewable("/usertoken2.ftl", userToken)).build();
     }
 
 
@@ -404,7 +404,7 @@ public class UserTokenResource {
             applicationtokenidmap.put(applicationtokenid,applicationtokenid);
             UserToken2 userToken = userAuthenticator.createAndLogonUser(applicationtokenid, appTokenXml, userCredentialXml, thirdPartyUserTokenXml);
             userticketmap.put(userticket, userToken.getTokenid());
-            return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
+            return Response.ok(new Viewable("/usertoken2.ftl", userToken)).build();
         } catch (AuthenticationFailedException ae) {
             logger.warn("createAndLogOnUser - Error creating or authenticating user. Token: {}", thirdPartyUserTokenXml);
             return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").build();

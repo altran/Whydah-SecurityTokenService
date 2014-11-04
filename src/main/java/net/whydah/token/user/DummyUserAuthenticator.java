@@ -23,7 +23,7 @@ public class DummyUserAuthenticator implements UserAuthenticator {
             UserToken2 ut = null;
             try {
                 String xml = loadFromFile(parseUsernameFromUserCredential(userCredentialXml));
-                ut = UserToken2Factory.fromXml(xml);
+                ut = UserTokenFactory.fromXml(xml);
             } catch (Exception ioe) {
                 logger.info("Could not load dummy token for username. " + ioe);
             }
