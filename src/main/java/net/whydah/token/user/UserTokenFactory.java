@@ -187,6 +187,7 @@ public class UserTokenFactory {
     */
 
     //ED: Can this hack be improved?
+    /*
     public static UserToken createNetIQToken() {
         ApplicationRoleEntry roleEntry = new ApplicationRoleEntry();
         roleEntry.setApplicationId("11");
@@ -200,6 +201,7 @@ public class UserTokenFactory {
         userToken.addApplicationRoleEntry(roleEntry);
         return userToken;
     }
+    */
 
     private String generateID() {
         return UUID.randomUUID().toString();

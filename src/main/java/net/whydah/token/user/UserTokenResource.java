@@ -245,9 +245,12 @@ public class UserTokenResource {
         if (applicationtokenidmap.get(userTokenId) != null){
             //UserToken netIQToken = new UserToken();
             //netIQToken.putApplicationCompanyRoleValue("11","SecurityTokenService","Whydah","WhydahUserAdmin","1");
+            throw new RuntimeException("Branch in getUserTokenByUserTokenId which should never be reached! Talk to Totto or Erik!");
+            /*
             UserToken netIQToken = UserTokenFactory.createNetIQToken();
             logger.trace("getUserTokenByUserTokenId OK. Response={}", netIQToken.toString());
             return Response.ok(new Viewable("/usertoken.ftl", netIQToken)).build();
+            */
         }
         logger.warn("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid {}", userTokenId);
         return Response.status(Response.Status.NOT_ACCEPTABLE).build();
