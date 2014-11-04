@@ -22,7 +22,7 @@ public class DummyUserAuthenticator implements UserAuthenticator {
         if (ApplicationMode.getApplicationMode().equalsIgnoreCase(ApplicationMode.DEV)) {
             UserToken ut = new UserToken();
             try {
-                ut = ut.createUserTokenFromUserTokenXML(loadFromFile(parseUsernameFromUserCredential(userCredentialXml)));
+                ut = ut.createFromUserTokenXML(loadFromFile(parseUsernameFromUserCredential(userCredentialXml)));
             } catch (Exception ioe) {
                 logger.info("Could not load dummy token for username. " + ioe);
             }

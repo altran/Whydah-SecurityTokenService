@@ -48,14 +48,14 @@ public class UserToken implements Serializable{
         lifespan = String.valueOf(60 * 60 * rand.nextInt(100));
     }
 
-    public static UserToken createUserTokenFromUserTokenXML(String userTokenXml) {
+    public static UserToken createFromUserTokenXML(String userTokenXml) {
         defcon = appConfig.getProperty("DEFCON");
         UserToken userToken = new UserToken();
         userToken.parseAndUpdatefromUserToken(userTokenXml);
         return userToken;
     }
 
-    public static UserToken createUserTokenFromUserAggregate(String appTokenXml, String userAggregateXML) {
+    public static UserToken createFromUserAggregate(String appTokenXml, String userAggregateXML) {
         defcon = appConfig.getProperty("DEFCON");
         UserToken userToken = new UserToken();
         userToken.parseAndUpdatefromAppToken(appTokenXml);
@@ -164,7 +164,7 @@ public class UserToken implements Serializable{
 
     }
 
-
+    //Used by usertoken.ftl
     public String getMD5() {
         String md5base = null2empty(uid) + null2empty(personRef) + null2empty(tokenid) + null2empty(timestamp)
                 + null2empty(firstName) + null2empty(lastName) + null2empty(email) + securityLevel + issuer;
@@ -193,10 +193,10 @@ public class UserToken implements Serializable{
         }
     }
 
-
     private String null2empty(String value) {
         return value != null ? value : "";
     }
+
 
     public void putApplicationCompanyRoleValue(String p_application_ID, String p_application_Name,  String p_company_name, String p_role, String p_value) {
         if (applicationCompanyRoleValueMap.containsKey(p_application_ID)) {
@@ -249,6 +249,7 @@ public class UserToken implements Serializable{
     }
 
 
+    /*
     public String toXML(String applicationID) {
         return "UserToken{" +
                 "tokenid='" + tokenid + '\'' +
@@ -267,6 +268,8 @@ public class UserToken implements Serializable{
                 '}';
 
     }
+    */
+
     @Override
     public String toString() {
         return "UserToken{" +

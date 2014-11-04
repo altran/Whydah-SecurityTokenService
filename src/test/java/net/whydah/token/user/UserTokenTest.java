@@ -41,7 +41,7 @@ public class UserTokenTest {
         utoken.setPersonRef("73637276722376");
         utoken.setTokenid(UUID.randomUUID().toString());
         String xml = freemarkerProcessor.toXml(utoken);
-        UserToken copyToken = UserToken.createUserTokenFromUserTokenXML(xml);
+        UserToken copyToken = UserToken.createFromUserTokenXML(xml);
         String copyxml = freemarkerProcessor.toXml(copyToken);
         assertTrue("The generated user token is wrong.", xml.equalsIgnoreCase(copyxml));
     }
@@ -87,7 +87,7 @@ public class UserTokenTest {
         utoken.putApplicationCompanyRoleValue("appa", "whydag.org", "Kunde 1", "President", "Valla");
         String tokenxml = freemarkerProcessor.toXml(utoken);
 
-        UserToken copyToken = UserToken.createUserTokenFromUserTokenXML(tokenxml);
+        UserToken copyToken = UserToken.createFromUserTokenXML(tokenxml);
         String copyxml = freemarkerProcessor.toXml(copyToken);
         //System.out.println("FROM: " + tokenxml);
         //System.out.println("TO: " + copyxml);
