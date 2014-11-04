@@ -10,7 +10,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -22,20 +21,23 @@ import java.util.UUID;
  * @author <a href="mailto:erik-dev@fjas.no">Erik Drolshammer</a> 03.11.14
  */
 public class UserToken2Factory {
+    static final String TOKEN_ISSUER = "/token/TOKEN_ISSUER/tokenverifier";
+
     private static final Logger logger = LoggerFactory.getLogger(UserToken2Factory.class);
     private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-    private final Random rand = new Random();
-
     private static String defcon = "0";
-    private String issuer = "/token/issuer/tokenverifier";
-    private String lifespan = String.valueOf(60 * 60 * rand.nextInt(1000));
+    private static String lifespan;
+    //private String lifespan = String.valueOf(60 * 60 * rand.nextInt(1000));
+
 
 
     public UserToken2Factory(String defcon) {
         UserToken2Factory.defcon = defcon;
+        Random rand = new Random();
+        lifespan = String.valueOf(60 * 60 * rand.nextInt(100));
     }
 
-    public static UserToken2 fromUserTokenXml(String userTokenXml) {
+    public static UserToken2 fromXml(String userTokenXml) {
         try {
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(new InputSource(new StringReader(userTokenXml)));
@@ -51,8 +53,9 @@ public class UserToken2Factory {
 
             String tokenid = (String) xPath.evaluate("/usertoken/@id", doc, XPathConstants.STRING);
             String timestamp = (String) xPath.evaluate("/usertoken/timestamp", doc, XPathConstants.STRING);
-            String defcon = (String) xPath.evaluate("/usertoken/DEFCON", doc, XPathConstants.STRING);
-            String lifespan = (String) xPath.evaluate("/usertoken/lifespan", doc, XPathConstants.STRING);
+
+            String defcon = (String) xPath.evaluate("/usertoken/DEFCON", doc, XPathConstants.STRING);   //TODO Should DEFCON be overriden by factory?
+            String lifespan = (String) xPath.evaluate("/usertoken/lifespan", doc, XPathConstants.STRING);   //TODO Should lifespan be overriden by factory?
             String issuer = (String) xPath.evaluate("/usertoken/issuer", doc, XPathConstants.STRING);
             //applicationCompanyRoleValueMap = new HashMap<>();
             //parseAndUpdateRolemapFromUserToken(doc);
@@ -96,17 +99,22 @@ public class UserToken2Factory {
         }
     }
 
-    public UserToken2 createUserTokenFromUserAggregate(String appTokenXml, String userAggregateXML) {
-        UserToken2 userToken = fromUserAggregate(userAggregateXML);
-        String issuer = extractIssuer(appTokenXml);
-        userToken.setIssuer(issuer);
+    //String appTokenXml
+    public UserToken2 fromUserAggregate(String userAggregateXML) {
+        UserToken2 userToken = parseUserAggregateXml(userAggregateXML);
         userToken.setTokenid(generateID());
         userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+        String securityLevel = "1";
+        userToken.setSecurityLevel(securityLevel);
+
+        userToken.setDefcon(defcon);
+        //String issuer = extractIssuer(appTokenXml);
+        userToken.setIssuer(TOKEN_ISSUER);
+        userToken.setLifespan(lifespan);
         return userToken;
     }
 
-
-    private UserToken2 fromUserAggregate(String userAggregateXML) {
+    private UserToken2 parseUserAggregateXml(String userAggregateXML) {
         try {
             DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
             Document doc = documentBuilder.parse(new InputSource(new StringReader(userAggregateXML)));
@@ -138,9 +146,6 @@ public class UserToken2Factory {
             userToken.setEmail(email);
             userToken.setPersonRef(personRef);
             userToken.setRoleList(roleList);
-
-            String securityLevel = "1";
-            userToken.setSecurityLevel(securityLevel);
             return userToken;
         } catch (Exception e) {
             logger.error("Error parsing userAggregateXML " + userAggregateXML, e);
@@ -148,6 +153,7 @@ public class UserToken2Factory {
         }
     }
 
+    /*
     private String extractIssuer(String appTokenXml) {
         try {
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -161,8 +167,13 @@ public class UserToken2Factory {
             return null;
         }
     }
+    */
 
     private String generateID() {
         return UUID.randomUUID().toString();
+    }
+
+    public static void setDefcon(String defcon) {
+        UserToken2Factory.defcon = defcon;
     }
 }
