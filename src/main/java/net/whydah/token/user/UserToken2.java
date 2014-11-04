@@ -1,34 +1,16 @@
 package net.whydah.token.user;
 
-import net.whydah.token.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
 import java.io.Serializable;
-import java.io.StringReader;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
-import java.util.UUID;
 
 public class UserToken2 implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(UserToken2.class);
-    private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-    private final Random rand = new Random();
-
-    private static String defcon = "0";
-    private static AppConfig appConfig = new AppConfig();
 
     // nextInt is normally exclusive of the top value,
     // so add 1 to make it inclusive
@@ -42,21 +24,22 @@ public class UserToken2 implements Serializable {
     private String firstName;
     private String lastName;
     private String email;
+    private String timestamp;
 
-    private String timestamp = Long.toString(System.currentTimeMillis());
-    private String securityLevel = "0";
-    private String lifespan = String.valueOf(60 * 60 * rand.nextInt(1000));
-    private String issuer = "/token/issuer/tokenverifier";
+    private static String defcon;
+    private String securityLevel;
+    private String lifespan;
+    private String issuer;
     private List<ApplicationRoleEntry> roleList;
     //Ignored properties: cellPhone,
 
 
     public UserToken2() {
-        defcon = appConfig.getProperty("DEFCON");
-        lifespan = String.valueOf(60 * 60 * rand.nextInt(100));
-        roleList = new LinkedList();
+        this.timestamp = Long.toString(System.currentTimeMillis());
+        this.roleList = new LinkedList<>();
     }
 
+    /*
     public static UserToken2 createUserTokenFromUserTokenXML(String userTokenXml) {
         defcon = appConfig.getProperty("DEFCON");
         UserToken2 userToken = new UserToken2();
@@ -138,7 +121,9 @@ public class UserToken2 implements Serializable {
     private String generateID() {
         return UUID.randomUUID().toString();
     }
+    */
 
+    //Used by usertoken.ftl
     public String getMD5() {
         String md5base = null2empty(uid) + null2empty(personRef) + null2empty(tokenid) + null2empty(timestamp)
                 + null2empty(firstName) + null2empty(lastName) + null2empty(email) + securityLevel + issuer;
@@ -154,7 +139,6 @@ public class UserToken2 implements Serializable {
             return "";
         }
     }
-
     private String null2empty(String value) {
         return value != null ? value : "";
     }

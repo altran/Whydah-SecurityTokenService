@@ -55,8 +55,8 @@ public class UserToken2Factory {
             String tokenId = (String) xPath.evaluate("/usertoken/@id", doc, XPathConstants.STRING);
             String timestamp = (String) xPath.evaluate("/usertoken/timestamp", doc, XPathConstants.STRING);
 
-            String defcon = (String) xPath.evaluate("/usertoken/DEFCON", doc, XPathConstants.STRING);   //TODO Should DEFCON be overridden by factory?
-            String lifespan = (String) xPath.evaluate("/usertoken/lifespan", doc, XPathConstants.STRING);   //TODO Should lifespan be overridden by factory?
+            String defcon = (String) xPath.evaluate("/usertoken/DEFCON", doc, XPathConstants.STRING);
+            String lifespan = (String) xPath.evaluate("/usertoken/lifespan", doc, XPathConstants.STRING);
             String issuer = (String) xPath.evaluate("/usertoken/issuer", doc, XPathConstants.STRING);
 
 

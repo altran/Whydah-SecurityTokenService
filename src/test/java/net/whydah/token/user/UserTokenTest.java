@@ -156,9 +156,11 @@ public class UserTokenTest {
                 "         <expires>3213213212</expires>\n" +
                 "     </params> \n" +
                 " </token>\n";
-        UserToken2 userToken = UserToken2.createUserTokenFromUserAggregate(appXML, identityXML);
+        //UserToken2 userToken = UserToken2.createUserTokenFromUserAggregate(appXML, identityXML);
 
-        //System.out.printf(userToken.toString());
+        UserToken2 userToken = new UserToken2Factory("0").fromUserAggregate(identityXML);
+
+                //System.out.printf(userToken.toString());
         //String xml = freemarkerProcessor.toXml(userToken);
         //System.out.println(freemarkerProcessor.toXml(userToken));
 
