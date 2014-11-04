@@ -126,7 +126,12 @@ public class ApplicationAuthentication {
             String expectedValue = appConfig.getProperty(appid);
             logger.trace("verifyApplicationCredential - Authenticating appid: {} matching {} got {}", appid, expectedValue, secret);
             if (appid == null || appid.length() < 2) {
-                logger.warn("verifyApplicationCredential - Authenticating appid failed. No or null appid");
+                logger.warn("verifyApplicationCredential - Authenticating appid failed. No or null applicationID");
+                return false;
+
+            }
+            if (secret == null || secret.length() < 2) {
+                logger.warn("verifyApplicationCredential - Authenticating appid failed. No or null applicationSecret");
                 return false;
 
             }
