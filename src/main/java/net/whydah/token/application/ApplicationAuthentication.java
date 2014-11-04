@@ -77,7 +77,7 @@ public class ApplicationAuthentication {
     @Produces(MediaType.APPLICATION_XML)
     public Response logonApplication(@FormParam("applicationcredential") String appCredentialXml) {
         logger.trace("logonApplication with appCredentialXml={}", appCredentialXml);
-        if (!verifyApplicationCredential(appCredentialXml)) {
+        if (!verifyApplicationCredentials(appCredentialXml)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         ApplicationToken token = new ApplicationToken(appCredentialXml);
@@ -102,50 +102,55 @@ public class ApplicationAuthentication {
         }
     }
 
-    private boolean verifyApplicationCredential(String appcreedential) {
-
+    private boolean verifyApplicationCredentials(String appCredentials) {
         if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
-            logger.trace("verifyApplicationCredential - running in DEV mode, auto accepted.");
+            logger.trace("verifyApplicationCredentials - running in DEV mode, auto accepted.");
             return true;
         }
 
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(new InputSource(new StringReader(appcreedential)));
+            Document doc = db.parse(new InputSource(new StringReader(appCredentials)));
             XPath xPath = XPathFactory.newInstance().newXPath();
 
             String secretxpath = "applicationcredential/params/applicationSecret";
             String appidxpath = "applicationcredential/params/applicationID";
             XPathExpression xPathExpression = xPath.compile(secretxpath);
-            String secret = (xPathExpression.evaluate(doc));
+            String appSecret = (xPathExpression.evaluate(doc));
             xPathExpression = xPath.compile(appidxpath);
-            String appid = (xPathExpression.evaluate(doc));
+            String appId = (xPathExpression.evaluate(doc));
 
 
-            String expectedValue = appConfig.getProperty(appid);
-            logger.trace("verifyApplicationCredential - Authenticating appid: {} matching {} got {}", appid, expectedValue, secret);
-            if (appid == null || appid.length() < 2) {
-                logger.warn("verifyApplicationCredential - Authenticating appid failed. No or null applicationID");
+
+
+            if (appId == null || appId.length() < 2) {
+                logger.warn("Application authentication failed. No or null applicationID");
                 return false;
 
             }
-            if (secret == null || secret.length() < 2) {
-                logger.warn("verifyApplicationCredential - Authenticating appid failed. No or null applicationSecret");
+            if (appSecret == null || appSecret.length() < 2) {
+                logger.warn("verifyApplicationCredentials - verify appSecret failed. No or null applicationSecret");
+                logger.warn("Application authentication failed. No or null applicationSecret for applicationId={}", appId);
                 return false;
-
             }
-            if (expectedValue != null && expectedValue.length() > 1) {
-                if (!secret.equalsIgnoreCase(expectedValue)) {
-                    logger.warn("verifyApplicationCredential - Authenticating appid failed. Wrong applicationSecret");
-                    return false;
-                }
+
+
+            String expectedAppSecret = appConfig.getProperty(appId);
+            logger.trace("verifyApplicationCredentials: appid={}, appSecret={}, expectedAppSecret={}", appId, appSecret, expectedAppSecret);
+
+            if (expectedAppSecret == null || expectedAppSecret.length() < 2) {
+                logger.warn("Application authentication failed. No application secret in property file for applicationId={}", appId);
+                return false;
+            }
+            if (!appSecret.equalsIgnoreCase(expectedAppSecret)) {
+                logger.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret from property file.");
+                return false;
             }
         } catch (Exception e) {
-            logger.error("verifyApplicationCredential - exception", e);
+            logger.error("Error in verifyApplicationCredentials.", e);
             return false;
         }
-
         return true;
     }
 }
