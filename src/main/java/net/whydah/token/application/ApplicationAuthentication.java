@@ -33,14 +33,14 @@ public class ApplicationAuthentication {
     @Produces(MediaType.TEXT_HTML)
     public Response info() {
         if ("enabled".equals(appConfig.getProperty("testpage"))) {
-            logger.debug("Showing test page");
+            //logger.debug("Showing test page");
             HashMap<String, Object> model = new HashMap<String, Object>();
             UserCredential testUserCredential = new UserCredential("whydah_user", "whydah_password");
             model.put("applicationcredential", new ApplicationCredential().toXML());
             model.put("testUserCredential", testUserCredential.toXML());
             return Response.ok().entity(new Viewable("/testpage.html.ftl", model)).build();
         } else {
-            logger.debug("Showing prod page");
+            //logger.debug("Showing prod page");
             return Response.ok().entity(new Viewable("/html/prodwelcome.html")).build();
         }
     }
@@ -114,7 +114,6 @@ public class ApplicationAuthentication {
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(new InputSource(new StringReader(appcreedential)));
             XPath xPath = XPathFactory.newInstance().newXPath();
-
 
             String secretxpath = "applicationcredential/params/applicationSecret";
             String appidxpath = "applicationcredential/params/applicationID";
