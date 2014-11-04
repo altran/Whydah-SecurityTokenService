@@ -1,52 +1,52 @@
 package net.whydah.token.user;
 
 public class ApplicationRoleEntry {
-    private String applicationid;
-    private String applicationname;
-    private String organizationname;
-    private String rolename;
-    private String rolevalue;
+    private String applicationId;
+    private String applicationName;
+    private String organizationName;
+    private String roleName;
+    private String roleValue;
 
-    public void setApplicationid(String applicationid) {
-        this.applicationid = applicationid;
+    public void setApplicationId(String applicationId) {
+        this.applicationId = applicationId;
     }
-    public void setApplicationname(String applicationname) {
-        this.applicationname = applicationname;
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
     }
-    public void setOrganizationname(String organizationname) {
-        this.organizationname = organizationname;
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
     }
-    public void setRolename(String rolename) {
-        this.rolename = rolename;
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
-    public void setRolevalue(String rolevalue) {
-        this.rolevalue = rolevalue;
+    public void setRoleValue(String roleValue) {
+        this.roleValue = roleValue;
     }
 
-    public String getApplicationid() {
-        return applicationid;
+    public String getApplicationId() {
+        return applicationId;
     }
-    public String getApplicationname() {
-        return applicationname;
+    public String getApplicationName() {
+        return applicationName;
     }
-    public String getOrganizationname() {
-        return organizationname;
+    public String getOrganizationName() {
+        return organizationName;
     }
-    public String getRolename() {
-        return rolename;
+    public String getRoleName() {
+        return roleName;
     }
-    public String getRolevalue() {
-        return rolevalue;
+    public String getRoleValue() {
+        return roleValue;
     }
 
     @Override
     public String toString() {
         return "ApplicationRoleEntry{" +
-                "applicationid='" + applicationid + '\'' +
-                ", applicationname='" + applicationname + '\'' +
-                ", organizationname='" + organizationname + '\'' +
-                ", rolename='" + rolename + '\'' +
-                ", rolevalue='" + rolevalue + '\'' +
+                "applicationId='" + applicationId + '\'' +
+                ", applicationName='" + applicationName + '\'' +
+                ", organizationName='" + organizationName + '\'' +
+                ", roleName='" + roleName + '\'' +
+                ", roleValue='" + roleValue + '\'' +
                 '}';
     }
 }

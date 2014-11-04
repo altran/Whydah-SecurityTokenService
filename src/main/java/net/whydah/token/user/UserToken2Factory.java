@@ -3,6 +3,7 @@ package net.whydah.token.user;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
@@ -25,6 +26,7 @@ public class UserToken2Factory {
 
     private static final Logger logger = LoggerFactory.getLogger(UserToken2Factory.class);
     private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    private static Random rand = new Random();
     private static String defcon = "0";
     private static String lifespan;
     //private String lifespan = String.valueOf(60 * 60 * rand.nextInt(1000));
@@ -33,7 +35,6 @@ public class UserToken2Factory {
 
     public UserToken2Factory(String defcon) {
         UserToken2Factory.defcon = defcon;
-        Random rand = new Random();
         lifespan = String.valueOf(60 * 60 * rand.nextInt(100));
     }
 
@@ -54,27 +55,34 @@ public class UserToken2Factory {
             String tokenid = (String) xPath.evaluate("/usertoken/@id", doc, XPathConstants.STRING);
             String timestamp = (String) xPath.evaluate("/usertoken/timestamp", doc, XPathConstants.STRING);
 
-            String defcon = (String) xPath.evaluate("/usertoken/DEFCON", doc, XPathConstants.STRING);   //TODO Should DEFCON be overriden by factory?
-            String lifespan = (String) xPath.evaluate("/usertoken/lifespan", doc, XPathConstants.STRING);   //TODO Should lifespan be overriden by factory?
+            String defcon = (String) xPath.evaluate("/usertoken/DEFCON", doc, XPathConstants.STRING);   //TODO Should DEFCON be overridden by factory?
+            String lifespan = (String) xPath.evaluate("/usertoken/lifespan", doc, XPathConstants.STRING);   //TODO Should lifespan be overridden by factory?
             String issuer = (String) xPath.evaluate("/usertoken/issuer", doc, XPathConstants.STRING);
-            //applicationCompanyRoleValueMap = new HashMap<>();
-            //parseAndUpdateRolemapFromUserToken(doc);
+
 
             List<ApplicationRoleEntry> roleList = new ArrayList<>();
-            //TODO verify XPATH for application
-            /*
-            //NodeList applicationNodes = (NodeList) xPath.evaluate("/whydahuser/applications/application/appId", doc, XPathConstants.NODESET);
             NodeList applicationNodes = (NodeList) xPath.evaluate("//application", doc, XPathConstants.NODESET);
-            for (int i = 1; i < applicationNodes.getLength() + 1; i++) {
-                ApplicationRoleEntry role = new ApplicationRoleEntry();
-                role.setApplicationid((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/appId", doc, XPathConstants.STRING));
-                role.setApplicationname((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/applicationName", doc, XPathConstants.STRING));
-                role.setOrganizationname((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/orgName", doc, XPathConstants.STRING));
-                role.setRolename((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/roleName", doc, XPathConstants.STRING));
-                role.setRolevalue((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/roleValue", doc, XPathConstants.STRING));
-                roleList.add(role);
+            for (int i = 0; i < applicationNodes.getLength(); i++) {
+                Node appNode = applicationNodes.item(i);
+                String appId = (String) xPath.evaluate("@ID", appNode, XPathConstants.STRING);
+                String appName = (String) xPath.evaluate("./applicationName", appNode, XPathConstants.STRING);
+                String organizationName = (String) xPath.evaluate("./organizationName", appNode, XPathConstants.STRING);
+                NodeList roles = (NodeList) xPath.evaluate("./role", appNode, XPathConstants.NODESET);
+
+                for (int k = 0; k < roles.getLength(); k ++) {
+                    Node roleNode = roles.item(k);
+                    String roleName = (String) xPath.evaluate("@name", roleNode, XPathConstants.STRING);
+                    String roleValue = (String) xPath.evaluate("@value", roleNode, XPathConstants.STRING);
+                    ApplicationRoleEntry role = new ApplicationRoleEntry();
+                    role.setApplicationId(appId);
+                    role.setApplicationName(appName);
+                    role.setOrganizationName(organizationName);
+                    role.setRoleName(roleName);
+                    role.setRoleValue(roleValue);
+                    roleList.add(role);
+                }
             }
-            */
+
 
             UserToken2 userToken = new UserToken2();
             userToken.setUid(uid);
@@ -91,7 +99,6 @@ public class UserToken2Factory {
             UserToken2.setDefcon(defcon);
             userToken.setLifespan(lifespan);
             userToken.setIssuer(issuer);
-
             return userToken;
         } catch (Exception e) {
             logger.error("Error parsing userTokenXml " + userTokenXml, e);
@@ -131,11 +138,11 @@ public class UserToken2Factory {
             NodeList applicationNodes = (NodeList) xPath.evaluate("/whydahuser/applications/application/appId", doc, XPathConstants.NODESET);
             for (int i = 1; i < applicationNodes.getLength() + 1; i++) {
                 ApplicationRoleEntry role = new ApplicationRoleEntry();
-                role.setApplicationid((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/appId", doc, XPathConstants.STRING));
-                role.setApplicationname((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/applicationName", doc, XPathConstants.STRING));
-                role.setOrganizationname((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/orgName", doc, XPathConstants.STRING));
-                role.setRolename((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/roleName", doc, XPathConstants.STRING));
-                role.setRolevalue((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/roleValue", doc, XPathConstants.STRING));
+                role.setApplicationId((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/appId", doc, XPathConstants.STRING));
+                role.setApplicationName((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/applicationName", doc, XPathConstants.STRING));
+                role.setOrganizationName((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/orgName", doc, XPathConstants.STRING));
+                role.setRoleName((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/roleName", doc, XPathConstants.STRING));
+                role.setRoleValue((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/roleValue", doc, XPathConstants.STRING));
                 roleList.add(role);
             }
             UserToken2 userToken = new UserToken2();

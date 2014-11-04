@@ -12,10 +12,10 @@
     <email>${it.email!?xml}</email>
     <personRef>${it.personRef!?xml}</personRef>
     <#list it.roleList as app>
-    <application ID="${app.applicationid!?xml}">
-        <applicationName>${app.applicationname!?xml}</applicationName>
-        <organizationName>${app.organizationname!?xml}</organizationName>
-        <role name="${app.rolename?xml}" value="${app.rolevalue!?xml}"/>
+    <application ID="${app.applicationId!?xml}">
+        <applicationName>${app.applicationName!?xml}</applicationName>
+        <organizationName>${app.organizationName!?xml}</organizationName>
+        <role name="${app.roleName?xml}" value="${app.roleValue!?xml}"/>
     </application>
 </#list>
 

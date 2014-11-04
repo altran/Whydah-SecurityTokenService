@@ -42,18 +42,48 @@ public class UserToken2FactoryTest {
             "</usertoken>\n"+
             "\n";
 
+    private final String userTokenXml2 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+            "<usertoken xmlns:ns2=\"http://www.w3.org/1999/xhtml\" id=\"8e4020b6-ea61-44f1-8b31-ecdd84869784\">\n" +
+            "    <uid>8d563960-7b4f-4c44-a241-1ac359999b63</uid>\n" +
+            "    <timestamp>1415091757670</timestamp>\n" +
+            "    <lifespan>3600000</lifespan>\n" +
+            "    <issuer></issuer>\n" +
+            "    <securitylevel>0</securitylevel>\n" +
+            "    <DEFCON>5</DEFCON>\n" +
+            "    <username>anders.norman@company.com</username>\n" +
+            "    <firstname>Anders</firstname>\n" +
+            "    <lastname>Norman</lastname>\n" +
+            "    <email>anders.norman@company.com</email>\n" +
+            "    <personRef>Anders Norman</personRef>\n" +
+            "    <application ID=\"99\">\n" +
+            "        <applicationName>WhydahTestWebApplication</applicationName>\n" +
+            "        <organizationName>Whydah</organizationName>\n" +
+            "        <role name=\"WhydahDefaultUser\" value=\"anders.norman@company.com\"/>\n" +
+            "    </application>\n" +
+            "    <application ID=\"100\">\n" +
+            "        <applicationName>ACS</applicationName>\n" +
+            "        <organizationName>Company</organizationName>\n" +
+            "        <role name=\"Employee\" value=\"anders.norman@company.com\"/>\n" +
+            "    </application>\n" +
+            "\n" +
+            "    <ns2:link type=\"application/xml\" href=\"/8e4020b6-ea61-44f1-8b31-ecdd84869784\" rel=\"self\"/>\n" +
+            "    <hash type=\"MD5\">88e4a2db17733f371e8f78e123108d13</hash>\n" +
+            "</usertoken>";
+    private static UserToken2Factory factory;
+
 
     @BeforeClass
-    public static void setEnv() {
-        Map<String, String> envs = new HashMap<String, String>();
+    public static void shared() {
+        Map<String, String> envs = new HashMap<>();
         envs.put(ApplicationMode.IAM_MODE_KEY, ApplicationMode.DEV);
         EnvHelper.setEnv(envs);
+
+        factory = new UserToken2Factory("1");
     }
 
 
     @Test
-    public void testFromXml() {
-        UserToken2Factory factory = new UserToken2Factory("1");
+    public void testFromXml1() {
         UserToken2 userToken = factory.fromXml(userTokenXml1);
         assertEquals(userToken.getUid(), "uid1");
         assertEquals(userToken.getUserName(), "username1");
@@ -61,6 +91,33 @@ public class UserToken2FactoryTest {
         assertEquals(userToken.getDefcon(), "5");
         assertEquals(userToken.getTimestamp(), "1415091487335");
         assertEquals(userToken.getLifespan(), "82800");
-        //assertEquals(userToken.getRoleList().size(), 2);
+        assertEquals(userToken.getRoleList().size(), 2);
     }
+
+    @Test
+    public void testFromXml2() {
+        UserToken2 userToken = factory.fromXml(userTokenXml2);
+        assertEquals(userToken.getUid(), "8d563960-7b4f-4c44-a241-1ac359999b63");
+        assertEquals(userToken.getUserName(), "anders.norman@company.com");
+        assertEquals(userToken.getIssuer(), "");
+        assertEquals(userToken.getDefcon(), "5");
+        assertEquals(userToken.getTimestamp(), "1415091757670");
+        assertEquals(userToken.getLifespan(), "3600000");
+        assertEquals(userToken.getRoleList().size(), 2);
+
+        ApplicationRoleEntry roleEntry1 = userToken.getRoleList().get(0);
+        assertEquals(roleEntry1.getApplicationId(), "99");
+        assertEquals(roleEntry1.getApplicationName(), "WhydahTestWebApplication");
+        assertEquals(roleEntry1.getOrganizationName(), "Whydah");
+        assertEquals(roleEntry1.getRoleName(), "WhydahDefaultUser");
+        assertEquals(roleEntry1.getRoleValue(), "anders.norman@company.com");
+
+        ApplicationRoleEntry roleEntry2 = userToken.getRoleList().get(1);
+        assertEquals(roleEntry2.getApplicationId(), "100");
+        assertEquals(roleEntry2.getApplicationName(), "ACS");
+        assertEquals(roleEntry2.getOrganizationName(), "Company");
+        assertEquals(roleEntry2.getRoleName(), "Employee");
+        assertEquals(roleEntry2.getRoleValue(), "anders.norman@company.com");
+    }
+
 }
