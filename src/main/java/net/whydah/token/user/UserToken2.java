@@ -3,7 +3,7 @@ package net.whydah.token.user;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
+import java.io.*;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.LinkedList;
@@ -123,10 +123,41 @@ public class UserToken2 implements Serializable {
     }
     */
 
-    //Used by usertoken.ftl
+    public boolean isValid() {
+        logger.trace("usertoken - isValid  timestamp={}  lifespan={}", timestamp, lifespan);
+        if (timestamp == null || lifespan == null) {
+            return false;
+        }
+
+        long now = System.currentTimeMillis();
+        long timeout = Long.parseLong(timestamp) + Long.parseLong(lifespan);
+        logger.debug("usertoken - isValid timeout={} > now={}", timeout, now);
+        boolean stillValid = (timeout > now);
+        if (!stillValid) {
+            logger.info ("SecurityToken timed out.");
+        }
+        return stillValid;
+    }
+
+    public UserToken2 copy() {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(this);
+            byte[] obj = baos.toByteArray();
+            ByteArrayInputStream bais = new ByteArrayInputStream(obj);
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            return (UserToken2) ois.readObject();
+        } catch (Exception e) {
+            logger.error("Error copying UserToken", e);
+        }
+        return null;
+    }
+
+    //Used by usertoken2.ftl
     public String getMD5() {
         String md5base = null2empty(uid) + null2empty(personRef) + null2empty(tokenid) + null2empty(timestamp)
-                + null2empty(firstName) + null2empty(lastName) + null2empty(email) + securityLevel + issuer;
+                + null2empty(firstName) + null2empty(lastName) + null2empty(email) + null2empty(securityLevel) + null2empty(issuer);
         try {
             MessageDigest m = MessageDigest.getInstance("MD5");
             m.reset();
@@ -143,6 +174,10 @@ public class UserToken2 implements Serializable {
         return value != null ? value : "";
     }
 
+
+    public void addApplicationRoleEntry(ApplicationRoleEntry role) {
+        roleList.add(role);
+    }
 
     public void setTokenid(String tokenid) {
         this.tokenid = tokenid;
@@ -223,5 +258,23 @@ public class UserToken2 implements Serializable {
     }
     public static String getDefcon() {
         return defcon;
+    }
+
+    @Override
+    public String toString() {
+        return "UserToken{" +
+                "tokenid='" + tokenid + '\'' +
+                ", uid='" + uid + '\'' +
+                ", personRef='" + personRef + '\'' +
+                ", userName='" + userName + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", timestamp='" + timestamp + '\'' +
+                ", securityLevel='" + securityLevel + '\'' +
+                ", lifespan='" + lifespan + '\'' +
+                ", issuer='" + issuer + '\'' +
+                ", roleList.size=" + roleList.size() +
+                '}';
     }
 }

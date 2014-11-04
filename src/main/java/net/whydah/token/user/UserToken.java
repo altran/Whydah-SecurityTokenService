@@ -18,6 +18,7 @@ import java.security.MessageDigest;
 import java.util.*;
 
 
+@Deprecated
 public class UserToken implements Serializable{
     private static final Logger logger = LoggerFactory.getLogger(UserToken.class);
     private final static DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

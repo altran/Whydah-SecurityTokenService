@@ -1,5 +1,7 @@
 package net.whydah.token.user;
 
+import com.google.inject.Singleton;
+import net.whydah.token.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -21,6 +23,7 @@ import java.util.UUID;
 /**
  * @author <a href="mailto:erik-dev@fjas.no">Erik Drolshammer</a> 03.11.14
  */
+@Singleton
 public class UserToken2Factory {
     static final String TOKEN_ISSUER = "/token/TOKEN_ISSUER/tokenverifier";
 
@@ -31,7 +34,13 @@ public class UserToken2Factory {
     private static String lifespan;
     //private String lifespan = String.valueOf(60 * 60 * rand.nextInt(1000));
 
+    //ED: I do not like this dependency...
+    private static AppConfig appConfig = new AppConfig();
 
+    @Deprecated
+    public UserToken2Factory() {
+        this(appConfig.getProperty("DEFCON"));
+    }
 
     public UserToken2Factory(String defcon) {
         UserToken2Factory.defcon = defcon;
@@ -112,7 +121,7 @@ public class UserToken2Factory {
         UserToken2 userToken = parseUserAggregateXml(userAggregateXML);
         userToken.setTokenid(generateID());
         userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
-        String securityLevel = "1";
+        String securityLevel = "1"; //UserIdentity as source = securitylevel=0
         userToken.setSecurityLevel(securityLevel);
 
         userToken.setDefcon(defcon);
@@ -176,6 +185,21 @@ public class UserToken2Factory {
         }
     }
     */
+
+    //ED: Can this hack be improved?
+    public static UserToken2 createNetIQToken() {
+        ApplicationRoleEntry roleEntry = new ApplicationRoleEntry();
+        roleEntry.setApplicationId("11");
+        roleEntry.setApplicationName("SecurityTokenService");
+        roleEntry.setOrganizationName("Whydah");
+        roleEntry.setRoleName("WhydahUserAdmin");
+        roleEntry.setRoleValue("1");
+
+
+        UserToken2 userToken = new UserToken2();
+        userToken.addApplicationRoleEntry(roleEntry);
+        return userToken;
+    }
 
     private String generateID() {
         return UUID.randomUUID().toString();

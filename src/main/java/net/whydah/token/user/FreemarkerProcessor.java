@@ -23,11 +23,12 @@ public class FreemarkerProcessor {
         freemarkerConfig.setTemplateUpdateDelay(3600);
     }
 
-    public String toXml(UserToken userToken) {
-        HashMap<String, UserToken> model = new HashMap<String, UserToken>(1);
+    /*
+    public String toXml(UserToken2 userToken) {
+        HashMap<String, UserToken2> model = new HashMap<>(1);
         model.put("it", userToken);
         try {
-            Template template = freemarkerConfig.getTemplate("usertoken.ftl");
+            Template template = freemarkerConfig.getTemplate("usertoken2.ftl");
             StringWriter writer = new StringWriter();
             template.process(model, writer);
             return writer.toString();
@@ -36,9 +37,10 @@ public class FreemarkerProcessor {
             return "XML conversion failed for userToken with id " + userToken.getTokenid();
         }
     }
+    */
 
     public String toXml(UserToken2 userToken) {
-        HashMap<String, UserToken2> model = new HashMap<String, UserToken2>(1);
+        HashMap<String, UserToken2> model = new HashMap<>(1);
         model.put("it", userToken);
         try {
             Template template = freemarkerConfig.getTemplate("usertoken2.ftl");

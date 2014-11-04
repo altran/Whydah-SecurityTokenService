@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class ActiveUserTokenRepository {
     private final static Logger logger = LoggerFactory.getLogger(ActiveUserTokenRepository.class);
-    private static Map<String, UserToken> activeusertokensmap;
+    private static Map<String, UserToken2> activeusertokensmap;
 
     static {
         String xmlFileName = System.getProperty("hazelcast.config");
@@ -39,12 +39,12 @@ public class ActiveUserTokenRepository {
      * @param usertokenId userTokenId
      * @return UserToken if found and valid, null if not.
      */
-    public static UserToken getUserToken(String usertokenId) {
+    public static UserToken2 getUserToken(String usertokenId) {
         logger.debug("getUserToken with userTokenid=" + usertokenId);
         if (usertokenId == null) {
             return null;
         }
-        UserToken resToken = activeusertokensmap.get(usertokenId);
+        UserToken2 resToken = activeusertokensmap.get(usertokenId);
         if (resToken != null && verifyUserToken(resToken)) {
             logger.info("Valid userToken found: " + resToken);
             logger.debug("userToken=" + resToken);
@@ -57,15 +57,15 @@ public class ActiveUserTokenRepository {
     /**
      * Check if token exists in UserTokenRepository, and is valid and not timed out.
      *
-     * @param token UserToken
+     * @param userToken UserToken
      * @return true if token is valid.
      */
-    public static boolean verifyUserToken(UserToken token) {
-        if (token.getTokenid() == null) {
+    public static boolean verifyUserToken(UserToken2 userToken) {
+        if (userToken.getTokenid() == null) {
             logger.info("UserToken not valid, missing tokenId");
             return false;
         }
-        UserToken resToken = activeusertokensmap.get(token.getTokenid());
+        UserToken2 resToken = activeusertokensmap.get(userToken.getTokenid());
         if (resToken == null) {
             logger.info("UserToken not found in repo.");
             return false;
@@ -73,17 +73,18 @@ public class ActiveUserTokenRepository {
         logger.debug("UserToken from repo: {}", resToken);
         if (!resToken.isValid()) {
             logger.debug("resToken is not valid");
-            activeusertokensmap.remove(token.getTokenid());
+            activeusertokensmap.remove(userToken.getTokenid());
             return false;
         }
-        if (token.toString().equals(resToken.toString())) {
-            return true;
+        if (!userToken.toString().equals(resToken.toString())) {
+            logger.info("UserToken not valid: not the same as in repo. token: {}  repotoken: {}", userToken, resToken);
+            return false;
         }
-        logger.info("UserToken not valid: not the same as in repo. token: {}  repotoken: {}", token, resToken);
-        return false;
+
+        return true;
     }
 
-    public static void addUserToken(UserToken token) {
+    public static void addUserToken(UserToken2 token) {
         if (token.getTokenid() == null) {
             logger.error("Error: token has net tokenid");
             return;
@@ -92,7 +93,7 @@ public class ActiveUserTokenRepository {
             logger.error("Error: trying to update an already existing UserToken in repo..");
             return;
         }
-        UserToken copy = token.copy();
+        UserToken2 copy = token.copy();
         activeusertokensmap.put(copy.getTokenid(), copy);
         logger.info("Added token with id {}", copy.getTokenid(), " content:" + copy);
     }
@@ -103,6 +104,4 @@ public class ActiveUserTokenRepository {
 
     public static void initializeDistributedMap() {
     }
-
-    ;
 }

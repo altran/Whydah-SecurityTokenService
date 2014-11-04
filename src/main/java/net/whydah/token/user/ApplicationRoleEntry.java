@@ -7,6 +7,17 @@ public class ApplicationRoleEntry {
     private String roleName;
     private String roleValue;
 
+    public ApplicationRoleEntry() {
+    }
+
+    public ApplicationRoleEntry(String applicationId, String applicationName, String organizationName, String roleName, String roleValue) {
+        this.applicationId = applicationId;
+        this.applicationName = applicationName;
+        this.organizationName = organizationName;
+        this.roleName = roleName;
+        this.roleValue = roleValue;
+    }
+
     public void setApplicationId(String applicationId) {
         this.applicationId = applicationId;
     }

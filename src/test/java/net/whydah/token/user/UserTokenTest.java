@@ -16,8 +16,10 @@ import javax.xml.xpath.XPathFactory;
 import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.*;
 
 public class UserTokenTest {
@@ -33,29 +35,35 @@ public class UserTokenTest {
 
 
     @Test
-    public void testCreateUserToken() {
-        UserToken utoken = new UserToken();
+    public void testCreateUserToken() throws Exception {
+        UserToken2 utoken = new UserToken2();
         utoken.setFirstName("Ola");
         utoken.setLastName("Nordmann");
         utoken.setTimestamp("123123123");
         utoken.setPersonRef("73637276722376");
         utoken.setTokenid(UUID.randomUUID().toString());
         String xml = freemarkerProcessor.toXml(utoken);
-        UserToken copyToken = UserToken.createFromUserTokenXML(xml);
+
+        UserToken2 copyToken = UserToken2Factory.fromXml(xml);
         String copyxml = freemarkerProcessor.toXml(copyToken);
-        assertTrue("The generated user token is wrong.", xml.equalsIgnoreCase(copyxml));
+        //assertTrue("The generated user token is wrong.", xml.equalsIgnoreCase(copyxml));
+
+        assertXMLEqual(xml, copyxml);
     }
 
     @Test
     public void testActiveUserTokenRepository() {
-        UserToken utoken = new UserToken();
+        UserToken2 utoken = new UserToken2();
         utoken.setFirstName("Ola");
         utoken.setLastName("Nordmann");
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
         utoken.setTokenid(UUID.randomUUID().toString());
         utoken.setPersonRef("78125637812638");
+        utoken.setLifespan(String.valueOf(60 * 60 * new Random().nextInt(100)));
+
         ActiveUserTokenRepository.addUserToken(utoken);
         assertTrue("Verification of valid token failed", ActiveUserTokenRepository.verifyUserToken(utoken));
+
         utoken.setFirstName("Pelle");
         String token = freemarkerProcessor.toXml(utoken);
         assertTrue("Token not updated", token.indexOf("Pelle") > 0);
@@ -64,7 +72,7 @@ public class UserTokenTest {
 
     @Test
     public void testTimedOutActiveUserTokenRepository() {
-        UserToken utoken = new UserToken();
+        UserToken2 utoken = new UserToken2();
         utoken.setTokenid(UUID.randomUUID().toString());
         utoken.setFirstName("Ola");
         utoken.setLastName("Nordmann");
@@ -77,17 +85,17 @@ public class UserTokenTest {
 
     @Test
     public void testCreateUserTokenWithRoles() {
-        UserToken utoken = new UserToken();
+        UserToken2 utoken = new UserToken2();
         utoken.setFirstName("Olav");
         utoken.setLastName("Nordmann");
         utoken.setTokenid(UUID.randomUUID().toString());
-        utoken.putApplicationCompanyRoleValue("2349785543", "Whydah.net", "Kunde 1", "Boardmember", "Diktator");
-        utoken.putApplicationCompanyRoleValue("2349785543", "Whydah.net", "Kunde 2", "tester", "ansatt");
-        utoken.putApplicationCompanyRoleValue("2349785543", "Whydah.net", "Kunde 3", "Boardmember", "");
-        utoken.putApplicationCompanyRoleValue("appa", "whydag.org", "Kunde 1", "President", "Valla");
+        utoken.addApplicationRoleEntry(new ApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 1", "Boardmember", "Diktator"));
+        utoken.addApplicationRoleEntry(new ApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 2", "tester", "ansatt"));
+        utoken.addApplicationRoleEntry(new ApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 3", "Boardmember", ""));
+        utoken.addApplicationRoleEntry(new ApplicationRoleEntry("appa", "whydag.org", "Kunde 1", "President", "Valla"));
         String tokenxml = freemarkerProcessor.toXml(utoken);
 
-        UserToken copyToken = UserToken.createFromUserTokenXML(tokenxml);
+        UserToken2 copyToken = UserToken2Factory.fromXml(tokenxml);
         String copyxml = freemarkerProcessor.toXml(copyToken);
         //System.out.println("FROM: " + tokenxml);
         //System.out.println("TO: " + copyxml);
