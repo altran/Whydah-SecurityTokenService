@@ -105,6 +105,7 @@ public class ApplicationAuthentication {
     private boolean verifyApplicationCredential(String appcreedential) {
 
         if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
+            logger.trace("verifyApplicationCredential - running in DEV mode, auto accepted.");
             return true;
         }
 
@@ -137,7 +138,7 @@ public class ApplicationAuthentication {
             }
             if (expectedValue != null && expectedValue.length() > 1) {
                 if (!secret.equalsIgnoreCase(expectedValue)) {
-                    logger.warn("verifyApplicationCredential - Authenticating appid failed.");
+                    logger.warn("verifyApplicationCredential - Authenticating appid failed. Wrong applicationSecret");
                     return false;
                 }
             }
