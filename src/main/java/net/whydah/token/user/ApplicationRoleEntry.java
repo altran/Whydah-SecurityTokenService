@@ -1,6 +1,9 @@
 package net.whydah.token.user;
 
-public class ApplicationRoleEntry {
+import java.io.Serializable;
+
+public class ApplicationRoleEntry implements Serializable {
+    private static final long serialVersionUID = -1557134588400171584L;
     private String applicationId;
     private String applicationName;
     private String organizationName;
@@ -59,5 +62,32 @@ public class ApplicationRoleEntry {
                 ", roleName='" + roleName + '\'' +
                 ", roleValue='" + roleValue + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ApplicationRoleEntry roleEntry = (ApplicationRoleEntry) o;
+
+        if (!applicationId.equals(roleEntry.applicationId)) return false;
+        if (applicationName != null ? !applicationName.equals(roleEntry.applicationName) : roleEntry.applicationName != null)
+            return false;
+        if (!organizationName.equals(roleEntry.organizationName)) return false;
+        if (!roleName.equals(roleEntry.roleName)) return false;
+        if (!roleValue.equals(roleEntry.roleValue)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = applicationId.hashCode();
+        result = 31 * result + (applicationName != null ? applicationName.hashCode() : 0);
+        result = 31 * result + organizationName.hashCode();
+        result = 31 * result + roleName.hashCode();
+        result = 31 * result + roleValue.hashCode();
+        return result;
     }
 }
