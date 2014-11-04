@@ -36,7 +36,7 @@ public class UserTokenTest {
 
     @Test
     public void testCreateUserToken() throws Exception {
-        UserToken2 utoken = new UserToken2();
+        UserToken utoken = new UserToken();
         utoken.setFirstName("Ola");
         utoken.setLastName("Nordmann");
         utoken.setTimestamp("123123123");
@@ -44,7 +44,7 @@ public class UserTokenTest {
         utoken.setTokenid(UUID.randomUUID().toString());
         String xml = freemarkerProcessor.toXml(utoken);
 
-        UserToken2 copyToken = UserTokenFactory.fromXml(xml);
+        UserToken copyToken = UserTokenFactory.fromXml(xml);
         String copyxml = freemarkerProcessor.toXml(copyToken);
         //assertTrue("The generated user token is wrong.", xml.equalsIgnoreCase(copyxml));
 
@@ -53,7 +53,7 @@ public class UserTokenTest {
 
     @Test
     public void testActiveUserTokenRepository() {
-        UserToken2 utoken = new UserToken2();
+        UserToken utoken = new UserToken();
         utoken.setFirstName("Ola");
         utoken.setLastName("Nordmann");
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
@@ -72,7 +72,7 @@ public class UserTokenTest {
 
     @Test
     public void testTimedOutActiveUserTokenRepository() {
-        UserToken2 utoken = new UserToken2();
+        UserToken utoken = new UserToken();
         utoken.setTokenid(UUID.randomUUID().toString());
         utoken.setFirstName("Ola");
         utoken.setLastName("Nordmann");
@@ -85,7 +85,7 @@ public class UserTokenTest {
 
     @Test
     public void testCreateUserTokenWithRoles() {
-        UserToken2 utoken = new UserToken2();
+        UserToken utoken = new UserToken();
         utoken.setFirstName("Olav");
         utoken.setLastName("Nordmann");
         utoken.setTokenid(UUID.randomUUID().toString());
@@ -95,7 +95,7 @@ public class UserTokenTest {
         utoken.addApplicationRoleEntry(new ApplicationRoleEntry("appa", "whydag.org", "Kunde 1", "President", "Valla"));
         String tokenxml = freemarkerProcessor.toXml(utoken);
 
-        UserToken2 copyToken = UserTokenFactory.fromXml(tokenxml);
+        UserToken copyToken = UserTokenFactory.fromXml(tokenxml);
         String copyxml = freemarkerProcessor.toXml(copyToken);
         //System.out.println("FROM: " + tokenxml);
         //System.out.println("TO: " + copyxml);
@@ -166,7 +166,7 @@ public class UserTokenTest {
                 " </token>\n";
         //UserToken2 userToken = UserToken2.createUserTokenFromUserAggregate(appXML, identityXML);
 
-        UserToken2 userToken = new UserTokenFactory("0").fromUserAggregate(identityXML);
+        UserToken userToken = new UserTokenFactory("0").fromUserAggregate(identityXML);
 
                 //System.out.printf(userToken.toString());
         //String xml = freemarkerProcessor.toXml(userToken);

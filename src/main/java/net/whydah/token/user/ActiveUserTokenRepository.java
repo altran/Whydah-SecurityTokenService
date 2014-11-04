@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class ActiveUserTokenRepository {
     private final static Logger logger = LoggerFactory.getLogger(ActiveUserTokenRepository.class);
-    private static Map<String, UserToken2> activeusertokensmap;
+    private static Map<String, UserToken> activeusertokensmap;
 
     static {
         String xmlFileName = System.getProperty("hazelcast.config");
@@ -39,12 +39,12 @@ public class ActiveUserTokenRepository {
      * @param usertokenId userTokenId
      * @return UserToken if found and valid, null if not.
      */
-    public static UserToken2 getUserToken(String usertokenId) {
+    public static UserToken getUserToken(String usertokenId) {
         logger.debug("getUserToken with userTokenid=" + usertokenId);
         if (usertokenId == null) {
             return null;
         }
-        UserToken2 resToken = activeusertokensmap.get(usertokenId);
+        UserToken resToken = activeusertokensmap.get(usertokenId);
         if (resToken != null && verifyUserToken(resToken)) {
             logger.info("Valid userToken found: " + resToken);
             logger.debug("userToken=" + resToken);
@@ -60,12 +60,12 @@ public class ActiveUserTokenRepository {
      * @param userToken UserToken
      * @return true if token is valid.
      */
-    public static boolean verifyUserToken(UserToken2 userToken) {
+    public static boolean verifyUserToken(UserToken userToken) {
         if (userToken.getTokenid() == null) {
             logger.info("UserToken not valid, missing tokenId");
             return false;
         }
-        UserToken2 resToken = activeusertokensmap.get(userToken.getTokenid());
+        UserToken resToken = activeusertokensmap.get(userToken.getTokenid());
         if (resToken == null) {
             logger.info("UserToken not found in repo.");
             return false;
@@ -84,7 +84,7 @@ public class ActiveUserTokenRepository {
         return true;
     }
 
-    public static void addUserToken(UserToken2 token) {
+    public static void addUserToken(UserToken token) {
         if (token.getTokenid() == null) {
             logger.error("Error: token has net tokenid");
             return;
@@ -93,7 +93,7 @@ public class ActiveUserTokenRepository {
             logger.error("Error: trying to update an already existing UserToken in repo..");
             return;
         }
-        UserToken2 copy = token.copy();
+        UserToken copy = token.copy();
         activeusertokensmap.put(copy.getTokenid(), copy);
         logger.info("Added token with id {}", copy.getTokenid(), " content:" + copy);
     }

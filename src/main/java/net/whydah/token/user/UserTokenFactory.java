@@ -47,7 +47,7 @@ public class UserTokenFactory {
         lifespan = String.valueOf(60 * 60 * rand.nextInt(100));
     }
 
-    public static UserToken2 fromXml(String userTokenXml) {
+    public static UserToken fromXml(String userTokenXml) {
         try {
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(new InputSource(new StringReader(userTokenXml)));
@@ -94,7 +94,7 @@ public class UserTokenFactory {
             }
 
 
-            UserToken2 userToken = new UserToken2();
+            UserToken userToken = new UserToken();
             userToken.setUid(uid);
             userToken.setUserName(userName);
             userToken.setFirstName(firstName);
@@ -106,7 +106,7 @@ public class UserTokenFactory {
 
             userToken.setTokenid(tokenId);
             userToken.setTimestamp(timestamp);
-            UserToken2.setDefcon(defcon);
+            UserToken.setDefcon(defcon);
             userToken.setLifespan(lifespan);
             userToken.setIssuer(issuer);
             return userToken;
@@ -117,8 +117,8 @@ public class UserTokenFactory {
     }
 
     //String appTokenXml
-    public UserToken2 fromUserAggregate(String userAggregateXML) {
-        UserToken2 userToken = parseUserAggregateXml(userAggregateXML);
+    public UserToken fromUserAggregate(String userAggregateXML) {
+        UserToken userToken = parseUserAggregateXml(userAggregateXML);
         userToken.setTokenid(generateID());
         userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
         String securityLevel = "1"; //UserIdentity as source = securitylevel=0
@@ -131,7 +131,7 @@ public class UserTokenFactory {
         return userToken;
     }
 
-    private UserToken2 parseUserAggregateXml(String userAggregateXML) {
+    private UserToken parseUserAggregateXml(String userAggregateXML) {
         try {
             DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
             Document doc = documentBuilder.parse(new InputSource(new StringReader(userAggregateXML)));
@@ -155,7 +155,7 @@ public class UserTokenFactory {
                 role.setRoleValue((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/roleValue", doc, XPathConstants.STRING));
                 roleList.add(role);
             }
-            UserToken2 userToken = new UserToken2();
+            UserToken userToken = new UserToken();
             userToken.setUid(uid);
             userToken.setUserName(userName);
             userToken.setFirstName(firstName);
@@ -187,7 +187,7 @@ public class UserTokenFactory {
     */
 
     //ED: Can this hack be improved?
-    public static UserToken2 createNetIQToken() {
+    public static UserToken createNetIQToken() {
         ApplicationRoleEntry roleEntry = new ApplicationRoleEntry();
         roleEntry.setApplicationId("11");
         roleEntry.setApplicationName("SecurityTokenService");
@@ -196,7 +196,7 @@ public class UserTokenFactory {
         roleEntry.setRoleValue("1");
 
 
-        UserToken2 userToken = new UserToken2();
+        UserToken userToken = new UserToken();
         userToken.addApplicationRoleEntry(roleEntry);
         return userToken;
     }

@@ -94,7 +94,7 @@ public class UserTokenFactoryTest {
 
     @Test
     public void testFromXml1() {
-        UserToken2 userToken = factory.fromXml(userTokenXml1);
+        UserToken userToken = factory.fromXml(userTokenXml1);
         assertEquals(userToken.getUid(), "uid1");
         assertEquals(userToken.getUserName(), "username1");
         assertEquals(userToken.getIssuer(), "UserToken2FactoryTestTokenIssuer");
@@ -106,7 +106,7 @@ public class UserTokenFactoryTest {
 
     @Test
     public void testFromXmlWithSeveralRoles() {
-        UserToken2 userToken = factory.fromXml(userTokenXmlWithFourRoles);
+        UserToken userToken = factory.fromXml(userTokenXmlWithFourRoles);
         assertEquals(userToken.getUid(), "8d563960-7b4f-4c44-a241-1ac359999b63");
         assertEquals(userToken.getUserName(), "anders.norman@company.com");
         assertEquals(userToken.getIssuer(), "");

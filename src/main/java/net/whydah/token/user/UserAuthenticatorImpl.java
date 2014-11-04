@@ -36,14 +36,14 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     }
 
     @Override
-    public UserToken2 logonUser(final String applicationTokenId, final String appTokenXml, final String userCredentialXml) {
+    public UserToken logonUser(final String applicationTokenId, final String appTokenXml, final String userCredentialXml) {
         logger.trace("logonUser - Calling UserIdentityBackend at " + useridentitybackend + " appTokenXml:" + appTokenXml + " userCredentialXml:" + userCredentialXml);
         try {
             // /uib/{applicationTokenId}/authenticate/user
             WebResource webResource = uibResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH);
             ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, userCredentialXml);
 
-            UserToken2 userToken = getUserToken(appTokenXml, response);
+            UserToken userToken = getUserToken(appTokenXml, response);
             return userToken;
         } catch (Exception e) {
             logger.error("Problems connecting to {}", useridentitybackend);
@@ -53,7 +53,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
     @Deprecated     //TODO move this functionality to new UserAdminService
     @Override
-    public UserToken2 createAndLogonUser(String applicationtokenid, String appTokenXml, String userCredentialXml, String fbUserXml) {
+    public UserToken createAndLogonUser(String applicationtokenid, String appTokenXml, String userCredentialXml, String fbUserXml) {
         logger.trace("createAndLogonUser - Calling UserIdentityBackend at with appTokenXml:\n" + appTokenXml + "userCredentialXml:\n" + userCredentialXml + "fbUserXml:\n" + fbUserXml);
         // TODO /uib//{applicationTokenId}/{applicationTokenId}/createandlogon/
         // TODO /authenticate/user
@@ -61,13 +61,13 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         logger.debug("createAndLogonUser - Calling createandlogon " + webResource.toString());
         ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, fbUserXml);
 
-        UserToken2 token = getUserToken(appTokenXml, response);
+        UserToken token = getUserToken(appTokenXml, response);
         token.setSecurityLevel("0");  // 3rd party token as source = securitylevel=0
         return token;
     }
 
 
-    private UserToken2 getUserToken(String appTokenXml, ClientResponse response) {
+    private UserToken getUserToken(String appTokenXml, ClientResponse response) {
         if (response.getStatus() != Response.Status.OK.getStatusCode()) {
             logger.error("Response from UIB: {}: {}", response.getStatus(), response.getEntity(String.class));
             throw new AuthenticationFailedException("Authentication failed. Status code " + response.getStatus());
@@ -79,7 +79,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         }
 
         //UserToken token = UserToken.createFromUserAggregate(appTokenXml, identityXML);
-        UserToken2 userToken = userTokenFactory.fromUserAggregate(identityXML);
+        UserToken userToken = userTokenFactory.fromUserAggregate(identityXML);
         //token.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
         ActiveUserTokenRepository.addUserToken(userToken);
         return userToken;

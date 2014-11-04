@@ -9,8 +9,12 @@ import java.security.MessageDigest;
 import java.util.LinkedList;
 import java.util.List;
 
-public class UserToken2 implements Serializable {
-    private static final Logger logger = LoggerFactory.getLogger(UserToken2.class);
+/**
+ * @author Totto
+ * @author <a href="mailto:erik-dev@fjas.no">Erik Drolshammer</a>
+ */
+public class UserToken implements Serializable {
+    private static final Logger logger = LoggerFactory.getLogger(UserToken.class);
 
     // nextInt is normally exclusive of the top value,
     // so add 1 to make it inclusive
@@ -34,7 +38,7 @@ public class UserToken2 implements Serializable {
     //Ignored properties: cellPhone,
 
 
-    public UserToken2() {
+    public UserToken() {
         this.timestamp = Long.toString(System.currentTimeMillis());
         this.roleList = new LinkedList<>();
     }
@@ -139,7 +143,7 @@ public class UserToken2 implements Serializable {
         return stillValid;
     }
 
-    public UserToken2 copy() {
+    public UserToken copy() {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -147,14 +151,14 @@ public class UserToken2 implements Serializable {
             byte[] obj = baos.toByteArray();
             ByteArrayInputStream bais = new ByteArrayInputStream(obj);
             ObjectInputStream ois = new ObjectInputStream(bais);
-            return (UserToken2) ois.readObject();
+            return (UserToken) ois.readObject();
         } catch (Exception e) {
             logger.error("Error copying UserToken", e);
         }
         return null;
     }
 
-    //Used by usertoken2.ftl
+    //Used by usertoken.ftl
     public String getMD5() {
         String md5base = null2empty(uid) + null2empty(personRef) + null2empty(tokenid) + null2empty(timestamp)
                 + null2empty(firstName) + null2empty(lastName) + null2empty(email) + null2empty(securityLevel) + null2empty(issuer);
@@ -216,7 +220,7 @@ public class UserToken2 implements Serializable {
         this.roleList = roleList;
     }
     public static void setDefcon(String defcon) {
-        UserToken2.defcon = defcon;
+        UserToken.defcon = defcon;
     }
 
 

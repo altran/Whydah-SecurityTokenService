@@ -18,9 +18,9 @@ public class DummyUserAuthenticator implements UserAuthenticator {
     private final static DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
 
-    public UserToken2 logonUser(String applicationTokenId, String appTokenXml, String userCredentialXml) {
+    public UserToken logonUser(String applicationTokenId, String appTokenXml, String userCredentialXml) {
         if (ApplicationMode.getApplicationMode().equalsIgnoreCase(ApplicationMode.DEV)) {
-            UserToken2 ut = null;
+            UserToken ut = null;
             try {
                 String xml = loadFromFile(parseUsernameFromUserCredential(userCredentialXml));
                 ut = UserTokenFactory.fromXml(xml);
@@ -33,9 +33,9 @@ public class DummyUserAuthenticator implements UserAuthenticator {
         throw new IllegalStateException();
     }
 
-    public UserToken2 createAndLogonUser(String applicationtokenid, String appTokenXml, String userCredentialXml, String fbUserXml) {
+    public UserToken createAndLogonUser(String applicationtokenid, String appTokenXml, String userCredentialXml, String fbUserXml) {
         if (ApplicationMode.getApplicationMode().equalsIgnoreCase(ApplicationMode.DEV)) {
-            return new UserToken2();
+            return new UserToken();
         }
         throw new IllegalStateException();
     }

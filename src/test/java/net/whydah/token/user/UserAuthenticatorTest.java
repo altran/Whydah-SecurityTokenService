@@ -36,7 +36,7 @@ public class UserAuthenticatorTest {
         envs.put(ApplicationMode.IAM_MODE_KEY, ApplicationMode.DEV);
         EnvHelper.setEnv(envs);
         UserAuthenticator ua = new DummyUserAuthenticator();
-        UserToken2 ut = ua.logonUser(applicationTokenId, appTokenXml, userCredentialXml);
+        UserToken ut = ua.logonUser(applicationTokenId, appTokenXml, userCredentialXml);
         // System.out.println(ut.toString());
         assertNotNull(ut);
     }
