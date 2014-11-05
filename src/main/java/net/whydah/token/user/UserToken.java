@@ -34,6 +34,9 @@ public class UserToken implements Serializable {
     private String securityLevel;
     private String lifespan;
     private String issuer;
+
+
+    private String ns2link;
     private List<ApplicationRoleEntry> roleList;
     //Ignored properties: cellPhone,
 
@@ -223,6 +226,10 @@ public class UserToken implements Serializable {
         UserToken.defcon = defcon;
     }
 
+    public void setNs2link(String ns2link) {
+        this.ns2link = ns2link;
+    }
+
 
     public String getTokenid() {
         return tokenid;
@@ -262,6 +269,9 @@ public class UserToken implements Serializable {
     }
     public static String getDefcon() {
         return defcon;
+    }
+    public String getNs2link() {
+        return ns2link;
     }
 
     @Override
