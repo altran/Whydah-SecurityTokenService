@@ -131,18 +131,18 @@ public class UserToken implements Serializable {
     */
 
     public boolean isValid() {
-        logger.trace("usertoken - isValid  timestamp={}  lifespan={}", timestamp, lifespan);
         if (timestamp == null || lifespan == null) {
+            logger.trace("usertoken invalid because timestamp or lifespan is not set. timestamp={}  lifespan={}", timestamp, lifespan);
             return false;
         }
 
         long now = System.currentTimeMillis();
         long timeout = Long.parseLong(timestamp) + Long.parseLong(lifespan);
-        logger.debug("usertoken - isValid timeout={} > now={}", timeout, now);
-        boolean stillValid = (timeout > now);
+        boolean stillValid = timeout > now;
         if (!stillValid) {
-            logger.info ("SecurityToken timed out.");
+            logger.trace("usertoken invalid (timed out). timeout={} is NOT greater than now={}", timeout, now);
         }
+        logger.trace("usertoken is valid!");
         return stillValid;
     }
 
