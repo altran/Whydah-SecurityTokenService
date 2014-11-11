@@ -18,7 +18,7 @@ public class UserTokenFactoryTest {
             "    <uid>uid1</uid>\n"+
             "    <timestamp>1415091487335</timestamp>\n"+
             "    <lifespan>82800</lifespan>\n"+
-            "    <issuer>https://sso.whydah.no/tokenservice/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06</issuer>\n"+
+            "    <issuer>https://sso.whydah.no/tokenservice/user/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06</issuer>\n"+
             "    <securitylevel>0</securitylevel>\n"+
             "    <DEFCON>5</DEFCON>\n"+
             "    <username>username1</username>\n"+
@@ -37,7 +37,7 @@ public class UserTokenFactoryTest {
             "        <role name=\"President\" value=\"Valla\"/>\n"+
             "    </application>\n"+
             "\n"+
-            "    <ns2:link type=\"application/xml\" href=\"https://sso.whydah.no/tokenservice/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06\" rel=\"self\"/>\n"+
+            "    <ns2:link type=\"application/xml\" href=\"https://sso.whydah.no/tokenservice/user/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06\" rel=\"self\"/>\n"+
             "    <hash type=\"MD5\">509eec7aef07357e4660f99f74255390</hash>\n"+
             "</usertoken>\n"+
             "\n";
@@ -47,7 +47,7 @@ public class UserTokenFactoryTest {
             "    <uid>8d563960-7b4f-4c44-a241-1ac359999b63</uid>\n" +
             "    <timestamp>1415091757670</timestamp>\n" +
             "    <lifespan>3600000</lifespan>\n" +
-            "    <issuer>https://sso.whydah.no/tokenservice/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06</issuer>\n" +
+            "    <issuer>https://sso.whydah.no/tokenservice/user/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06</issuer>\n" +
             "    <securitylevel>0</securitylevel>\n" +
             "    <DEFCON>5</DEFCON>\n" +
             "    <username>anders.norman@company.com</username>\n" +
@@ -76,7 +76,7 @@ public class UserTokenFactoryTest {
             "        <role name=\"Owner\" value=\"Anders Norman\"/>\n" +
             "    </application>\n" +
             "\n" +
-            "    <ns2:link type=\"application/xml\" href=\"https://sso.whydah.no/tokenservice/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06\" rel=\"self\"/>\n" +
+            "    <ns2:link type=\"application/xml\" href=\"https://sso.whydah.no/tokenservice/user/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06\" rel=\"self\"/>\n" +
             "    <hash type=\"MD5\">88e4a2db17733f371e8f78e123108d13</hash>\n" +
             "</usertoken>";
     private static UserTokenFactory factory;
@@ -97,7 +97,7 @@ public class UserTokenFactoryTest {
         UserToken userToken = factory.fromXml(userTokenXml1);
         assertEquals(userToken.getUid(), "uid1");
         assertEquals(userToken.getUserName(), "username1");
-        assertEquals(userToken.getIssuer(), "https://sso.whydah.no/tokenservice/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06");
+        assertEquals(userToken.getIssuer(), "https://sso.whydah.no/tokenservice/user/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06");
         assertEquals(userToken.getDefcon(), "5");
         assertEquals(userToken.getTimestamp(), "1415091487335");
         assertEquals(userToken.getLifespan(), "82800");
@@ -109,7 +109,7 @@ public class UserTokenFactoryTest {
         UserToken userToken = factory.fromXml(userTokenXmlWithFourRoles);
         assertEquals(userToken.getUid(), "8d563960-7b4f-4c44-a241-1ac359999b63");
         assertEquals(userToken.getUserName(), "anders.norman@company.com");
-        assertEquals(userToken.getIssuer(), "https://sso.whydah.no/tokenservice/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06");
+        assertEquals(userToken.getIssuer(), "https://sso.whydah.no/tokenservice/user/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06");
         assertEquals(userToken.getDefcon(), "5");
         assertEquals(userToken.getTimestamp(), "1415091757670");
         assertEquals(userToken.getLifespan(), "3600000");

@@ -95,8 +95,7 @@ public class UserTokenResource {
         }
         try {
             UserToken userToken = userAuthenticator.logonUser(applicationtokenid, appTokenXml, userCredentialXml);
-            // /{applicationtokenid}/validate_usertokenid/{usertokenid}
-            userToken.setNs2link(appConfig.getProperty("myuri")+applicationtokenid+"/validate_usertokenid/"+userToken.getTokenid());
+            userToken.setNs2link(appConfig.getProperty("myuri")+"user/"+applicationtokenid+"/validate_usertokenid/"+userToken.getTokenid());
             return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
         } catch (AuthenticationFailedException ae) {
             logger.warn("getUserToken - User authentication failed");
@@ -134,8 +133,7 @@ public class UserTokenResource {
 
             // Add the user to the ticket-map with the ticket given from the caller
             userticketmap.put(userticket, usertoken.getTokenid());
-            // /{applicationtokenid}/validate_usertokenid/{usertokenid}
-            usertoken.setNs2link(appConfig.getProperty("myuri")+applicationtokenid+"/validate_usertokenid/"+usertoken.getTokenid());
+            usertoken.setNs2link(appConfig.getProperty("myuri")+"user/"+applicationtokenid+"/validate_usertokenid/"+usertoken.getTokenid());
             return Response.ok(new Viewable("/usertoken.ftl", usertoken)).build();
         } catch (AuthenticationFailedException ae) {
             logger.warn("getUserTokenAndStoreUserTicket - User authentication failed");
@@ -213,8 +211,7 @@ public class UserTokenResource {
         if (userToken != null) {
             userticketmap.put(userticket, userToken.getTokenid());
             logger.trace("createUserTicketByUserTokenId OK. Response={}", userToken.toString());
-            // /{applicationtokenid}/validate_usertokenid/{usertokenid}
-            userToken.setNs2link(appConfig.getProperty("myuri") + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
+            userToken.setNs2link(appConfig.getProperty("myuri") +"user/"+ applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
             return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
         }
         logger.warn("createUserTicketByUserTokenId - attempt to access with non acceptable usertokenid {}", userTokenId);
@@ -250,8 +247,7 @@ public class UserTokenResource {
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
         if (userToken != null) {
             logger.trace("getUserTokenByUserTokenId OK. Response={}", userToken.toString());
-            // /{applicationtokenid}/validate_usertokenid/{usertokenid}
-            userToken.setNs2link(appConfig.getProperty("myuri") + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
+            userToken.setNs2link(appConfig.getProperty("myuri")+"user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
             return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
         }
         if (applicationtokenidmap.get(userTokenId) != null){
@@ -315,8 +311,7 @@ public class UserTokenResource {
             return Response.status(Response.Status.NOT_ACCEPTABLE).build(); //406
         }
         logger.trace("getUserTokenByUserTicket OK. Response={}", userToken.toString());
-        // /{applicationtokenid}/validate_usertokenid/{usertokenid}
-        userToken.setNs2link(appConfig.getProperty("myuri") + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
+        userToken.setNs2link(appConfig.getProperty("myuri")+"user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
         return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
     }
 
@@ -423,8 +418,7 @@ public class UserTokenResource {
             applicationtokenidmap.put(applicationtokenid,applicationtokenid);
             UserToken userToken = userAuthenticator.createAndLogonUser(applicationtokenid, appTokenXml, userCredentialXml, thirdPartyUserTokenXml);
             userticketmap.put(userticket, userToken.getTokenid());
-            // /{applicationtokenid}/validate_usertokenid/{usertokenid}
-            userToken.setNs2link(appConfig.getProperty("myuri")+applicationtokenid+"/validate_usertokenid/"+userToken.getTokenid());
+            userToken.setNs2link(appConfig.getProperty("myuri")+"user/"+applicationtokenid+"/validate_usertokenid/"+userToken.getTokenid());
             return Response.ok(new Viewable("/usertoken.ftl", userToken)).build();
         } catch (AuthenticationFailedException ae) {
             logger.warn("createAndLogOnUser - Error creating or authenticating user. Token: {}", thirdPartyUserTokenXml);
