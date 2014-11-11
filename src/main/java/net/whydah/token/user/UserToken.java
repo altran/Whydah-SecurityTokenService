@@ -261,8 +261,9 @@ public class UserToken implements Serializable {
     public String getLifespan() {
         return lifespan;
     }
+    // TODO  return a better issuer?
     public String getIssuer() {
-        return issuer;
+        return ns2link;
     }
     public List<ApplicationRoleEntry> getRoleList() {
         return roleList;
