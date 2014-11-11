@@ -17,7 +17,6 @@ import javax.xml.xpath.XPathFactory;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -29,10 +28,10 @@ public class UserTokenFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(UserTokenFactory.class);
     private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-    private static Random rand = new Random();
+    //private static Random rand = new Random();
     private static String defcon = "0";
-    private static String lifespan;
-    //private String lifespan = String.valueOf(60 * 60 * rand.nextInt(1000));
+    private static String lifespanMs;
+    //private String lifespanMs = String.valueOf(60 * 60 * rand.nextInt(1000));
 
     //ED: I do not like this dependency...
     private static AppConfig appConfig = new AppConfig();
@@ -44,7 +43,8 @@ public class UserTokenFactory {
 
     public UserTokenFactory(String defcon) {
         UserTokenFactory.defcon = defcon;
-        lifespan = String.valueOf(60 * 60 * rand.nextInt(100));
+        //lifespanMs = String.valueOf(60 * 60 * rand.nextInt(100));
+        lifespanMs = String.valueOf(14 * 24 * 60 * 60 * 1000); //14 days, reduce when refresh is implemented.
     }
 
     public static UserToken fromXml(String userTokenXml) {
@@ -127,7 +127,7 @@ public class UserTokenFactory {
         userToken.setDefcon(defcon);
         //String issuer = extractIssuer(appTokenXml);
         userToken.setIssuer(TOKEN_ISSUER);
-        userToken.setLifespan(lifespan);
+        userToken.setLifespan(lifespanMs);
         return userToken;
     }
 
