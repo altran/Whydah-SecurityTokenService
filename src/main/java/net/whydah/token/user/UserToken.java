@@ -263,7 +263,10 @@ public class UserToken implements Serializable {
     }
     // TODO  return a better issuer?
     public String getIssuer() {
-        return ns2link;
+        if (ns2link!=null){
+            return ns2link;
+        }
+        return issuer;
     }
     public List<ApplicationRoleEntry> getRoleList() {
         return roleList;
