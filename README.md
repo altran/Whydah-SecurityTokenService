@@ -147,7 +147,7 @@ As a 3rd party app developer, you can do as follows to develop and test your int
 **Note:** If you don't want to create your own login screen, you can use the configurable login user interface provided with [SSOLoginWebApplication](http://github.com/altran/Whydah-SSOLoginWebApplication). In that case, you'll need to download and set up that application as well to talk with your STS. 
 
 ## Using the testpage
-The testpage is accessible at *mybaseuri* if it is enabled.
+The testpage is accessible at *myuri* if it is enabled.
 You will normally find at at [http://localhost:9998/tokenservice/] if you run locally.
 
 It is useful to test that application logon and user logon actually works.
