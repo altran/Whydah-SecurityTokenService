@@ -4,6 +4,7 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import net.whydah.token.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +16,7 @@ public class ActiveUserTokenRepository {
     private static Map<String, UserToken> activeusertokensmap;
 
     static {
+        AppConfig appConfig = new AppConfig();
         String xmlFileName = System.getProperty("hazelcast.config");
         logger.info("Loading hazelcast configuration from :" + xmlFileName);
         Config hazelcastConfig = new Config();
@@ -28,7 +30,7 @@ public class ActiveUserTokenRepository {
         }
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
-        activeusertokensmap = hazelcastInstance.getMap("activeusertokensmap");
+        activeusertokensmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"activeusertokensmap");
 
     }
 

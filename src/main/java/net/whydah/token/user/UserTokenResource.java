@@ -29,6 +29,7 @@ public class UserTokenResource {
     private static Map  applicationtokenidmap = new HashMap();
 
     static {
+        AppConfig appConfig = new AppConfig();
         String xmlFileName = System.getProperty("hazelcast.config");
         logger.info("Loading hazelcast configuration from :" + xmlFileName);
         Config hazelcastConfig = new Config();
@@ -42,8 +43,8 @@ public class UserTokenResource {
         }
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
-        userticketmap = hazelcastInstance.getMap("userticketmap");
-        applicationtokenidmap = hazelcastInstance.getMap("applicationtokenidmap");
+        userticketmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"userticketmap");
+        applicationtokenidmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"applicationtokenidmap");
 
     }
 
