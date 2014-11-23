@@ -21,6 +21,7 @@ import javax.ws.rs.core.UriInfo;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 @Path("/user")
 public class UserTokenResource {
@@ -30,9 +31,14 @@ public class UserTokenResource {
     private static Map  applicationtokenidmap = new HashMap();
 
     static {
-        SSLTool.disableCertificateValidation();
 
         AppConfig appConfig = new AppConfig();
+
+        // Property-overwrite of SSL verification to support weak ssl certificates
+        if ("disabled".equalsIgnoreCase(appConfig.getProperty("sslverification"))) {
+            SSLTool.disableCertificateValidation();
+
+        }
         String xmlFileName = System.getProperty("hazelcast.config");
         logger.info("Loading hazelcast configuration from :" + xmlFileName);
         Config hazelcastConfig = new Config();
