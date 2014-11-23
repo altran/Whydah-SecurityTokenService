@@ -9,6 +9,7 @@ import com.sun.jersey.api.view.Viewable;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
+import net.whydah.token.config.SSLTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +30,8 @@ public class UserTokenResource {
     private static Map  applicationtokenidmap = new HashMap();
 
     static {
+        SSLTool.disableCertificateValidation();
+
         AppConfig appConfig = new AppConfig();
         String xmlFileName = System.getProperty("hazelcast.config");
         logger.info("Loading hazelcast configuration from :" + xmlFileName);
