@@ -31,6 +31,7 @@ public class ActiveUserTokenRepository {
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         activeusertokensmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"activeusertokensmap");
+        logger.info("Connectiong to map {}",appConfig.getProperty("gridprefix")+"activeusertokensmap");
 
     }
 

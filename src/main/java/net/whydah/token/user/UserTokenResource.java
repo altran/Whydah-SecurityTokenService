@@ -45,6 +45,9 @@ public class UserTokenResource {
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         userticketmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"userticketmap");
         applicationtokenidmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"applicationtokenidmap");
+        logger.info("Connectiong to map {}",appConfig.getProperty("gridprefix")+"userticketmap");
+        logger.info("Connectiong to map {}",appConfig.getProperty("gridprefix")+"applicationtokenidmap");
+
 
     }
 
