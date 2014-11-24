@@ -15,7 +15,7 @@ import java.net.URI;
 public class UserAuthenticatorImpl implements UserAuthenticator {
     private static final Logger logger = LoggerFactory.getLogger(UserAuthenticatorImpl.class);
     private static final String USER_AUTHENTICATION_PATH = "/authenticate/user";
-    private static final String CREATE_AND_LOGON_PATH = "createandlogon";
+    private static final String CREATE_AND_LOGON_OPERATION = "createandlogon";
     //private static final String USER_TOKEN_URL = "usertoken";
     //private static final String AUTHENTICATE = "authenticate";
     //private static final String USER_URL = "user";
@@ -57,7 +57,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         logger.trace("createAndLogonUser - Calling UserIdentityBackend at with appTokenXml:\n" + appTokenXml + "userCredentialXml:\n" + userCredentialXml + "fbUserXml:\n" + fbUserXml);
         // TODO /uib//{applicationTokenId}/{applicationTokenId}/createandlogon/
         // TODO /authenticate/user
-        WebResource webResource = uibResource.path(applicationtokenid).path(USER_AUTHENTICATION_PATH).path(CREATE_AND_LOGON_PATH);
+        WebResource webResource = uibResource.path(applicationtokenid).path(USER_AUTHENTICATION_PATH).path(CREATE_AND_LOGON_OPERATION);
         logger.debug("createAndLogonUser - Calling createandlogon " + webResource.toString());
         ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, fbUserXml);
 
