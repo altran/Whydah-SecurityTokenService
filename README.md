@@ -139,7 +139,7 @@ Therefore Whydah is designed for easy peasy integration so all developers relati
 As a 3rd party app developer, you can do as follows to develop and test your integration locally:
 * Download and configure STS in DEV-mode
 * Create usertoken files for the different roles you have in your application. Remember **t_** in front of filename and **.token**
-** [Read more about user tokens here](https://wiki.cantara.no/display/iam/UserToken)
+** [Read more about user tokens here](https://wiki.cantara.no/display/whydah/UserToken)
 * Run STS in DEV-mode locally, different usernames will give you different "stubbed" usertokens, password check is omitted.
 * Learn the login flow using the testpage.
 * Build your integration.
