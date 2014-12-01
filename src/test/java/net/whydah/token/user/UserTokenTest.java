@@ -254,4 +254,11 @@ public class UserTokenTest {
         assertTrue(roleList.size() == 4);
 
     }
-}
+    @Test
+    public void testUserTokenFullUserToken() throws Exception {
+        assertTrue(UserTokenFactory.shouldReturnFullUserToken("11"));
+        assertFalse(UserTokenFactory.shouldReturnFullUserToken("121"));
+
+    }
+
+    }
