@@ -51,6 +51,12 @@ public class UserToken implements Serializable {
     private List<ApplicationRoleEntry> roleList;
     //Ignored properties: cellPhone,
 
+    public void setApplicationID(String applicationID) {
+        this.applicationID = applicationID;
+    }
+
+    private String applicationID=null;
+
 
     public UserToken() {
         this.timestamp = Long.toString(System.currentTimeMillis());
@@ -198,7 +204,20 @@ public class UserToken implements Serializable {
         return issuer;
     }
     public List<ApplicationRoleEntry> getRoleList() {
+        if (applicationID!=null){
+            return getRoleList(applicationID);
+        }
         return roleList;
+    }
+    public List<ApplicationRoleEntry> getRoleList(String applicationID) {
+        List<ApplicationRoleEntry> filteredRoleList= new LinkedList<>();
+        for ( ApplicationRoleEntry are: roleList) {
+            if (are.getApplicationId().equalsIgnoreCase(applicationID)){
+                filteredRoleList.add(are);
+            }
+
+        }
+        return filteredRoleList;
     }
     public static String getDefcon() {
         return defcon;
@@ -222,7 +241,7 @@ public class UserToken implements Serializable {
                 ", securityLevel='" + securityLevel + '\'' +
                 ", lifespan='" + lifespan + '\'' +
                 ", issuer='" + issuer + '\'' +
-                ", roleList.size=" + roleList.size() +
+                ", roleList.size=" + getRoleList().size() +
                 '}';
     }
 }
