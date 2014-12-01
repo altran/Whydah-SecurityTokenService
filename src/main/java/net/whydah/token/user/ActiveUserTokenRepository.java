@@ -85,7 +85,6 @@ public class ActiveUserTokenRepository {
             return false;
         }
         if (userToken.getEmail()!=null){
-            userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
             lastSeenMap.put(userToken.getEmail(),new Date());
 
         }
