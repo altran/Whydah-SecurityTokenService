@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import static junit.framework.Assert.assertNotSame;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.*;
 
@@ -104,6 +105,11 @@ public class UserTokenTest {
         //System.out.println("FROM: " + tokenxml);
         //System.out.println("TO: " + copyxml);
         assertEquals(tokenxml, copyxml);
+        UserToken copyToken2 = UserTokenFactory.fromXml(tokenxml);
+        copyToken2.setApplicationID("2349785543");
+        String copyxml2 = freemarkerProcessor.toXml(copyToken2);
+        //System.out.println("FILTERED: " + copyxml2);
+        assertFalse("Should not be equal as result is applicationfiltered ", tokenxml.equals(copyxml2));
     }
 
     @Test
