@@ -91,7 +91,7 @@ public class UserTokenTest {
         UserToken utoken = new UserToken();
         utoken.setFirstName("Olav");
         utoken.setLastName("Nordmann");
-        utoken.setEmail("test@whydah.net");
+        utoken.setEmail("test2@whydah.net");
         utoken.setTokenid(UUID.randomUUID().toString());
         utoken.addApplicationRoleEntry(new ApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 1", "Boardmember", "Diktator"));
         utoken.addApplicationRoleEntry(new ApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 2", "tester", "ansatt"));
