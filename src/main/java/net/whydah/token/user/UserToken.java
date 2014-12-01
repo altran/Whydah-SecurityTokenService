@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -53,6 +54,7 @@ public class UserToken implements Serializable {
 
     public UserToken() {
         this.timestamp = Long.toString(System.currentTimeMillis());
+        this.lastSeen= new Date().toString();
         this.roleList = new LinkedList<>();
     }
 
