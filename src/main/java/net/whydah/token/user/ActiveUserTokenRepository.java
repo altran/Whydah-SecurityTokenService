@@ -63,6 +63,7 @@ public class ActiveUserTokenRepository {
         }
         UserToken resToken = activeusertokensmap.get(usertokenId);
         if (resToken != null && verifyUserToken(resToken)) {
+            resToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(resToken));
             lastSeenMap.put(resToken.getEmail(),new Date());
             logger.info("Valid userToken found: " + resToken);
             logger.debug("userToken=" + resToken);
@@ -84,6 +85,7 @@ public class ActiveUserTokenRepository {
             return false;
         }
         if (userToken.getEmail()!=null){
+            userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
             lastSeenMap.put(userToken.getEmail(),new Date());
 
         }
@@ -111,7 +113,9 @@ public class ActiveUserTokenRepository {
             logger.error("Error: token has net tokenid");
             return;
         }
+
         if (userToken.getEmail()!=null){
+            userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
             lastSeenMap.put(userToken.getEmail(),new Date());
 
         }
