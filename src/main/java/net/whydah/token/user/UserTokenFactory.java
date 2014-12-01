@@ -172,38 +172,6 @@ public class UserTokenFactory {
         }
     }
 
-    /*
-    private String extractIssuer(String appTokenXml) {
-        try {
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(new InputSource(new StringReader(appTokenXml)));
-            XPath xPath = XPathFactory.newInstance().newXPath();
-            String expression = "/token/Url[1]/@template";
-            XPathExpression xPathExpression = xPath.compile(expression);
-            return xPathExpression.evaluate(doc);
-        } catch (Exception e) {
-            logger.error("Error when parsing appToken " + appTokenXml, e);
-            return null;
-        }
-    }
-    */
-
-    //ED: Can this hack be improved?
-    /*
-    public static UserToken createNetIQToken() {
-        ApplicationRoleEntry roleEntry = new ApplicationRoleEntry();
-        roleEntry.setApplicationId("11");
-        roleEntry.setApplicationName("SecurityTokenService");
-        roleEntry.setOrganizationName("Whydah");
-        roleEntry.setRoleName("WhydahUserAdmin");
-        roleEntry.setRoleValue("1");
-
-
-        UserToken userToken = new UserToken();
-        userToken.addApplicationRoleEntry(roleEntry);
-        return userToken;
-    }
-    */
 
     private String generateID() {
         return UUID.randomUUID().toString();
@@ -211,5 +179,18 @@ public class UserTokenFactory {
 
     public static void setDefcon(String defcon) {
         UserTokenFactory.defcon = defcon;
+    }
+
+    public static boolean shouldReturnFullUserToken(String applicationID) {
+        String[] applicationIDs = appConfig.getProperty("fulltokenapplications").split(",");
+        for (int i = 0; i < applicationIDs.length; i++){
+            if (applicationIDs[i].equalsIgnoreCase(applicationID)) {
+                return true;
+            }
+        }
+//        if (appConfig.getProperty("fulltokenapplications").compareTo(applicationID)>0){
+//            return true;
+//        }
+        return false;
     }
 }

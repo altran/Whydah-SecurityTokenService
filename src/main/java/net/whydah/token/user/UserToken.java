@@ -1,5 +1,6 @@
 package net.whydah.token.user;
 
+import net.whydah.token.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,9 +17,6 @@ import java.util.List;
  */
 public class UserToken implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(UserToken.class);
-
-    // nextInt is normally exclusive of the top value,
-    // so add 1 to make it inclusive
 
     private String tokenid;
 
@@ -210,6 +208,9 @@ public class UserToken implements Serializable {
         return roleList;
     }
     public List<ApplicationRoleEntry> getRoleList(String applicationID) {
+        if (UserTokenFactory.shouldReturnFullUserToken(applicationID)){
+            return roleList;
+        }
         List<ApplicationRoleEntry> filteredRoleList= new LinkedList<>();
         for ( ApplicationRoleEntry are: roleList) {
             if (are.getApplicationId().equalsIgnoreCase(applicationID)){
