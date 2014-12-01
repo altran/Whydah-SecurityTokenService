@@ -63,6 +63,7 @@ public class UserTokenFactory {
 
             String tokenId = (String) xPath.evaluate("/usertoken/@id", doc, XPathConstants.STRING);
             String timestamp = (String) xPath.evaluate("/usertoken/timestamp", doc, XPathConstants.STRING);
+            String lastSeen = (String) xPath.evaluate("/usertoken/lastseen", doc, XPathConstants.STRING);
 
             String defcon = (String) xPath.evaluate("/usertoken/DEFCON", doc, XPathConstants.STRING);
             String lifespan = (String) xPath.evaluate("/usertoken/lifespan", doc, XPathConstants.STRING);
@@ -106,6 +107,7 @@ public class UserTokenFactory {
 
             userToken.setTokenid(tokenId);
             userToken.setTimestamp(timestamp);
+            userToken.setLastSeen(lastSeen);
             UserToken.setDefcon(defcon);
             userToken.setLifespan(lifespan);
             userToken.setIssuer(issuer);

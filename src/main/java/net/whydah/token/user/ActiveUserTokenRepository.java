@@ -9,11 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
+import java.sql.Time;
+import java.util.Date;
 import java.util.Map;
 
 public class ActiveUserTokenRepository {
     private final static Logger logger = LoggerFactory.getLogger(ActiveUserTokenRepository.class);
     private static Map<String, UserToken> activeusertokensmap;
+    private static Map<String, Date> lastSeenMap;
 
     static {
         AppConfig appConfig = new AppConfig();
@@ -32,9 +35,20 @@ public class ActiveUserTokenRepository {
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         activeusertokensmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"activeusertokensmap");
         logger.info("Connectiong to map {}",appConfig.getProperty("gridprefix")+"activeusertokensmap");
-
+        lastSeenMap= hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"lastSeenMap");
+        logger.info("Connectiong to map {}",appConfig.getProperty("gridprefix")+"lastSeenMap");
     }
 
+
+    public static String getLastSeen(UserToken userToken){
+        if (userToken!=null) {
+            Date d = lastSeenMap.get(userToken.getEmail());
+            if (d!=null){
+                return d.toString();
+            }
+        }
+        return "Not seen";
+    }
 
     /**
      * Get UserToken from UserTokenRepository. If token is not found or is not valid/timed out, null is returned.
@@ -49,6 +63,7 @@ public class ActiveUserTokenRepository {
         }
         UserToken resToken = activeusertokensmap.get(usertokenId);
         if (resToken != null && verifyUserToken(resToken)) {
+            lastSeenMap.put(resToken.getEmail(),new Date());
             logger.info("Valid userToken found: " + resToken);
             logger.debug("userToken=" + resToken);
             return resToken;
@@ -67,6 +82,10 @@ public class ActiveUserTokenRepository {
         if (userToken.getTokenid() == null) {
             logger.info("UserToken not valid, missing tokenId");
             return false;
+        }
+        if (userToken.getEmail()!=null){
+            lastSeenMap.put(userToken.getEmail(),new Date());
+
         }
         UserToken resToken = activeusertokensmap.get(userToken.getTokenid());
         if (resToken == null) {
@@ -87,16 +106,20 @@ public class ActiveUserTokenRepository {
         return true;
     }
 
-    public static void addUserToken(UserToken token) {
-        if (token.getTokenid() == null) {
+    public static void addUserToken(UserToken userToken) {
+        if (userToken.getTokenid() == null) {
             logger.error("Error: token has net tokenid");
             return;
         }
-        if (activeusertokensmap.containsKey(token.getTokenid())) {
+        if (userToken.getEmail()!=null){
+            lastSeenMap.put(userToken.getEmail(),new Date());
+
+        }
+        if (activeusertokensmap.containsKey(userToken.getTokenid())) {
             logger.error("Error: trying to update an already existing UserToken in repo..");
             return;
         }
-        UserToken copy = token.copy();
+        UserToken copy = userToken.copy();
         activeusertokensmap.put(copy.getTokenid(), copy);
         logger.info("Added token with id {}", copy.getTokenid(), " content:" + copy);
     }

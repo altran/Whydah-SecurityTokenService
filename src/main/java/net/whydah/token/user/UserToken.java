@@ -30,6 +30,16 @@ public class UserToken implements Serializable {
     private String email;
     private String timestamp;
 
+    public String getLastSeen() {
+        return lastSeen;
+    }
+
+    public void setLastSeen(String lastSeen) {
+        this.lastSeen = lastSeen;
+    }
+
+    private String lastSeen;
+
     private static String defcon;
     private String securityLevel;
     private String lifespan;
@@ -46,89 +56,6 @@ public class UserToken implements Serializable {
         this.roleList = new LinkedList<>();
     }
 
-    /*
-    public static UserToken2 createUserTokenFromUserTokenXML(String userTokenXml) {
-        defcon = appConfig.getProperty("DEFCON");
-        UserToken2 userToken = new UserToken2();
-        return userToken;
-    }
-
-    private void parseAndUpdatefromUserToken(String userTokenXml) {
-        try {
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(new InputSource(new StringReader(userTokenXml)));
-            XPath xPath = XPathFactory.newInstance().newXPath();
-            tokenid = (String) xPath.evaluate("/usertoken/@id", doc, XPathConstants.STRING);
-            uid = (String) xPath.evaluate("/usertoken/uid", doc, XPathConstants.STRING);
-            personRef = (String) xPath.evaluate("/usertoken/personRef", doc, XPathConstants.STRING);
-            userName = (String) xPath.evaluate("/usertoken/username", doc, XPathConstants.STRING);
-            firstName = (String) xPath.evaluate("/usertoken/firstname", doc, XPathConstants.STRING);
-            lastName = (String) xPath.evaluate("/usertoken/lastname", doc, XPathConstants.STRING);
-            email = (String) xPath.evaluate("/usertoken/email", doc, XPathConstants.STRING);
-            timestamp = (String) xPath.evaluate("/usertoken/timestamp", doc, XPathConstants.STRING);
-            defcon = (String) xPath.evaluate("/usertoken/DEFCON", doc, XPathConstants.STRING);
-            securityLevel = (String) xPath.evaluate("/usertoken/securitylevel", doc, XPathConstants.STRING);
-            lifespan = (String) xPath.evaluate("/usertoken/lifespan", doc, XPathConstants.STRING);
-            issuer = (String) xPath.evaluate("/usertoken/issuer", doc, XPathConstants.STRING);
-        } catch (Exception e) {
-            logger.error("Error parsing userTokenXml " + userTokenXml, e);
-        }
-    }
-
-    private void parseAndUpdatefromAppToken(String appTokenXml) {
-        try {
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(new InputSource(new StringReader(appTokenXml)));
-            XPath xPath = XPathFactory.newInstance().newXPath();
-            String expression = "/token/Url[1]/@template";
-            XPathExpression xPathExpression = xPath.compile(expression);
-            issuer = xPathExpression.evaluate(doc);
-        } catch (Exception e) {
-            logger.error("Error when parsing appToken " + appTokenXml, e);
-        }
-    }
-
-    private void parseAndUpdateFromUserAggregate(String userAggregateXML) {
-        try {
-            DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
-            Document doc = documentBuilder.parse(new InputSource(new StringReader(userAggregateXML)));
-            XPath xPath = XPathFactory.newInstance().newXPath();
-            uid = (String) xPath.evaluate("//UID", doc, XPathConstants.STRING);
-            userName = (String) xPath.evaluate("//identity/username", doc, XPathConstants.STRING);
-            firstName = (String) xPath.evaluate("//identity/firstname", doc, XPathConstants.STRING);
-            lastName = (String) xPath.evaluate("//identity/lastname", doc, XPathConstants.STRING);
-            email = (String) xPath.evaluate("//identity/email", doc, XPathConstants.STRING);
-            personRef = (String) xPath.evaluate("//identity/personRef", doc, XPathConstants.STRING);
-            securityLevel = "1";
-            NodeList applicationNodes = (NodeList) xPath.evaluate("/whydahuser/applications/application/appId", doc, XPathConstants.NODESET);
-            for (int i = 1; i < applicationNodes.getLength() + 1; i++) {
-                ApplicationRoleEntry role = new ApplicationRoleEntry();
-                role.setApplicationId((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/appId", doc, XPathConstants.STRING));
-                role.setApplicationName((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/applicationName", doc, XPathConstants.STRING));
-                role.setOrganizationName((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/orgName", doc, XPathConstants.STRING));
-                role.setRoleName((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/roleName", doc, XPathConstants.STRING));
-                role.setRoleValue((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/roleValue", doc, XPathConstants.STRING));
-                roleList.add(role);
-            }
-        } catch (Exception e) {
-            logger.error("Error parsing userAggregateXML " + userAggregateXML, e);
-        }
-    }
-
-    public static UserToken2 createUserTokenFromUserAggregate(String appTokenXml, String userAggregateXML) {
-        defcon = appConfig.getProperty("DEFCON");
-        UserToken2 userToken = new UserToken2();
-        userToken.parseAndUpdatefromAppToken(appTokenXml);
-        userToken.parseAndUpdateFromUserAggregate(userAggregateXML);
-        userToken.tokenid = userToken.generateID();
-        userToken.timestamp = String.valueOf(System.currentTimeMillis());
-        return userToken;
-    }
-
-    private String generateID() {
-        return UUID.randomUUID().toString();
-    }
-    */
 
     public boolean isValid() {
         if (timestamp == null || lifespan == null) {
@@ -289,6 +216,7 @@ public class UserToken implements Serializable {
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", timestamp='" + timestamp + '\'' +
+                ", lastSeen='" + lastSeen + '\'' +
                 ", securityLevel='" + securityLevel + '\'' +
                 ", lifespan='" + lifespan + '\'' +
                 ", issuer='" + issuer + '\'' +
