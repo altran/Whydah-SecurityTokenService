@@ -38,6 +38,7 @@ public class UserTokenTest {
     public void testCreateUserToken() throws Exception {
         UserToken utoken = new UserToken();
         utoken.setFirstName("Ola");
+        utoken.setEmail("test@whydah.net");
         utoken.setLastName("Nordmann");
         utoken.setTimestamp("123123123");
         utoken.setPersonRef("73637276722376");
@@ -56,6 +57,7 @@ public class UserTokenTest {
         UserToken utoken = new UserToken();
         utoken.setFirstName("Ola");
         utoken.setLastName("Nordmann");
+        utoken.setEmail("test@whydah.net");
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
         utoken.setTokenid(UUID.randomUUID().toString());
         utoken.setPersonRef("78125637812638");
@@ -76,6 +78,7 @@ public class UserTokenTest {
         utoken.setTokenid(UUID.randomUUID().toString());
         utoken.setFirstName("Ola");
         utoken.setLastName("Nordmann");
+        utoken.setEmail("test@whydah.net");
         utoken.setPersonRef("78125637812638");
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis() - 1000));
         utoken.setLifespan("0");
@@ -88,6 +91,7 @@ public class UserTokenTest {
         UserToken utoken = new UserToken();
         utoken.setFirstName("Olav");
         utoken.setLastName("Nordmann");
+        utoken.setEmail("test@whydah.net");
         utoken.setTokenid(UUID.randomUUID().toString());
         utoken.addApplicationRoleEntry(new ApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 1", "Boardmember", "Diktator"));
         utoken.addApplicationRoleEntry(new ApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 2", "tester", "ansatt"));
