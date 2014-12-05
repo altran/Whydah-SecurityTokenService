@@ -185,6 +185,10 @@
                         <manifestEntries>
                             <Main-Class>net.whydah.token.ServiceStarter</Main-Class>
                         </manifestEntries>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
                     </archive>
                 </configuration>
             </plugin>
