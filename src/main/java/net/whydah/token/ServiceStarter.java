@@ -23,6 +23,8 @@ public class ServiceStarter {
     private HttpServer httpServer;
     private int webappPort;
     private final String contextpath="/tokenservice";
+    public static String version;
+
 
     public static void main(String[] args) throws IOException {
         ServiceStarter serviceStarter = new ServiceStarter();
@@ -38,9 +40,11 @@ public class ServiceStarter {
     protected void startServer() throws IOException {
         String appMode = ApplicationMode.getApplicationMode();
         AppConfig appConfig = new AppConfig();
+        version = this.getClass().getPackage().getImplementationVersion();
+
         Injector injector = Guice.createInjector(new SecurityTokenServiceModule(appConfig, appMode));
 
-        logger.info("Starting SecurityTokenService...");
+        logger.info("Starting SecurityTokenService... version:{}",version);
 
         ServletHandler adapter = new ServletHandler();
         adapter.setContextPath(contextpath);
