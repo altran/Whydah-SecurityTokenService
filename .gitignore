@@ -7,7 +7,7 @@ dependency-reduced-pom.xml
 *.ear
 /target
 /logs
-
+/.code_swarm
 
 #IDE
 .classpath
