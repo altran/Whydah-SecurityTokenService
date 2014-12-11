@@ -19,10 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.FileNotFoundException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 @Path("/user")
 public class UserTokenResource {
@@ -104,7 +101,7 @@ public class UserTokenResource {
     public Response getUserToken(@PathParam("applicationtokenid") String applicationtokenid,
                                  @FormParam("apptoken") String appTokenXml,
                                  @FormParam("usercredential") String userCredentialXml) {
-        if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
+        if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             logger.warn("getUserToken - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
@@ -139,7 +136,7 @@ public class UserTokenResource {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
 
-        if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
+        if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             logger.warn("getUserTokenAndStoreUserTicket - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
@@ -218,7 +215,7 @@ public class UserTokenResource {
         logger.trace("createUserTicketByUserTokenId: applicationtokenid={}, userticket={}, usertokenid={}, appTokenXml={}", applicationtokenid, userticket, userTokenId, appTokenXml);
 
 
-        if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
+        if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             logger.warn("createUserTicketByUserTokenId - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
@@ -255,7 +252,7 @@ public class UserTokenResource {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
 
-        if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
+        if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             logger.warn("getUserTokenByUserTokenId - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
@@ -308,7 +305,7 @@ public class UserTokenResource {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
 
-        if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
+        if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             logger.warn("getUserTokenByUserTicket - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
@@ -359,6 +356,36 @@ public class UserTokenResource {
     }
 
     /**
+     * Request SSO session renewal.
+     *
+     * @param applicationtokenid
+     * @param usertokenid
+     * @return
+     */
+    @Path("/{applicationtokenid}/renew_usertoken")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response renewUserToken(@PathParam("applicationtokenid") String applicationtokenid,
+                                     @FormParam("usertokenid") String usertokenid) {
+        logger.trace("renewUserToken - entry.  usertokenid={}", usertokenid);
+        if(!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
+            logger.warn("renewUserToken - attempt to access from invalid application. ID: {}", applicationtokenid);
+            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
+        }
+        if (usertokenid == null) {
+            logger.warn("renewUserToken - attempt with no usertokenid: Null");
+            return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").build();
+        }
+        UserToken utoken = ActiveUserTokenRepository.getUserToken(usertokenid);
+        utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
+        utoken.setLifespan(String.valueOf(60 * 60 * new Random().nextInt(100)));
+        ActiveUserTokenRepository.addUserToken(utoken);
+
+        logger.trace("renewUserToken - session renewed, usertokenid={}", usertokenid);
+        return Response.ok().build();
+    }
+
+    /**
      * This method is for elevating user access to a higher level for the receiving end of a session handover between SSO applications
      *
      * @param applicationtokenid
@@ -385,16 +412,6 @@ public class UserTokenResource {
     }
 
 
-    private boolean verifyApplicationToken(String applicationtokenid, String applicationtokenXml) {
-        boolean validAppToken = false;
-        if (applicationtokenXml != null && applicationtokenid != null) {
-            validAppToken = applicationtokenXml.contains(applicationtokenid) && AuthenticatedApplicationRepository.verifyApplicationToken(applicationtokenXml);
-        } else {
-            logger.debug("not expecting null values appTokenId {}, appTokenXml {}", applicationtokenid, applicationtokenXml);
-            return false;
-        }
-        return true; //FIXME bli validAppToken;
-    }
 
 
     /**
@@ -424,7 +441,7 @@ public class UserTokenResource {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
 
-        if (!verifyApplicationToken(applicationtokenid, appTokenXml)) {
+        if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             // TODO:  Limit this operation to SSOLoginWebApplication ONLY
             logger.warn("createAndLogOnUser - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();

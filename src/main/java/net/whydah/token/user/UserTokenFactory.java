@@ -1,6 +1,7 @@
 package net.whydah.token.user;
 
 import com.google.inject.Singleton;
+import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -193,4 +194,16 @@ public class UserTokenFactory {
 //        }
         return false;
     }
+
+    public static boolean verifyApplicationToken(String applicationtokenid, String applicationtokenXml) {
+        boolean validAppToken = false;
+        if (applicationtokenXml != null && applicationtokenid != null) {
+            validAppToken = applicationtokenXml.contains(applicationtokenid) && AuthenticatedApplicationRepository.verifyApplicationToken(applicationtokenXml);
+        } else {
+            logger.debug("not expecting null values appTokenId {}, appTokenXml {}", applicationtokenid, applicationtokenXml);
+            return false;
+        }
+        return true; //FIXME bli validAppToken;
+    }
+
 }
