@@ -3,11 +3,16 @@ package net.whydah.token.user;
 import net.whydah.token.config.ApplicationMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 
 /**
  * This class is responsible for handling test and development of this module as a standalone instance, shortcutting user authentication
@@ -58,8 +63,16 @@ public class DummyUserAuthenticator implements UserAuthenticator {
     }
 
     private String parseUsernameFromUserCredential(String userCredential) {
-        return userCredential.substring(userCredential.indexOf("<username>") + "<username>".length(), userCredential.indexOf("</username>"));
-    }
 
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        try {
+            InputSource source = new InputSource(new StringReader(userCredential));
+            String userName = xpath.evaluate("/usercredential/params/username", source).trim();
+            return userName;
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
 
 }
