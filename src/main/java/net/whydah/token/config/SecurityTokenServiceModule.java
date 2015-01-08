@@ -33,6 +33,10 @@ public class SecurityTokenServiceModule extends AbstractModule {
             logger.info("Try to connect to UserIdentityBackend on url {}", useridentitybackend);
             URI useridbackendUri = URI.create(useridentitybackend);
             bind(URI.class).annotatedWith(Names.named("useridentitybackend")).toInstance(useridbackendUri);
+            String useradminservice = appConfig.getProperty("useradminservice");
+            logger.info("Try to connect to useradminservice on url {}", useradminservice);
+            URI useradminserviceUri = URI.create(useradminservice);
+            bind(URI.class).annotatedWith(Names.named("useradminservice")).toInstance(useradminserviceUri);
         }
     }
 
