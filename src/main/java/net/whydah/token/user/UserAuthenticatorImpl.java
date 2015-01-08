@@ -14,7 +14,8 @@ import java.net.URI;
 
 public class UserAuthenticatorImpl implements UserAuthenticator {
     private static final Logger logger = LoggerFactory.getLogger(UserAuthenticatorImpl.class);
-    private static final String USER_AUTHENTICATION_PATH = "/authenticate/user";
+//    private static final String USER_AUTHENTICATION_PATH = "/authenticate/user";
+    private static final String USER_AUTHENTICATION_PATH = "/auth/logon/user";
     private static final String CREATE_AND_LOGON_OPERATION = "createandlogon";
 
 
