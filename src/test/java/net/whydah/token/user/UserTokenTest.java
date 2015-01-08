@@ -62,7 +62,7 @@ public class UserTokenTest {
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
         utoken.setTokenid(UUID.randomUUID().toString());
         utoken.setPersonRef("78125637812638");
-        utoken.setLifespan(String.valueOf(60 * 60 * new Random().nextInt(100)));
+        utoken.setLifespan(String.valueOf(2*60 * 60 * new Random().nextInt(100)));
 
         ActiveUserTokenRepository.addUserToken(utoken);
         assertTrue("Verification of valid token failed", ActiveUserTokenRepository.verifyUserToken(utoken));
