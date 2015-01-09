@@ -1,21 +1,32 @@
 package net.whydah.token;
 
+import static org.junit.Assert.assertTrue;
+
+import java.io.StringReader;
+import java.net.URI;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriBuilder;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import net.whydah.token.application.ApplicationCredential;
+import net.whydah.token.config.ApplicationMode;
+import net.whydah.token.user.UserCredential;
+
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.xml.sax.InputSource;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-import net.whydah.token.application.ApplicationCredential;
-import net.whydah.token.config.ApplicationMode;
-import net.whydah.token.user.UserCredential;
-import org.junit.*;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriBuilder;
-import java.net.URI;
-
-import static org.junit.Assert.assertTrue;
 
 public class PostTest {
     private static URI baseUri;
@@ -51,11 +62,10 @@ public class PostTest {
     }
 
     @Test
-    @Ignore
     public void testUserToken() {
         String apptokenxml = getAppToken();
         String applicationtokenid = getTokenIdFromAppToken(apptokenxml);
-        UserCredential user = new UserCredential("nalle", "puh");
+        UserCredential user = new UserCredential("test@hotmail.com", "puh");
 
         WebResource userTokenResource = restClient.resource(baseUri).path("user/" + applicationtokenid + "/usertoken");
         MultivaluedMap<String,String> formData = new MultivaluedMapImpl();
@@ -66,7 +76,7 @@ public class PostTest {
         //System.out.println(responseXML);
         assertTrue(responseXML.contains("securitylevel"));
         assertTrue(responseXML.contains("id=\""));
-        assertTrue(responseXML.contains("personid"));
+        assertTrue(responseXML.contains("personRef"));
         assertTrue(responseXML.contains("hash"));
     }
 
@@ -86,6 +96,15 @@ public class PostTest {
     }
 
     private String getTokenIdFromAppToken(String appTokenXML) {
-        return appTokenXML.substring(appTokenXML.indexOf("<applicationtoken>") + "<applicationtoken>".length(), appTokenXML.indexOf("</applicationtoken>"));
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        try {
+            InputSource source = new InputSource(new StringReader(appTokenXML));
+            String appTokenId = xpath.evaluate("/applicationtoken/params/applicationtokenID", source).trim();
+            return appTokenId;
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();
+            return "";
+        }
+        //return appTokenXML.substring(appTokenXML.indexOf("<applicationtoken>") + "<applicationtoken>".length(), appTokenXML.indexOf("</applicationtoken>"));
     }
 }
