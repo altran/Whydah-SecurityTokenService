@@ -11,12 +11,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.security.MessageDigest;
 import java.util.UUID;
 
 
-public class ApplicationToken {
+public class ApplicationToken implements Serializable {
     private final static Logger logger = LoggerFactory.getLogger(ApplicationToken.class);
 
     private String applicationTokenId = "";
