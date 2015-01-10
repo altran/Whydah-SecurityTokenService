@@ -1,5 +1,8 @@
 package net.whydah.token.user;
 
+import net.whydah.token.application.ApplicationCredential;
+import net.whydah.token.application.ApplicationToken;
+import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
 import org.junit.BeforeClass;
@@ -258,6 +261,87 @@ public class UserTokenTest {
     public void testUserTokenFullUserToken() throws Exception {
         assertTrue(UserTokenFactory.shouldReturnFullUserToken("11"));
         assertFalse(UserTokenFactory.shouldReturnFullUserToken("121"));
+
+    }
+
+    @Test
+    public void testUserTokenFiltering() throws Exception {
+        String identityXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+                "<whydahuser>\n" +
+                "    <identity>\n" +
+                "        <username>admin</username>\n" +
+                "        <cellPhone>+1555406789</cellPhone>\n" +
+                "        <email>useradmin@getwhydah.com</email>\n" +
+                "        <firstname>User</firstname>\n" +
+                "        <lastname>Admin</lastname>\n" +
+                "        <personRef>0</personRef>\n" +
+                "        <UID>useradmin</UID>\n" +
+                "    </identity>\n" +
+                "    <applications>\n" +
+                "        <application>\n" +
+                "            <appId>19</appId>\n" +
+                "            <applicationName>UserAdminWebApplication</applicationName>\n" +
+                "            <orgName>Support</orgName>\n" +
+                "            <roleName>WhydahUserAdmin</roleName>\n" +
+                "            <roleValue>1</roleValue>\n" +
+                "        </application>\n" +
+                "        <application>\n" +
+                "            <appId>19</appId>\n" +
+                "            <applicationName>UserAdminWebApplication</applicationName>\n" +
+                "            <orgName>Support</orgName>\n" +
+                "            <roleName>UserAdmin</roleName>\n" +
+                "            <roleValue>100</roleValue>\n" +
+                "        </application>\n" +
+                "        <application>\n" +
+                "            <appId>121</appId>\n" +
+                "            <applicationName>UserAdminWebApplication</applicationName>\n" +
+                "            <orgName>Support</orgName>\n" +
+                "            <roleName>UserAdmin</roleName>\n" +
+                "            <roleValue>100</roleValue>\n" +
+                "        </application>\n" +
+                "        <application>\n" +
+                "            <appId>19</appId>\n" +
+                "            <applicationName>UserAdminWebApplication</applicationName>\n" +
+                "            <orgName>Support</orgName>\n" +
+                "            <roleName>TEST</roleName>\n" +
+                "            <roleValue>3</roleValue>\n" +
+                "        </application>\n" +
+                "    </applications>\n" +
+                "</whydahuser>\n";
+
+
+        UserToken userToken = new UserTokenFactory("0").fromUserAggregate(identityXML);
+
+        //System.out.printf(userToken.toString());
+        //String xml = freemarkerProcessor.toXml(userToken);
+        //System.out.println(freemarkerProcessor.toXml(userToken));
+
+        assertEquals("0", userToken.getPersonRef());
+        assertEquals("User", userToken.getFirstName());
+        assertEquals("Admin", userToken.getLastName());
+        assertEquals("useradmin@getwhydah.com", userToken.getEmail());
+
+        assertTrue(freemarkerProcessor.toXml(userToken).indexOf("UserAdmin") > 0);
+        assertTrue(freemarkerProcessor.toXml(userToken).indexOf("WhydahUserAdmin") > 0);
+
+        ApplicationCredential cred = new ApplicationCredential();
+        cred.setApplicationID("19");
+        cred.setApplicationSecret("dummy");
+        ApplicationToken imp = new ApplicationToken(cred.toXML());
+        AuthenticatedApplicationRepository.addApplicationToken(imp);
+
+
+
+        List<ApplicationRoleEntry> origRoleList = userToken.getRoleList();
+        List<ApplicationRoleEntry> roleList = new LinkedList<>();
+        String myappid = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(imp.getApplicationTokenId());
+        for (int i=0;i<origRoleList.size();i++){
+            ApplicationRoleEntry are = origRoleList.get(i);
+            if (are.getApplicationId().equalsIgnoreCase(myappid)){
+                roleList.add(are);
+            }
+        }
+        assertTrue(roleList.size() == 3);
 
     }
 

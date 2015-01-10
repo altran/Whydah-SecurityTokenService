@@ -17,6 +17,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -189,10 +190,31 @@ public class UserTokenFactory {
                 return true;
             }
         }
-//        if (appConfig.getProperty("fulltokenapplications").compareTo(applicationID)>0){
-//            return true;
-//        }
         return false;
+    }
+
+
+    public static UserToken getFilteredUserToken(String applicationTokenID,UserToken userToken) {
+
+        String myappid = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(applicationTokenID);
+        if (shouldReturnFullUserToken(myappid)){
+            return userToken;
+        } else {
+            List<ApplicationRoleEntry> origRoleList = userToken.getRoleList();
+            List<ApplicationRoleEntry> roleList = new LinkedList<>();
+
+            for (int i=0;i<origRoleList.size();i++){
+                ApplicationRoleEntry are = origRoleList.get(i);
+                if (are.getApplicationId().equalsIgnoreCase(myappid)){
+                    roleList.add(are);
+                }
+            }
+
+            userToken.setRoleList(roleList);
+        }
+
+
+        return userToken;
     }
 
     public static boolean verifyApplicationToken(String applicationtokenid, String applicationtokenXml) {

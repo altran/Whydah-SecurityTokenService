@@ -7,12 +7,22 @@ import java.util.Map;
 public class AuthenticatedApplicationRepository {
     private static final Map<String, ApplicationToken> apptokens = new HashMap<String, ApplicationToken>();
 
+
+    public static void addApplicationToken(ApplicationToken token) {
+        apptokens.put(token.getApplicationTokenId(), token);
+    }
+
+    public static ApplicationToken getApplicationToken(String applicationtokenid) {
+        return apptokens.get(applicationtokenid);
+    }
+
+
     public static boolean verifyApplicationToken(ApplicationToken token) {
         return token.equals(apptokens.get(token.getApplicationTokenId()));
     }
 
-    public static boolean verifyApplicationTokenId(String tokenid) {
-        return apptokens.get(tokenid) != null;
+    public static boolean verifyApplicationTokenId(String applicationtokenid) {
+        return apptokens.get(applicationtokenid) != null;
     }
 
     public static boolean verifyApplicationToken(String s) {
@@ -25,7 +35,9 @@ public class AuthenticatedApplicationRepository {
         }
     }
 
-    public static void addApplicationToken(ApplicationToken token) {
-        apptokens.put(token.getApplicationTokenId(), token);
+    public static String getApplicationIdFromApplicationTokenID(String applicationtokenid) {
+        ApplicationToken at = apptokens.get(applicationtokenid);
+        return at.getApplicationID();
     }
+
 }
