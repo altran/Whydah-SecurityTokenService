@@ -187,4 +187,18 @@ public class ApplicationToken {
         }
         return result.toString();
     }
+
+    @Override
+    public String toString() {
+        return "ApplicationToken{" +
+                "applicationTokenId='" + applicationTokenId + '\'' +
+                ", applicationSecret='" + applicationSecret + '\'' +
+                ", applicationName='" + applicationName + '\'' +
+                ", applicationID='" + applicationID + '\'' +
+                ", expires='" + expires + '\'' +
+                ", baseuri='" + baseuri + '\'' +
+                ", template=" + template +
+                ", templateToken='" + templateToken + '\'' +
+                '}';
+    }
 }
