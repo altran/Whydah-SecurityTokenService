@@ -1,11 +1,41 @@
 package net.whydah.token.application;
 
+import com.hazelcast.config.Config;
+import com.hazelcast.config.XmlConfigBuilder;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
+import net.whydah.token.config.AppConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
 
 public class AuthenticatedApplicationRepository {
-    private static final Map<String, ApplicationToken> apptokens = new HashMap<String, ApplicationToken>();
+    private final static Logger logger = LoggerFactory.getLogger(AuthenticatedApplicationRepository.class);
+
+    private static final Map<String, ApplicationToken> apptokens;
+
+    static {
+        AppConfig appConfig = new AppConfig();
+        String xmlFileName = System.getProperty("hazelcast.config");
+        logger.info("Loading hazelcast configuration from :" + xmlFileName);
+        Config hazelcastConfig = new Config();
+        if (xmlFileName != null && xmlFileName.length() > 10) {
+            try {
+                hazelcastConfig = new XmlConfigBuilder(xmlFileName).build();
+                logger.info("Loading hazelcast configuration from :" + xmlFileName);
+            } catch (FileNotFoundException notFound) {
+                logger.error("Error - not able to load hazelcast.xml configuration.  Using embedded as fallback");
+            }
+        }
+        hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
+        HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
+        apptokens = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"_autnenticated_apptokens");
+        logger.info("Connecting to map {}",appConfig.getProperty("gridprefix")+"_autnenticated_apptokens");
+    }
 
 
     public static void addApplicationToken(ApplicationToken token) {
