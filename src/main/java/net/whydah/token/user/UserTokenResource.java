@@ -101,6 +101,9 @@ public class UserTokenResource {
     public Response getUserToken(@PathParam("applicationtokenid") String applicationtokenid,
                                  @FormParam("apptoken") String appTokenXml,
                                  @FormParam("usercredential") String userCredentialXml) {
+        if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
+            return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
+        }
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             logger.warn("getUserToken - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();

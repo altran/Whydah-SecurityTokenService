@@ -6,6 +6,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import net.whydah.token.application.ApplicationCredential;
+import net.whydah.token.application.ApplicationToken;
 import net.whydah.token.config.ApplicationMode;
 import net.whydah.token.user.UserCredential;
 import org.junit.*;
@@ -51,28 +52,29 @@ public class PostTest {
     }
 
     @Test
-    @Ignore
-    public void testUserToken() {
+    public void testPostToGetUserToken() {
         String apptokenxml = getAppToken();
-        String applicationtokenid = getTokenIdFromAppToken(apptokenxml);
+        String applicationtokenid = getApplicationTokenIdFromAppToken(apptokenxml);
         UserCredential user = new UserCredential("nalle", "puh");
 
-        WebResource userTokenResource = restClient.resource(baseUri).path("user/" + applicationtokenid + "/usertoken");
+
+        WebResource userTokenResource = restClient.resource(baseUri).path("user").path(applicationtokenid).path("/usertoken");
         MultivaluedMap<String,String> formData = new MultivaluedMapImpl();
         formData.add("apptoken", apptokenxml);
         formData.add("usercredential", user.toXML());
         ClientResponse response = userTokenResource.type(MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(ClientResponse.class, formData);
+        System.out.println("Calling:"+userTokenResource.getURI());
         String responseXML = response.getEntity(String.class);
-        //System.out.println(responseXML);
-        assertTrue(responseXML.contains("securitylevel"));
-        assertTrue(responseXML.contains("id=\""));
-        assertTrue(responseXML.contains("personid"));
+        System.out.println("responseXML:\n"+responseXML);
+        assertTrue(responseXML.contains("usertoken"));
+        assertTrue(responseXML.contains("DEFCON"));
+        assertTrue(responseXML.contains("applicationName"));
         assertTrue(responseXML.contains("hash"));
     }
 
     private String getAppToken() {
         ApplicationCredential acred = new ApplicationCredential();
-        acred.setApplicationID("Whydah-TestWebApp");
+        acred.setApplicationID("21356253");
         acred.setApplicationSecret("dummy");
         return logonApplication(acred.toXML());
     }
@@ -85,7 +87,9 @@ public class PostTest {
         return response.getEntity(String.class);
     }
 
-    private String getTokenIdFromAppToken(String appTokenXML) {
-        return appTokenXML.substring(appTokenXML.indexOf("<applicationtoken>") + "<applicationtoken>".length(), appTokenXML.indexOf("</applicationtoken>"));
+    private String getApplicationTokenIdFromAppToken(String appTokenXML) {
+        ApplicationToken at = new ApplicationToken(appTokenXML);
+
+        return at.getApplicationTokenId();
     }
 }
