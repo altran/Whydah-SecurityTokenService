@@ -265,18 +265,6 @@ public class UserTokenResource {
             userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
             return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid,userToken))).build();
         }
-        if (applicationtokenidmap.get(userTokenId) != null){
-            //UserToken netIQToken = new UserToken();
-            //netIQToken.putApplicationCompanyRoleValue("11","SecurityTokenService","Whydah","WhydahUserAdmin","1");
-            throw new RuntimeException("Branch in getUserTokenByUserTokenId which should never be reached! Talk to Totto or Erik!");
-            /*
-            UserToken netIQToken = UserTokenFactory.createNetIQToken();
-            logger.trace("getUserTokenByUserTokenId OK. Response={}", netIQToken.toString());
-            // /{applicationtokenid}/validate_usertokenid/{usertokenid}
-            userToken.setNs2link(appConfig.getProperty("myuri") + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
-            return Response.ok(new Viewable("/usertoken.ftl", netIQToken)).build();
-            */
-        }
         logger.warn("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid {}", userTokenId);
         return Response.status(Response.Status.NOT_ACCEPTABLE).build();
     }
