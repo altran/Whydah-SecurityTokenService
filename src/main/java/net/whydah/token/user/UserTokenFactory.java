@@ -197,11 +197,13 @@ public class UserTokenFactory {
     public static UserToken getFilteredUserToken(String applicationTokenID,UserToken userToken) {
 
         String myappid = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(applicationTokenID);
+        logger.info("getFilteredUserToken - found appid={}",myappid);
         if (shouldReturnFullUserToken(myappid)){
             return userToken;
         } else {
             List<ApplicationRoleEntry> origRoleList = userToken.getRoleList();
             List<ApplicationRoleEntry> roleList = new LinkedList<>();
+            logger.info("getFilteredUserToken - filtering active");
 
             for (int i=0;i<origRoleList.size();i++){
                 ApplicationRoleEntry are = origRoleList.get(i);
