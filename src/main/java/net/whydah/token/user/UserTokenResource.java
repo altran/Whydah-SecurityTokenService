@@ -259,14 +259,15 @@ public class UserTokenResource {
             logger.warn("getUserTokenByUserTokenId - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
-        UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
-        if (userToken != null) {
-            logger.trace("getUserTokenByUserTokenId OK. Response={}", userToken.toString());
-            userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
-            return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid,userToken))).build();
+        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
+        if (userToken == null) {
+            logger.warn("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid {}", userTokenId);
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
-        logger.warn("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid {}", userTokenId);
-        return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+        logger.trace("getUserTokenByUserTokenId OK. Response={}", userToken.toString());
+        userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
+        userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
+        return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).build();
     }
 
     /**
