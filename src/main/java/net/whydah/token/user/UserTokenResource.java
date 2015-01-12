@@ -259,7 +259,7 @@ public class UserTokenResource {
             logger.warn("getUserTokenByUserTokenId - attempt to access from invalid application. ID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
-        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
+        UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
         if (userToken != null) {
             logger.trace("getUserTokenByUserTokenId OK. Response={}", userToken.toString());
             userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
