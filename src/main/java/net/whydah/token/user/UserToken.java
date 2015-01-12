@@ -202,11 +202,9 @@ public class UserToken implements Serializable {
         return issuer;
     }
     public List<ApplicationRoleEntry> getRoleList() {
-        if (applicationID!=null){
-            return getRoleList(applicationID);
-        }
         return roleList;
     }
+
     public List<ApplicationRoleEntry> getRoleList(String applicationID) {
         if (UserTokenFactory.shouldReturnFullUserToken(applicationID)){
             return roleList;
