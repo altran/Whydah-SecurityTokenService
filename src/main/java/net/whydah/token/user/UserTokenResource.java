@@ -181,7 +181,7 @@ public class UserTokenResource {
             return Response.ok().build();
         }
         logger.warn("validateUserTokenXML failed for usertoken {}", userTokenXml);
-        return Response.status(Response.Status.CONFLICT).build();
+        return Response.status(Response.Status.UNAUTHORIZED).build();
     }
 
     @Path("/{applicationtokenid}/validate_usertokenid/{usertokenid}")
@@ -196,7 +196,7 @@ public class UserTokenResource {
             return Response.ok().build();
         }
         logger.warn("Usertoken not ok: {}", usertokenid);
-        return Response.status(Response.Status.CONFLICT).build();
+        return Response.status(Response.Status.UNAUTHORIZED).build();
     }
 
     /**
