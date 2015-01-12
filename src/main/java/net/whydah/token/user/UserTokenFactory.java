@@ -187,9 +187,11 @@ public class UserTokenFactory {
         String[] applicationIDs = appConfig.getProperty("fulltokenapplications").split(",");
         for (int i = 0; i < applicationIDs.length; i++){
             if (applicationIDs[i].equalsIgnoreCase(applicationID)) {
+                logger.info("shouldReturnFullUserToken=true");
                 return true;
             }
         }
+        logger.trace("shouldReturnFullUserToken=false");
         return false;
     }
 
