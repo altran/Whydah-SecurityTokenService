@@ -205,19 +205,6 @@ public class UserToken implements Serializable {
         return roleList;
     }
 
-    public List<ApplicationRoleEntry> getRoleList(String applicationID) {
-        if (UserTokenFactory.shouldReturnFullUserToken(applicationID)){
-            return roleList;
-        }
-        List<ApplicationRoleEntry> filteredRoleList= new LinkedList<>();
-        for ( ApplicationRoleEntry are: roleList) {
-            if (are.getApplicationId().equalsIgnoreCase(applicationID)){
-                filteredRoleList.add(are);
-            }
-
-        }
-        return filteredRoleList;
-    }
     public static String getDefcon() {
         return defcon;
     }
