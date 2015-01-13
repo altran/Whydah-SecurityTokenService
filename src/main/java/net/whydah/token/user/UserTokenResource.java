@@ -381,8 +381,9 @@ public class UserTokenResource {
      * This method is for elevating user access to a higher level for the receiving end of a session handover between SSO applications
      *
      * @param applicationtokenid
+     * @param appTokenXml
      * @param userTokenXml
-     * @param newAppToken
+     * @param newAppTokenId
      * @return
      */
     @Path("/{applicationtokenid}/transform_usertoken")
@@ -390,17 +391,31 @@ public class UserTokenResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response transformUserToken(@PathParam("applicationtokenid") String applicationtokenid,
+                                       @FormParam("apptoken") String appTokenXml,
                                        @FormParam("usertoken") String userTokenXml,
-                                       @FormParam("tp_applicationtoken") String newAppToken) {
+                                       @FormParam("to_apptokenid") String newAppTokenId) {
         if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
 
-        if(!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            logger.warn("transformUserToken - attempt to access from invalid application. ID: {}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
+        if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
+            return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
-        return Response.ok().language(userTokenXml).build();
+
+        if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
+            logger.warn("getUserTokenByUserTokenId - attempt to access from invalid application. ID: {}", applicationtokenid);
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
+        }
+        String userTokenId = UserTokenFactory.fromXml(userTokenXml).getTokenid();
+        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
+        if (userToken == null) {
+            logger.warn("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid {}", userTokenId);
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+        }
+        logger.trace("getUserTokenByUserTokenId OK. Response={}", userToken.toString());
+        userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + newAppTokenId + "/validate_usertokenid/" + userToken.getTokenid());
+        userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
+        return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(newAppTokenId, userToken))).build();
     }
 
 
