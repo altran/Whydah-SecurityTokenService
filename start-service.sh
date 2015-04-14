@@ -5,10 +5,6 @@ if [ -z "$IAM_MODE" ]; then
   IAM_MODE=PROD
 fi
 
-# If IAM_CONFOG not set, use PROD properties from local directory
-if [ -z "$IAM_CONFIG" ]; then 
-  IAM_CONFIG=securitytokenservice.PROD.properties
-fi
 
 # If Version is from source, find the artifact
 if [ "$Version" = "FROM_SOURCE" ]; then 
@@ -19,5 +15,11 @@ else
 fi
 
 
-nohup /usr/bin/java -DIAM_MODE=$IAM_MODE -Dhazelcast.config=hazelcast.xml -DIAM_CONFIG=$IAM_CONFIG -jar  $Version
+# If IAM_CONFIG not set, use embedded
+if [ -z "$IAM_CONFIG" ]; then
+  nohup /usr/bin/java -DIAM_MODE=$IAM_MODE-Dhazelcast.config=hazelcast.xml  -jar  $Version &
+else  
+  nohup /usr/bin/java -DIAM_MODE=$IAM_MODE -Dhazelcast.config=hazelcast.xml -DIAM_CONFIG=$IAM_CONFIG -jar  $Version &
+fi
+
 
