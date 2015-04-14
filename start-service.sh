@@ -17,7 +17,7 @@ fi
 
 # If IAM_CONFIG not set, use embedded
 if [ -z "$IAM_CONFIG" ]; then
-  nohup /usr/bin/java -DIAM_MODE=$IAM_MODE-Dhazelcast.config=hazelcast.xml  -jar  $Version &
+  nohup /usr/bin/java -DIAM_MODE=$IAM_MODE -Dhazelcast.config=hazelcast.xml  -jar  $Version &
 else  
   nohup /usr/bin/java -DIAM_MODE=$IAM_MODE -Dhazelcast.config=hazelcast.xml -DIAM_CONFIG=$IAM_CONFIG -jar  $Version &
 fi
