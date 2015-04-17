@@ -1,9 +1,19 @@
 package net.whydah.token.application;
 
-import junit.framework.TestCase;
+import net.whydah.token.config.ApplicationMode;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-public class ApplicationTokenTest extends TestCase {
+public class ApplicationTokenTest {
 
+    @BeforeClass
+    public static void init() throws Exception {
+        System.setProperty(ApplicationMode.IAM_MODE_KEY, ApplicationMode.DEV);
+    }
+
+    @Test
     public void testCreateApplicationCredential() {
         ApplicationCredential cred = new ApplicationCredential();
         cred.setApplicationID("1212");
@@ -14,6 +24,7 @@ public class ApplicationTokenTest extends TestCase {
         assertTrue(imp.getApplicationTokenId().length() > 12);
     }
 
+    @Test
     public void testCreateApplicationCredential2() {
         ApplicationCredential cred = new ApplicationCredential();
         cred.setApplicationID("1243");
@@ -24,6 +35,7 @@ public class ApplicationTokenTest extends TestCase {
         assertTrue(imp.getApplicationTokenId().length() > 12);
     }
 
+    @Test
     public void testCreateApplicationToken() {
         ApplicationCredential cred = new ApplicationCredential();
         cred.setApplicationID("2233");
@@ -37,4 +49,3 @@ public class ApplicationTokenTest extends TestCase {
         assertTrue(imp2.getApplicationTokenId().length() > 12);
     }
 }
-
