@@ -33,8 +33,8 @@ public class AuthenticatedApplicationRepository {
         }
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
-        apptokens = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"_autnenticated_apptokens");
-        logger.info("Connecting to map {}",appConfig.getProperty("gridprefix")+"_autnenticated_apptokens");
+        apptokens = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"_authenticated_apptokens");
+        logger.info("Connecting to map {}",appConfig.getProperty("gridprefix")+"_authenticated_apptokens");
     }
 
 
@@ -67,7 +67,11 @@ public class AuthenticatedApplicationRepository {
 
     public static String getApplicationIdFromApplicationTokenID(String applicationtokenid) {
         ApplicationToken at = apptokens.get(applicationtokenid);
-        return at.getApplicationID();
+        if (at!=null) {
+            return at.getApplicationID();
+        }
+        logger.error("Unable to find applicationID for applkicationtokenid="+applicationtokenid);
+        return "";
     }
 
 }
