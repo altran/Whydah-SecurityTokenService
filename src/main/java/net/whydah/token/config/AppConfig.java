@@ -7,7 +7,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Helper methods for reading configuration.
@@ -25,8 +27,16 @@ public class AppConfig {
     public AppConfig() {
         try {
             properties = readProperties(ApplicationMode.getApplicationMode());
+            logProperties(properties);
         } catch (IOException e) {
             throw new RuntimeException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    private void logProperties(Properties properties) {
+        Set keys = properties.keySet();
+        for (Object key : keys) {
+            logger.info("Property: {}, value {}", key, properties.getProperty((String) key));
         }
     }
 
