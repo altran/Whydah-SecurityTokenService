@@ -143,6 +143,12 @@
             <version>1.4.11</version>
         </dependency>
         <dependency>
+            <groupId>io.reactivex</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>1.0.7</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
         <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.7</version>
