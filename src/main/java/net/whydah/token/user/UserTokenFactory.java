@@ -44,7 +44,7 @@ public class UserTokenFactory {
     }
 
     public UserTokenFactory(String defcon) {
-        defcon = defcon;
+        this.defcon = defcon;
         //lifespanMs = String.valueOf(60 * 60 * rand.nextInt(100));
         lifespanMs = String.valueOf(14 * 24 * 60 * 60 * 1000); //14 days, reduce when refresh is implemented.
     }
@@ -219,10 +219,6 @@ public class UserTokenFactory {
     }
 
     public static boolean verifyApplicationToken(String applicationtokenid, String applicationtokenXml) {
-
-        return true;
-
-        /**
         boolean validAppToken = false;
         if (applicationtokenXml != null && applicationtokenid != null) {
             validAppToken = applicationtokenXml.contains(applicationtokenid) && AuthenticatedApplicationRepository.verifyApplicationToken(applicationtokenXml);
@@ -230,8 +226,7 @@ public class UserTokenFactory {
             logger.debug("not expecting null values appTokenId {}, appTokenXml {}", applicationtokenid, applicationtokenXml);
             return false;
         }
-        return true; //FIXME bli validAppToken;
-         */
+        return validAppToken;
     }
 
 }
