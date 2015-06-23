@@ -4,7 +4,7 @@
     <lifespan>3600000</lifespan>
     <issuer>/token/issuer/tokenverifier</issuer>
     <securitylevel>0</securitylevel>
-    <DEFCON>5</DEFCON>
+    <DEFCON>DEFCON5</DEFCON>
     <username></username>
     <firstname>Olav</firstname>
     <lastname>Nordmann</lastname>

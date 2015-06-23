@@ -31,7 +31,7 @@ public class UserTokenFactory {
     private static final Logger logger = LoggerFactory.getLogger(UserTokenFactory.class);
     private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     //private static Random rand = new Random();
-    private static String defcon = "0";
+    private static String defcon = UserToken.DEFCON.DEFCON5.toString();
     private static String lifespanMs;
     //private String lifespanMs = String.valueOf(60 * 60 * rand.nextInt(1000));
 

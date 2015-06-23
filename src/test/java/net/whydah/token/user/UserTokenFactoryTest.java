@@ -98,7 +98,7 @@ public class UserTokenFactoryTest {
         assertEquals(userToken.getUid(), "uid1");
         assertEquals(userToken.getUserName(), "username1");
         assertEquals(userToken.getIssuer(), "https://sso.whydah.no/tokenservice/user/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06");
-        assertEquals(userToken.getDefcon(), "5");
+        assertEquals(userToken.getDefcon(), UserToken.DEFCON.DEFCON5.toString());
         assertEquals(userToken.getTimestamp(), "1415091487335");
         assertEquals(userToken.getLifespan(), "82800");
         assertEquals(userToken.getRoleList().size(), 2);
@@ -110,7 +110,7 @@ public class UserTokenFactoryTest {
         assertEquals(userToken.getUid(), "8d563960-7b4f-4c44-a241-1ac359999b63");
         assertEquals(userToken.getUserName(), "anders.norman@company.com");
         assertEquals(userToken.getIssuer(), "https://sso.whydah.no/tokenservice/user/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06");
-        assertEquals(userToken.getDefcon(), "5");
+        assertEquals(userToken.getDefcon(), UserToken.DEFCON.DEFCON5.toString());
         assertEquals(userToken.getTimestamp(), "1415091757670");
         assertEquals(userToken.getLifespan(), "3600000");
         assertEquals(userToken.getRoleList().size(), 4);

@@ -55,6 +55,9 @@ public class UserToken implements Serializable {
 
     private String applicationID=null;
 
+    public enum DEFCON {
+        DEFCON1,DEFCON2,DEFCON3,DEFCON4,DEFCON5
+    }
 
     public UserToken() {
         this.timestamp = Long.toString(System.currentTimeMillis());
@@ -206,6 +209,9 @@ public class UserToken implements Serializable {
     }
 
     public static String getDefcon() {
+        if (defcon==null || defcon.length()<1){
+            return DEFCON.DEFCON5.toString();
+        }
         return defcon;
     }
     public String getNs2link() {
