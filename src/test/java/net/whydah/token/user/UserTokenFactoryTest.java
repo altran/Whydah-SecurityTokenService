@@ -20,7 +20,7 @@ public class UserTokenFactoryTest {
             "    <lifespan>82800</lifespan>\n"+
             "    <issuer>https://sso.whydah.no/tokenservice/user/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06</issuer>\n"+
             "    <securitylevel>0</securitylevel>\n"+
-            "    <DEFCON>DECFON5</DEFCON>\n"+
+            "    <DEFCON>DEFCON5</DEFCON>\n"+
             "    <username>username1</username>\n"+
             "    <firstname>Olav</firstname>\n"+
             "    <lastname>Nordmann</lastname>\n"+
@@ -49,7 +49,7 @@ public class UserTokenFactoryTest {
             "    <lifespan>3600000</lifespan>\n" +
             "    <issuer>https://sso.whydah.no/tokenservice/user/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06</issuer>\n" +
             "    <securitylevel>0</securitylevel>\n" +
-            "    <DEFCON>DECFON5</DEFCON>\n" +
+            "    <DEFCON>DEFCON5</DEFCON>\n" +
             "    <username>anders.norman@company.com</username>\n" +
             "    <firstname>Anders</firstname>\n" +
             "    <lastname>Norman</lastname>\n" +
