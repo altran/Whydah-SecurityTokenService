@@ -44,7 +44,7 @@ public class UserTokenFactory {
     }
 
     public UserTokenFactory(String defcon) {
-        UserTokenFactory.defcon = defcon;
+        defcon = defcon;
         //lifespanMs = String.valueOf(60 * 60 * rand.nextInt(100));
         lifespanMs = String.valueOf(14 * 24 * 60 * 60 * 1000); //14 days, reduce when refresh is implemented.
     }
