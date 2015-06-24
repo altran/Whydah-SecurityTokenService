@@ -219,14 +219,14 @@ public class UserTokenFactory {
     }
 
     public static boolean verifyApplicationToken(String applicationtokenid, String applicationtokenXml) {
+        // TODO - possibly implement check if apptokenXml is identical from source to repo
         boolean validAppToken = false;
-        if (applicationtokenXml != null && applicationtokenid != null) {
-            validAppToken = applicationtokenXml.contains(applicationtokenid) && AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid);
+        if (applicationtokenid != null) {
+            return AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid);
         } else {
             logger.debug("verifyApplicationToken - not expecting null values applicationtokenid {}, applicationtokenXml {}", applicationtokenid, applicationtokenXml);
             return false;
         }
-        return validAppToken;
     }
 
 }
