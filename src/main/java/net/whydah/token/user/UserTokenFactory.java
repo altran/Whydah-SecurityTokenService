@@ -221,9 +221,9 @@ public class UserTokenFactory {
     public static boolean verifyApplicationToken(String applicationtokenid, String applicationtokenXml) {
         boolean validAppToken = false;
         if (applicationtokenXml != null && applicationtokenid != null) {
-            validAppToken = applicationtokenXml.contains(applicationtokenid) && AuthenticatedApplicationRepository.verifyApplicationToken(applicationtokenXml);
+            validAppToken = applicationtokenXml.contains(applicationtokenid) && AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid);
         } else {
-            logger.debug("not expecting null values appTokenId {}, appTokenXml {}", applicationtokenid, applicationtokenXml);
+            logger.debug("verifyApplicationToken - not expecting null values applicationtokenid {}, applicationtokenXml {}", applicationtokenid, applicationtokenXml);
             return false;
         }
         return validAppToken;

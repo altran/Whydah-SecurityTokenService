@@ -140,7 +140,7 @@ public class UserTokenResource {
         }
 
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
-            logger.warn("getUserTokenAndStoreUserTicket - attempt to access from invalid application. ID: {}", applicationtokenid);
+            logger.warn("getUserTokenAndStoreUserTicket - attempt to access from invalid application. ApplicationTokenID: {}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         try {
