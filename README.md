@@ -1,6 +1,9 @@
 SecurityTokenService
 ====================
 
+![Build Status](http://jenkins.capraconsulting.no/buildStatus/icon?job=Whydah-SecurityTokenService)
+
+
 The UserToken and ApplicationToken generator and security session manager for the Whydah system
 
 If you are planning on integrating, you might want to run SecurityTokenService in DEV mode. This shortcuts the authentication.
