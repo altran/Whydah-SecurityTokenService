@@ -19,7 +19,7 @@ import java.io.StringReader;
  */
 
 public class DummyUserAuthenticator implements UserAuthenticator {
-    private static final Logger logger = LoggerFactory.getLogger(DummyUserAuthenticator.class);
+    private static final Logger log = LoggerFactory.getLogger(DummyUserAuthenticator.class);
     private final static DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
 
@@ -30,7 +30,7 @@ public class DummyUserAuthenticator implements UserAuthenticator {
                 String xml = loadFromFile(parseUsernameFromUserCredential(userCredentialXml));
                 ut = UserTokenFactory.fromXml(xml);
             } catch (Exception ioe) {
-                logger.info("Could not load dummy token for username. " + ioe);
+                log.info("Could not load dummy token for username. " + ioe);
             }
 
             return ut;

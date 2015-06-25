@@ -22,27 +22,27 @@ import java.util.Map;
 
 
 public class AuthenticatedApplicationRepository {
-    private final static Logger logger = LoggerFactory.getLogger(AuthenticatedApplicationRepository.class);
+    private final static Logger log = LoggerFactory.getLogger(AuthenticatedApplicationRepository.class);
 
     private static final Map<String, ApplicationToken> apptokens;
 
     static {
         AppConfig appConfig = new AppConfig();
         String xmlFileName = System.getProperty("hazelcast.config");
-        logger.info("Loading hazelcast configuration from :" + xmlFileName);
+        log.info("Loading hazelcast configuration from :" + xmlFileName);
         Config hazelcastConfig = new Config();
         if (xmlFileName != null && xmlFileName.length() > 10) {
             try {
                 hazelcastConfig = new XmlConfigBuilder(xmlFileName).build();
-                logger.info("Loading hazelcast configuration from :" + xmlFileName);
+                log.info("Loading hazelcast configuration from :" + xmlFileName);
             } catch (FileNotFoundException notFound) {
-                logger.error("Error - not able to load hazelcast.xml configuration.  Using embedded as fallback");
+                log.error("Error - not able to load hazelcast.xml configuration.  Using embedded as fallback");
             }
         }
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         apptokens = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"_authenticated_apptokens");
-        logger.info("Connecting to map {}",appConfig.getProperty("gridprefix")+"_authenticated_apptokens");
+        log.info("Connecting to map {}",appConfig.getProperty("gridprefix")+"_authenticated_apptokens");
     }
 
 
@@ -77,14 +77,14 @@ public class AuthenticatedApplicationRepository {
         if (at!=null) {
             return at.getApplicationID();
         }
-        logger.error("getApplicationIdFromApplicationTokenID - Unable to find applicationID for applkicationtokenid="+applicationtokenid);
+        log.error("getApplicationIdFromApplicationTokenID - Unable to find applicationID for applkicationtokenid="+applicationtokenid);
         return "";
     }
 
     public static  String getAppTokenIdFromAppTokenXML(String appTokenXML) {
         String appTokenId = "";
         if (appTokenXML == null) {
-            logger.debug("roleXml was empty, so returning empty orgName.");
+            log.debug("roleXml was empty, so returning empty orgName.");
         } else {
             String expression = "/applicationtoken/params/applicationtokenID[1]";
             appTokenId = findValue(appTokenXML, expression);
@@ -107,7 +107,7 @@ public class AuthenticatedApplicationRepository {
             XPathExpression xPathExpression = xPath.compile(expression);
             value = xPathExpression.evaluate(doc);
         } catch (Exception e) {
-            logger.warn("Failed to parse xml. Expression {}, xml {}, ", expression, xmlString, e);
+            log.warn("Failed to parse xml. Expression {}, xml {}, ", expression, xmlString, e);
         }
         return value;
     }

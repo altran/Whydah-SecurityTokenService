@@ -9,7 +9,7 @@ public class ApplicationCredential {
 
     private String applicationID;
     private String applicationsecret;
-    private static final Logger logger = LoggerFactory.getLogger(ApplicationCredential.class);
+    private static final Logger log = LoggerFactory.getLogger(ApplicationCredential.class);
 
     public void ApplicationCredential() {
         try {
@@ -17,7 +17,7 @@ public class ApplicationCredential {
             applicationID = config.getProperty("applicationid");
             applicationsecret = config.getProperty("applicationsecret");
         } catch (Exception e) {
-            logger.warn("Unable to read application properties", e);
+            log.warn("Unable to read application properties", e);
         }
 
     }

@@ -28,7 +28,7 @@ import java.util.UUID;
 public class UserTokenFactory {
     static final String TOKEN_ISSUER = "/token/TOKEN_ISSUER/tokenverifier";
 
-    private static final Logger logger = LoggerFactory.getLogger(UserTokenFactory.class);
+    private static final Logger log = LoggerFactory.getLogger(UserTokenFactory.class);
     private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     //private static Random rand = new Random();
     private static String defcon = UserToken.DEFCON.DEFCON5.toString();
@@ -115,7 +115,7 @@ public class UserTokenFactory {
             userToken.setIssuer(issuer);
             return userToken;
         } catch (Exception e) {
-            logger.error("Error parsing userTokenXml " + userTokenXml, e);
+            log.error("Error parsing userTokenXml " + userTokenXml, e);
             return null;
         }
     }
@@ -169,7 +169,7 @@ public class UserTokenFactory {
             userToken.setRoleList(roleList);
             return userToken;
         } catch (Exception e) {
-            logger.error("Error parsing userAggregateXML " + userAggregateXML, e);
+            log.error("Error parsing userAggregateXML " + userAggregateXML, e);
             return null;
         }
     }
@@ -187,11 +187,11 @@ public class UserTokenFactory {
         String[] applicationIDs = appConfig.getProperty("fulltokenapplications").split(",");
         for (int i = 0; i < applicationIDs.length; i++){
             if (applicationIDs[i].equalsIgnoreCase(applicationID)) {
-                logger.info("shouldReturnFullUserToken=true");
+                log.info("shouldReturnFullUserToken=true");
                 return true;
             }
         }
-        logger.trace("shouldReturnFullUserToken=false");
+        log.trace("shouldReturnFullUserToken=false");
         return false;
     }
 
@@ -199,13 +199,13 @@ public class UserTokenFactory {
     public static UserToken getFilteredUserToken(String applicationTokenID,UserToken userToken) {
 
         String myappid = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(applicationTokenID);
-        logger.info("getFilteredUserToken - found appid={}",myappid);
+        log.info("getFilteredUserToken - found appid={}",myappid);
         if (shouldReturnFullUserToken(myappid)){
             return userToken;
         } else {
             List<ApplicationRoleEntry> origRoleList = userToken.getRoleList();
             List<ApplicationRoleEntry> roleList = new LinkedList<>();
-            logger.info("getFilteredUserToken - filtering active");
+            log.info("getFilteredUserToken - filtering active");
 
             for (int i=0;i<origRoleList.size();i++){
                 ApplicationRoleEntry are = origRoleList.get(i);
@@ -224,7 +224,7 @@ public class UserTokenFactory {
         if (applicationtokenid != null) {
             return AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid);
         } else {
-            logger.debug("verifyApplicationToken - not expecting null values applicationtokenid {}, applicationtokenXml {}", applicationtokenid, applicationtokenXml);
+            log.debug("verifyApplicationToken - not expecting null values applicationtokenid {}, applicationtokenXml {}", applicationtokenid, applicationtokenXml);
             return false;
         }
     }

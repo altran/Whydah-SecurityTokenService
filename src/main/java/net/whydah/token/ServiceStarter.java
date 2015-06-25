@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 public class ServiceStarter {
-    private final static Logger logger = LoggerFactory.getLogger(ServiceStarter.class);
+    private final static Logger log = LoggerFactory.getLogger(ServiceStarter.class);
     private HttpServer httpServer;
     private int webappPort;
     private final String contextpath="/tokenservice";
@@ -44,7 +44,7 @@ public class ServiceStarter {
 
         Injector injector = Guice.createInjector(new SecurityTokenServiceModule(appConfig, appMode));
 
-        logger.info("Starting SecurityTokenService... version:{}",version);
+        log.info("Starting SecurityTokenService... version:{}",version);
 
         ServletHandler adapter = new ServletHandler();
         adapter.setContextPath(contextpath);
@@ -68,10 +68,10 @@ public class ServiceStarter {
         ActiveUserTokenRepository.initializeDistributedMap();  // Kick-off hazelcast distributed tokensession-map
         UserTokenResource.initializeDistributedMap();  // Kick-off hazelcast distributed ticketmap
 
-        logger.info("SecurityTokenService started on port {}, IAM_MODE = {}", webappPort, ApplicationMode.getApplicationMode());
-        logger.info("Status: http://localhost:{}{}/", webappPort, contextpath);
-        logger.info("WADL:   http://localhost:{}{}/application.wadl", webappPort, contextpath);
-        logger.info("Testpage = {}, TestDriverWeb:   http://localhost:{}{}/",appConfig.getProperty("testpage"), webappPort, contextpath);
+        log.info("SecurityTokenService started on port {}, IAM_MODE = {}", webappPort, ApplicationMode.getApplicationMode());
+        log.info("Status: http://localhost:{}{}/", webappPort, contextpath);
+        log.info("WADL:   http://localhost:{}{}/application.wadl", webappPort, contextpath);
+        log.info("Testpage = {}, TestDriverWeb:   http://localhost:{}{}/",appConfig.getProperty("testpage"), webappPort, contextpath);
     }
 
     public int getPort() {

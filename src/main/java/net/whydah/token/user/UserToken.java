@@ -16,7 +16,7 @@ import java.util.List;
  * @author <a href="mailto:erik-dev@fjas.no">Erik Drolshammer</a>
  */
 public class UserToken implements Serializable {
-    private static final Logger logger = LoggerFactory.getLogger(UserToken.class);
+    private static final Logger log = LoggerFactory.getLogger(UserToken.class);
 
     private String tokenid;
 
@@ -68,7 +68,7 @@ public class UserToken implements Serializable {
 
     public boolean isValid() {
         if (timestamp == null || lifespan == null) {
-            logger.trace("usertoken invalid because timestamp or lifespan is not set. timestamp={}  lifespan={}", timestamp, lifespan);
+            log.trace("usertoken invalid because timestamp or lifespan is not set. timestamp={}  lifespan={}", timestamp, lifespan);
             return false;
         }
 
@@ -76,9 +76,9 @@ public class UserToken implements Serializable {
         long timeout = Long.parseLong(timestamp) + Long.parseLong(lifespan);
         boolean stillValid = timeout > now;
         if (!stillValid) {
-            logger.trace("usertoken invalid (timed out). timeout={} is NOT greater than now={}", timeout, now);
+            log.trace("usertoken invalid (timed out). timeout={} is NOT greater than now={}", timeout, now);
         }
-        logger.trace("usertoken is valid!");
+        log.trace("usertoken is valid!");
         return stillValid;
     }
 
@@ -92,7 +92,7 @@ public class UserToken implements Serializable {
             ObjectInputStream ois = new ObjectInputStream(bais);
             return (UserToken) ois.readObject();
         } catch (Exception e) {
-            logger.error("Error copying UserToken", e);
+            log.error("Error copying UserToken", e);
         }
         return null;
     }
@@ -109,7 +109,7 @@ public class UserToken implements Serializable {
             BigInteger bigInt = new BigInteger(1, digest);
             return bigInt.toString(16);
         } catch (Exception e) {
-            logger.error("Error creating MD5 hash, returning empty string. userToken: " + toString(), e);
+            log.error("Error creating MD5 hash, returning empty string. userToken: " + toString(), e);
             return "";
         }
     }

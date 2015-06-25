@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.net.URI;
 
 public class SecurityTokenServiceModule extends AbstractModule {
-    private final static Logger logger = LoggerFactory.getLogger(SecurityTokenServiceModule.class);
+    private final static Logger log = LoggerFactory.getLogger(SecurityTokenServiceModule.class);
 
     private final AppConfig appConfig;
     private final String applicationmode;
@@ -25,16 +25,16 @@ public class SecurityTokenServiceModule extends AbstractModule {
     protected void configure() {
         bind(AppConfig.class).toInstance(appConfig);
         if (applicationmode.equals(ApplicationMode.DEV)) {
-            logger.info("Using TestUserAuthenticator to handle usercredentials");
+            log.info("Using TestUserAuthenticator to handle usercredentials");
             bind(UserAuthenticator.class).to(DummyUserAuthenticator.class);
         } else {
             bind(UserAuthenticator.class).to(UserAuthenticatorImpl.class);
             String useridentitybackend = appConfig.getProperty("useridentitybackend");
-            logger.info("Try to connect to UserIdentityBackend on url {}", useridentitybackend);
+            log.info("Try to connect to UserIdentityBackend on url {}", useridentitybackend);
             URI useridbackendUri = URI.create(useridentitybackend);
             bind(URI.class).annotatedWith(Names.named("useridentitybackend")).toInstance(useridbackendUri);
             String useradminservice = appConfig.getProperty("useradminservice");
-            logger.info("Try to connect to useradminservice on url {}", useradminservice);
+            log.info("Try to connect to useradminservice on url {}", useradminservice);
             URI useradminserviceUri = URI.create(useradminservice);
             bind(URI.class).annotatedWith(Names.named("useradminservice")).toInstance(useradminserviceUri);
         }

@@ -16,7 +16,7 @@ import java.net.URI;
  * Created by baardl on 22.03.14.
  */
 public class ApplicationAuthenticatorImpl implements ApplicationAuthenticator {
-    private static final Logger logger = LoggerFactory.getLogger(ApplicationAuthenticatorImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(ApplicationAuthenticatorImpl.class);
 
 
     @Inject
@@ -31,12 +31,12 @@ public class ApplicationAuthenticatorImpl implements ApplicationAuthenticator {
     @Override
     public ApplicationToken logonApplication(ApplicationCredential applicationCredential) {
         ApplicationToken token = null;
-        logger.trace("logonApplication - Calling UserIdentityBackend at " + useridbackendUri);
+        log.trace("logonApplication - Calling UserIdentityBackend at " + useridbackendUri);
         if (applicationCredential != null) {
             WebResource webResource = restClient.resource(useridbackendUri).path("logon");
             ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, applicationCredential.toXML());
             token = buildApplictionToken(applicationCredential, response);
-            logger.trace("Logged on Applicaton {}", token.toXML());
+            log.trace("Logged on Applicaton {}", token.toXML());
         }
 
         return token;

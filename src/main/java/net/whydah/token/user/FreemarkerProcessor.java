@@ -13,7 +13,7 @@ import java.util.HashMap;
  * Generate xml
  */
 public class FreemarkerProcessor {
-    private static final Logger logger = LoggerFactory.getLogger(FreemarkerProcessor.class);
+    private static final Logger log = LoggerFactory.getLogger(FreemarkerProcessor.class);
 
     private final Configuration freemarkerConfig;
 
@@ -32,7 +32,7 @@ public class FreemarkerProcessor {
             template.process(model, writer);
             return writer.toString();
         } catch (Exception e) {
-            logger.error("toXml failed for userToken=" + userToken.toString(), e);
+            log.error("toXml failed for userToken=" + userToken.toString(), e);
             return "XML conversion failed for userToken with id " + userToken.getTokenid();
         }
     }

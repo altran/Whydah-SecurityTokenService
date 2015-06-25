@@ -2,7 +2,7 @@
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %log{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -15,21 +15,21 @@
         </rollingPolicy>
 
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %log{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
 
-    <logger name="com.hazelcast" level="INFO" />
+    <log name="com.hazelcast" level="INFO" />
 
 
 
-    <logger name="net.whydah.token.file.StaticFiles" level="INFO" />
-    <logger name="net.whydah.token.config.FreemarkerViewProcessor" level="INFO" />
-    <logger name="net.whydah.token.file.StaticFileViewProcessor" level="INFO" />
-    <logger name="net.whydah.token.application.ApplicationToken" level="INFO" />
+    <log name="net.whydah.token.file.StaticFiles" level="INFO" />
+    <log name="net.whydah.token.config.FreemarkerViewProcessor" level="INFO" />
+    <log name="net.whydah.token.file.StaticFileViewProcessor" level="INFO" />
+    <log name="net.whydah.token.application.ApplicationToken" level="INFO" />
 
-    <logger name="net.whydah" level="TRACE" />
+    <log name="net.whydah" level="TRACE" />
 
     <root level="TRACE">
         <appender-ref ref="STDOUT" />

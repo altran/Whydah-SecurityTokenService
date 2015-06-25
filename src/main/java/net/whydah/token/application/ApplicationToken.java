@@ -18,7 +18,7 @@ import java.util.UUID;
 
 
 public class ApplicationToken implements Serializable {
-    private final static Logger logger = LoggerFactory.getLogger(ApplicationToken.class);
+    private final static Logger log = LoggerFactory.getLogger(ApplicationToken.class);
 
     private String applicationTokenId = "";
     private String applicationSecret;
@@ -34,7 +34,7 @@ public class ApplicationToken implements Serializable {
             applicationSecret= config.getProperty("applicationsecret");
             applicationName= config.getProperty("applicationname");
         } catch (Exception e){
-            logger.warn("Unable to read application properties",e);
+            log.warn("Unable to read application properties",e);
         }
 
     }
@@ -109,7 +109,7 @@ public class ApplicationToken implements Serializable {
     }
 
     private String getApplicationID(String applicationCredentialXML) {
-        logger.debug("applicationCredentialXML: {}", applicationCredentialXML);
+        log.debug("applicationCredentialXML: {}", applicationCredentialXML);
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -119,16 +119,16 @@ public class ApplicationToken implements Serializable {
             String expression = "/applicationcredential/*/applicationID[1]";
             XPathExpression xPathExpression = xPath.compile(expression);
             String appId = xPathExpression.evaluate(doc);
-            logger.debug("XML parse: applicationid = {}", appId);
+            log.debug("XML parse: applicationid = {}", appId);
             return appId;
         } catch (Exception e) {
-            logger.error("Could not get applicationID from XML: " + applicationCredentialXML, e);
+            log.error("Could not get applicationID from XML: " + applicationCredentialXML, e);
         }
         return "";
     }
 
     private String getApplicationName(String applicationCredentialXML) {
-        logger.debug("applicationCredentialXML: {}", applicationCredentialXML);
+        log.debug("applicationCredentialXML: {}", applicationCredentialXML);
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -138,16 +138,16 @@ public class ApplicationToken implements Serializable {
             String expression = "/applicationcredential/*/applicationName[1]";
             XPathExpression xPathExpression = xPath.compile(expression);
             String appName = xPathExpression.evaluate(doc);
-            logger.debug("XML parse: applicationName = {}", appName);
+            log.debug("XML parse: applicationName = {}", appName);
             return appName;
         } catch (Exception e) {
-            logger.error("Could not get applicationName from XML: " + applicationCredentialXML, e);
+            log.error("Could not get applicationName from XML: " + applicationCredentialXML, e);
         }
         return "";
     }
 
     private String getApplicationSecret(String applicationCredentialXML) {
-        logger.debug("applicationCredentialXML: {}", applicationCredentialXML);
+        log.debug("applicationCredentialXML: {}", applicationCredentialXML);
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -157,10 +157,10 @@ public class ApplicationToken implements Serializable {
             String expression = "/applicationcredential/*/applicationSecret[1]";
             XPathExpression xPathExpression = xPath.compile(expression);
             String appId = xPathExpression.evaluate(doc);
-            logger.debug("XML parse: applicationSecret = {}", appId);
+            log.debug("XML parse: applicationSecret = {}", appId);
             return appId;
         } catch (Exception e) {
-            logger.error("Could not get applicationID from XML: " + applicationCredentialXML, e);
+            log.error("Could not get applicationID from XML: " + applicationCredentialXML, e);
         }
         return "";
     }
@@ -176,7 +176,7 @@ public class ApplicationToken implements Serializable {
             byte[] h = digest.digest();
             return getHexString(h);
         } catch (Exception e) {
-            logger.error("Could not get MD5 hash for string " + t, e);
+            log.error("Could not get MD5 hash for string " + t, e);
         }
         return "";
     }

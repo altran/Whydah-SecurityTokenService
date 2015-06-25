@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 import java.net.URI;
 
 public class UserAuthenticatorImpl implements UserAuthenticator {
-    private static final Logger logger = LoggerFactory.getLogger(UserAuthenticatorImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(UserAuthenticatorImpl.class);
 //    private static final String USER_AUTHENTICATION_PATH = "/authenticate/user";
     private static final String USER_AUTHENTICATION_PATH = "/auth/logon/user";
     private static final String CREATE_AND_LOGON_OPERATION = "createandlogon";
@@ -38,7 +38,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
     @Override
     public UserToken logonUser(final String applicationTokenId, final String appTokenXml, final String userCredentialXml) {
-        logger.trace("logonUser - Calling UserAdminService at " + useradminservice + " appTokenXml:" + appTokenXml + " userCredentialXml:" + userCredentialXml);
+        log.trace("logonUser - Calling UserAdminService at " + useradminservice + " appTokenXml:" + appTokenXml + " userCredentialXml:" + userCredentialXml);
         try {
             // /uib/{applicationTokenId}/authenticate/user
 //            WebResource webResource = uibResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH);
@@ -48,19 +48,19 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
             UserToken userToken = getUserToken(appTokenXml, response);
             return userToken;
         } catch (Exception e) {
-            logger.error("Problems connecting to {}", useradminservice);
+            log.error("Problems connecting to {}", useradminservice);
             throw e;
         }
     }
 
     @Override
     public UserToken createAndLogonUser(String applicationtokenid, String appTokenXml, String userCredentialXml, String fbUserXml) {
-        logger.trace("createAndLogonUser - Calling UserAdminService at with appTokenXml:\n" + appTokenXml + "userCredentialXml:\n" + userCredentialXml + "fbUserXml:\n" + fbUserXml);
+        log.trace("createAndLogonUser - Calling UserAdminService at with appTokenXml:\n" + appTokenXml + "userCredentialXml:\n" + userCredentialXml + "fbUserXml:\n" + fbUserXml);
         // TODO /uib//{applicationTokenId}/{applicationTokenId}/createandlogon/
         // TODO /authenticate/user
 //        WebResource webResource = uibResource.path(applicationtokenid).path(USER_AUTHENTICATION_PATH).path(CREATE_AND_LOGON_OPERATION);
         WebResource webResource = uasResource.path(applicationtokenid).path(USER_AUTHENTICATION_PATH).path(CREATE_AND_LOGON_OPERATION);
-        logger.debug("createAndLogonUser - Calling createandlogon " + webResource.toString());
+        log.debug("createAndLogonUser - Calling createandlogon " + webResource.toString());
         ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, fbUserXml);
 
         UserToken token = getUserToken(appTokenXml, response);
@@ -71,11 +71,11 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
     private UserToken getUserToken(String appTokenXml, ClientResponse response) {
         if (response.getStatus() != Response.Status.OK.getStatusCode()) {
-            logger.error("Response from UAS: {}: {}", response.getStatus(), response.getEntity(String.class));
+            log.error("Response from UAS: {}: {}", response.getStatus(), response.getEntity(String.class));
             throw new AuthenticationFailedException("Authentication failed. Status code " + response.getStatus());
         }
         String identityXML = response.getEntity(String.class);
-        logger.debug("Response from UserAdminService: {}", identityXML);
+        log.debug("Response from UserAdminService: {}", identityXML);
         if (identityXML.contains("logonFailed")) {
             throw new AuthenticationFailedException("Authentication failed.");
         }

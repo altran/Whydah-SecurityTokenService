@@ -14,29 +14,29 @@ import java.util.Date;
 import java.util.Map;
 
 public class ActiveUserTokenRepository {
-    private final static Logger logger = LoggerFactory.getLogger(ActiveUserTokenRepository.class);
+    private final static Logger log = LoggerFactory.getLogger(ActiveUserTokenRepository.class);
     private static Map<String, UserToken> activeusertokensmap;
     private static Map<String, Date> lastSeenMap;
 
     static {
         AppConfig appConfig = new AppConfig();
         String xmlFileName = System.getProperty("hazelcast.config");
-        logger.info("Loading hazelcast configuration from :" + xmlFileName);
+        log.info("Loading hazelcast configuration from :" + xmlFileName);
         Config hazelcastConfig = new Config();
         if (xmlFileName != null && xmlFileName.length() > 10) {
             try {
                 hazelcastConfig = new XmlConfigBuilder(xmlFileName).build();
-                logger.info("Loading hazelcast configuration from :" + xmlFileName);
+                log.info("Loading hazelcast configuration from :" + xmlFileName);
             } catch (FileNotFoundException notFound) {
-                logger.error("Error - not able to load hazelcast.xml configuration.  Using embedded as fallback");
+                log.error("Error - not able to load hazelcast.xml configuration.  Using embedded as fallback");
             }
         }
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         activeusertokensmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"activeusertokensmap");
-        logger.info("Connecting to map {}",appConfig.getProperty("gridprefix")+"activeusertokensmap");
+        log.info("Connecting to map {}",appConfig.getProperty("gridprefix")+"activeusertokensmap");
         lastSeenMap= hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"lastSeenMap");
-        logger.info("Connecting to map {}",appConfig.getProperty("gridprefix")+"lastSeenMap");
+        log.info("Connecting to map {}",appConfig.getProperty("gridprefix")+"lastSeenMap");
     }
 
 
@@ -57,7 +57,7 @@ public class ActiveUserTokenRepository {
      * @return UserToken if found and valid, null if not.
      */
     public static UserToken getUserToken(String usertokenId) {
-        logger.debug("getUserToken with userTokenid=" + usertokenId);
+        log.debug("getUserToken with userTokenid=" + usertokenId);
         if (usertokenId == null) {
             return null;
         }
@@ -65,11 +65,11 @@ public class ActiveUserTokenRepository {
         if (resToken != null && verifyUserToken(resToken)) {
             resToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(resToken));
             lastSeenMap.put(resToken.getEmail(),new Date());
-            logger.info("Valid userToken found: " + resToken);
-            logger.debug("userToken=" + resToken);
+            log.info("Valid userToken found: " + resToken);
+            log.debug("userToken=" + resToken);
             return resToken;
         }
-        logger.debug("No usertoken found for usertokenId=" + usertokenId);
+        log.debug("No usertoken found for usertokenId=" + usertokenId);
         return null;
     }
 
@@ -81,7 +81,7 @@ public class ActiveUserTokenRepository {
      */
     public static boolean verifyUserToken(UserToken userToken) {
         if (userToken.getTokenid() == null) {
-            logger.info("UserToken not valid, missing tokenId");
+            log.info("UserToken not valid, missing tokenId");
             return false;
         }
         if (userToken.getEmail()!=null){
@@ -90,17 +90,17 @@ public class ActiveUserTokenRepository {
         }
         UserToken resToken = activeusertokensmap.get(userToken.getTokenid());
         if (resToken == null) {
-            logger.info("UserToken not found in repo.");
+            log.info("UserToken not found in repo.");
             return false;
         }
-        logger.debug("UserToken from repo: {}", resToken);
+        log.debug("UserToken from repo: {}", resToken);
         if (!resToken.isValid()) {
-            logger.debug("resToken is not valid");
+            log.debug("resToken is not valid");
             activeusertokensmap.remove(userToken.getTokenid());
             return false;
         }
         if (!userToken.toString().equals(resToken.toString())) {
-            logger.info("UserToken not valid: not the same as in repo. token: {}  repotoken: {}", userToken, resToken);
+            log.info("UserToken not valid: not the same as in repo. token: {}  repotoken: {}", userToken, resToken);
             return false;
         }
 
@@ -109,7 +109,7 @@ public class ActiveUserTokenRepository {
 
     public static void addUserToken(UserToken userToken) {
         if (userToken.getTokenid() == null) {
-            logger.error("Error: token has net tokenid");
+            log.error("Error: token has net tokenid");
             return;
         }
 
@@ -119,12 +119,12 @@ public class ActiveUserTokenRepository {
 
         }
         if (activeusertokensmap.containsKey(userToken.getTokenid())) {
-            logger.error("Error: trying to update an already existing UserToken in repo..");
+            log.error("Error: trying to update an already existing UserToken in repo..");
             return;
         }
         UserToken copy = userToken.copy();
         activeusertokensmap.put(copy.getTokenid(), copy);
-        logger.info("Added token with id {}", copy.getTokenid(), " content:" + copy);
+        log.info("Added token with id {}", copy.getTokenid(), " content:" + copy);
     }
 
     public static void removeUserToken(String userTokenId) {
