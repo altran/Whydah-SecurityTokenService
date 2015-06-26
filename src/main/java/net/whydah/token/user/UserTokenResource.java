@@ -328,7 +328,7 @@ public class UserTokenResource {
      *
      * @param applicationtokenid
      * @param usertokenid
-     * @return
+     * @return Response.OK
      */
     @Path("/{applicationtokenid}/release_usertoken")
     @POST
@@ -350,11 +350,11 @@ public class UserTokenResource {
     }
 
     /**
-     * Request SSO session renewal.
+     * Request SSO user session renewal.
      *
      * @param applicationtokenid
      * @param usertokenid
-     * @return
+     * @return userTokenXml - usertoken with extended lease
      */
     @Path("/{applicationtokenid}/renew_usertoken")
     @POST
@@ -386,7 +386,7 @@ public class UserTokenResource {
      * @param appTokenXml
      * @param userTokenXml
      * @param newAppTokenId
-     * @return
+     * @return UserTokenXml as seen for the given application session
      */
     @Path("/{applicationtokenid}/transform_usertoken")
     @POST
