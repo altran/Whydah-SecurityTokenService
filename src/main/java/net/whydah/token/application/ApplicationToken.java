@@ -51,7 +51,7 @@ public class ApplicationToken implements Serializable {
 
     public ApplicationToken() {
         applicationTokenId = UUID.randomUUID().toString();
-        expires = String.valueOf((System.currentTimeMillis() + 10000));
+        expires = String.valueOf((System.currentTimeMillis() + 100));
     }
 
     public ApplicationToken(String xml) {
@@ -59,7 +59,7 @@ public class ApplicationToken implements Serializable {
         applicationSecret = getApplicationSecret(xml);  // "ERST677hjS"
         applicationID = getApplicationID(xml);
         applicationName = getApplicationName(xml);
-        expires = String.valueOf((System.currentTimeMillis() + 10000));
+        expires = String.valueOf((System.currentTimeMillis() + 100));
         template = false;
     }
 
@@ -101,6 +101,10 @@ public class ApplicationToken implements Serializable {
 
     public String getExpires() {
         return expires;
+    }
+
+    public void setExpires(String expires) {
+        this.expires= expires;
     }
 
 

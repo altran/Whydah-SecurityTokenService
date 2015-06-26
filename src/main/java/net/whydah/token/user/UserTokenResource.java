@@ -372,7 +372,7 @@ public class UserTokenResource {
         }
         UserToken utoken = ActiveUserTokenRepository.getUserToken(usertokenid);
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
-        utoken.setLifespan(String.valueOf(60 * 60 * new Random().nextInt(100)));
+        utoken.setLifespan(String.valueOf( 60 * new Random().nextInt(100)));
         ActiveUserTokenRepository.addUserToken(utoken);
 
         log.trace("renewUserToken - session renewed, usertokenid={}", usertokenid);
