@@ -47,9 +47,9 @@
     </parent>
 
     <scm>
-        <developerConnection>scm:git:ssh://git@github.com/altran/Whydah-SecurityTokenService.git</developerConnection>
-        <connection>scm:git:https://github.com/altran/Whydah-SecurityTokenService.git</connection>
-        <url>https://github.com/altran/Whydah-SecurityTokenService</url>
+        <developerConnection>scm:git:ssh://git@github.com/cantara/Whydah-SecurityTokenService.git</developerConnection>
+        <connection>scm:git:https://github.com/cantara/Whydah-SecurityTokenService.git</connection>
+        <url>https://github.com/cantara/Whydah-SecurityTokenService</url>
     <tag>SecurityTokenService-2.0-rc-5</tag>
   </scm>
 
