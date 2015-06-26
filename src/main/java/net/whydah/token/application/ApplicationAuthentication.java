@@ -20,6 +20,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import java.io.StringReader;
 import java.util.HashMap;
+import java.util.Random;
 
 @Path("/")
 public class ApplicationAuthentication {
@@ -82,7 +83,7 @@ public class ApplicationAuthentication {
         }
         ApplicationToken token = new ApplicationToken(appCredentialXml);
         token.setBaseuri(appConfig.getProperty("myuri"));
-        token.setExpires(String.valueOf((System.currentTimeMillis() + 100)));
+        token.setExpires(String.valueOf((System.currentTimeMillis() + 10* new Random().nextInt(500))));
         AuthenticatedApplicationRepository.addApplicationToken(token);
         String applicationTokenXml = token.toXML();
         log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
