@@ -82,6 +82,7 @@ public class ApplicationAuthentication {
         }
         ApplicationToken token = new ApplicationToken(appCredentialXml);
         token.setBaseuri(appConfig.getProperty("myuri"));
+        token.setExpires(String.valueOf((System.currentTimeMillis() + 100)));
         AuthenticatedApplicationRepository.addApplicationToken(token);
         String applicationTokenXml = token.toXML();
         log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
