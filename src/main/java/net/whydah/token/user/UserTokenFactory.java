@@ -201,6 +201,7 @@ public class UserTokenFactory {
         String myappid = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(applicationTokenID);
         log.info("getFilteredUserToken - found appid={}",myappid);
         if (shouldReturnFullUserToken(myappid)){
+            log.info("getFilteredUserToken - no filtering");
             return userToken;
         } else {
             List<ApplicationRoleEntry> origRoleList = userToken.getRoleList();
@@ -214,8 +215,8 @@ public class UserTokenFactory {
                 }
             }
             userToken.setRoleList(roleList);
+            return userToken;
         }
-        return userToken;
     }
 
     public static boolean verifyApplicationToken(String applicationtokenid, String applicationtokenXml) {

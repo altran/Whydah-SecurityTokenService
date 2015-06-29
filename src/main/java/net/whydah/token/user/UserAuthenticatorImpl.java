@@ -74,14 +74,14 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
             log.error("Response from UAS: {}: {}", response.getStatus(), response.getEntity(String.class));
             throw new AuthenticationFailedException("Authentication failed. Status code " + response.getStatus());
         }
-        String identityXML = response.getEntity(String.class);
-        log.debug("Response from UserAdminService: {}", identityXML);
-        if (identityXML.contains("logonFailed")) {
+        String userAggregateXML = response.getEntity(String.class);
+        log.debug("Response from UserAdminService: {}", userAggregateXML);
+        if (userAggregateXML.contains("logonFailed")) {
             throw new AuthenticationFailedException("Authentication failed.");
         }
 
-        //UserToken token = UserToken.createFromUserAggregate(appTokenXml, identityXML);
-        UserToken userToken = userTokenFactory.fromUserAggregate(identityXML);
+        //UserToken token = UserToken.createFromUserAggregate(appTokenXml, userAggregateXML);
+        UserToken userToken = userTokenFactory.fromUserAggregate(userAggregateXML);
         //token.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
         ActiveUserTokenRepository.addUserToken(userToken);
         return userToken;

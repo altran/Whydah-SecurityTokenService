@@ -91,7 +91,7 @@ public class UserTokenTest {
     }
 
     @Test
-    public void testCreateUserTokenWithRoles() {
+    public void testCreateUserTokenWithRolesFreemarkerCopy() {
         UserToken utoken = new UserToken();
         utoken.setFirstName("Olav");
         utoken.setLastName("Nordmann");
@@ -113,6 +113,24 @@ public class UserTokenTest {
         String copyxml2 = freemarkerProcessor.toXml(copyToken2);
         //System.out.println("FILTERED: " + copyxml2);
         // assertFalse("Should not be equal as result is applicationfiltered ", tokenxml.equals(copyxml2));
+    }
+
+    @Test
+    public void testCreateUserTokenWithRolesUserTokenCopy() {
+        UserToken utoken = new UserToken();
+        utoken.setFirstName("Olav");
+        utoken.setLastName("Nordmann");
+        utoken.setEmail("test2@whydah.net");
+        utoken.setTokenid(UUID.randomUUID().toString());
+        utoken.addApplicationRoleEntry(new ApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 1", "Boardmember", "Diktator"));
+        utoken.addApplicationRoleEntry(new ApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 2", "tester", "ansatt"));
+        utoken.addApplicationRoleEntry(new ApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 3", "Boardmember", ""));
+        utoken.addApplicationRoleEntry(new ApplicationRoleEntry("appa", "whydag.org", "Kunde 1", "President", "Valla"));
+        String tokenxml = freemarkerProcessor.toXml(utoken);
+
+        UserToken copyToken = UserTokenFactory.fromXml(tokenxml);
+        UserToken copy2Token = copyToken.copy();
+        assertTrue(copy2Token.toString().equalsIgnoreCase(copyToken.toString()));
     }
 
     @Test
