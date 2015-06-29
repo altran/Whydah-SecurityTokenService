@@ -28,7 +28,7 @@ public class UserTokenResource {
     private final static Logger log = LoggerFactory.getLogger(UserTokenResource.class);
 
     private static Map userticketmap = new HashMap();
-    private static Map  applicationtokenidmap = new HashMap();
+    private static Map applicationtokenidmap = new HashMap();
 
     static {
 
@@ -52,11 +52,10 @@ public class UserTokenResource {
         }
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
-        userticketmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"userticketmap");
-        log.info("Connectiong to map {}",appConfig.getProperty("gridprefix")+"userticketmap");
-        applicationtokenidmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"applicationtokenidmap");
-        log.info("Connectiong to map {}",appConfig.getProperty("gridprefix")+"applicationtokenidmap");
-
+        userticketmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "userticketmap");
+        log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "userticketmap");
+        applicationtokenidmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "applicationtokenidmap");
+        log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "applicationtokenidmap");
 
 
     }
@@ -87,12 +86,10 @@ public class UserTokenResource {
     }
 
     /**
-     *
-     *
-     *
      * TODO baardl: rename the param apptoken
+     *
      * @param applicationtokenid the current application wanting to authenticate the user.
-     * @param appTokenXml the token representing the application the user want to access.
+     * @param appTokenXml        the token representing the application the user want to access.
      * @param userCredentialXml
      * @return
      */
@@ -112,11 +109,11 @@ public class UserTokenResource {
         }
         try {
             UserToken userToken = userAuthenticator.logonUser(applicationtokenid, appTokenXml, userCredentialXml);
-            userToken.setNs2link(appConfig.getProperty("myuri")+"user/"+applicationtokenid+"/validate_usertokenid/"+userToken.getTokenid());
-            return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid,userToken))).build();
+            userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
+            return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).build();
         } catch (AuthenticationFailedException ae) {
             log.warn("getUserToken - User authentication failed");
-                return Response.status(Response.Status.FORBIDDEN).entity("User authentication failed").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("User authentication failed").build();
         }
     }
 
@@ -134,9 +131,9 @@ public class UserTokenResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response getUserTokenAndStoreUserTicket(@PathParam("applicationtokenid") String applicationtokenid,
-                                 @PathParam("userticket") String userticket,
-                                 @FormParam("apptoken") String appTokenXml,
-                                 @FormParam("usercredential") String userCredentialXml) {
+                                                   @PathParam("userticket") String userticket,
+                                                   @FormParam("apptoken") String appTokenXml,
+                                                   @FormParam("usercredential") String userCredentialXml) {
         if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
@@ -146,24 +143,21 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         try {
-            UserToken usertoken = userAuthenticator.logonUser(applicationtokenid, appTokenXml, userCredentialXml);
+            UserToken userToken = userAuthenticator.logonUser(applicationtokenid, appTokenXml, userCredentialXml);
 
             // Add the user to the ticket-map with the ticket given from the caller
-            userticketmap.put(userticket, usertoken.getTokenid());
-            usertoken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + usertoken.getTokenid());
-            return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid,usertoken))).build();
+            userticketmap.put(userticket, userToken.getTokenid());
+            return createUserTokenResponse(applicationtokenid, userToken);
         } catch (AuthenticationFailedException ae) {
             log.warn("getUserTokenAndStoreUserTicket - User authentication failed");
-                return Response.status(Response.Status.FORBIDDEN).entity("User authentication failed").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("User authentication failed").build();
         }
     }
-
 
 
     /**
      * Verify that a usertoken and a user session is still valid. Usually used for application re-entries and before allowing
      * a user important and critical processes like monetary transactions
-     *
      *
      * @param applicationtokenid
      * @param userTokenXml
@@ -173,7 +167,7 @@ public class UserTokenResource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response validateUserTokenXML(@PathParam("applicationtokenid") String applicationtokenid, @FormParam("usertoken") String userTokenXml) {
-        if(!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
+        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("validateUserTokenXML - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
@@ -228,8 +222,7 @@ public class UserTokenResource {
         if (userToken != null) {
             userticketmap.put(userticket, userToken.getTokenid());
             log.trace("createUserTicketByUserTokenId OK. Response={}", userToken.toString());
-            userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
-            return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid,userToken))).build();
+            return createUserTokenResponse(applicationtokenid, userToken);
         }
         log.warn("createUserTicketByUserTokenId - attempt to access with non acceptable usertokenid {}", userTokenId);
         return Response.status(Response.Status.NOT_ACCEPTABLE).build();
@@ -249,8 +242,8 @@ public class UserTokenResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response getUserTokenByUserTokenId(@PathParam("applicationtokenid") String applicationtokenid,
-                                     @FormParam("apptoken") String appTokenXml,
-                                     @FormParam("usertokenid") String userTokenId) {
+                                              @FormParam("apptoken") String appTokenXml,
+                                              @FormParam("usertokenid") String userTokenId) {
         log.trace("getUserTokenByUserTokenId: applicationtokenid={}, usertokenid={}, appTokenXml={}", applicationtokenid, userTokenId, appTokenXml);
 
         if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
@@ -266,16 +259,12 @@ public class UserTokenResource {
             log.warn("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid={}", userTokenId);
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
-        log.trace("getUserTokenByUserTokenId OK. Response={}", userToken.toString());
-        userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
-        userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
-        return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).build();
+        return createUserTokenResponse(applicationtokenid, userToken);
     }
 
     /**
      * Lookup a user by a one-time userticket, usually the first thing we do after receiving a SSO redirect back to
      * an application from SSOLoginWebApplication
-     *
      *
      * @param applicationtokenid
      * @param appTokenXml
@@ -287,8 +276,8 @@ public class UserTokenResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response getUserTokenByUserTicket(@PathParam("applicationtokenid") String applicationtokenid,
-                                     @FormParam("apptoken") String appTokenXml,
-                                     @FormParam("userticket") String userticket) {
+                                             @FormParam("apptoken") String appTokenXml,
+                                             @FormParam("userticket") String userticket) {
         if (isEmpty(appTokenXml) || isEmpty(userticket)) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing required parameters").build();
         }
@@ -317,9 +306,9 @@ public class UserTokenResource {
             return Response.status(Response.Status.NOT_ACCEPTABLE).build(); //406
         }
         log.trace("getUserTokenByUserTicket OK. Response={}", userToken.toString());
-        userToken.setNs2link(appConfig.getProperty("myuri")+"user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
+        userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
         userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
-        return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid,userToken))).build();
+        return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).build();
     }
 
 
@@ -336,7 +325,7 @@ public class UserTokenResource {
     public Response releaseUserToken(@PathParam("applicationtokenid") String applicationtokenid,
                                      @FormParam("usertokenid") String usertokenid) {
         log.trace("releaseUserToken - entry.  usertokenid={}", usertokenid);
-        if(!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
+        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("releaseUserToken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
@@ -360,9 +349,9 @@ public class UserTokenResource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response renewUserToken(@PathParam("applicationtokenid") String applicationtokenid,
-                                     @FormParam("usertokenid") String usertokenid) {
+                                   @FormParam("usertokenid") String usertokenid) {
         log.trace("renewUserToken - entry.  usertokenid={}", usertokenid);
-        if(!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
+        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("renewUserToken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
@@ -372,7 +361,7 @@ public class UserTokenResource {
         }
         UserToken utoken = ActiveUserTokenRepository.getUserToken(usertokenid);
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
-        utoken.setLifespan(String.valueOf( 60 * new Random().nextInt(100)));
+        utoken.setLifespan(String.valueOf(60 * new Random().nextInt(100)));
         ActiveUserTokenRepository.addUserToken(utoken);
 
         log.trace("renewUserToken - session renewed, usertokenid={}", usertokenid);
@@ -414,13 +403,8 @@ public class UserTokenResource {
             log.warn("getUserTokenByUserTokenId - attempt to access with non acceptable userTokenId={}", userTokenId);
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
-        log.trace("getUserTokenByUserTokenId OK. Response={}", userToken.toString());
-        userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + newAppTokenId + "/validate_usertokenid/" + userToken.getTokenid());
-        userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
-        return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(newAppTokenId, userToken))).build();
+        return createUserTokenResponse(newAppTokenId, userToken);
     }
-
-
 
 
     /**
@@ -446,7 +430,7 @@ public class UserTokenResource {
                                        @FormParam("fbuser") String thirdPartyUserTokenXml) {
         log.trace("Response createAndLogOnUser: usercredential:" + userCredentialXml + "fbuser:" + thirdPartyUserTokenXml);
 
-        if (ApplicationMode.getApplicationMode()==ApplicationMode.DEV ) {
+        if (ApplicationMode.getApplicationMode() == ApplicationMode.DEV) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
 
@@ -457,20 +441,28 @@ public class UserTokenResource {
         }
 
         try {
-            applicationtokenidmap.put(applicationtokenid,applicationtokenid);
+            applicationtokenidmap.put(applicationtokenid, applicationtokenid);
             UserToken userToken = userAuthenticator.createAndLogonUser(applicationtokenid, appTokenXml, userCredentialXml, thirdPartyUserTokenXml);
             userticketmap.put(userticket, userToken.getTokenid());
-            userToken.setNs2link(appConfig.getProperty("myuri")+"user/"+applicationtokenid+"/validate_usertokenid/"+userToken.getTokenid());
-            return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid,userToken))).build();
+            userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
+            return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).build();
         } catch (AuthenticationFailedException ae) {
             log.warn("createAndLogOnUser - Error creating or authenticating user. thirdPartyUserTokenXml={}", thirdPartyUserTokenXml);
             return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").build();
         }
     }
 
+    private Response createUserTokenResponse(@PathParam("applicationtokenid") String applicationtokenid, UserToken userToken) {
+        log.trace("getUserTokenByUserTokenId OK. Response={}", userToken.toString());
+        userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
+        userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
+        return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).build();
+    }
+
+
     boolean isEmpty(String userticket) {
         boolean isEmpty = false;
-        if (userticket == null || userticket.isEmpty()){
+        if (userticket == null || userticket.isEmpty()) {
             isEmpty = true;
         }
         return isEmpty;
