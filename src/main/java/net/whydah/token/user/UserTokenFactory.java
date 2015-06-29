@@ -225,7 +225,7 @@ public class UserTokenFactory {
         if (applicationtokenid != null) {
             return AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid);
         } else {
-            log.debug("verifyApplicationToken - not expecting null values applicationtokenid {}, applicationtokenXml {}", applicationtokenid, applicationtokenXml);
+            log.warn("verifyApplicationToken - not expecting null values applicationtokenid {}, applicationtokenXml {}", applicationtokenid, applicationtokenXml);
             return false;
         }
     }
