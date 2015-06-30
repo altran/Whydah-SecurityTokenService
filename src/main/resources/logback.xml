@@ -31,7 +31,7 @@
     <logger name="com.hazelcast" level="WARN" />
 
 
-    <logger name="net.whydah" level="TRACE" />
+    <logger name="net.whydah" level="INFO" />
 
     <root level="TRACE">
         <appender-ref ref="STDOUT" />
