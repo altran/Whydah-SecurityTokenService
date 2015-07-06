@@ -91,9 +91,25 @@ public class ApplicationAuthentication {
     }
 
     @Path("{applicationtokenid}/validate")
+    @GET
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response validateApplicationTokenId(@PathParam("applicationtokenid") String applicationtokenid) {
+        log.debug("verify apptokenid {}", applicationtokenid);
+        if (AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
+            log.debug("Apptokenid valid");
+            return Response.ok().build();
+        } else {
+            log.debug("Apptokenid not valid");
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+    }
+
+    //ED: I think/hope this can be removed...
+    @Path("{applicationtokenid}/validate")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response validateApplicationtokenid(@PathParam("applicationtokenid") String applicationtokenid) {
+    @Deprecated
+    public Response validateApplicationtokenidPOST(@PathParam("applicationtokenid") String applicationtokenid) {
         log.debug("verify apptokenid {}", applicationtokenid);
         if (AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.debug("Apptokenid valid");
