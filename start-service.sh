@@ -8,8 +8,8 @@ fi
 
 # If Version is from source, find the artifact
 if [ "$Version" = "FROM_SOURCE" ]; then 
-    # Find the bult artifact
-    Version=$(find target/* -name '*.jar | grep SNAPSHOT | grep -v original | grep -v lib)
+    # Find the built artifact
+    Version=$(find target/* -name '*.jar' | grep SNAPSHOT | grep -v original | grep -v lib)
 else
     Version=SecurityTokenService.jar
 fi
@@ -17,7 +17,7 @@ fi
 
 # If IAM_CONFIG not set, use embedded
 if [ -z "$IAM_CONFIG" ]; then
-  nohup /usr/bin/java -DIAM_MODE=$IAM_MODE -Dhazelcast.config=hazelcast.xml  -jar  $Version &
+  nohup /usr/bin/java -DIAM_MODE=$IAM_MODE -Dhazelcast.config=hazelcast.xml -jar  $Version &
 else  
   nohup /usr/bin/java -DIAM_MODE=$IAM_MODE -Dhazelcast.config=hazelcast.xml -DIAM_CONFIG=$IAM_CONFIG -jar  $Version &
 fi
