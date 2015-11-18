@@ -55,6 +55,7 @@
 
     <properties>
         <service.name>Whydah-SecurityTokenService</service.name>
+        <whydah-typelib-version>0.7-SNAPSHOT</whydah-typelib-version>
         <jersey-version>1.6</jersey-version>
         <grizzy-version>2.1.11</grizzy-version>
     </properties>
@@ -76,6 +77,12 @@
 
 
     <dependencies>
+
+        <dependency>
+            <groupId>net.whydah.sso</groupId>
+            <artifactId>Whydah-TypeLib</artifactId>
+            <version>${whydah-typelib-version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.google.inject</groupId>
