@@ -162,7 +162,7 @@ public class ApplicationAuthentication {
                 return false;
             }
             if (!appSecret.equalsIgnoreCase(expectedAppSecret)) {
-                if (!checkAppsecretFromUAS(expectedAppSecret)) {
+                if (!checkAppsecretFromUAS(expectedAppSecret,appId)) {
                     log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret from property file.");
                     return false;
                 }
@@ -174,9 +174,9 @@ public class ApplicationAuthentication {
         return true;
     }
 
-    private boolean checkAppsecretFromUAS(String inputSecret){
+    private boolean checkAppsecretFromUAS(String inputSecret,String appId){
         /**
-         *         WebTarget applicationList = uasClient.target(userAdminServiceUri).path(myAppTokenId + "/" + adminUserTokenId + "/applications");
+         WebTarget applicationList = uasClient.target(userAdminServiceUri).path(myAppTokenId + "/" + adminUserTokenId + "/applications");
 
          Response response = applicationList.request().get();
          if (response.getStatus() == FORBIDDEN.getStatusCode()) {
@@ -186,7 +186,7 @@ public class ApplicationAuthentication {
          if (response.getStatus() == OK.getStatusCode()) {
          String responseJson = response.readEntity(String.class);
 
-         return ApplicationJsonpathHelper.findApplicationSecretFromApplicationListById(responseJson, inputSecret));
+         return inputSecret.equalsIgnoreCase(ApplicationJsonpathHelper.findApplicationSecretFromApplicationListById(responseJson, appId)));
          }
 
          */
