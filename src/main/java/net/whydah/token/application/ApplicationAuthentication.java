@@ -162,13 +162,37 @@ public class ApplicationAuthentication {
                 return false;
             }
             if (!appSecret.equalsIgnoreCase(expectedAppSecret)) {
-                log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret from property file.");
-                return false;
+                if (!checkAppsecretFromUAS()) {
+                    log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret from property file.");
+                    return false;
+                }
             }
         } catch (Exception e) {
             log.error("Error in verifyApplicationCredentials.", e);
             return false;
         }
         return true;
+    }
+
+    private boolean checkAppsecretFromUAS(){
+        /**
+         *         WebTarget applicationList = uasClient.target(userAdminServiceUri).path(myAppTokenId + "/" + adminUserTokenId + "/applications");
+
+         // Works against UIB, still misisng in UAS...
+         Response response = applicationList.request().get();
+         if (response.getStatus() == FORBIDDEN.getStatusCode()) {
+         log.info("CommandListApplications -  User authentication failed with status code " + response.getStatus());
+         return null;
+         //throw new IllegalArgumentException("Log on failed. " + ClientResponse.Status.FORBIDDEN);
+         }
+         if (response.getStatus() == OK.getStatusCode()) {
+         String responseJson = response.readEntity(String.class);
+         log.debug("CommandListApplications - Listing applications {}", responseJson);
+         return responseJson;
+         }
+
+         */
+        return false;
+
     }
 }
