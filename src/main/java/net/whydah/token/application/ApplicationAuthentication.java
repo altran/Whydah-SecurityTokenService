@@ -162,7 +162,7 @@ public class ApplicationAuthentication {
                 return false;
             }
             if (!appSecret.equalsIgnoreCase(expectedAppSecret)) {
-                if (!checkAppsecretFromUAS()) {
+                if (!checkAppsecretFromUAS(expectedAppSecret)) {
                     log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret from property file.");
                     return false;
                 }
