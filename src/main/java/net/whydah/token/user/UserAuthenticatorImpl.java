@@ -14,14 +14,12 @@ import java.net.URI;
 
 public class UserAuthenticatorImpl implements UserAuthenticator {
     private static final Logger log = LoggerFactory.getLogger(UserAuthenticatorImpl.class);
-//    private static final String USER_AUTHENTICATION_PATH = "/authenticate/user";
     private static final String USER_AUTHENTICATION_PATH = "/auth/logon/user";
     private static final String CREATE_AND_LOGON_OPERATION = "createandlogon";
 
 
     private URI useradminservice;
     private URI useridentitybackend;
-    private final WebResource uibResource;
     private final WebResource uasResource;
     private final UserTokenFactory userTokenFactory;
 
@@ -30,7 +28,6 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     @Inject
     public UserAuthenticatorImpl(@Named("useridentitybackend") URI useridentitybackend, @Named("useradminservice") URI useradminservice, UserTokenFactory userTokenFactory) {
         this.useridentitybackend = useridentitybackend;
-        this.uibResource = ApacheHttpClient.create().resource(useridentitybackend);
         this.useradminservice = useradminservice;
         this.uasResource = ApacheHttpClient.create().resource(useradminservice);
         this.userTokenFactory = userTokenFactory;
@@ -40,8 +37,6 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     public UserToken logonUser(final String applicationTokenId, final String appTokenXml, final String userCredentialXml) {
         log.trace("logonUser - Calling UserAdminService at " + useradminservice + " appTokenXml:" + appTokenXml + " userCredentialXml:" + userCredentialXml);
         try {
-            // /uib/{applicationTokenId}/authenticate/user
-//            WebResource webResource = uibResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH);
             WebResource webResource = uasResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH);
             ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, userCredentialXml);
 
@@ -56,9 +51,6 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     @Override
     public UserToken createAndLogonUser(String applicationtokenid, String appTokenXml, String userCredentialXml, String fbUserXml) {
         log.trace("createAndLogonUser - Calling UserAdminService at with appTokenXml:\n" + appTokenXml + "userCredentialXml:\n" + userCredentialXml + "fbUserXml:\n" + fbUserXml);
-        // TODO /uib//{applicationTokenId}/{applicationTokenId}/createandlogon/
-        // TODO /authenticate/user
-//        WebResource webResource = uibResource.path(applicationtokenid).path(USER_AUTHENTICATION_PATH).path(CREATE_AND_LOGON_OPERATION);
         WebResource webResource = uasResource.path(applicationtokenid).path(USER_AUTHENTICATION_PATH).path(CREATE_AND_LOGON_OPERATION);
         log.debug("createAndLogonUser - Calling createandlogon " + webResource.toString());
         ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, fbUserXml);
@@ -80,9 +72,8 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
             throw new AuthenticationFailedException("Authentication failed.");
         }
 
-        //UserToken token = UserToken.createFromUserAggregate(appTokenXml, userAggregateXML);
         UserToken userToken = userTokenFactory.fromUserAggregate(userAggregateXML);
-        //token.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
+        userToken.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
         ActiveUserTokenRepository.addUserToken(userToken);
         return userToken;
     }

@@ -1,10 +1,16 @@
 package net.whydah.token.application;
 
 import com.google.inject.Inject;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.view.Viewable;
+import net.whydah.sso.application.helpers.ApplicationHelper;
+import net.whydah.sso.application.helpers.ApplicationJsonpathHelper;
+import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
 import net.whydah.token.user.UserCredential;
+import net.whydah.token.user.UserToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -162,7 +168,7 @@ public class ApplicationAuthentication {
                 return false;
             }
             if (!appSecret.equalsIgnoreCase(expectedAppSecret)) {
-                if (!checkAppsecretFromUAS(expectedAppSecret,appId)) {
+                if (!checkAppsecretFromUAS(appCredentials,appSecret,appId)) {
                     log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret from property file.");
                     return false;
                 }
@@ -174,9 +180,21 @@ public class ApplicationAuthentication {
         return true;
     }
 
-    private boolean checkAppsecretFromUAS(String inputSecret,String appId){
+    private boolean checkAppsecretFromUAS(String appCredentialXml,String appSecret,String appId){
+        ApplicationToken token = new ApplicationToken(appCredentialXml);
+        token.setBaseuri(appConfig.getProperty("myuri"));
+        token.setExpires(String.valueOf((System.currentTimeMillis() + 10* new Random().nextInt(500))));
+
         /**
-         WebTarget applicationList = uasClient.target(userAdminServiceUri).path(myAppTokenId + "/" + adminUserTokenId + "/applications");
+        AuthenticatedApplicationRepository.addApplicationToken(token);
+
+
+        WebResource webResource = uasResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH);
+        ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, userCredentialXml);
+
+        UserToken userToken = getUserToken(appTokenXml, response);
+
+        WebTarget applicationList = uasClient.target(userAdminServiceUri).path(myAppTokenId + "/" + adminUserTokenId + "/applications");
 
          Response response = applicationList.request().get();
          if (response.getStatus() == FORBIDDEN.getStatusCode()) {
@@ -186,9 +204,8 @@ public class ApplicationAuthentication {
          if (response.getStatus() == OK.getStatusCode()) {
          String responseJson = response.readEntity(String.class);
 
-         return inputSecret.equalsIgnoreCase(ApplicationJsonpathHelper.findApplicationSecretFromApplicationListById(responseJson, appId)));
+         return appSecret.equalsIgnoreCase(ApplicationJsonpathHelper.findApplicationSecretFromApplicationListById(responseJson, appId)));
          }
-
          */
         return false;
 
