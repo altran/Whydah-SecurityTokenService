@@ -6,6 +6,10 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
+import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
+import net.whydah.sso.application.mappers.ApplicationTokenMapper;
+import net.whydah.sso.application.types.ApplicationCredential;
+import net.whydah.sso.application.types.ApplicationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,9 +38,9 @@ public class ApplicationAuthenticatorImpl implements ApplicationAuthenticator {
         log.trace("logonApplication - Calling UserIdentityBackend at " + useridbackendUri);
         if (applicationCredential != null) {
             WebResource webResource = restClient.resource(useridbackendUri).path("logon");
-            ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, applicationCredential.toXML());
+            ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, ApplicationCredentialMapper.toXML(applicationCredential));
             token = buildApplictionToken(applicationCredential, response);
-            log.trace("Logged on Applicaton {}", token.toXML());
+            log.trace("Logged on Applicaton {}", ApplicationTokenMapper.toXML(token));
         }
 
         return token;

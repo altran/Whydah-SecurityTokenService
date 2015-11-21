@@ -1,16 +1,15 @@
 package net.whydah.token.application;
 
 import com.google.inject.Inject;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.view.Viewable;
-import net.whydah.sso.application.helpers.ApplicationHelper;
-import net.whydah.sso.application.helpers.ApplicationJsonpathHelper;
+import net.whydah.sso.application.helpers.ApplicationCredentialHelper;
 import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
+import net.whydah.sso.application.mappers.ApplicationTokenMapper;
+import net.whydah.sso.application.types.ApplicationCredential;
+import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
 import net.whydah.token.user.UserCredential;
-import net.whydah.token.user.UserToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -43,7 +42,7 @@ public class ApplicationAuthentication {
             //log.debug("Showing test page");
             HashMap<String, Object> model = new HashMap<String, Object>();
             UserCredential testUserCredential = new UserCredential("whydah_user", "whydah_password");
-            model.put("applicationcredential", new ApplicationCredential().toXML());
+            model.put("applicationcredential", ApplicationCredentialHelper.getDummyApplicationCredential());
             model.put("testUserCredential", testUserCredential.toXML());
             return Response.ok().entity(new Viewable("/testpage.html.ftl", model)).build();
         } else {
@@ -58,7 +57,7 @@ public class ApplicationAuthentication {
     @Produces(MediaType.APPLICATION_XML)
     public Response getApplicationTokenTemplate() {
         ApplicationToken template = new ApplicationToken();
-        return Response.ok().entity(template.toXML()).build();
+        return Response.ok().entity(ApplicationTokenMapper.toXML(template)).build();
     }
 
 
@@ -66,8 +65,8 @@ public class ApplicationAuthentication {
     @GET
     @Produces(MediaType.APPLICATION_XML)
     public Response getApplicationCredentialsTemplate() {
-        ApplicationCredential template = new ApplicationCredential();
-        return Response.ok().entity(template.toXML()).build();
+        ApplicationCredential template = ApplicationCredentialMapper.fromXml(ApplicationCredentialHelper.getDummyApplicationCredential());
+        return Response.ok().entity(ApplicationCredentialMapper.toXML(template)).build();
     }
 
     @Path("/usercredentialtemplate")
@@ -87,11 +86,11 @@ public class ApplicationAuthentication {
         if (!verifyApplicationCredentials(appCredentialXml)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
-        ApplicationToken token = new ApplicationToken(appCredentialXml);
+        ApplicationToken token = ApplicationTokenMapper.fromApplicationCredentialXML(appCredentialXml);
         token.setBaseuri(appConfig.getProperty("myuri"));
         token.setExpires(String.valueOf((System.currentTimeMillis() + 10* new Random().nextInt(500))));
         AuthenticatedApplicationRepository.addApplicationToken(token);
-        String applicationTokenXml = token.toXML();
+        String applicationTokenXml = ApplicationTokenMapper.toXML(token);
         log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
         return Response.ok().entity(applicationTokenXml).build();
     }
@@ -181,7 +180,7 @@ public class ApplicationAuthentication {
     }
 
     private boolean checkAppsecretFromUAS(String appCredentialXml,String appSecret,String appId){
-        ApplicationToken token = new ApplicationToken(appCredentialXml);
+        ApplicationToken token =  ApplicationTokenMapper.fromApplicationCredentialXML(appCredentialXml);
         token.setBaseuri(appConfig.getProperty("myuri"));
         token.setExpires(String.valueOf((System.currentTimeMillis() + 10* new Random().nextInt(500))));
 
@@ -208,6 +207,18 @@ public class ApplicationAuthentication {
          }
          */
         return false;
+
+    }
+
+    private ApplicationToken getSTSApplicationToken(){
+        AppConfig appConfig = new AppConfig();
+        String applicationName = appConfig.getProperty("applicationname");
+        String applicationId = appConfig.getProperty("applicationid");
+        String applicationsecret = appConfig.getProperty("applicationsecret");
+        ApplicationCredential ac = new ApplicationCredential(applicationId,applicationName,applicationsecret);
+        ApplicationToken myToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(ac));
+
+        return myToken;
 
     }
 }
