@@ -1,7 +1,9 @@
 package net.whydah.token.user;
 
-import net.whydah.token.application.ApplicationCredential;
-import net.whydah.token.application.ApplicationToken;
+import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
+import net.whydah.sso.application.mappers.ApplicationTokenMapper;
+import net.whydah.sso.application.types.ApplicationCredential;
+import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
@@ -22,7 +24,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-import static junit.framework.Assert.assertNotSame;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.*;
 
@@ -342,10 +343,8 @@ public class UserTokenTest {
         assertTrue(freemarkerProcessor.toXml(userToken).indexOf("UserAdmin") > 0);
         assertTrue(freemarkerProcessor.toXml(userToken).indexOf("WhydahUserAdmin") > 0);
 
-        ApplicationCredential cred = new ApplicationCredential();
-        cred.setApplicationID("19");
-        cred.setApplicationSecret("dummy");
-        ApplicationToken imp = new ApplicationToken(cred.toXML());
+        ApplicationCredential cred = new ApplicationCredential("19","myapp","dummy");
+        ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
         AuthenticatedApplicationRepository.addApplicationToken(imp);
 
 

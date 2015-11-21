@@ -5,8 +5,11 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-import net.whydah.token.application.ApplicationCredential;
-import net.whydah.token.application.ApplicationToken;
+import net.whydah.sso.application.helpers.ApplicationTokenXpathHelper;
+import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
+import net.whydah.sso.application.mappers.ApplicationTokenMapper;
+import net.whydah.sso.application.types.ApplicationCredential;
+import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.token.config.ApplicationMode;
 import net.whydah.token.user.UserCredential;
 import org.junit.*;
@@ -73,10 +76,8 @@ public class PostTest {
     }
 
     private String getAppToken() {
-        ApplicationCredential acred = new ApplicationCredential();
-        acred.setApplicationID("21356253");
-        acred.setApplicationSecret("dummy");
-        return logonApplication(acred.toXML());
+        ApplicationCredential acred = new ApplicationCredential("21356253","ine app","dummy");
+        return logonApplication(ApplicationCredentialMapper.toXML(acred));
     }
 
     private String logonApplication(String appCredential) {
@@ -88,8 +89,6 @@ public class PostTest {
     }
 
     private String getApplicationTokenIdFromAppToken(String appTokenXML) {
-        ApplicationToken at = new ApplicationToken(appTokenXML);
-
-        return at.getApplicationTokenId();
+        return  ApplicationTokenXpathHelper.getApplicationSecretFromApplicationToken(appTokenXML);
     }
 }

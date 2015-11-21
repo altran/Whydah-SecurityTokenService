@@ -1,5 +1,9 @@
 package net.whydah.token.application;
 
+import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
+import net.whydah.sso.application.mappers.ApplicationTokenMapper;
+import net.whydah.sso.application.types.ApplicationCredential;
+import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.token.config.ApplicationMode;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -15,10 +19,8 @@ public class ApplicationTokenTest {
 
     @Test
     public void testCreateApplicationCredential() {
-        ApplicationCredential cred = new ApplicationCredential();
-        cred.setApplicationID("1212");
-        cred.setApplicationSecret("dummy");
-        ApplicationToken imp = new ApplicationToken(cred.toXML());
+        ApplicationCredential cred = new ApplicationCredential("1212","testapp","dummy");
+        ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
         //System.out.println(imp.toXML());
         assertEquals("The generated application token is wrong.", cred.getApplicationID(), imp.getApplicationID());
         assertTrue(imp.getApplicationTokenId().length() > 12);
@@ -26,10 +28,8 @@ public class ApplicationTokenTest {
 
     @Test
     public void testCreateApplicationCredential2() {
-        ApplicationCredential cred = new ApplicationCredential();
-        cred.setApplicationID("1243");
-        cred.setApplicationSecret("dummy");
-        ApplicationToken imp = new ApplicationToken(cred.toXML());
+        ApplicationCredential cred = new ApplicationCredential("1212","testapp","dummy");
+        ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
         //System.out.println(imp.toXML());
         assertEquals("The generated application token is wrong.", cred.getApplicationID(), imp.getApplicationID());
         assertTrue(imp.getApplicationTokenId().length() > 12);
@@ -37,10 +37,8 @@ public class ApplicationTokenTest {
 
     @Test
     public void testCreateApplicationToken() {
-        ApplicationCredential cred = new ApplicationCredential();
-        cred.setApplicationID("2233");
-        cred.setApplicationSecret("dummy");
-        ApplicationToken imp = new ApplicationToken(cred.toXML());
+        ApplicationCredential cred = new ApplicationCredential("1212","testapp","dummy");
+        ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
         AuthenticatedApplicationRepository.addApplicationToken(imp);
 
         ApplicationToken imp2 = AuthenticatedApplicationRepository.getApplicationToken(imp.getApplicationTokenId());

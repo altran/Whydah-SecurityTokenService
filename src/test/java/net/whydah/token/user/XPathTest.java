@@ -1,8 +1,10 @@
 package net.whydah.token.user;
 
 import junit.framework.TestCase;
-import net.whydah.token.application.ApplicationCredential;
-import net.whydah.token.application.ApplicationToken;
+import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
+import net.whydah.sso.application.mappers.ApplicationTokenMapper;
+import net.whydah.sso.application.types.ApplicationCredential;
+import net.whydah.sso.application.types.ApplicationToken;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -18,16 +20,11 @@ import java.io.StringReader;
 public class XPathTest extends TestCase {
 
     public void testCreateApplicationToken() throws Exception {
-        ApplicationCredential cred = new ApplicationCredential();
-        cred.setApplicationID("12345678");
-        cred.setApplicationSecret("dummy");
-        ApplicationToken imp = new ApplicationToken(cred.toXML());
-        //System.out.println(imp.toXML());
-        //System.out.println(imp.getApplicationID());
-        //System.out.println(cred.getApplicationID());
+        ApplicationCredential cred = new ApplicationCredential("12345678","apps","dummy");
+        ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
         assertTrue("The generated application token is wrong.", imp.getApplicationID().equals(cred.getApplicationID()));
         assertTrue(imp.getApplicationTokenId().length() > 12);
-        xpathParseAppToken(imp.toXML());
+        xpathParseAppToken(ApplicationTokenMapper.toXML(imp));
     }
 
     private void xpathParseAppToken(String appTokenXml) throws Exception {
