@@ -89,6 +89,6 @@ public class PostTest {
     }
 
     private String getApplicationTokenIdFromAppToken(String appTokenXML) {
-        return  ApplicationTokenXpathHelper.getApplicationSecretFromApplicationToken(appTokenXML);
+        return  ApplicationTokenXpathHelper.getApplicationTokenIDFromApplicationToken(appTokenXML);
     }
 }
