@@ -28,6 +28,9 @@
     <logger name="net.whydah.token.config.FreemarkerViewProcessor" level="INFO" />
     <logger name="net.whydah.token.file.StaticFileViewProcessor" level="INFO" />
     <logger name="net.whydah.token.application.ApplicationToken" level="INFO" />
+
+
+    <logger name="com.sun.jersey.api.client" level="INFO" />
     <logger name="com.hazelcast" level="WARN" />
 
 
