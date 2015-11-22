@@ -204,6 +204,7 @@ public class ApplicationAuthentication {
 
         WebResource uasResource = ApacheHttpClient.create().resource(useradminservice);
 
+        int uasResponseCode=0;
         WebResource webResource = uasResource.path(stsToken.getApplicationTokenId()).path(APPLICATION_AUTH_PATH);
         log.info("checkAppsecretFromUAS - Calling application auth " + webResource.toString());
         MultivaluedMap<String,String> formData = new MultivaluedMapImpl();
@@ -211,15 +212,16 @@ public class ApplicationAuthentication {
         try {
 
             ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(ClientResponse.class);
-            log.trace("Response from UAS:"+response.getStatus());
-            if (response.getStatus()==204){
+            uasResponseCode=response.getStatus();
+            log.info("Response from UAS:"+uasResponseCode);
+            if (uasResponseCode==204){
                 return true;
             }
         } catch (Exception e) {
             log.error("checkAppsecretFromUAS - Problems connecting to {}", useradminservice);
             throw e;
         }
-        log.warn("Illegal application tried to access whydah.");
+        log.warn("Illegal application tried to access whydah. ApplicationID: {}, Response from UAS: {}",appId,uasResponseCode);
 
         return false;
 
