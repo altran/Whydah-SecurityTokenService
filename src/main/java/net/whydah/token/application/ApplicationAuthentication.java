@@ -193,9 +193,12 @@ public class ApplicationAuthentication {
         token.setExpires(String.valueOf((System.currentTimeMillis() + 10* new Random().nextInt(500))));
 
         String useradminservice = appConfig.getProperty("useradminservice");
+        ApplicationToken stsToken = getSTSApplicationToken();
+        AuthenticatedApplicationRepository.addApplicationToken(token);
+
         WebResource uasResource = ApacheHttpClient.create().resource(useradminservice);
 
-        WebResource webResource = uasResource.path(token.getApplicationTokenId()).path(APPLICATION_AUTH_PATH);
+        WebResource webResource = uasResource.path(stsToken.getApplicationTokenId()).path(APPLICATION_AUTH_PATH);
         log.debug("checkAppsecretFromUAS - Calling application auth " + webResource.toString());
         MultivaluedMap<String,String> formData = new MultivaluedMapImpl();
         formData.add(APP_CREDENTIAL_XML, appCredentialXml);
