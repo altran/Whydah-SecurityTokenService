@@ -1,7 +1,11 @@
 package net.whydah.token.application;
 
 import com.google.inject.Inject;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.view.Viewable;
+import com.sun.jersey.client.apache.ApacheHttpClient;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import net.whydah.sso.application.helpers.ApplicationCredentialHelper;
 import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
@@ -10,6 +14,7 @@ import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
 import net.whydah.token.user.UserCredential;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -17,6 +22,7 @@ import org.xml.sax.InputSource;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -30,6 +36,8 @@ import java.util.Random;
 @Path("/")
 public class ApplicationAuthentication {
     private final static Logger log = LoggerFactory.getLogger(ApplicationAuthentication.class);
+    private static final String APPLICATION_AUTH_PATH = "application/auth";
+    public static final String APP_CREDENTIAL_XML = "appCredentialXml";
 
     @Inject
     private AppConfig appConfig;
@@ -184,28 +192,25 @@ public class ApplicationAuthentication {
         token.setBaseuri(appConfig.getProperty("myuri"));
         token.setExpires(String.valueOf((System.currentTimeMillis() + 10* new Random().nextInt(500))));
 
-        /**
-        AuthenticatedApplicationRepository.addApplicationToken(token);
+        String useradminservice = appConfig.getProperty("useradminservice");
+        WebResource uasResource = ApacheHttpClient.create().resource(useradminservice);
 
+        WebResource webResource = uasResource.path(token.getApplicationTokenId()).path(APPLICATION_AUTH_PATH);
+        log.debug("checkAppsecretFromUAS - Calling application auth " + webResource.toString());
+        MultivaluedMap<String,String> formData = new MultivaluedMapImpl();
+        formData.add(APP_CREDENTIAL_XML, appCredentialXml);
+        try {
 
-        WebResource webResource = uasResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH);
-        ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, userCredentialXml);
+            ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class);
+            if (response.getStatus()==204){
+                return true;
+            }
+        } catch (Exception e) {
+            log.error("checkAppsecretFromUAS - Problems connecting to {}", useradminservice);
+            throw e;
+        }
+        log.warn("Illegal application tried to access whydah.");
 
-        UserToken userToken = getUserToken(appTokenXml, response);
-
-        WebTarget applicationList = uasClient.target(userAdminServiceUri).path(myAppTokenId + "/" + adminUserTokenId + "/applications");
-
-         Response response = applicationList.request().get();
-         if (response.getStatus() == FORBIDDEN.getStatusCode()) {
-         return null;
-         //throw new IllegalArgumentException("Log on failed. " + ClientResponse.Status.FORBIDDEN);
-         }
-         if (response.getStatus() == OK.getStatusCode()) {
-         String responseJson = response.readEntity(String.class);
-
-         return appSecret.equalsIgnoreCase(ApplicationJsonpathHelper.findApplicationSecretFromApplicationListById(responseJson, appId)));
-         }
-         */
         return false;
 
     }
