@@ -204,7 +204,7 @@ public class ApplicationAuthentication {
         formData.add(APP_CREDENTIAL_XML, appCredentialXml);
         try {
 
-            ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class);
+            ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(ClientResponse.class);
             if (response.getStatus()==204){
                 return true;
             }
