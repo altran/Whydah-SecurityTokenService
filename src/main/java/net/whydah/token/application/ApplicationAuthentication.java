@@ -203,15 +203,13 @@ public class ApplicationAuthentication {
         AuthenticatedApplicationRepository.addApplicationToken(stsToken);
 
         WebResource uasResource = ApacheHttpClient.create().resource(useradminservice);
-
         int uasResponseCode=0;
         WebResource webResource = uasResource.path(stsToken.getApplicationTokenId()).path(APPLICATION_AUTH_PATH);
         log.info("checkAppsecretFromUAS - Calling application auth " + webResource.toString());
         MultivaluedMap<String,String> formData = new MultivaluedMapImpl();
         formData.add(APP_CREDENTIAL_XML, appCredentialXml);
         try {
-
-            ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(ClientResponse.class);
+            ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(ClientResponse.class,formData);
             uasResponseCode=response.getStatus();
             log.info("Response from UAS:"+uasResponseCode);
             if (uasResponseCode==204){
@@ -222,9 +220,7 @@ public class ApplicationAuthentication {
             throw e;
         }
         log.warn("Illegal application tried to access whydah. ApplicationID: {}, Response from UAS: {}",appId,uasResponseCode);
-
         return false;
-
     }
 
     private ApplicationToken getSTSApplicationToken(){
