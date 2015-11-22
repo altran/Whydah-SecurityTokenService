@@ -171,7 +171,12 @@ public class ApplicationAuthentication {
             log.trace("verifyApplicationCredentials: appid={}, appSecret={}, expectedAppSecret={}", appId, appSecret, expectedAppSecret);
 
             if (expectedAppSecret == null || expectedAppSecret.length() < 2) {
-                log.warn("Application authentication failed. No application secret in property file for applicationId={}", appId);
+                log.warn("No application secret in property file for applicationId={} - Trying UAS/UIB", appId);
+                if (!checkAppsecretFromUAS(appCredentials,appSecret,appId)) {
+                    log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret in UIB");
+                    return false;
+                }
+                log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret in UIB");
                 return false;
             }
             if (!appSecret.equalsIgnoreCase(expectedAppSecret)) {
@@ -200,12 +205,13 @@ public class ApplicationAuthentication {
         WebResource uasResource = ApacheHttpClient.create().resource(useradminservice);
 
         WebResource webResource = uasResource.path(stsToken.getApplicationTokenId()).path(APPLICATION_AUTH_PATH);
-        log.debug("checkAppsecretFromUAS - Calling application auth " + webResource.toString());
+        log.info("checkAppsecretFromUAS - Calling application auth " + webResource.toString());
         MultivaluedMap<String,String> formData = new MultivaluedMapImpl();
         formData.add(APP_CREDENTIAL_XML, appCredentialXml);
         try {
 
             ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(ClientResponse.class);
+            log.trace("Response from UAS:"+response.getStatus());
             if (response.getStatus()==204){
                 return true;
             }
