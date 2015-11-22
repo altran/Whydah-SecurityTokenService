@@ -175,8 +175,9 @@ public class ApplicationAuthentication {
                 return false;
             }
             if (!appSecret.equalsIgnoreCase(expectedAppSecret)) {
+                log.info("Incoming applicationSecret does not match applicationSecret from property file. - Trying UAS/UIB");
                 if (!checkAppsecretFromUAS(appCredentials,appSecret,appId)) {
-                    log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret from property file.");
+                    log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret in UIB");
                     return false;
                 }
             }
