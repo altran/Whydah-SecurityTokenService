@@ -62,20 +62,22 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
 
     private UserToken getUserToken(String appTokenXml, ClientResponse response) {
-        if (response.getStatus() != Response.Status.OK.getStatusCode() || response.getStatus() != Response.Status.NO_CONTENT.getStatusCode()) {
+        if (response.getStatus() == Response.Status.OK.getStatusCode() || response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()){
+            String userAggregateXML = response.getEntity(String.class);
+            log.debug("Response from UserAdminService: {}", userAggregateXML);
+            if (userAggregateXML.contains("logonFailed")) {
+                throw new AuthenticationFailedException("Authentication failed.");
+            }
+
+            UserToken userToken = userTokenFactory.fromUserAggregate(userAggregateXML);
+            userToken.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
+            ActiveUserTokenRepository.addUserToken(userToken);
+            return userToken;
+
+        } else  {
             log.error("Response from UAS: {}: {}", response.getStatus(), response.getEntity(String.class));
             throw new AuthenticationFailedException("Authentication failed. Status code " + response.getStatus());
         }
-        String userAggregateXML = response.getEntity(String.class);
-        log.debug("Response from UserAdminService: {}", userAggregateXML);
-        if (userAggregateXML.contains("logonFailed")) {
-            throw new AuthenticationFailedException("Authentication failed.");
-        }
-
-        UserToken userToken = userTokenFactory.fromUserAggregate(userAggregateXML);
-        userToken.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
-        ActiveUserTokenRepository.addUserToken(userToken);
-        return userToken;
     }
 
 }
