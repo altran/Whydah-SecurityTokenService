@@ -62,7 +62,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
 
     private UserToken getUserToken(String appTokenXml, ClientResponse response) {
-        if (response.getStatus() != Response.Status.OK.getStatusCode()) {
+        if (response.getStatus() != Response.Status.OK.getStatusCode() || response.getStatus() != Response.Status.NO_CONTENT.getStatusCode()) {
             log.error("Response from UAS: {}: {}", response.getStatus(), response.getEntity(String.class));
             throw new AuthenticationFailedException("Authentication failed. Status code " + response.getStatus());
         }
