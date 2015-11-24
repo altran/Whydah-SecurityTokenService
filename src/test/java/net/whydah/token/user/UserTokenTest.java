@@ -278,8 +278,8 @@ public class UserTokenTest {
     }
     @Test
     public void testUserTokenFullUserToken() throws Exception {
-        assertTrue(UserTokenFactory.shouldReturnFullUserToken("11"));
-        assertFalse(UserTokenFactory.shouldReturnFullUserToken("121"));
+        assertTrue(UserTokenFactory.shouldReturnFullUserToken("2211"));
+        assertFalse(UserTokenFactory.shouldReturnFullUserToken("22121"));
 
     }
 
