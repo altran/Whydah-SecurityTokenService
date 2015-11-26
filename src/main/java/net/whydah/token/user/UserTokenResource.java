@@ -88,10 +88,10 @@ public class UserTokenResource {
     /**
      * TODO baardl: rename the param apptoken
      *
-     * @param applicationtokenid the current application wanting to authenticate the user.
-     * @param appTokenXml        the token representing the application the user want to access.
-     * @param userCredentialXml
-     * @return
+     * @param applicationtokenid  application session
+     * @param appTokenXml   application session data
+     * @param userCredentialXml user credentials i.e. (username & password)
+     * @return userToken - user session data
      */
     @Path("/{applicationtokenid}/usertoken")
     @POST
@@ -120,11 +120,11 @@ public class UserTokenResource {
     /**
      * Login in user by his/her usercredentials and register its ticket in the ticket-map for session handover
      *
-     * @param applicationtokenid
-     * @param userticket
-     * @param appTokenXml
-     * @param userCredentialXml
-     * @return
+     * @param applicationtokenid  application session
+     * @param userticket  user session handover ticket
+     * @param appTokenXml   application session data
+     * @param userCredentialXml user credentials i.e. (username & password)
+     * @return user session data
      */
     @Path("/{applicationtokenid}/{userticket}/usertoken")
     @POST
@@ -159,9 +159,9 @@ public class UserTokenResource {
      * Verify that a usertoken and a user session is still valid. Usually used for application re-entries and before allowing
      * a user important and critical processes like monetary transactions
      *
-     * @param applicationtokenid
-     * @param userTokenXml
-     * @return
+     * @param applicationtokenid - application session id
+     * @param userTokenXml  - user session data
+     * @return - OK if valid user session exists based upon user session data
      */
     @Path("/{applicationtokenid}/validate_usertoken")
     @POST
@@ -198,11 +198,11 @@ public class UserTokenResource {
     /**
      * Used to create a userticket for a user to transfer a session between whydah SSO apps
      *
-     * @param applicationtokenid
-     * @param appTokenXml
-     * @param userticket
-     * @param userTokenId
-     * @return
+     * @param applicationtokenid  application session
+     * @param appTokenXml   application session data
+     * @param userticket  user session handover ticket
+     * @param userTokenId  user session id
+     * @return userticket - user session handover ticket
      */
     @Path("/{applicationtokenid}/create_userticket_by_usertokenid")
     @POST
@@ -232,10 +232,10 @@ public class UserTokenResource {
     /**
      * Used to get the usertoken from a usertokenid, which the application usually stores in its secure cookie
      *
-     * @param applicationtokenid
-     * @param appTokenXml
+     * @param applicationtokenid  application session
+     * @param appTokenXml   application session data
      * @param userTokenId
-     * @return
+     * @return usertoken
      */
     @Path("/{applicationtokenid}/get_usertoken_by_usertokenid")
     @POST
@@ -259,6 +259,7 @@ public class UserTokenResource {
             log.warn("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid={}", userTokenId);
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
+        log.info("getUserTokenByUserTokenId - valid session found for {} ",userTokenId);
         return createUserTokenResponse(applicationtokenid, userToken);
     }
 
@@ -266,10 +267,10 @@ public class UserTokenResource {
      * Lookup a user by a one-time userticket, usually the first thing we do after receiving a SSO redirect back to
      * an application from SSOLoginWebApplication
      *
-     * @param applicationtokenid
-     * @param appTokenXml
-     * @param userticket
-     * @return
+     * @param applicationtokenid  application session
+     * @param appTokenXml   application session data
+     * @param userticket  user session handover ticket
+     * @return usertoken
      */
     @Path("/{applicationtokenid}/get_usertoken_by_userticket")
     @POST
@@ -315,8 +316,8 @@ public class UserTokenResource {
     /**
      * Force cross-applications/SSO session logout. Use with extreme care as the user's hate the resulting user experience..
      *
-     * @param applicationtokenid
-     * @param usertokenid
+     * @param applicationtokenid  application session
+     * @param usertokenid  user session id
      * @return Response.OK
      */
     @Path("/{applicationtokenid}/release_usertoken")
@@ -341,8 +342,8 @@ public class UserTokenResource {
     /**
      * Request SSO user session renewal.
      *
-     * @param applicationtokenid
-     * @param usertokenid
+     * @param applicationtokenid  application session
+     * @param usertokenid  user session id
      * @return userTokenXml - usertoken with extended lease
      */
     @Path("/{applicationtokenid}/renew_usertoken")
@@ -371,10 +372,10 @@ public class UserTokenResource {
     /**
      * This method is for elevating user access to a higher level for the receiving end of a session handover between SSO applications
      *
-     * @param applicationtokenid
-     * @param appTokenXml
-     * @param userTokenXml
-     * @param newAppTokenId
+     * @param applicationtokenid  calling application session
+     * @param appTokenXml   application session data
+     * @param userTokenXml  user session data
+     * @param newAppTokenId  application session id of receiving application session
      * @return UserTokenXml as seen for the given application session
      */
     @Path("/{applicationtokenid}/transform_usertoken")
@@ -412,12 +413,12 @@ public class UserTokenResource {
      * the corresponding defaultroles (UAS|UIB) and create a new session with a one-time userticket for handover to receiving
      * SSO applications
      *
-     * @param applicationtokenid
-     * @param userticket
-     * @param appTokenXml
-     * @param userCredentialXml
+     * @param applicationtokenid  calling application session
+     * @param userticket  user session id
+     * @param appTokenXml   application session data
+     * @param userCredentialXml  user credential  i.e. (username and password)
      * @param thirdPartyUserTokenXml typically facebook user-token or other oauth2 usertoken
-     * @return
+     * @return  user session data
      */
     @Path("/{applicationtokenid}/{userticket}/create_user")
     @POST
