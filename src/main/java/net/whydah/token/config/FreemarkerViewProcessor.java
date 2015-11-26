@@ -36,7 +36,7 @@ import java.util.Map;
  * <p>
  * This will put your Viewable's model object in the template variable "it",
  * unless the model is a Map. If so, the values will be assigned to the template
- * assuming the map is of type <tt>Map&lt;String,Object></tt>.
+ * assuming the map is of type Map-String,Object.
  * </p>
  *
  * <p>
@@ -45,8 +45,8 @@ import java.util.Map;
  * or adding variables to be assigned to every template context.
  * </p>
  *
- * @author Chris Winters <chris@cwinters.com> // original code
- * @author Olivier Grisel <ogrisel@nuxeo.com> // ViewProcessor refactoring
+ * @author Chris Winters chris@cwinters.com // original code
+ * @author Olivier Grisel ogrisel@nuxeo.com // ViewProcessor refactoring
  */
 @Provider
 public class FreemarkerViewProcessor implements ViewProcessor<Template> {
