@@ -90,7 +90,7 @@ public class UserTokenResource {
      *
      * @param applicationtokenid  application session
      * @param appTokenXml   application session data
-     * @param userCredentialXml user credentials i.e. (username & password)
+     * @param userCredentialXml user credentials i.e. (username / password)
      * @return userToken - user session data
      */
     @Path("/{applicationtokenid}/usertoken")
@@ -123,7 +123,7 @@ public class UserTokenResource {
      * @param applicationtokenid  application session
      * @param userticket  user session handover ticket
      * @param appTokenXml   application session data
-     * @param userCredentialXml user credentials i.e. (username & password)
+     * @param userCredentialXml user credentials i.e. (username / password)
      * @return user session data
      */
     @Path("/{applicationtokenid}/{userticket}/usertoken")
@@ -234,7 +234,7 @@ public class UserTokenResource {
      *
      * @param applicationtokenid  application session
      * @param appTokenXml   application session data
-     * @param userTokenId
+     * @param userTokenId  user session id
      * @return usertoken
      */
     @Path("/{applicationtokenid}/get_usertoken_by_usertokenid")
