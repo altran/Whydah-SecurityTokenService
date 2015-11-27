@@ -9,6 +9,7 @@
     <username>${it.userName!?xml}</username>
     <firstname>${it.firstName!?xml}</firstname>
     <lastname>${it.lastName!?xml}</lastname>
+    <cellphone>${it.cellPhone!?xml}</cellphone>
     <email>${it.email!?xml}</email>
     <personRef>${it.personRef!?xml}</personRef>
     <#list it.roleList as app>
