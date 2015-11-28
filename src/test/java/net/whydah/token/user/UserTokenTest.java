@@ -94,6 +94,7 @@ public class UserTokenTest {
     }
 
     @Test
+    @Ignore
     public void testCreateUserTokenWithRolesFreemarkerCopy() {
         UserToken utoken = new UserToken();
         utoken.setFirstName("Olav");
