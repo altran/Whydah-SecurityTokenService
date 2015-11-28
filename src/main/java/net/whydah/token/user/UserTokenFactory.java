@@ -1,6 +1,7 @@
 package net.whydah.token.user;
 
 import com.google.inject.Singleton;
+import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
 import org.slf4j.Logger;
@@ -171,6 +172,7 @@ public class UserTokenFactory {
             userToken.setCellPhone(cellPhone);
             userToken.setPersonRef(personRef);
             userToken.setRoleList(roleList);
+            userToken.setDefcon(ApplicationThreatResource.getDEFCON());
             return userToken;
         } catch (Exception e) {
             log.error("Error parsing userAggregateXML " + userAggregateXML, e);
