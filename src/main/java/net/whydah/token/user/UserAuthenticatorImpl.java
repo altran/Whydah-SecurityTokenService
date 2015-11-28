@@ -5,6 +5,7 @@ import com.google.inject.name.Named;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
+import net.whydah.token.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +40,8 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
             ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, userCredentialXml);
 
             UserToken userToken = getUserToken(appTokenXml, response);
+            AppConfig.updateApplinks(useradminservice,applicationTokenId,response.toString());
+
             return userToken;
         } catch (Exception e) {
             log.error("Problems connecting to {}", useradminservice);

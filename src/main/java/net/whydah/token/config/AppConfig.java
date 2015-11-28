@@ -1,5 +1,9 @@
 package net.whydah.token.config;
 
+import net.whydah.sso.application.helpers.ApplicationHelper;
+import net.whydah.sso.application.mappers.ApplicationMapper;
+import net.whydah.sso.application.types.Application;
+import net.whydah.sso.user.mappers.UserTokenMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,7 +11,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
+import java.net.URI;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -19,6 +24,7 @@ public class AppConfig {
     private final static Logger log = LoggerFactory.getLogger(AppConfig.class);
 
     private final Properties properties;
+    private static String fullTokenApplications = "2210,2211,2212,2215,2219";
 
     public String getProperty(String key) {
         return properties.getProperty(key);
@@ -28,6 +34,7 @@ public class AppConfig {
         try {
             properties = readProperties(ApplicationMode.getApplicationMode());
             logProperties(properties);
+            fullTokenApplications = getProperty("fulltokenapplications");
         } catch (IOException e) {
             throw new RuntimeException(e.getLocalizedMessage(), e);
         }
@@ -74,4 +81,41 @@ public class AppConfig {
             System.exit(3);
         }
     }
+
+
+    public static String getFullTokenApplications() {
+        return fullTokenApplications;
+    }
+
+    public static void setFullTokenApplications(String appLinks) {
+        fullTokenApplications = appLinks;
+        log.debug("updated fulltoken list: "+appLinks);
+    }
+
+
+    public static void updateApplinks(URI userAdminServiceUri, String myAppTokenId, String responseXML) {
+        log.trace("updateApplinks(URI userAdminServiceUri:{}, String myAppTokenId:{}, String responseXML:{}",userAdminServiceUri,  myAppTokenId,  responseXML);
+        if (shouldUpdate() || getFullTokenApplications() == null || fullTokenApplications.length() < 6) {
+            String userTokenId = UserTokenMapper.fromUserTokenXml(responseXML).getTokenid();
+            String applicationsJson = new CommandListApplications(userAdminServiceUri, myAppTokenId, userTokenId, "").execute();
+            log.debug("AppLications returned:" + applicationsJson);
+            List<Application> applications = ApplicationMapper.fromJsonList(applicationsJson);
+            String fTokenList="";
+            for (Application application : applications) {
+                if (application.isFullTokenApplication()){
+                    fTokenList=fTokenList+application.getId()+",";
+                    log.debug("is fulltoken {} appid:{}", application.isFullTokenApplication(), application.getId());
+                }
+
+            }
+            setFullTokenApplications(fTokenList.substring(0,fTokenList.length()-1));
+        }
+    }
+
+
+    public static boolean shouldUpdate() {
+        int max = 100;
+        return (5 >= ((int) (Math.random() * max)));  // update on 5 percent of requests
+    }
+
 }

@@ -190,7 +190,7 @@ public class UserTokenFactory {
     }
 
     public static boolean shouldReturnFullUserToken(String applicationID) {
-        String[] applicationIDs = appConfig.getProperty("fulltokenapplications").split(",");
+        String[] applicationIDs = AppConfig.getFullTokenApplications().split(",");
         for (int i = 0; i < applicationIDs.length; i++){
             if (applicationIDs[i].equalsIgnoreCase(applicationID)) {
                 log.info("shouldReturnFullUserToken=true");
