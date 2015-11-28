@@ -6,6 +6,7 @@ import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.sun.jersey.api.view.Viewable;
+import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
@@ -110,6 +111,7 @@ public class UserTokenResource {
         try {
             UserToken userToken = userAuthenticator.logonUser(applicationtokenid, appTokenXml, userCredentialXml);
             userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
+            userToken.setDefcon(ApplicationThreatResource.getDEFCON());
             return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).build();
         } catch (AuthenticationFailedException ae) {
             log.warn("getUserToken - User authentication failed");
@@ -309,6 +311,7 @@ public class UserTokenResource {
         log.trace("getUserTokenByUserTicket OK. Response={}", userToken.toString());
         userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
         userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
+        userToken.setDefcon(ApplicationThreatResource.getDEFCON());
         return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).build();
     }
 
@@ -361,6 +364,7 @@ public class UserTokenResource {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").build();
         }
         UserToken utoken = ActiveUserTokenRepository.getUserToken(usertokenid);
+        utoken.setDefcon(ApplicationThreatResource.getDEFCON());
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
         utoken.setLifespan(String.valueOf(60 * new Random().nextInt(100)));
         ActiveUserTokenRepository.addUserToken(utoken);
@@ -400,6 +404,7 @@ public class UserTokenResource {
         }
         String userTokenId = UserTokenFactory.fromXml(userTokenXml).getTokenid();
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
+        userToken.setDefcon(ApplicationThreatResource.getDEFCON());
         if (userToken == null) {
             log.warn("getUserTokenByUserTokenId - attempt to access with non acceptable userTokenId={}", userTokenId);
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();
@@ -445,6 +450,7 @@ public class UserTokenResource {
             applicationtokenidmap.put(applicationtokenid, applicationtokenid);
             UserToken userToken = userAuthenticator.createAndLogonUser(applicationtokenid, appTokenXml, userCredentialXml, thirdPartyUserTokenXml);
             userticketmap.put(userticket, userToken.getTokenid());
+            userToken.setDefcon(ApplicationThreatResource.getDEFCON());
             userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
             return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).build();
         } catch (AuthenticationFailedException ae) {
@@ -457,6 +463,7 @@ public class UserTokenResource {
         log.trace("getUserTokenByUserTokenId OK. Response={}", userToken.toString());
         userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
         userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
+        userToken.setDefcon(ApplicationThreatResource.getDEFCON());
         return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).build();
     }
 
