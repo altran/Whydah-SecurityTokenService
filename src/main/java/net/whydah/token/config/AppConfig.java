@@ -24,7 +24,7 @@ public class AppConfig {
     private final static Logger log = LoggerFactory.getLogger(AppConfig.class);
 
     private final Properties properties;
-    private static String fullTokenApplications;
+    private static String fullTokenApplications = "2210,2211,2212,2215,2219";
 
     public String getProperty(String key) {
         return properties.getProperty(key);
@@ -34,7 +34,7 @@ public class AppConfig {
         try {
             properties = readProperties(ApplicationMode.getApplicationMode());
             logProperties(properties);
-            fullTokenApplications = null;
+            fullTokenApplications = getProperty("fulltokenapplications");
         } catch (IOException e) {
             throw new RuntimeException(e.getLocalizedMessage(), e);
         }
