@@ -93,7 +93,7 @@ applicationsecret=secretq986Ep6By7B9J46m96D
 
 myuri=https://sso.whydah.net/tokenservice/
 service.port=9998
-useridentitybackend=https://sso.whydah.net/uib/
+useradminservice=https://sso.whydah.net/uib/useradminservice/
 testpage=enabled
 
 # Temporary provisioning of applications secret in wait for UAS/UIB support
