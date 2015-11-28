@@ -132,7 +132,7 @@ Configuration and Integration
 |-------- | -------------- | -----------| 
 |*myuri*|http://myserver.net/tokenservice/ | The URI to this instance of STS |
 |*service.port*|9998| Port for this service |
-|*useridentitybackend*| http://myservice/uib/ | URL to useridentitybackend |
+|*useradminservice*| http://myservice/useradminservice/ | URL to useridentitybackend |
 |*testpage*|disabled| Whether or not to enable the testpage. The url is printed when you start the service with it enabled. |
 |*logourl*|http://stocklogos.com/somelogo.png | A logo to display for the kicks of it | 
 

@@ -25,7 +25,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
 
     @Inject
-    public UserAuthenticatorImpl(@Named("useridentitybackend") URI useradminservice, UserTokenFactory userTokenFactory) {
+    public UserAuthenticatorImpl(@Named("useradminservice") URI useradminservice, UserTokenFactory userTokenFactory) {
         this.useradminservice = useradminservice;
         this.uasResource = ApacheHttpClient.create().resource(useradminservice);
         this.userTokenFactory = userTokenFactory;
