@@ -113,7 +113,7 @@ public class UserTokenFactory {
             userToken.setTokenid(tokenId);
             userToken.setTimestamp(timestamp);
             userToken.setLastSeen(lastSeen);
-            UserToken.setDefcon(defcon);
+            userToken.setDefcon(defcon);
             userToken.setLifespan(lifespan);
             userToken.setIssuer(issuer);
             return userToken;

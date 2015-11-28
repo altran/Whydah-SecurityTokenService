@@ -4,6 +4,7 @@ import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
+import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
@@ -49,6 +50,7 @@ public class UserTokenTest {
         utoken.setLastName("Nordmann");
         utoken.setTimestamp("123123123");
         utoken.setPersonRef("73637276722376");
+        utoken.setDefcon(ApplicationThreatResource.getDEFCON());
         utoken.setTokenid(UUID.randomUUID().toString());
         String xml = freemarkerProcessor.toXml(utoken);
 

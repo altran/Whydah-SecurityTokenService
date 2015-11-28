@@ -39,7 +39,7 @@ public class UserToken implements Serializable {
     }
 
     private String lastSeen;
-    private static String defcon;
+    private String defcon;
     private String securityLevel;
     private String lifespan;
     private String issuer;
@@ -158,8 +158,8 @@ public class UserToken implements Serializable {
     public void setRoleList(List<ApplicationRoleEntry> roleList) {
         this.roleList = roleList;
     }
-    public static void setDefcon(String defconValue) {
-        defcon = defconValue;
+    public void setDefcon(String defconValue) {
+        this.defcon = defconValue;
     }
 
     public void setNs2link(String ns2link) {
@@ -216,7 +216,7 @@ public class UserToken implements Serializable {
         return roleList;
     }
 
-    public static String getDefcon() {
+    public String getDefcon() {
         if (defcon==null || defcon.length()<1){
             return DEFCON.DEFCON5.toString();
         }

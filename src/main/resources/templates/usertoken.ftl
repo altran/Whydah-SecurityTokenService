@@ -5,7 +5,7 @@
     <lifespan>${it.lifespan!}</lifespan>
     <issuer>${it.issuer!?xml}</issuer>
     <securitylevel>${it.securityLevel!}</securitylevel>
-    <DEFCON>${it.defcon!}</DEFCON>
+    <DEFCON>${it.defcon!?xml}</DEFCON>
     <username>${it.userName!?xml}</username>
     <firstname>${it.firstName!?xml}</firstname>
     <lastname>${it.lastName!?xml}</lastname>
