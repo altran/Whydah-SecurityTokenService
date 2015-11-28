@@ -1,12 +1,22 @@
 package net.whydah.token.config;
 
+import net.whydah.sso.application.helpers.ApplicationHelper;
+import net.whydah.sso.application.mappers.ApplicationMapper;
+import net.whydah.sso.application.types.Application;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+
 import static org.junit.Assert.*;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
+import java.util.List;
 
 public class AppConfigTest {
+
+    private static final Logger log = getLogger(AppConfigTest.class);
+
     @BeforeClass
     public static void init() {
         System.setProperty(ApplicationMode.IAM_MODE_KEY, ApplicationMode.TEST);
@@ -19,4 +29,22 @@ public class AppConfigTest {
         assertEquals("value", appConfig.getProperty("property")); //fra testconfig
         assertEquals("9998", appConfig.getProperty("service.port")); //fra securitytokenservice.TEST.properties
     }
+
+    @Test
+    public void testValidFullTokenApplications() {
+        List<Application> applications = ApplicationMapper.fromJsonList(ApplicationHelper.getDummyAppllicationListJson());
+        String fTokenList="";
+        for (Application application : applications) {
+            if (application.isFullTokenApplication()){
+                fTokenList=fTokenList+application.getId()+",";
+                log.debug("is fulltoken {} appid:{}", application.isFullTokenApplication(), application.getId());
+            }
+
+        }
+        if (fTokenList==null || fTokenList.length()<3){
+            return;
+        }
+        log.debug("Result:"+fTokenList.substring(0,fTokenList.length()-1));
+    }
+
 }

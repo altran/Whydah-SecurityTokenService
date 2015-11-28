@@ -108,6 +108,11 @@ public class AppConfig {
                 }
 
             }
+            if (fTokenList==null || fTokenList.length()<3){
+                // Some error occured, ignore data
+                return;
+            }
+
             setFullTokenApplications(fTokenList.substring(0,fTokenList.length()-1));
         }
     }
