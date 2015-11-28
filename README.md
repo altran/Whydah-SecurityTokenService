@@ -177,8 +177,9 @@ UIB should typically be behind a tight firewall.
         ProxyPreserveHost on
                 ProxyPass /sso http://localhost:9997/sso
                 ProxyPass /uib http://localhost:9995/uib
+                ProxyPass /useradminservice http://localhost:9992/useradminservice
                 ProxyPass /tokenservice http://localhost:9998/tokenservice
-                ProxyPass /useradmin http://localhost:9996/useradmin
+                ProxyPass /useradmin http://localhost:9996/useradminser
                 ProxyPass /test http://localhost:9990/test/
 </VirtualHost>
 ```
