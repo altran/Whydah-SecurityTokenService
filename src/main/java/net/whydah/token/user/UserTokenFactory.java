@@ -60,7 +60,8 @@ public class UserTokenFactory {
             String userName = (String) xPath.evaluate("/usertoken/username", doc, XPathConstants.STRING);
             String firstName = (String) xPath.evaluate("/usertoken/firstname", doc, XPathConstants.STRING);
             String lastName = (String) xPath.evaluate("/usertoken/lastname", doc, XPathConstants.STRING);
-            String email = (String) xPath.evaluate("/usertoken/email", doc, XPathConstants.STRING);
+            String email = (String) xPath.evaluate("/usertoken/cellphone", doc, XPathConstants.STRING);
+            String cellPhone = (String) xPath.evaluate("/usertoken/email", doc, XPathConstants.STRING);
             String securityLevel = (String) xPath.evaluate("/usertoken/securitylevel", doc, XPathConstants.STRING);
 
             String tokenId = (String) xPath.evaluate("/usertoken/@id", doc, XPathConstants.STRING);
@@ -103,6 +104,7 @@ public class UserTokenFactory {
             userToken.setFirstName(firstName);
             userToken.setLastName(lastName);
             userToken.setEmail(email);
+            userToken.setCellPhone(cellPhone);
             userToken.setPersonRef(personRef);
             userToken.setSecurityLevel(securityLevel);
             userToken.setRoleList(roleList);
@@ -144,6 +146,7 @@ public class UserTokenFactory {
             String userName = (String) xPath.evaluate("//identity/username", doc, XPathConstants.STRING);
             String firstName = (String) xPath.evaluate("//identity/firstname", doc, XPathConstants.STRING);
             String lastName = (String) xPath.evaluate("//identity/lastname", doc, XPathConstants.STRING);
+            String cellPhone = (String) xPath.evaluate("//identity/cellPhone", doc, XPathConstants.STRING);
             String email = (String) xPath.evaluate("//identity/email", doc, XPathConstants.STRING);
             String personRef = (String) xPath.evaluate("//identity/personRef", doc, XPathConstants.STRING);
 
@@ -165,6 +168,7 @@ public class UserTokenFactory {
             userToken.setFirstName(firstName);
             userToken.setLastName(lastName);
             userToken.setEmail(email);
+            userToken.setCellPhone(cellPhone);
             userToken.setPersonRef(personRef);
             userToken.setRoleList(roleList);
             return userToken;

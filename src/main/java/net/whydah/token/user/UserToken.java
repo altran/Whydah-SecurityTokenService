@@ -26,6 +26,7 @@ public class UserToken implements Serializable {
     private String userName;
     private String firstName;
     private String lastName;
+    private String cellPhone;
     private String email;
     private String timestamp;
 
@@ -38,7 +39,6 @@ public class UserToken implements Serializable {
     }
 
     private String lastSeen;
-
     private static String defcon;
     private String securityLevel;
     private String lifespan;
@@ -164,6 +164,14 @@ public class UserToken implements Serializable {
 
     public void setNs2link(String ns2link) {
         this.ns2link = ns2link;
+    }
+
+    public String getCellPhone() {
+        return cellPhone;
+    }
+
+    public void setCellPhone(String cellPhone) {
+        this.cellPhone = cellPhone;
     }
 
 
