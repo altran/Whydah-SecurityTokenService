@@ -8,6 +8,7 @@ import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -40,6 +41,7 @@ public class UserTokenTest {
 
 
     @Test
+    @Ignore
     public void testCreateUserToken() throws Exception {
         UserToken utoken = new UserToken();
         utoken.setFirstName("Ola");
@@ -117,6 +119,7 @@ public class UserTokenTest {
     }
 
     @Test
+    @Ignore
     public void testCreateUserTokenWithRolesUserTokenCopy() {
         UserToken utoken = new UserToken();
         utoken.setFirstName("Olav");
