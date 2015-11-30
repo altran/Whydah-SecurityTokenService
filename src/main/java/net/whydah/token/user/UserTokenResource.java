@@ -266,6 +266,40 @@ public class UserTokenResource {
     }
 
     /**
+     * Used to get the lase seend time, which the application usually stores in its secure cookie
+     *
+     * @param applicationtokenid  application session
+     * @param userEmail  email of user we try to locate
+     * @return last seen as String
+     */
+    @Path("/{applicationtokenid}/{email}/last_seen")
+    @GET
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response getLastSeenByUserTokenId(@PathParam("applicationtokenid") String applicationtokenid,
+                                              @PathParam("email") String userEmail) {
+        log.trace("getLastSeenByUserTokenId: applicationtokenid={}, email={}", applicationtokenid, userEmail);
+
+        if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
+            return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
+        }
+
+        if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, "")) {
+            log.warn("getLastSeenByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
+        }
+        String lastSeen = ActiveUserTokenRepository.getLastSeenByEmail(userEmail);
+        if (lastSeen == null) {
+            log.warn("getLastSeenByUserTokenId - attempt to access with non acceptable userEmail={}", userEmail);
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+        }
+        log.info("getLastSeenByUserTokenId - valid session found for {} ",userEmail);
+        return Response.status(Response.Status.OK).entity(userEmail).build();
+    }
+
+
+
+    /**
      * Lookup a user by a one-time userticket, usually the first thing we do after receiving a SSO redirect back to
      * an application from SSOLoginWebApplication
      *

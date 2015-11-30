@@ -50,6 +50,15 @@ public class ActiveUserTokenRepository {
         return "Not seen";
     }
 
+    public static String getLastSeenByEmail(String email){
+        if (email!=null) {
+            Date d = lastSeenMap.get(email);
+            if (d!=null){
+                return d.toString();
+            }
+        }
+        return "Not seen";
+    }
     /**
      * Get UserToken from UserTokenRepository. If token is not found or is not valid/timed out, null is returned.
      *
