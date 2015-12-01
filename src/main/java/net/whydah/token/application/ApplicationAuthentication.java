@@ -7,7 +7,9 @@ import com.sun.jersey.api.view.Viewable;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import net.whydah.sso.application.helpers.ApplicationCredentialHelper;
+import net.whydah.sso.application.helpers.ApplicationXpathHelper;
 import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
+import net.whydah.sso.application.mappers.ApplicationMapper;
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
@@ -117,16 +119,30 @@ public class ApplicationAuthentication {
         }
     }
 
-    //ED: I think/hope this can be removed...
-    @Path("{applicationtokenid}/validate")
-    @POST
+    @Path("{applicationtokenid}/get_application_id")
+    @GET
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Deprecated
-    public Response validateApplicationtokenidPOST(@PathParam("applicationtokenid") String applicationtokenid) {
+    public Response getApplicationIdFromApplicationTokenId(@PathParam("applicationtokenid") String applicationtokenid) {
         log.debug("verify apptokenid {}", applicationtokenid);
-        if (AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
+        ApplicationToken myApp = AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid);
+        if (myApp!=null || myApp.toString().length()>10) {
             log.debug("Apptokenid valid");
-            return Response.ok().build();
+            return Response.ok(myApp.getApplicationID()).build();
+        } else {
+            log.debug("Apptokenid not valid");
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+    }
+
+    @Path("{applicationtokenid}/get_application_name")
+    @GET
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response getApplicationNameFromApplicationTokenId(@PathParam("applicationtokenid") String applicationtokenid) {
+        log.debug("verify apptokenid {}", applicationtokenid);
+        ApplicationToken myApp = AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid);
+        if (myApp!=null || myApp.toString().length()>10) {
+            log.debug("Apptokenid valid");
+            return Response.ok(myApp.getApplicationName()).build();
         } else {
             log.debug("Apptokenid not valid");
             return Response.status(Response.Status.FORBIDDEN).build();
