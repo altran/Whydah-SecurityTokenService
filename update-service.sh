@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 A=SecurityTokenService
 V=SNAPSHOT
