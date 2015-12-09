@@ -7,9 +7,7 @@ import com.sun.jersey.api.view.Viewable;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import net.whydah.sso.application.helpers.ApplicationCredentialHelper;
-import net.whydah.sso.application.helpers.ApplicationXpathHelper;
 import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
-import net.whydah.sso.application.mappers.ApplicationMapper;
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
@@ -36,8 +34,8 @@ import java.util.HashMap;
 import java.util.Random;
 
 @Path("/")
-public class ApplicationAuthentication {
-    private final static Logger log = LoggerFactory.getLogger(ApplicationAuthentication.class);
+public class ApplicationAuthenticationResource {
+    private final static Logger log = LoggerFactory.getLogger(ApplicationAuthenticationResource.class);
     private static final String APPLICATION_AUTH_PATH = "application/auth";
     public static final String APP_CREDENTIAL_XML = "appCredentialXml";
 
