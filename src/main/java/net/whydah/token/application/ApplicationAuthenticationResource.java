@@ -154,49 +154,39 @@ public class ApplicationAuthenticationResource {
         }
 
         try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(new InputSource(new StringReader(appCredentials)));
-            XPath xPath = XPathFactory.newInstance().newXPath();
-
-            String secretxpath = "applicationcredential/params/applicationSecret";
-            String appidxpath = "applicationcredential/params/applicationID";
-            XPathExpression xPathExpression = xPath.compile(secretxpath);
-            String appSecret = (xPathExpression.evaluate(doc));
-            xPathExpression = xPath.compile(appidxpath);
-            String appId = (xPathExpression.evaluate(doc));
+            ApplicationCredential applicationCredential = ApplicationCredentialMapper.fromXml(appCredentials);
 
 
 
 
-            if (appId == null || appId.length() < 2) {
+            if (applicationCredential.getApplicationID() == null || applicationCredential.getApplicationID().length() < 2) {
                 log.warn("Application authentication failed. No or null applicationID");
                 return false;
 
             }
-            if (appSecret == null || appSecret.length() < 2) {
+            if (applicationCredential.getApplicationSecret() == null || applicationCredential.getApplicationSecret().length() < 2) {
                 log.warn("verifyApplicationCredentials - verify appSecret failed. No or null applicationSecret");
-                log.warn("Application authentication failed. No or null applicationSecret for applicationId={}", appId);
+                log.warn("Application authentication failed. No or null applicationSecret for applicationId={}", applicationCredential.getApplicationID());
                 return false;
             }
 
 
-            String expectedAppSecret = appConfig.getProperty(appId);
-            log.trace("verifyApplicationCredentials: appid={}, appSecret={}, expectedAppSecret={}", appId, appSecret, expectedAppSecret);
+            String expectedAppSecret = appConfig.getProperty(applicationCredential.getApplicationID());
+            log.trace("verifyApplicationCredentials: appid={}, appSecret={}, expectedAppSecret={}", applicationCredential.getApplicationID(), applicationCredential.getApplicationSecret(), expectedAppSecret);
 
             if (expectedAppSecret == null || expectedAppSecret.length() < 2) {
-                log.warn("No application secret in property file for applicationId={} - Trying UAS/UIB", appId);
-                if (!checkAppsecretFromUAS(appCredentials,appSecret,appId)) {
+                log.warn("No application secret in property file for applicationId={} - applicationName: {} - Trying UAS/UIB", applicationCredential.getApplicationID(),applicationCredential.getApplicationName());
+                if (!checkAppsecretFromUAS(applicationCredential)) {
                     log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret in UIB");
                     return false;
                 } else {
-                    log.warn("Application authentication OK for appId:{} from UAS",appId);
+                    log.warn("Application authentication OK for appId:{}, applicationName: {} from UAS",applicationCredential.getApplicationID(),applicationCredential.getApplicationName());
                     return true;
                 }
             }
-            if (!appSecret.equalsIgnoreCase(expectedAppSecret)) {
+            if (!applicationCredential.getApplicationSecret().equalsIgnoreCase(expectedAppSecret)) {
                 log.info("Incoming applicationSecret does not match applicationSecret from property file. - Trying UAS/UIB");
-                if (!checkAppsecretFromUAS(appCredentials,appSecret,appId)) {
+                if (!checkAppsecretFromUAS(applicationCredential)) {
                     log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret in UIB");
                     return false;
                 }
@@ -208,8 +198,8 @@ public class ApplicationAuthenticationResource {
         return true;
     }
 
-    private boolean checkAppsecretFromUAS(String appCredentialXml,String appSecret,String appId){
-        ApplicationToken token =  ApplicationTokenMapper.fromApplicationCredentialXML(appCredentialXml);
+    private boolean checkAppsecretFromUAS( ApplicationCredential applicationCredential){
+        ApplicationToken token =  ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(applicationCredential));
         token.setBaseuri(appConfig.getProperty("myuri"));
         token.setExpires(String.valueOf((System.currentTimeMillis() + 10* new Random().nextInt(500))));
 
@@ -222,7 +212,7 @@ public class ApplicationAuthenticationResource {
         WebResource webResource = uasResource.path(stsToken.getApplicationTokenId()).path(APPLICATION_AUTH_PATH);
         log.info("checkAppsecretFromUAS - Calling application auth " + webResource.toString());
         MultivaluedMap<String,String> formData = new MultivaluedMapImpl();
-        formData.add(APP_CREDENTIAL_XML, appCredentialXml);
+        formData.add(APP_CREDENTIAL_XML, ApplicationCredentialMapper.toXML(applicationCredential));
         try {
             ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(ClientResponse.class,formData);
             uasResponseCode=response.getStatus();
@@ -234,7 +224,7 @@ public class ApplicationAuthenticationResource {
             log.error("checkAppsecretFromUAS - Problems connecting to {}", useradminservice);
             throw e;
         }
-        log.warn("Illegal application tried to access whydah. ApplicationID: {}, Response from UAS: {}",appId,uasResponseCode);
+        log.warn("Illegal application tried to access whydah. ApplicationID: {}, Response from UAS: {}",applicationCredential.getApplicationID(),uasResponseCode);
         return false;
     }
 
