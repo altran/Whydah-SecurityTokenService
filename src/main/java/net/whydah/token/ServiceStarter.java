@@ -48,7 +48,7 @@ public class ServiceStarter {
 
         ServletHandler adapter = new ServletHandler();
         adapter.setContextPath(contextpath);
-        adapter.addInitParameter("com.sun.jersey.config.property.packages", "net.whydah.token");
+        adapter.addInitParameter("com.sun.jersey.config.property.packages", "net.whydah");
         adapter.setProperty(ServletHandler.LOAD_ON_STARTUP, "1");
 
         GuiceFilter filter = new GuiceFilter();
@@ -70,6 +70,7 @@ public class ServiceStarter {
 
         log.info("SecurityTokenService started on port {}, IAM_MODE = {}", webappPort, ApplicationMode.getApplicationMode());
         log.info("Status: http://localhost:{}{}/", webappPort, contextpath);
+        log.info("Health: http://localhost:{}{}/health", webappPort, contextpath);
         log.info("WADL:   http://localhost:{}{}/application.wadl", webappPort, contextpath);
         log.info("Testpage = {}, TestDriverWeb:   http://localhost:{}{}/",appConfig.getProperty("testpage"), webappPort, contextpath);
     }
