@@ -9,10 +9,8 @@ import java.util.Map;
  */
 public class EnvHelper {
 
-    public static void setEnv(Map<String, String> newenv)
-    {
-        try
-        {
+    public static void setEnv(Map<String, String> newenv) {
+        try {
             Class<?> processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
             Field theEnvironmentField = processEnvironmentClass.getDeclaredField("theEnvironment");
             theEnvironmentField.setAccessible(true);
@@ -20,16 +18,14 @@ public class EnvHelper {
             env.putAll(newenv);
             Field theCaseInsensitiveEnvironmentField = processEnvironmentClass.getDeclaredField("theCaseInsensitiveEnvironment");
             theCaseInsensitiveEnvironmentField.setAccessible(true);
-            Map<String, String> cienv = (Map<String, String>)     theCaseInsensitiveEnvironmentField.get(null);
+            Map<String, String> cienv = (Map<String, String>) theCaseInsensitiveEnvironmentField.get(null);
             cienv.putAll(newenv);
-        }
-        catch (NoSuchFieldException e)
-        {
+        } catch (NoSuchFieldException e) {
             try {
                 Class[] classes = Collections.class.getDeclaredClasses();
                 Map<String, String> env = System.getenv();
-                for(Class cl : classes) {
-                    if("java.util.Collections$UnmodifiableMap".equals(cl.getName())) {
+                for (Class cl : classes) {
+                    if ("java.util.Collections$UnmodifiableMap".equals(cl.getName())) {
                         Field field = cl.getDeclaredField("m");
                         field.setAccessible(true);
                         Object obj = field.get(env);
