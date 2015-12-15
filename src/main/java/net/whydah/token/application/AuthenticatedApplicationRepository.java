@@ -64,6 +64,13 @@ public class AuthenticatedApplicationRepository {
         return apptokens.get(applicationtokenid) != null;
     }
 
+    public static ApplicationToken renewApplicationTokenId(String applicationtokenid) {
+        ApplicationToken temp = apptokens.get(applicationtokenid);
+        temp.setExpires(updateExpires(temp.getExpires()));
+        apptokens.put(temp.getApplicationTokenId(), temp);
+        return temp;
+    }
+
     public static boolean verifyApplicationTokenXml(String applicationtokenXml) {
         try {
             String appid = getAppTokenIdFromAppTokenXML(applicationtokenXml);
@@ -94,6 +101,9 @@ public class AuthenticatedApplicationRepository {
     }
 
 
+    private static String updateExpires(String oldExpiry){
+        return String.valueOf(System.currentTimeMillis() + 1000*60*2);
+    }
 
 
     private static String findValue(String xmlString,  String expression) {
