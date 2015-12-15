@@ -95,8 +95,8 @@ public class ApplicationAuthenticationResource {
         return Response.ok().entity(applicationTokenXml).build();
     }
 
-    @Path("{applicationtokenid}/renew_applicationtoken")
-    @POST
+    @Path("{applicationtokenid}/validate")
+    @GET
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response validateApplicationTokenId(@PathParam("applicationtokenid") String applicationtokenid) {
         log.debug("verify applicationtokenid {}", applicationtokenid);
@@ -109,11 +109,11 @@ public class ApplicationAuthenticationResource {
         }
     }
 
-    @Path("{applicationtokenid}/validate")
-    @GET
+    @Path("{applicationtokenid}/renew_applicationtoken")
+    @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response extendApplicationSession(@PathParam("applicationtokenid") String applicationtokenid) {
-        log.debug("verify applicationtokenid {}", applicationtokenid);
+        log.debug("extend applicationtokenid {}", applicationtokenid);
         if (AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             ApplicationToken token = AuthenticatedApplicationRepository.renewApplicationTokenId(applicationtokenid);
             log.debug("Apptoken extended");
