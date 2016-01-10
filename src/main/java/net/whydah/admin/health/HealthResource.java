@@ -26,12 +26,18 @@ public class HealthResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response isHealthy() {
         boolean ok = true;
-        log.trace("isHealthy={}", ok);
+        log.trace("isHealthy={}", getHealthText());
         if (ok) {
-            return Response.ok("Status: OK"+"\nDEFCON: "+ ApplicationThreatResource.getDEFCON()+"\nActiveUserTokenMapSize: "+ ActiveUserTokenRepository.getMapSize()).build();
+            return Response.ok(getHealthText()).build();
         } else {
             //Intentionally not returning anything the client can use to determine what's the error for security reasons.
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    public static String  getHealthText(){
+        return "Status: OK"+
+                "\nDEFCON: "+ ApplicationThreatResource.getDEFCON()+
+                "\nActiveUserTokenMapSize: "+ ActiveUserTokenRepository.getMapSize();
     }
 }
