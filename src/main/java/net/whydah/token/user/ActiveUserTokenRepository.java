@@ -142,4 +142,8 @@ public class ActiveUserTokenRepository {
 
     public static void initializeDistributedMap() {
     }
+
+    public static int getMapSize(){
+        return activeusertokensmap.size();
+    }
 }

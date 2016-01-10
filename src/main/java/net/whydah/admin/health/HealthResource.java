@@ -1,5 +1,7 @@
 package net.whydah.admin.health;
 
+import net.whydah.token.application.ApplicationThreatResource;
+import net.whydah.token.user.ActiveUserTokenRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- * Endpoint for health check, copied from UIB.
+ * Endpoint for health check
  */
 @Path("/health")
 public class HealthResource {
@@ -26,7 +28,7 @@ public class HealthResource {
         boolean ok = true;
         log.trace("isHealthy={}", ok);
         if (ok) {
-            return Response.ok("Status OK!").build();
+            return Response.ok("Status: OK"+"\nDEFCON: "+ ApplicationThreatResource.getDEFCON()+"\nActiveUserTokenMapSize: "+ ActiveUserTokenRepository.getMapSize()).build();
         } else {
             //Intentionally not returning anything the client can use to determine what's the error for security reasons.
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
