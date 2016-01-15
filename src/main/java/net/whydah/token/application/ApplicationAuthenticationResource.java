@@ -113,15 +113,15 @@ public class ApplicationAuthenticationResource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response extendApplicationSession(@PathParam("applicationtokenid") String applicationtokenid) {
-        log.debug("extend applicationtokenid {}", applicationtokenid);
+        log.debug("renew session for applicationtokenid {}", applicationtokenid);
         if (AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             ApplicationToken token = AuthenticatedApplicationRepository.renewApplicationTokenId(applicationtokenid);
-            log.debug("Apptoken extended");
+            log.info("ApplicationToken for {} extended",token.getApplicationName());
             String applicationTokenXml = ApplicationTokenMapper.toXML(token);
             log.trace("extendApplicationSession returns applicationTokenXml={}", applicationTokenXml);
             return Response.ok().entity(applicationTokenXml).build();
         } else {
-            log.debug("applicationtokenid not valid");
+            log.info("applicationtokenid not valid");
             return Response.status(Response.Status.FORBIDDEN).build();
         }
     }
