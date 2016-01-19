@@ -25,6 +25,8 @@ import java.util.Map;
 public class AuthenticatedApplicationRepository {
     private final static Logger log = LoggerFactory.getLogger(AuthenticatedApplicationRepository.class);
 
+    public static int SESSION_EXTENSION_TIME_IN_SECONDS= 120;
+
     private static final Map<String, ApplicationToken> apptokens;
 
     static {
@@ -102,7 +104,8 @@ public class AuthenticatedApplicationRepository {
 
 
     private static String updateExpires(String oldExpiry){
-        return String.valueOf(System.currentTimeMillis() + 1000*60*2);
+        // Simplified method, extend session with SESSION_EXTENSION_TIME_IN_SECONDS from NOW
+        return String.valueOf(System.currentTimeMillis() + SESSION_EXTENSION_TIME_IN_SECONDS*1000);
     }
 
 
