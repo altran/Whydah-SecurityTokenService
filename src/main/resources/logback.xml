@@ -34,7 +34,7 @@
     <logger name="net.whydah.token.application.ApplicationToken" level="INFO" />
     <logger name="net.whydah" level="INFO" />
 
-    <root level="debug">
+    <root level="INFO">
 <!--        <appender-ref ref="STDOUT" />   -->
         <appender-ref ref="FILE" />
     </root>
