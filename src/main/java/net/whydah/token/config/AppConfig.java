@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -23,20 +24,23 @@ public class AppConfig {
     public final static String IAM_CONFIG_KEY = "IAM_CONFIG";
     private final static Logger log = LoggerFactory.getLogger(AppConfig.class);
 
-    private final Properties properties;
+    private static Properties properties=null;
     private static String fullTokenApplications = "2210,2211,2212,2215,2219";
+    Random rand = new Random();
 
     public String getProperty(String key) {
         return properties.getProperty(key);
     }
 
     public AppConfig() {
-        try {
-            properties = readProperties(ApplicationMode.getApplicationMode());
-            logProperties(properties);
-            fullTokenApplications = getProperty("fulltokenapplications");
-        } catch (IOException e) {
-            throw new RuntimeException(e.getLocalizedMessage(), e);
+        if (rand.nextInt(100)>95 || properties==null) {  // reload properties on 5% of the calls or if not loaded
+            try {
+                properties = readProperties(ApplicationMode.getApplicationMode());
+                logProperties(properties);
+                fullTokenApplications = getProperty("fulltokenapplications");
+            } catch (IOException e) {
+                throw new RuntimeException(e.getLocalizedMessage(), e);
+            }
         }
     }
 
