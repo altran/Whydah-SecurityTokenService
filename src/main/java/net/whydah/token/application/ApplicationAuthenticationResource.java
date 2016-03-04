@@ -28,8 +28,6 @@ import java.util.Random;
 @Path("/")
 public class ApplicationAuthenticationResource {
     private final static Logger log = LoggerFactory.getLogger(ApplicationAuthenticationResource.class);
-    private static final String APPLICATION_AUTH_PATH = "application/auth";
-    public static final String APP_CREDENTIAL_XML = "appCredentialXml";
 
     @Inject
     private AppConfig appConfig;
@@ -181,7 +179,7 @@ public class ApplicationAuthenticationResource {
 
             if (expectedAppSecret == null || expectedAppSecret.length() < 2) {
                 log.warn("No application secret in property file for applicationId={} - applicationName: {} - Trying UAS/UIB", applicationCredential.getApplicationID(), applicationCredential.getApplicationName());
-                if (!checkAppsecretFromUAS(applicationCredential)) {
+                if (!ApplicationAuthenticationUASClient.checkAppsecretFromUAS(applicationCredential,appConfig,getSTSApplicationToken())) {
                     log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret in UIB");
                     return false;
                 } else {
@@ -191,7 +189,7 @@ public class ApplicationAuthenticationResource {
             }
             if (!applicationCredential.getApplicationSecret().equalsIgnoreCase(expectedAppSecret)) {
                 log.info("Incoming applicationSecret does not match applicationSecret from property file. - Trying UAS/UIB");
-                if (!checkAppsecretFromUAS(applicationCredential)) {
+                if (!ApplicationAuthenticationUASClient.checkAppsecretFromUAS(applicationCredential,appConfig,getSTSApplicationToken())) {
                     log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret in UIB");
                     return false;
                 }
@@ -203,35 +201,7 @@ public class ApplicationAuthenticationResource {
         return true;
     }
 
-    private boolean checkAppsecretFromUAS(ApplicationCredential applicationCredential) {
-        ApplicationToken token = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(applicationCredential));
-        token.setBaseuri(appConfig.getProperty("myuri"));
-        token.setExpires(String.valueOf((System.currentTimeMillis() + 10 * new Random().nextInt(500))));
 
-        String useradminservice = appConfig.getProperty("useradminservice");
-        ApplicationToken stsToken = getSTSApplicationToken();
-        AuthenticatedApplicationRepository.addApplicationToken(stsToken);
-
-        WebResource uasResource = ApacheHttpClient.create().resource(useradminservice);
-        int uasResponseCode = 0;
-        WebResource webResource = uasResource.path(stsToken.getApplicationTokenId()).path(APPLICATION_AUTH_PATH);
-        log.info("checkAppsecretFromUAS - Calling application auth " + webResource.toString());
-        MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
-        formData.add(APP_CREDENTIAL_XML, ApplicationCredentialMapper.toXML(applicationCredential));
-        try {
-            ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(ClientResponse.class, formData);
-            uasResponseCode = response.getStatus();
-            log.info("Response from UAS:" + uasResponseCode);
-            if (uasResponseCode == 204) {
-                return true;
-            }
-        } catch (Exception e) {
-            log.error("checkAppsecretFromUAS - Problems connecting to {}", useradminservice);
-            throw e;
-        }
-        log.warn("Illegal application tried to access whydah. ApplicationID: {}, Response from UAS: {}", applicationCredential.getApplicationID(), uasResponseCode);
-        return false;
-    }
 
     private ApplicationToken getSTSApplicationToken() {
         AppConfig appConfig = new AppConfig();
