@@ -80,8 +80,9 @@ public class ApplicationAuthenticationResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response logonApplication(@FormParam("applicationcredential") String appCredentialXml) {
-        log.trace("logonApplication with appCredentialXml={}", appCredentialXml);
+        log.trace("logonApplication with applicationcredential={}", appCredentialXml);
         if (!verifyApplicationCredentials(appCredentialXml)) {
+            log.warn("logonApplication - illegal applicationcredential, returning FORBIDDEN");
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         ApplicationToken token = ApplicationTokenMapper.fromApplicationCredentialXML(appCredentialXml);
@@ -162,7 +163,7 @@ public class ApplicationAuthenticationResource {
 
         try {
             ApplicationCredential applicationCredential = ApplicationCredentialMapper.fromXml(appCredentials);
-            if (applicationCredential.getApplicationID() == null || applicationCredential.getApplicationID().length() < 2) {
+            if (applicationCredential == null || applicationCredential.getApplicationID() == null || applicationCredential.getApplicationID().length() < 2) {
                 log.warn("Application authentication failed. No or null applicationID");
                 return false;
 
