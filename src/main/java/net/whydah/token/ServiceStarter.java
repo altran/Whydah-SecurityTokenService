@@ -15,6 +15,8 @@ import org.glassfish.grizzly.http.server.ServerConfiguration;
 import org.glassfish.grizzly.servlet.ServletHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.valuereporter.agent.activity.ObservedActivityDistributer;
+import org.valuereporter.agent.http.HttpObservationDistributer;
 
 import java.io.IOException;
 
@@ -45,6 +47,17 @@ public class ServiceStarter {
         Injector injector = Guice.createInjector(new SecurityTokenServiceModule(appConfig, appMode));
 
         log.info("Starting SecurityTokenService... version:{}",version);
+
+
+        //Start Valuereporter event distributer.
+        String reporterHost = appConfig.getProperty("valuereporter.host");
+        String reporterPort = appConfig.getProperty("valuereporter.port");
+        String prefix = appConfig.getProperty("applicationname");
+        int cacheSize = Integer.parseInt(appConfig.getProperty("valuereporter.activity.batchsize"));
+        int forwardInterval = Integer.parseInt(appConfig.getProperty("valuereporter.activity.postintervalms"));
+        new Thread(new ObservedActivityDistributer(reporterHost, reporterPort, prefix, cacheSize, forwardInterval)).start();
+        new Thread(new HttpObservationDistributer(reporterHost, reporterPort, prefix)).start();
+
 
         ServletHandler adapter = new ServletHandler();
         adapter.setContextPath(contextpath);

@@ -5,8 +5,11 @@ import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import net.whydah.token.config.AppConfig;
+import net.whydah.token.user.statistics.UserSessionObservedActivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.valuereporter.agent.MonitorReporter;
+import org.valuereporter.agent.activity.ObservedActivity;
 
 import java.io.FileNotFoundException;
 import java.sql.Time;
@@ -65,7 +68,7 @@ public class ActiveUserTokenRepository {
      * @param usertokenId userTokenId
      * @return UserToken if found and valid, null if not.
      */
-    public static UserToken getUserToken(String usertokenId) {
+    public static UserToken getUserToken(String usertokenId,String applicationId) {
         log.debug("getUserToken with userTokenid=" + usertokenId);
         if (usertokenId == null) {
             return null;
@@ -76,6 +79,11 @@ public class ActiveUserTokenRepository {
             lastSeenMap.put(resToken.getEmail(),new Date());
             log.info("Valid userToken found: " + resToken);
             log.debug("userToken=" + resToken);
+
+            ObservedActivity observedActivity = new UserSessionObservedActivity(usertokenId,"temp app");
+            MonitorReporter.reportActivity(observedActivity);
+            log.trace("Adding activity to cache {}", observedActivity);
+
             return resToken;
         }
         log.debug("No usertoken found for usertokenId=" + usertokenId);

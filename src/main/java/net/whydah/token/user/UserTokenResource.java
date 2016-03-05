@@ -189,7 +189,7 @@ public class UserTokenResource {
             log.warn("validateUserTokenXML - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
-        if (ActiveUserTokenRepository.getUserToken(usertokenid) != null) {
+        if (ActiveUserTokenRepository.getUserToken(usertokenid,applicationtokenid) != null) {
             log.trace("Verified {}", usertokenid);
             return Response.ok().build();
         }
@@ -220,7 +220,7 @@ public class UserTokenResource {
             log.warn("createUserTicketByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
-        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
+        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId,applicationtokenid);
         if (userToken != null) {
             userticketmap.put(userticket, userToken.getTokenid());
             log.trace("createUserTicketByUserTokenId OK. Response={}", userToken.toString());
@@ -256,7 +256,7 @@ public class UserTokenResource {
             log.warn("getUserTokenByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
-        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
+        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId,applicationtokenid);
         if (userToken == null) {
             log.warn("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid={}", userTokenId);
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();
@@ -336,7 +336,7 @@ public class UserTokenResource {
         }
         log.trace("getUserTokenByUserTicket - Found usertokenid: " + userTokenId);
         userticketmap.remove(userticket);
-        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
+        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId,applicationtokenid);
 
         if (userToken == null) {
             log.warn("getUserTokenByUserTicket - illegal/Null userticket received ");
@@ -397,7 +397,7 @@ public class UserTokenResource {
             log.warn("renewUserToken - attempt with no usertokenid: Null");
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").build();
         }
-        UserToken utoken = ActiveUserTokenRepository.getUserToken(usertokenid);
+        UserToken utoken = ActiveUserTokenRepository.getUserToken(usertokenid,applicationtokenid);
         utoken.setDefcon(ApplicationThreatResource.getDEFCON());
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
         utoken.setLifespan(String.valueOf(60 * new Random().nextInt(100)));
@@ -437,7 +437,7 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
         String userTokenId = UserTokenFactory.fromXml(userTokenXml).getTokenid();
-        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId);
+        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId,applicationtokenid);
         userToken.setDefcon(ApplicationThreatResource.getDEFCON());
         if (userToken == null) {
             log.warn("getUserTokenByUserTokenId - attempt to access with non acceptable userTokenId={}", userTokenId);

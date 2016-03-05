@@ -80,7 +80,12 @@
         <dependency>
             <groupId>net.whydah.sso</groupId>
             <artifactId>Whydah-TypeLib</artifactId>
-            <version>1.0.36</version>
+            <version>1.0.37</version>
+        </dependency>
+        <dependency>
+            <groupId>org.valuereporter</groupId>
+            <artifactId>valuereporter-agent</artifactId>
+            <version>0.4-SNAPSHOT</version>
         </dependency>
 
         <dependency>
