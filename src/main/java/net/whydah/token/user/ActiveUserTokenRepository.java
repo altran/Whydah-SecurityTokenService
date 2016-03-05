@@ -80,7 +80,7 @@ public class ActiveUserTokenRepository {
             log.info("Valid userToken found: " + resToken);
             log.debug("userToken=" + resToken);
 
-            ObservedActivity observedActivity = new UserSessionObservedActivity(usertokenId,"temp app");
+            ObservedActivity observedActivity = new UserSessionObservedActivity(usertokenId,applicationId);
             MonitorReporter.reportActivity(observedActivity);
             log.trace("Adding activity to cache {}", observedActivity);
 
