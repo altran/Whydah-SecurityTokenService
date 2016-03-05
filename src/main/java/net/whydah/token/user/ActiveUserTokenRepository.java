@@ -4,6 +4,7 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import net.whydah.sso.user.helpers.UserTokenXpathHelper;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.user.statistics.UserSessionObservedActivity;
 import org.slf4j.Logger;
@@ -68,7 +69,7 @@ public class ActiveUserTokenRepository {
      * @param usertokenId userTokenId
      * @return UserToken if found and valid, null if not.
      */
-    public static UserToken getUserToken(String usertokenId,String applicationId) {
+    public static UserToken getUserToken(String usertokenId,String applicationTokenId) {
         log.debug("getUserToken with userTokenid=" + usertokenId);
         if (usertokenId == null) {
             return null;
@@ -80,9 +81,9 @@ public class ActiveUserTokenRepository {
             log.info("Valid userToken found: " + resToken);
             log.debug("userToken=" + resToken);
 
-            ObservedActivity observedActivity = new UserSessionObservedActivity(usertokenId,applicationId);
+            ObservedActivity observedActivity = new UserSessionObservedActivity(resToken.getUid(),applicationTokenId);
             MonitorReporter.reportActivity(observedActivity);
-            log.trace("Adding activity to cache {}", observedActivity);
+            log.trace("Adding activity to statistics cache {}", observedActivity);
 
             return resToken;
         }
