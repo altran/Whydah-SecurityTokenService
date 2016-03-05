@@ -9,7 +9,7 @@ public class UserSessionObservedActivity extends ObservedActivity {
 
     public UserSessionObservedActivity(String userid,String applicationtokenid) {
         super(USER_SESSION_ACTIVITY, System.currentTimeMillis());
-        String applicationid = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(applicationtokenid);
+        String applicationid = "1212";  //AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(applicationtokenid);
         put("userid", userid);
         put("applicationtokenid", applicationtokenid);
         put("applicationid", applicationid);
