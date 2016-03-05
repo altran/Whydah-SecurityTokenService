@@ -12,7 +12,7 @@
         <email>leon.ho@test.com</email>
         <firstname>Leon</firstname>
         <lastname>Ho</lastname>
-        <personRef>1</personRef>
+        <personref>1</personref>
         <UID>leon.ho@test.com</UID>
     </identity>
     <applications>

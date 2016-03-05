@@ -11,7 +11,7 @@
     <lastname>${it.lastName!?xml}</lastname>
     <cellphone>${it.cellPhone!?xml}</cellphone>
     <email>${it.email!?xml}</email>
-    <personRef>${it.personRef!?xml}</personRef>
+    <personref>${it.personRef!?xml}</personref>
     <#list it.roleList as app>
     <application ID="${app.applicationId!?xml}">
         <applicationName>${app.applicationName!?xml}</applicationName>

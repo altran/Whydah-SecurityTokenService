@@ -9,7 +9,7 @@
     <firstname>Olav</firstname>
     <lastname>Nordmann</lastname>
     <email></email>
-    <personRef></personRef>
+    <personref></personref>
     <application ID="2349785543">
         <applicationName>Whydah.net</applicationName>
         <organizationName>Customer 3</organizationName>
