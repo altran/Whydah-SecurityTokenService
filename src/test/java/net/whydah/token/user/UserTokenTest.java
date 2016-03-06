@@ -72,13 +72,13 @@ public class UserTokenTest {
         utoken.setPersonRef("78125637812638");
         utoken.setLifespan(String.valueOf(2*60 * 60 * new Random().nextInt(100)));
 
-        ActiveUserTokenRepository.addUserToken(utoken);
-        assertTrue("Verification of valid token failed", ActiveUserTokenRepository.verifyUserToken(utoken));
+        ActiveUserTokenRepository.addUserToken(utoken,"");
+        assertTrue("Verification of valid token failed", ActiveUserTokenRepository.verifyUserToken(utoken,""));
 
         utoken.setFirstName("Pelle");
         String token = freemarkerProcessor.toXml(utoken);
         assertTrue("Token not updated", token.indexOf("Pelle") > 0);
-        assertFalse("Verification of in-valid token successful", ActiveUserTokenRepository.verifyUserToken(utoken));
+        assertFalse("Verification of in-valid token successful", ActiveUserTokenRepository.verifyUserToken(utoken,""));
     }
 
     @Test
@@ -91,8 +91,8 @@ public class UserTokenTest {
         utoken.setPersonRef("78125637812638");
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis() - 1000));
         utoken.setLifespan("0");
-        ActiveUserTokenRepository.addUserToken(utoken);
-        assertFalse("Verification of timed-out token successful", ActiveUserTokenRepository.verifyUserToken(utoken));
+        ActiveUserTokenRepository.addUserToken(utoken,"");
+        assertFalse("Verification of timed-out token successful", ActiveUserTokenRepository.verifyUserToken(utoken,""));
     }
 
     @Test

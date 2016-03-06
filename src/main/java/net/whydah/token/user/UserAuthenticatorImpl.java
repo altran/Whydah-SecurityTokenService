@@ -5,6 +5,7 @@ import com.google.inject.name.Named;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
+import net.whydah.sso.application.helpers.ApplicationTokenXpathHelper;
 import net.whydah.token.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +73,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
             UserToken userToken = userTokenFactory.fromUserAggregate(userAggregateXML);
             userToken.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
-            ActiveUserTokenRepository.addUserToken(userToken);
+            ActiveUserTokenRepository.addUserToken(userToken, ApplicationTokenXpathHelper.getApplicationTokenIDFromApplicationToken(appTokenXml));
             return userToken;
 
         } else  {

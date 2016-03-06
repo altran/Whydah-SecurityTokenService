@@ -175,7 +175,7 @@ public class UserTokenResource {
         }
         //UserToken userToken = UserToken.createFromUserTokenXML(userTokenXml);
         UserToken userToken = UserTokenFactory.fromXml(userTokenXml);
-        if (ActiveUserTokenRepository.verifyUserToken(userToken)) {
+        if (ActiveUserTokenRepository.verifyUserToken(userToken,applicationtokenid)) {
             return Response.ok().build();
         }
         log.warn("validateUserTokenXML failed for usertoken {}", userTokenXml);
@@ -372,7 +372,7 @@ public class UserTokenResource {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").build();
         }
         log.trace("releaseUserToken - removed session, usertokenid={}", usertokenid);
-        ActiveUserTokenRepository.removeUserToken(usertokenid);
+        ActiveUserTokenRepository.removeUserToken(usertokenid,applicationtokenid);
         return Response.ok().build();
     }
 
@@ -401,7 +401,7 @@ public class UserTokenResource {
         utoken.setDefcon(ApplicationThreatResource.getDEFCON());
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
         utoken.setLifespan(String.valueOf(60 * new Random().nextInt(100)));
-        ActiveUserTokenRepository.addUserToken(utoken);
+        ActiveUserTokenRepository.addUserToken(utoken,applicationtokenid);
 
         log.trace("renewUserToken - session renewed, usertokenid={}", usertokenid);
         return Response.ok().build();

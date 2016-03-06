@@ -75,13 +75,13 @@ public class ActiveUserTokenRepository {
             return null;
         }
         UserToken resToken = activeusertokensmap.get(usertokenId);
-        if (resToken != null && verifyUserToken(resToken)) {
+        if (resToken != null && verifyUserToken(resToken,applicationTokenId)) {
             resToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(resToken));
             lastSeenMap.put(resToken.getEmail(),new Date());
             log.info("Valid userToken found: " + resToken);
             log.debug("userToken=" + resToken);
 
-            ObservedActivity observedActivity = new UserSessionObservedActivity(resToken.getUid(),applicationTokenId);
+            ObservedActivity observedActivity = new UserSessionObservedActivity(resToken.getUid(),"tokenAccess",applicationTokenId);
             MonitorReporter.reportActivity(observedActivity);
             log.trace("Adding activity to statistics cache {}", observedActivity);
 
@@ -97,7 +97,7 @@ public class ActiveUserTokenRepository {
      * @param userToken UserToken
      * @return true if token is valid.
      */
-    public static boolean verifyUserToken(UserToken userToken) {
+    public static boolean verifyUserToken(UserToken userToken,String applicationTokenId) {
         if (userToken.getTokenid() == null) {
             log.info("UserToken not valid, missing tokenId");
             return false;
@@ -121,11 +121,13 @@ public class ActiveUserTokenRepository {
             log.info("UserToken not valid: not the same as in repo. token: {}  repotoken: {}", userToken, resToken);
             return false;
         }
+        ObservedActivity observedActivity = new UserSessionObservedActivity(resToken.getUid(),"tokenVerification",applicationTokenId);
+        MonitorReporter.reportActivity(observedActivity);
 
         return true;
     }
 
-    public static void addUserToken(UserToken userToken) {
+    public static void addUserToken(UserToken userToken,String applicationTokenId) {
         if (userToken.getTokenid() == null) {
             log.error("Error: token has net tokenid");
             return;
@@ -142,11 +144,16 @@ public class ActiveUserTokenRepository {
         }
         UserToken copy = userToken.copy();
         activeusertokensmap.put(copy.getTokenid(), copy);
+        ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUid(),"tokenCreated",applicationTokenId);
+        MonitorReporter.reportActivity(observedActivity);
         log.info("Added token with id {}", copy.getTokenid(), " content:" + copy);
     }
 
-    public static void removeUserToken(String userTokenId) {
-        activeusertokensmap.remove(userTokenId);
+    public static void removeUserToken(String userTokenId,String applicationTokenId) {
+        UserToken removedToken = activeusertokensmap.remove(userTokenId);
+        ObservedActivity observedActivity = new UserSessionObservedActivity(removedToken.getUid(),"tokenRemoved",applicationTokenId);
+        MonitorReporter.reportActivity(observedActivity);
+
     }
 
     public static void initializeDistributedMap() {
