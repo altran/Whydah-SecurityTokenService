@@ -5,6 +5,7 @@ import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import net.whydah.sso.user.helpers.UserTokenXpathHelper;
+import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.user.statistics.UserSessionObservedActivity;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.sql.Time;
 import java.util.Date;
 import java.util.Map;
+import java.util.Random;
 
 public class ActiveUserTokenRepository {
     private final static Logger log = LoggerFactory.getLogger(ActiveUserTokenRepository.class);
@@ -81,7 +83,7 @@ public class ActiveUserTokenRepository {
             log.info("Valid userToken found: " + resToken);
             log.debug("userToken=" + resToken);
 
-            ObservedActivity observedActivity = new UserSessionObservedActivity(resToken.getUid(),"tokenAccess",applicationTokenId);
+            ObservedActivity observedActivity = new UserSessionObservedActivity(resToken.getUid(),"userSessionAccess",applicationTokenId);
             MonitorReporter.reportActivity(observedActivity);
             log.trace("Adding activity to statistics cache {}", observedActivity);
 
@@ -121,10 +123,21 @@ public class ActiveUserTokenRepository {
             log.info("UserToken not valid: not the same as in repo. token: {}  repotoken: {}", userToken, resToken);
             return false;
         }
-        ObservedActivity observedActivity = new UserSessionObservedActivity(resToken.getUid(),"tokenVerification",applicationTokenId);
+        ObservedActivity observedActivity = new UserSessionObservedActivity(resToken.getUid(),"userSessionVerification",applicationTokenId);
         MonitorReporter.reportActivity(observedActivity);
 
         return true;
+    }
+
+    public static void renewUserToken(String usertokenid,String applicationTokenId){
+        UserToken utoken = ActiveUserTokenRepository.getUserToken(usertokenid,applicationTokenId);
+        utoken.setDefcon(ApplicationThreatResource.getDEFCON());
+        utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
+        utoken.setLifespan(String.valueOf(60 * new Random().nextInt(100)));
+        addUserToken(utoken,applicationTokenId);
+        ObservedActivity observedActivity = new UserSessionObservedActivity(utoken.getUid(),"userSessionRenewal",applicationTokenId);
+        MonitorReporter.reportActivity(observedActivity);
+
     }
 
     public static void addUserToken(UserToken userToken,String applicationTokenId) {
@@ -144,14 +157,14 @@ public class ActiveUserTokenRepository {
         }
         UserToken copy = userToken.copy();
         activeusertokensmap.put(copy.getTokenid(), copy);
-        ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUid(),"tokenCreated",applicationTokenId);
+        ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUid(),"userSessionCreated",applicationTokenId);
         MonitorReporter.reportActivity(observedActivity);
         log.info("Added token with id {}", copy.getTokenid(), " content:" + copy);
     }
 
     public static void removeUserToken(String userTokenId,String applicationTokenId) {
         UserToken removedToken = activeusertokensmap.remove(userTokenId);
-        ObservedActivity observedActivity = new UserSessionObservedActivity(removedToken.getUid(),"tokenRemoved",applicationTokenId);
+        ObservedActivity observedActivity = new UserSessionObservedActivity(removedToken.getUid(),"userSessionRemoved",applicationTokenId);
         MonitorReporter.reportActivity(observedActivity);
 
     }

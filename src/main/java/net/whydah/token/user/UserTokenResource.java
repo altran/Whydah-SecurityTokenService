@@ -397,11 +397,7 @@ public class UserTokenResource {
             log.warn("renewUserToken - attempt with no usertokenid: Null");
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").build();
         }
-        UserToken utoken = ActiveUserTokenRepository.getUserToken(usertokenid,applicationtokenid);
-        utoken.setDefcon(ApplicationThreatResource.getDEFCON());
-        utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
-        utoken.setLifespan(String.valueOf(60 * new Random().nextInt(100)));
-        ActiveUserTokenRepository.addUserToken(utoken,applicationtokenid);
+        ActiveUserTokenRepository.renewUserToken(usertokenid,applicationtokenid);
 
         log.trace("renewUserToken - session renewed, usertokenid={}", usertokenid);
         return Response.ok().build();
