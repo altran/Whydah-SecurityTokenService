@@ -143,7 +143,7 @@ public class UserTokenFactory {
             DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
             Document doc = documentBuilder.parse(new InputSource(new StringReader(userAggregateXML)));
             XPath xPath = XPathFactory.newInstance().newXPath();
-            String uid = (String) xPath.evaluate("//UID", doc, XPathConstants.STRING);
+            String uid = (String) xPath.evaluate("//identity/UID", doc, XPathConstants.STRING);
             String userName = (String) xPath.evaluate("//identity/username", doc, XPathConstants.STRING);
             String firstName = (String) xPath.evaluate("//identity/firstname", doc, XPathConstants.STRING);
             String lastName = (String) xPath.evaluate("//identity/lastname", doc, XPathConstants.STRING);
