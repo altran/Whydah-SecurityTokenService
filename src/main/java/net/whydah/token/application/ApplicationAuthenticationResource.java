@@ -193,6 +193,9 @@ public class ApplicationAuthenticationResource {
                 if (!ApplicationAuthenticationUASClient.checkAppsecretFromUAS(applicationCredential,appConfig,getSTSApplicationToken())) {
                     log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret in UIB");
                     return false;
+                } else {
+                    log.warn("Application authentication OK for appId:{}, applicationName: {} from UAS", applicationCredential.getApplicationID(), applicationCredential.getApplicationName());
+                    return true;
                 }
             }
         } catch (Exception e) {
