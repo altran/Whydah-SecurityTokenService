@@ -66,10 +66,10 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
     // TODO - complete this implementation
     @Override
-    public UserToken createAndLogonPinUser(String applicationtokenid, String appTokenXml, String userCredentialXml, String cellPhone, String pin, String userJson) {
+    public UserToken createAndLogonPinUser(String applicationtokenid, String appTokenXml, String adminUserTokenId, String cellPhone, String pin, String userJson) {
         if (ActivePinRepository.usePin(cellPhone, pin)) {
             try {
-                WebResource uasWR = uasResource.path(applicationtokenid).path("userTokenId").path("user");
+                WebResource uasWR = uasResource.path(applicationtokenid).path(adminUserTokenId).path("user");
                 ClientResponse uasResponse = uasWR.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, userJson);
                 if (uasResponse.getStatus() != ClientResponse.Status.OK.getStatusCode()) {
                     String error = uasResponse.getEntity(String.class);
