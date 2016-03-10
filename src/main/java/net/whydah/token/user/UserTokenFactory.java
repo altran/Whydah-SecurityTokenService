@@ -257,13 +257,13 @@ public class UserTokenFactory {
     private static UserToken parseUserAggregateJson(String userAggregateJSON) {
         try {
             DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
-            String uid = getFieldFromUserAggregateJson("$.identity.uid", userAggregateJSON);
-            String userName = getFieldFromUserAggregateJson("$.identity.username",userAggregateJSON);
-            String firstName = getFieldFromUserAggregateJson("$.identity.firstName",userAggregateJSON);
-            String lastName = getFieldFromUserAggregateJson("$.identity.lastName",userAggregateJSON);
-            String email = getFieldFromUserAggregateJson("$.identity.email",userAggregateJSON);
-            String cellPhone = getFieldFromUserAggregateJson("$.identity.cellPhone",userAggregateJSON);
-            String personRef = getFieldFromUserAggregateJson("$.identity.personRef",userAggregateJSON);
+            String uid = getFieldFromUserAggregateJson("$..uid", userAggregateJSON);
+            String userName = getFieldFromUserAggregateJson("$..username",userAggregateJSON);
+            String firstName = getFieldFromUserAggregateJson("$..firstName",userAggregateJSON);
+            String lastName = getFieldFromUserAggregateJson("$..lastName",userAggregateJSON);
+            String email = getFieldFromUserAggregateJson("$..email",userAggregateJSON);
+            String cellPhone = getFieldFromUserAggregateJson("$..cellPhone",userAggregateJSON);
+            String personRef = getFieldFromUserAggregateJson("$..personRef",userAggregateJSON);
 
             UserToken userToken = new UserToken();
             userToken.setUid(uid);
