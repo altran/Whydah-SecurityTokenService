@@ -5,12 +5,16 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.view.Viewable;
+import com.sun.jersey.client.apache.ApacheHttpClient;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
 import net.whydah.token.config.SSLTool;
+import net.whydah.token.user.command.CommandSendSMSToUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +27,9 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+
+import static javax.ws.rs.core.Response.Status.FORBIDDEN;
+import static javax.ws.rs.core.Response.Status.OK;
 
 @Path("/user")
 public class UserTokenResource {
@@ -440,6 +447,42 @@ public class UserTokenResource {
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
         return createUserTokenResponse(newAppTokenId, userToken);
+    }
+
+    /**
+     * The backend for PIN signup processes
+     *
+     * @param applicationtokenid
+     * @param phoneNo
+     * @param smsPin
+     * @return
+     */
+    @Path("/{applicationtokenid}/send_sms_pin")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_XML)
+    public Response sendSMSPin(@PathParam("applicationtokenid") String applicationtokenid,
+                               @FormParam("phoneNo") String phoneNo,
+                               @FormParam("smsPin") String smsPin) {
+        log.trace("Response sendSMSPin: phoneNo:" + phoneNo + "smsPin:" + smsPin);
+        ActivePinRepository.setPin(phoneNo, smsPin);
+
+        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
+            log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
+        }
+
+        String serviceURL = System.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
+        String serviceAccount = System.getProperty("smsgw.serviceaccount");  //"serviceAccount";
+        String username = System.getProperty("smsgw.username");  // "smsserviceusername";
+        String password = System.getProperty("smsgw.password");  //"smsservicepassword";
+        String cellNo = phoneNo;
+        String smsMessage = smsPin;
+        String queryParam = System.getProperty("smsgw.queryparams");  //"serviceId=serviceAccount&me...ssword=smsservicepassword";
+        String response = new CommandSendSMSToUser(serviceURL, serviceAccount, username, password, queryParam, cellNo, smsMessage).execute();
+
+        return Response.ok().build();
+
     }
 
 
