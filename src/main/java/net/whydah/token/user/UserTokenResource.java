@@ -580,16 +580,16 @@ public class UserTokenResource {
      * @param newUserjson a simple userjson for new user
      * @return  user session data
      */
-    @Path("/{applicationtokenid}/{pin}/create_pinverified_user")
+    @Path("/{applicationtokenid}/{userticket}/{pin}/create_pinverified_user")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response createAndLogOnPinUser(@PathParam("applicationtokenid") String applicationtokenid,
                                           @PathParam("userticket") String userticket,
-                                       @PathParam("pin") String pin,
-                                       @FormParam("apptoken") String appTokenXml,
-                                       @FormParam("usercredential") String userCredentialXml,
-                                       @FormParam("jsonuser") String newUserjson) {
+                                          @PathParam("pin") String pin,
+                                          @FormParam("apptoken") String appTokenXml,
+                                          @FormParam("usercredential") String userCredentialXml,
+                                          @FormParam("jsonuser") String newUserjson) {
         log.trace("Response createAndLogOnPinUser: usercredential:" + userCredentialXml + "jsonuser:" + newUserjson);
 
         if (ApplicationMode.getApplicationMode() == ApplicationMode.DEV) {
