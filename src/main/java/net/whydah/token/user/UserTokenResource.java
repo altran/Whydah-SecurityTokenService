@@ -464,7 +464,7 @@ public class UserTokenResource {
     public Response sendSMSPin(@PathParam("applicationtokenid") String applicationtokenid,
                                @FormParam("phoneNo") String phoneNo,
                                @FormParam("smsPin") String smsPin) {
-        log.trace("Response sendSMSPin: phoneNo:" + phoneNo + "smsPin:" + smsPin);
+        log.trace("sendSMSPin: phoneNo:" + phoneNo + "smsPin:" + smsPin);
         ActivePinRepository.setPin(phoneNo, smsPin);
 
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
@@ -479,7 +479,8 @@ public class UserTokenResource {
         String cellNo = phoneNo;
         String smsMessage = smsPin;
         String queryParam = System.getProperty("smsgw.queryparams");  //"serviceId=serviceAccount&me...ssword=smsservicepassword";
-        String response = new CommandSendSMSToUser(serviceURL, serviceAccount, username, password, queryParam, cellNo, smsMessage).execute();
+        log.info("CommandSendSMSToUser({}, {}, {}, {}, {}, cellNo, smsMessage)",serviceURL,serviceAccount,username,password,queryParam);
+        new CommandSendSMSToUser(serviceURL, serviceAccount, username, password, queryParam, cellNo, smsMessage).execute();
 
         return Response.ok().build();
 
