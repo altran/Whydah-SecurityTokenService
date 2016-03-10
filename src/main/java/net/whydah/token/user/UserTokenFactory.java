@@ -205,6 +205,40 @@ public class UserTokenFactory {
     }
 
 
+    public static UserToken fromUserIdentityJson(String userIdentityJSON) {
+        UserToken userToken = parseUserIdentityJson(userIdentityJSON);
+        userToken.setTokenid(generateID());
+        userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+        String securityLevel = "1";
+        userToken.setSecurityLevel(securityLevel);
+        return userToken;
+    }
+
+    private static UserToken parseUserIdentityJson(String userIdentityJSON) {
+        try {
+            DocumentBuilder e = dbf.newDocumentBuilder();
+            String uid = getFieldFromUserAggregateJson("$.identity.uid", userIdentityJSON);
+            String userName = getFieldFromUserAggregateJson("$.identity.username", userIdentityJSON);
+            String firstName = getFieldFromUserAggregateJson("$.identity.firstName", userIdentityJSON);
+            String lastName = getFieldFromUserAggregateJson("$.identity.lastName", userIdentityJSON);
+            String email = getFieldFromUserAggregateJson("$.identity.email", userIdentityJSON);
+            String cellPhone = getFieldFromUserAggregateJson("$.identity.cellPhone", userIdentityJSON);
+            String personRef = getFieldFromUserAggregateJson("$.identity.personRef", userIdentityJSON);
+            UserToken userToken = new UserToken();
+            userToken.setUid(uid);
+            userToken.setUserName(userName);
+            userToken.setFirstName(firstName);
+            userToken.setLastName(lastName);
+            userToken.setEmail(email);
+            userToken.setPersonRef(personRef);
+            userToken.setCellPhone(cellPhone);
+            return userToken;
+        } catch (Exception var10) {
+            log.error("Error parsing userAggregateJSON " + userIdentityJSON, var10);
+            return null;
+        }
+    }
+
     //String appTokenXml
     public static UserToken fromUserAggregateJson(String userAggregateXML) {
         UserToken userToken = parseUserAggregateJson(userAggregateXML);

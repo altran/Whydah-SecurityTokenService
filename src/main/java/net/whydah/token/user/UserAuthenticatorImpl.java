@@ -75,8 +75,8 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
                     String error = uasResponse.getEntity(String.class);
                     log.error(error);
                 } else {
-                    String userAggretateJson = uasResponse.getEntity(String.class);
-                    UserToken myToken = UserTokenFactory.fromUserAggregateJson(userAggretateJson);
+                    String userIdentityJson = uasResponse.getEntity(String.class);
+                    UserToken myToken = UserTokenFactory.fromUserIdentityJson(userIdentityJson);
 
                     ActiveUserTokenRepository.addUserToken(myToken,applicationtokenid);
                     return myToken;
