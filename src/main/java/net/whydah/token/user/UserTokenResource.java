@@ -472,13 +472,13 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
 
-        String serviceURL = System.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
-        String serviceAccount = System.getProperty("smsgw.serviceaccount");  //"serviceAccount";
-        String username = System.getProperty("smsgw.username");  // "smsserviceusername";
-        String password = System.getProperty("smsgw.password");  //"smsservicepassword";
+        String serviceURL = appConfig.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
+        String serviceAccount = appConfig.getProperty("smsgw.serviceaccount");  //"serviceAccount";
+        String username = appConfig.getProperty("smsgw.username");  // "smsserviceusername";
+        String password = appConfig.getProperty("smsgw.password");  //"smsservicepassword";
         String cellNo = phoneNo;
         String smsMessage = smsPin;
-        String queryParam = System.getProperty("smsgw.queryparams");  //"serviceId=serviceAccount&me...ssword=smsservicepassword";
+        String queryParam = appConfig.getProperty("smsgw.queryparams");  //"serviceId=serviceAccount&me...ssword=smsservicepassword";
         log.info("CommandSendSMSToUser({}, {}, {}, {}, {}, cellNo, smsMessage)",serviceURL,serviceAccount,username,password,queryParam);
         new CommandSendSMSToUser(serviceURL, serviceAccount, username, password, queryParam, cellNo, smsMessage).execute();
 
