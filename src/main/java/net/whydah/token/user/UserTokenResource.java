@@ -588,10 +588,11 @@ public class UserTokenResource {
                                           @PathParam("userticket") String userticket,
                                           @PathParam("pin") String pin,
                                           @FormParam("apptoken") String appTokenXml,
+                                          @FormParam("adminUserTokenId") String adminUserTokenId,
                                           @FormParam("usercredential") String userCredentialXml,
                                           @FormParam("cellPhone") String cellPhone,
                                           @FormParam("jsonuser") String newUserjson) {
-        log.trace("Response createAndLogOnPinUser: usercredential:" + userCredentialXml + "jsonuser:" + newUserjson);
+        log.info("Response createAndLogOnPinUser: usercredential:" + userCredentialXml + "jsonuser:" + newUserjson);
 
         if (ApplicationMode.getApplicationMode() == ApplicationMode.DEV) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
@@ -603,7 +604,7 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         try {
-            UserToken userToken = userAuthenticator.createAndLogonPinUser(applicationtokenid,appTokenXml,userCredentialXml,cellPhone,pin,newUserjson);
+            UserToken userToken = userAuthenticator.createAndLogonPinUser(applicationtokenid,appTokenXml,adminUserTokenId,cellPhone,pin,newUserjson);
             userticketmap.put(userticket, userToken.getTokenid());
             userToken.setDefcon(ApplicationThreatResource.getDEFCON());
             userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
