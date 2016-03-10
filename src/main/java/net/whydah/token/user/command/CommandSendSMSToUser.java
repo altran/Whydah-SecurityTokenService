@@ -33,7 +33,7 @@ public class CommandSendSMSToUser extends HystrixCommand<String> {
     @Override
     protected String run() {
 
-        log.trace("CommandSendSMSToUser {}, using service {} and query template {} message {}", cellNo, serviceUrl, queryparam, smsMessage);
+        log.info("CommandSendSMSToUser {}, using service {} and query template {} message {}", cellNo, serviceUrl, queryparam, smsMessage);
         HttpRequest request = HttpRequest.get(serviceUrl + "?" + queryparam).contentType(HttpSender.APPLICATION_JSON);
         int statusCode = request.code();
         String responseBody = request.body();
