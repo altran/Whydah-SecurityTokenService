@@ -15,8 +15,11 @@ import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
 import net.whydah.token.config.SSLTool;
 import net.whydah.token.user.command.CommandSendSMSToUser;
+import net.whydah.token.user.statistics.UserSessionObservedActivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.valuereporter.agent.MonitorReporter;
+import org.valuereporter.agent.activity.ObservedActivity;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -560,6 +563,10 @@ public class UserTokenResource {
             userticketmap.put(userticket, userToken.getTokenid());
             userToken.setDefcon(ApplicationThreatResource.getDEFCON());
             userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
+            // Report to statistics
+            ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUserName(),"userCreated",applicationtokenid);
+            MonitorReporter.reportActivity(observedActivity);
+
             return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).build();
         } catch (AuthenticationFailedException ae) {
             log.warn("createAndLogOnUser - Error creating or authenticating user. thirdPartyUserTokenXml={}", thirdPartyUserTokenXml);
@@ -608,6 +615,9 @@ public class UserTokenResource {
             userticketmap.put(userticket, userToken.getTokenid());
             userToken.setDefcon(ApplicationThreatResource.getDEFCON());
             userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
+            // Report to statistics
+            ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUserName(),"userCreated",applicationtokenid);
+            MonitorReporter.reportActivity(observedActivity);
             return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).build();
         } catch (AuthenticationFailedException ae) {
             log.warn("createAndLogOnPinUser - Error creating or authenticating user. jsonuser={}", newUserjson);
