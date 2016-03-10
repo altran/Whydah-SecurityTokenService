@@ -76,10 +76,10 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
                     log.error(error);
                 } else {
                     String userAggretateJson = uasResponse.getEntity(String.class);
-//                UserToken myToken = UserTokenMapper.fromUserAggregateJson(userAggretateJson);
-//                String uid = myToken.getUid();
+                    UserToken myToken = UserTokenFactory.fromUserAggregateJson(userAggretateJson);
 
-//                ActiveUserTokenRepository.addUserToken(myToken);
+                    ActiveUserTokenRepository.addUserToken(myToken,applicationtokenid);
+                    return myToken;
                     // return Response.ok(new Viewable("/usertoken.ftl", myToken)).build();
                 }
             } catch (Exception e) {
@@ -87,7 +87,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
                 throw e;
             }
         }
-        return new UserToken();
+        throw new AuthenticationFailedException("APin uthentication failed. Status code ");
     }
 
 

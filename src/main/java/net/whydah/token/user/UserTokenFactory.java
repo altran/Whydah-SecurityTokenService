@@ -1,6 +1,9 @@
 package net.whydah.token.user;
 
 import com.google.inject.Singleton;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
@@ -124,7 +127,7 @@ public class UserTokenFactory {
     }
 
     //String appTokenXml
-    public UserToken fromUserAggregate(String userAggregateXML) {
+    public  UserToken fromUserAggregate(String userAggregateXML) {
         UserToken userToken = parseUserAggregateXml(userAggregateXML);
         userToken.setTokenid(generateID());
         userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
@@ -181,7 +184,7 @@ public class UserTokenFactory {
     }
 
 
-    private String generateID() {
+    private static String generateID() {
         return UUID.randomUUID().toString();
     }
 
@@ -199,6 +202,59 @@ public class UserTokenFactory {
         }
         log.trace("shouldReturnFullUserToken=false");
         return false;
+    }
+
+
+    //String appTokenXml
+    public static UserToken fromUserAggregateJson(String userAggregateXML) {
+        UserToken userToken = parseUserAggregateJson(userAggregateXML);
+        userToken.setTokenid(generateID());
+        userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+        String securityLevel = "1"; //UserIdentity as source = securitylevel=0
+        userToken.setSecurityLevel(securityLevel);
+
+        userToken.setDefcon(defcon);
+        //String issuer = extractIssuer(appTokenXml);
+        userToken.setIssuer(TOKEN_ISSUER);
+        userToken.setLifespan(lifespanMs);
+        return userToken;
+    }
+
+    private static UserToken parseUserAggregateJson(String userAggregateJSON) {
+        try {
+            DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
+            String uid = getFieldFromUserAggregateJson("$.identity.uid", userAggregateJSON);
+            String userName = getFieldFromUserAggregateJson("$.identity.username",userAggregateJSON);
+            String firstName = getFieldFromUserAggregateJson("$.identity.firstName",userAggregateJSON);
+            String lastName = getFieldFromUserAggregateJson("$.identity.lastName",userAggregateJSON);
+            String email = getFieldFromUserAggregateJson("$.identity.email",userAggregateJSON);
+            String cellPhone = getFieldFromUserAggregateJson("$.identity.cellPhone",userAggregateJSON);
+            String personRef = getFieldFromUserAggregateJson("$.identity.personRef",userAggregateJSON);
+
+            UserToken userToken = new UserToken();
+            userToken.setUid(uid);
+            userToken.setUserName(userName);
+            userToken.setFirstName(firstName);
+            userToken.setLastName(lastName);
+            userToken.setEmail(email);
+            userToken.setPersonRef(personRef);
+            userToken.setCellPhone(cellPhone);
+//            userToken.setRoleList(roleList);
+            return userToken;
+        } catch (Exception e) {
+            log.error("Error parsing userAggregateJSON " + userAggregateJSON, e);
+            return null;
+        }
+    }
+
+    public static String getFieldFromUserAggregateJson(String expression, String jsonString ) throws PathNotFoundException {
+        //String expression = "$.identity.uid";
+        String value = "";
+        Object document = Configuration.defaultConfiguration().jsonProvider().parse(jsonString);
+        String result= JsonPath.read(document, expression);
+        value=result.toString();
+
+        return value;
     }
 
 
