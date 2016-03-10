@@ -6,6 +6,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import net.whydah.sso.application.helpers.ApplicationTokenXpathHelper;
+import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.token.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,34 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         UserToken token = getUserToken(appTokenXml, response);
         token.setSecurityLevel("0");  // 3rd party token as source = securitylevel=0
         return token;
+    }
+
+
+    // TODO - complete this implementation
+    @Override
+    public UserToken createAndLogonPinUser(String applicationtokenid, String appTokenXml, String userCredentialXml, String pin, String userJson) {
+        String cellPhone = "xxx-not enabled";
+        if (ActivePinRepository.usePin(cellPhone, pin)) {
+            try {
+                WebResource uasWR = uasResource.path(applicationtokenid).path("userTokenId").path("user");
+                ClientResponse uasResponse = uasWR.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, userJson);
+                if (uasResponse.getStatus() != ClientResponse.Status.OK.getStatusCode()) {
+                    String error = uasResponse.getEntity(String.class);
+                    log.error(error);
+                } else {
+                    String userAggretateJson = uasResponse.getEntity(String.class);
+//                UserToken myToken = UserTokenMapper.fromUserAggregateJson(userAggretateJson);
+//                String uid = myToken.getUid();
+
+//                ActiveUserTokenRepository.addUserToken(myToken);
+                    // return Response.ok(new Viewable("/usertoken.ftl", myToken)).build();
+                }
+            } catch (Exception e) {
+                log.error("Problems connecting to {}", useradminservice);
+                throw e;
+            }
+        }
+        return new UserToken();
     }
 
 

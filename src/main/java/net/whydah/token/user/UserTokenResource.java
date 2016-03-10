@@ -532,6 +532,48 @@ public class UserTokenResource {
         }
     }
 
+
+    /**
+     * The SSOLoginWebApplication backend for 3rd party UserTokens. Receive a new user, create a Whydah UserIdentity with
+     * the corresponding defaultroles (UAS|UIB) and create a new session with a one-time userticket for handover to receiving
+     * SSO applications
+     *
+     * @param applicationtokenid  calling application session
+     * @param pin  user session pin
+     * @param appTokenXml   application session data
+     * @param userCredentialXml  user credential  i.e. (username and password)
+     * @param newUserjson a simple userjson for new user
+     * @return  user session data
+     */
+    @Path("/{applicationtokenid}/{pin}/create_pinverified_user")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_XML)
+    public Response createAndLogOnPinUser(@PathParam("applicationtokenid") String applicationtokenid,
+                                       @PathParam("pin") String pin,
+                                       @FormParam("apptoken") String appTokenXml,
+                                       @FormParam("usercredential") String userCredentialXml,
+                                       @FormParam("jsonuser") String newUserjson) {
+        log.trace("Response createAndLogOnPinUser: usercredential:" + userCredentialXml + "jsonuser:" + newUserjson);
+
+        if (ApplicationMode.getApplicationMode() == ApplicationMode.DEV) {
+            return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
+        }
+
+        if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
+            // TODO:  Limit this operation to SSOLoginWebApplication ONLY
+            log.warn("createAndLogOnPinUser - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
+        }
+        try {
+
+                    return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, new UserToken()))).build();
+        } catch (AuthenticationFailedException ae) {
+            log.warn("createAndLogOnPinUser - Error creating or authenticating user. jsonuser={}", newUserjson);
+            return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").build();
+        }
+    }
+
     private Response createUserTokenResponse(@PathParam("applicationtokenid") String applicationtokenid, UserToken userToken) {
         log.trace("getUserTokenByUserTokenId OK. Response={}", userToken.toString());
         userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());

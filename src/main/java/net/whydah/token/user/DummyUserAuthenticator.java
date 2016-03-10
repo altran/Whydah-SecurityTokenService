@@ -45,6 +45,12 @@ public class DummyUserAuthenticator implements UserAuthenticator {
         throw new IllegalStateException();
     }
 
+    public UserToken createAndLogonPinUser(String applicationtokenid, String appTokenXml, String userCredentialXml, String pin, String userJson) {
+        if (ApplicationMode.getApplicationMode().equalsIgnoreCase(ApplicationMode.DEV)) {
+            return new UserToken();
+        }
+        throw new IllegalStateException();
+    }
 
     private static String loadFromFile(String dummytokenuser) throws IOException {
         String xmlToken;
