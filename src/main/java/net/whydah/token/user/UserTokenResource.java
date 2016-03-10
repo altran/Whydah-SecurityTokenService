@@ -485,6 +485,40 @@ public class UserTokenResource {
 
     }
 
+    /**
+     * The backend for sms messages to user
+     *
+     * @param applicationtokenid
+     * @param phoneNo
+     * @param smsPin
+     * @return
+     */
+    @Path("/{applicationtokenid}/send_sms")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_XML)
+    public Response sendSMSMessage(@PathParam("applicationtokenid") String applicationtokenid,
+                               @FormParam("phoneNo") String phoneNo,
+                               @FormParam("smsPin") String smsPin) {
+        log.trace("Response sendSMSMessage: phoneNo:" + phoneNo + "smsPin:" + smsPin);
+
+        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
+            log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
+        }
+
+        String serviceURL = System.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
+        String serviceAccount = System.getProperty("smsgw.serviceaccount");  //"serviceAccount";
+        String username = System.getProperty("smsgw.username");  // "smsserviceusername";
+        String password = System.getProperty("smsgw.password");  //"smsservicepassword";
+        String cellNo = phoneNo;
+        String smsMessage = smsPin;
+        String queryParam = System.getProperty("smsgw.queryparams");  //"serviceId=serviceAccount&me...ssword=smsservicepassword";
+        String response = new CommandSendSMSToUser(serviceURL, serviceAccount, username, password, queryParam, cellNo, smsMessage).execute();
+
+        return Response.ok().build();
+
+    }
 
     /**
      * The SSOLoginWebApplication backend for 3rd party UserTokens. Receive a new user, create a Whydah UserIdentity with
@@ -566,8 +600,10 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").build();
         }
         try {
-
-                    return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, new UserToken()))).build();
+            UserToken userToken = userAuthenticator.createAndLogonPinUser(applicationtokenid,appTokenXml,userCredentialXml,pin,newUserjson);
+            userToken.setDefcon(ApplicationThreatResource.getDEFCON());
+            userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
+            return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).build();
         } catch (AuthenticationFailedException ae) {
             log.warn("createAndLogOnPinUser - Error creating or authenticating user. jsonuser={}", newUserjson);
             return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").build();
