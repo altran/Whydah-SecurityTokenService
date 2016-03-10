@@ -585,6 +585,7 @@ public class UserTokenResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response createAndLogOnPinUser(@PathParam("applicationtokenid") String applicationtokenid,
+                                          @PathParam("userticket") String userticket,
                                        @PathParam("pin") String pin,
                                        @FormParam("apptoken") String appTokenXml,
                                        @FormParam("usercredential") String userCredentialXml,
@@ -602,6 +603,7 @@ public class UserTokenResource {
         }
         try {
             UserToken userToken = userAuthenticator.createAndLogonPinUser(applicationtokenid,appTokenXml,userCredentialXml,pin,newUserjson);
+            userticketmap.put(userticket, userToken.getTokenid());
             userToken.setDefcon(ApplicationThreatResource.getDEFCON());
             userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
             return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).build();
