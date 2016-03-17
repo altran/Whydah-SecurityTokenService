@@ -39,7 +39,7 @@ public class UserTokenResource {
     private final static Logger log = LoggerFactory.getLogger(UserTokenResource.class);
 
     private static Map userticketmap = new HashMap();
-    private static Map userpinmap = new HashMap();
+    private static Map<String,String> userpinmap = new HashMap();
     private static Map applicationtokenidmap = new HashMap();
 
     static {
@@ -368,16 +368,16 @@ public class UserTokenResource {
      *
      * @param applicationtokenid  application session
      * @param appTokenXml   application session data
-     * @param username  user pin
+     * @param phoneno  user phonenumber
      * @param pin  user pin
      * @return usertoken
      */
-    @Path("/{applicationtokenid}/{username}/get_usertoken_by_pin")
+    @Path("/{applicationtokenid}/{phoneno}/get_usertoken_by_pin")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response getUserTokenByDistributedPin(@PathParam("applicationtokenid") String applicationtokenid,
-                                                 @PathParam("username") String username,
+                                                 @PathParam("phoneno") String phoneno,
                                                  @FormParam("apptoken") String appTokenXml,
                                                  @FormParam("pin") String pin) {
         if (isEmpty(appTokenXml) || isEmpty(pin)) {
@@ -395,32 +395,19 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
 
-        // verify pin
-        // get user from UAS
-        // create token
-        // add token to tokenmap
-        // return token
+        if (userpinmap.get(phoneno).equalsIgnoreCase(pin) ){
 
-/**
-        String userTokenId = (String) userpinmap.get(userticket);
-        if (userTokenId == null) {
-            log.warn("getUserTokenByUserTicket - Attempt to resolve non-existing userticket={}", userticket);
-            return Response.status(Response.Status.GONE).build(); //410
-        }
-        log.trace("getUserTokenByUserTicket - Found usertokenid: " + userTokenId);
-        userticketmap.remove(userticket);
-        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId,applicationtokenid);
+            // TODO implement getuserAggregate from UAS for username=phoneno
+            final UserToken userToken = new UserToken();
+                    //null;//;ActiveUserTokenRepository.getUserToken(userTokenId,applicationtokenid);
+            if (userToken == null) {
+                log.warn("getUserTokenByDistributedPin - attempt to access with non acceptable username, phoneno={}", phoneno);
+                return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+            }
+            log.info("getUserTokenByDistributedPin - valid session created for {} ",phoneno);
+            return createUserTokenResponse(applicationtokenid, userToken);
 
-        if (userToken == null) {
-            log.warn("getUserTokenByUserTicket - illegal/Null userticket received ");
-            return Response.status(Response.Status.NOT_ACCEPTABLE).build(); //406
         }
-        log.trace("getUserTokenByUserTicket OK. Response={}", userToken.toString());
-        userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
-        userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
-        userToken.setDefcon(ApplicationThreatResource.getDEFCON());
-        return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).build();
- */
         return null;
     }
 
@@ -541,6 +528,7 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
 
+
         String serviceURL = appConfig.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
         String serviceAccount = appConfig.getProperty("smsgw.serviceaccount");  //"serviceAccount";
         String username = appConfig.getProperty("smsgw.username");  // "smsserviceusername";
@@ -550,6 +538,7 @@ public class UserTokenResource {
         String queryParam = appConfig.getProperty("smsgw.queryparams");  //"serviceId=serviceAccount&me...ssword=smsservicepassword";
         log.info("CommandSendSMSToUser({}, {}, {}, {}, {}, cellNo, smsMessage)",serviceURL,serviceAccount,username,password,queryParam);
         new CommandSendSMSToUser(serviceURL, serviceAccount, username, password, queryParam, cellNo, smsMessage).execute();
+        userpinmap.put(phoneNo,smsPin);
 
         return Response.ok().build();
 
@@ -576,6 +565,8 @@ public class UserTokenResource {
             log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
         }
+
+
 
         String serviceURL = System.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
         String serviceAccount = System.getProperty("smsgw.serviceaccount");  //"serviceAccount";
