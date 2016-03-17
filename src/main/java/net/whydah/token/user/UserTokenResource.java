@@ -39,6 +39,7 @@ public class UserTokenResource {
     private final static Logger log = LoggerFactory.getLogger(UserTokenResource.class);
 
     private static Map userticketmap = new HashMap();
+    private static Map userpinmap = new HashMap();
     private static Map applicationtokenidmap = new HashMap();
 
     static {
@@ -67,6 +68,8 @@ public class UserTokenResource {
         log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "userticketmap");
         applicationtokenidmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "applicationtokenidmap");
         log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "applicationtokenidmap");
+        userpinmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "userpinmap");
+        log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "userpinmap");
 
 
     }
@@ -358,6 +361,69 @@ public class UserTokenResource {
         userToken.setDefcon(ApplicationThreatResource.getDEFCON());
         return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).build();
     }
+
+    /**
+     * Lookup a user by a one-time pin-code distributed to the users registered cellPhone number, usually the first thing we do after receiving a SSO redirect back to
+     * an application from SSOLoginWebApplication
+     *
+     * @param applicationtokenid  application session
+     * @param appTokenXml   application session data
+     * @param username  user pin
+     * @param pin  user pin
+     * @return usertoken
+     */
+    @Path("/{applicationtokenid}/{username}/get_usertoken_by_pin")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_XML)
+    public Response getUserTokenByDistributedPin(@PathParam("applicationtokenid") String applicationtokenid,
+                                                 @PathParam("username") String username,
+                                                 @FormParam("apptoken") String appTokenXml,
+                                                 @FormParam("pin") String pin) {
+        if (isEmpty(appTokenXml) || isEmpty(pin)) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Missing required parameters").build();
+        }
+
+        log.trace("getUserTokenByDistributedPin: applicationtokenid={}, pin={}, appTokenXml={}", applicationtokenid, pin, appTokenXml);
+
+        if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
+            return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
+        }
+
+        if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
+            log.warn("getUserTokenByUserTicket - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").build();
+        }
+
+        // verify pin
+        // get user from UAS
+        // create token
+        // add token to tokenmap
+        // return token
+
+/**
+        String userTokenId = (String) userpinmap.get(userticket);
+        if (userTokenId == null) {
+            log.warn("getUserTokenByUserTicket - Attempt to resolve non-existing userticket={}", userticket);
+            return Response.status(Response.Status.GONE).build(); //410
+        }
+        log.trace("getUserTokenByUserTicket - Found usertokenid: " + userTokenId);
+        userticketmap.remove(userticket);
+        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId,applicationtokenid);
+
+        if (userToken == null) {
+            log.warn("getUserTokenByUserTicket - illegal/Null userticket received ");
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build(); //406
+        }
+        log.trace("getUserTokenByUserTicket OK. Response={}", userToken.toString());
+        userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
+        userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
+        userToken.setDefcon(ApplicationThreatResource.getDEFCON());
+        return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).build();
+ */
+        return null;
+    }
+
 
 
     /**
