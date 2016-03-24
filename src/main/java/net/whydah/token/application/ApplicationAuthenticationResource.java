@@ -37,10 +37,10 @@ public class ApplicationAuthenticationResource {
             UserCredential testUserCredential = new UserCredential("whydah_user", "whydah_password");
             model.put("applicationcredential", ApplicationCredentialHelper.getDummyApplicationCredential());
             model.put("testUserCredential", testUserCredential.toXML());
-            return Response.ok().entity(new Viewable("/testpage.html.ftl", model)).build();
+            return Response.ok().entity(new Viewable("/testpage.html.ftl", model)).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
             //log.debug("Showing prod page");
-            return Response.ok().entity(new Viewable("/html/prodwelcome.html")).build();
+            return Response.ok().entity(new Viewable("/html/prodwelcome.html")).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
     }
 
@@ -50,7 +50,7 @@ public class ApplicationAuthenticationResource {
     @Produces(MediaType.APPLICATION_XML)
     public Response getApplicationTokenTemplate() {
         ApplicationToken template = new ApplicationToken();
-        return Response.ok().entity(ApplicationTokenMapper.toXML(template)).build();
+        return Response.ok().entity(ApplicationTokenMapper.toXML(template)).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
     }
 
 
@@ -59,7 +59,7 @@ public class ApplicationAuthenticationResource {
     @Produces(MediaType.APPLICATION_XML)
     public Response getApplicationCredentialsTemplate() {
         ApplicationCredential template = ApplicationCredentialMapper.fromXml(ApplicationCredentialHelper.getDummyApplicationCredential());
-        return Response.ok().entity(ApplicationCredentialMapper.toXML(template)).build();
+        return Response.ok().entity(ApplicationCredentialMapper.toXML(template)).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
     }
 
     @Path("/usercredentialtemplate")
@@ -67,7 +67,7 @@ public class ApplicationAuthenticationResource {
     @Produces(MediaType.APPLICATION_XML)
     public Response getUserCredentialsTemplate() {
         UserCredential template = new UserCredential("", "");
-        return Response.ok().entity(template.toXML()).build();
+        return Response.ok().entity(template.toXML()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
     }
 
     @Path("/logon")
@@ -78,7 +78,7 @@ public class ApplicationAuthenticationResource {
         log.trace("logonApplication with applicationcredential={}", appCredentialXml);
         if (!verifyApplicationCredentials(appCredentialXml)) {
             log.warn("logonApplication - illegal applicationcredential, returning FORBIDDEN");
-            return Response.status(Response.Status.FORBIDDEN).build();
+            return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
         ApplicationToken token = ApplicationTokenMapper.fromApplicationCredentialXML(appCredentialXml);
         token.setBaseuri(appConfig.getProperty("myuri"));
@@ -86,7 +86,7 @@ public class ApplicationAuthenticationResource {
         AuthenticatedApplicationRepository.addApplicationToken(token);
         String applicationTokenXml = ApplicationTokenMapper.toXML(token);
         log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
-        return Response.ok().entity(applicationTokenXml).build();
+        return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
     }
 
     @Path("{applicationtokenid}/validate")
@@ -96,10 +96,10 @@ public class ApplicationAuthenticationResource {
         log.debug("verify applicationtokenid {}", applicationtokenid);
         if (AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.debug("applicationtokenid valid");
-            return Response.ok().build();
+            return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
             log.debug("applicationtokenid not valid");
-            return Response.status(Response.Status.FORBIDDEN).build();
+            return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
     }
 
@@ -113,10 +113,10 @@ public class ApplicationAuthenticationResource {
             log.info("ApplicationToken for {} extended",token.getApplicationName());
             String applicationTokenXml = ApplicationTokenMapper.toXML(token);
             log.trace("extendApplicationSession returns applicationTokenXml={}", applicationTokenXml);
-            return Response.ok().entity(applicationTokenXml).build();
+            return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
             log.info("applicationtokenid not valid");
-            return Response.status(Response.Status.FORBIDDEN).build();
+            return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
     }
 
@@ -128,10 +128,10 @@ public class ApplicationAuthenticationResource {
         ApplicationToken myApp = AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid);
         if (myApp != null || myApp.toString().length() > 10) {
             log.debug("Apptokenid valid");
-            return Response.ok(myApp.getApplicationID()).build();
+            return Response.ok(myApp.getApplicationID()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
             log.debug("Apptokenid not valid");
-            return Response.status(Response.Status.FORBIDDEN).build();
+            return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
     }
 
@@ -143,10 +143,10 @@ public class ApplicationAuthenticationResource {
         ApplicationToken myApp = AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid);
         if (myApp != null || myApp.toString().length() > 10) {
             log.debug("Apptokenid valid");
-            return Response.ok(myApp.getApplicationName()).build();
+            return Response.ok(myApp.getApplicationName()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
             log.debug("Apptokenid not valid");
-            return Response.status(Response.Status.FORBIDDEN).build();
+            return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
     }
 
