@@ -34,8 +34,8 @@
             <roles>
                 <role>Developer</role>
             </roles>
-            <organization>Altran Norge AS</organization>
-            <organizationUrl>http://www.altran.no/</organizationUrl>
+            <organization>Capra Consulting AS</organization>
+            <organizationUrl>http://www.capraconsulting.no/</organizationUrl>
         </developer>
     </developers>
 
@@ -80,7 +80,7 @@
         <dependency>
             <groupId>net.whydah.sso</groupId>
             <artifactId>Whydah-TypeLib</artifactId>
-            <version>1.0.39</version>
+            <version>1.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.valuereporter</groupId>
