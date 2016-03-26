@@ -235,6 +235,31 @@ public class UserTokenFactory {
             return userToken;
         } catch (Exception var10) {
             log.error("Error parsing userAggregateJSON " + userIdentityJSON, var10);
+        }
+
+        /**
+         * Fallbacl parsing to handle old, non conformant useridentyty json format
+         */
+        try {
+            DocumentBuilder e = dbf.newDocumentBuilder();
+            String uid = getFieldFromUserAggregateJson("$..uid", userIdentityJSON);
+            String userName = getFieldFromUserAggregateJson("$..username", userIdentityJSON);
+            String firstName = getFieldFromUserAggregateJson("$..firstName", userIdentityJSON);
+            String lastName = getFieldFromUserAggregateJson("$..lastName", userIdentityJSON);
+            String email = getFieldFromUserAggregateJson("$..email", userIdentityJSON);
+            String cellPhone = getFieldFromUserAggregateJson("$..cellPhone", userIdentityJSON);
+            String personRef = getFieldFromUserAggregateJson("$..personRef", userIdentityJSON);
+            UserToken userToken = new UserToken();
+            userToken.setUid(uid);
+            userToken.setUserName(userName);
+            userToken.setFirstName(firstName);
+            userToken.setLastName(lastName);
+            userToken.setEmail(email);
+            userToken.setPersonRef(personRef);
+            userToken.setCellPhone(cellPhone);
+            return userToken;
+        } catch (Exception var10) {
+            log.error("Error parsing userAggregateJSON " + userIdentityJSON, var10);
             return null;
         }
     }
