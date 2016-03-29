@@ -77,6 +77,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
                 } else {
                     String userIdentityJson = uasResponse.getEntity(String.class);
                     UserToken myToken = UserTokenFactory.fromUserIdentityJson(userIdentityJson);
+                    myToken.setSecurityLevel("0");  // 3rd party token as source = securitylevel=0
 
                     ActiveUserTokenRepository.addUserToken(myToken,applicationtokenid);
                     return myToken;
