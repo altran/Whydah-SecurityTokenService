@@ -64,7 +64,6 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     }
 
 
-    // TODO - complete this implementation
     @Override
     public UserToken createAndLogonPinUser(String applicationtokenid, String appTokenXml, String adminUserTokenId, String cellPhone, String pin, String userJson) {
         if (ActivePinRepository.usePin(cellPhone, pin)) {
@@ -83,6 +82,24 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
                     return myToken;
                     // return Response.ok(new Viewable("/usertoken.ftl", myToken)).build();
                 }
+            } catch (Exception e) {
+                log.error("Problems connecting to {}", useradminservice);
+                throw e;
+            }
+        }
+        throw new AuthenticationFailedException("APin uthentication failed. Status code ");
+    }
+
+    @Override
+    public UserToken logonPinUser(String applicationtokenid, String appTokenXml, String adminUserTokenId,String cellPhone, String pin) {
+        // TODO implement getuserAggregate from UAS for username=phoneno
+        if (ActivePinRepository.usePin(cellPhone, pin)) {
+            try {
+                WebResource uasWR = uasResource.path(applicationtokenid).path(adminUserTokenId).path("user");
+
+                // serach for user
+                // create usertoken from useraggregate
+                // add token to active map
             } catch (Exception e) {
                 log.error("Problems connecting to {}", useradminservice);
                 throw e;

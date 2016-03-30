@@ -395,11 +395,8 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
 
-        if (userpinmap.get(phoneno).equalsIgnoreCase(pin) ){
 
-            // TODO implement getuserAggregate from UAS for username=phoneno
-            final UserToken userToken = new UserToken();
-                    //null;//;ActiveUserTokenRepository.getUserToken(userTokenId,applicationtokenid);
+            final UserToken userToken = userAuthenticator.logonPinUser(applicationtokenid, appTokenXml,"adminUserTokenId",phoneno,pin);
             if (userToken == null) {
                 log.warn("getUserTokenByDistributedPin - attempt to access with non acceptable username, phoneno={}", phoneno);
                 return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
@@ -407,8 +404,6 @@ public class UserTokenResource {
             log.info("getUserTokenByDistributedPin - valid session created for {} ",phoneno);
             return createUserTokenResponse(applicationtokenid, userToken);
 
-        }
-        return null;
     }
 
 
