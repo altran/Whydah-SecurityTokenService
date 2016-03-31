@@ -6,7 +6,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import net.whydah.sso.application.helpers.ApplicationTokenXpathHelper;
-import net.whydah.sso.user.mappers.UserTokenMapper;
+import net.whydah.sso.commands.adminapi.user.CommandListUsers;
 import net.whydah.token.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +22,16 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
 
     private URI useradminservice;
+    private final AppConfig appConfig;
     private final WebResource uasResource;
     private final UserTokenFactory userTokenFactory;
 
 
 
     @Inject
-    public UserAuthenticatorImpl(@Named("useradminservice") URI useradminservice, UserTokenFactory userTokenFactory) {
+    public UserAuthenticatorImpl(@Named("useradminservice") URI useradminservice, UserTokenFactory userTokenFactory, AppConfig appConfig) {
         this.useradminservice = useradminservice;
+        this.appConfig = appConfig;
         this.uasResource = ApacheHttpClient.create().resource(useradminservice);
         this.userTokenFactory = userTokenFactory;
     }
@@ -92,12 +94,13 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
     @Override
     public UserToken logonPinUser(String applicationtokenid, String appTokenXml, String adminUserTokenId,String cellPhone, String pin) {
-        // TODO implement getuserAggregate from UAS for username=phoneno
         if (ActivePinRepository.usePin(cellPhone, pin)) {
             try {
                 WebResource uasWR = uasResource.path(applicationtokenid).path(adminUserTokenId).path("user");
 
+                // TODO implement getuserAggregate from UAS for username=phoneno
                 // serach for user
+                searchForUsersByPhone(applicationtokenid, appTokenXml, cellPhone);
                 // create usertoken from useraggregate
                 // add token to active map
             } catch (Exception e) {
@@ -106,6 +109,14 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
             }
         }
         throw new AuthenticationFailedException("APin uthentication failed. Status code ");
+    }
+
+    private void searchForUsersByPhone(String applicationtokenid, String appTokenXml, String phoneno) {
+        String userQuery = "mobile=" + phoneno;
+        String adminUserTokenId = getWhyDahAdminUserTokenId(applicationtokenid, appTokenXml);
+
+        String responsBody = new CommandListUsers(useradminservice, applicationtokenid, adminUserTokenId, userQuery).execute();
+        // produserer userJson
     }
 
 
@@ -128,4 +139,14 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         }
     }
 
+    public String getWhyDahAdminUserTokenId(String applicationtokenid, String appTokenXml) {
+
+        String user = appConfig.getProperty("whydah.adminuser.username");
+        String password = appConfig.getProperty("whydah.adminuser.password");
+        UserCredential userCredential = new UserCredential(user, password);
+        UserToken whyDahUserAdminUserToken = logonUser(applicationtokenid, appTokenXml, userCredential.toXML());
+
+
+        return whyDahUserAdminUserToken.getTokenid();
+    }
 }

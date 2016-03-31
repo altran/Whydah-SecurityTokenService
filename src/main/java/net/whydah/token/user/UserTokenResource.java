@@ -5,10 +5,7 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.view.Viewable;
-import com.sun.jersey.client.apache.ApacheHttpClient;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
@@ -21,7 +18,13 @@ import org.slf4j.LoggerFactory;
 import org.valuereporter.agent.MonitorReporter;
 import org.valuereporter.agent.activity.ObservedActivity;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -29,10 +32,6 @@ import javax.ws.rs.core.UriInfo;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
-
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
-import static javax.ws.rs.core.Response.Status.OK;
 
 @Path("/user")
 public class UserTokenResource {
@@ -372,36 +371,37 @@ public class UserTokenResource {
      * @param pin  user pin
      * @return usertoken
      */
-    @Path("/{applicationtokenid}/{phoneno}/get_usertoken_by_pin")
+    @Path("/{applicationtokenid}/{phoneno}/get_usertoken_by_pin_and_logon_user")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
-    public Response getUserTokenByDistributedPin(@PathParam("applicationtokenid") String applicationtokenid,
-                                                 @PathParam("phoneno") String phoneno,
-                                                 @FormParam("apptoken") String appTokenXml,
-                                                 @FormParam("pin") String pin) {
+    //TODO Refacor to better name?
+    public Response getUserTokenByDistributedPinAndLogonUser(@PathParam("applicationtokenid") String applicationtokenid,
+                                                             @PathParam("phoneno") String phoneno,
+                                                             @FormParam("apptoken") String appTokenXml,
+                                                             @FormParam("pin") String pin) {
         if (isEmpty(appTokenXml) || isEmpty(pin)) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing required parameters").build();
         }
 
-        log.trace("getUserTokenByDistributedPin: applicationtokenid={}, pin={}, appTokenXml={}", applicationtokenid, pin, appTokenXml);
+        log.trace("getUserTokenByDistributedPinAndLogonUser: applicationtokenid={}, pin={}, appTokenXml={}", applicationtokenid, pin, appTokenXml);
 
         if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
 
+        // Verify calling application
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             log.warn("getUserTokenByUserTicket - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
 
-
-            final UserToken userToken = userAuthenticator.logonPinUser(applicationtokenid, appTokenXml,"adminUserTokenId",phoneno,pin);
-            if (userToken == null) {
-                log.warn("getUserTokenByDistributedPin - attempt to access with non acceptable username, phoneno={}", phoneno);
+        final UserToken userToken = userAuthenticator.logonPinUser(applicationtokenid, appTokenXml,"adminUserTokenId",phoneno,pin);
+        if (userToken == null) {
+                log.warn("getUserTokenByDistributedPinAndLogonUser - attempt to access with non acceptable username, phoneno={}", phoneno);
                 return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
             }
-            log.info("getUserTokenByDistributedPin - valid session created for {} ",phoneno);
+        log.info("getUserTokenByDistributedPinAndLogonUser - valid session created for {} ",phoneno);
             return createUserTokenResponse(applicationtokenid, userToken);
 
     }
