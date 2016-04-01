@@ -6,6 +6,8 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import net.whydah.sso.application.helpers.ApplicationTokenXpathHelper;
+import net.whydah.sso.commands.adminapi.user.CommandGetUser;
+import net.whydah.sso.commands.adminapi.user.CommandGetUserAggregate;
 import net.whydah.sso.commands.adminapi.user.CommandListUsers;
 import net.whydah.token.config.AppConfig;
 import org.slf4j.Logger;
@@ -98,25 +100,33 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
             try {
                 WebResource uasWR = uasResource.path(applicationtokenid).path(adminUserTokenId).path("user");
 
-                // TODO implement getuserAggregate from UAS for username=phoneno
-                // serach for user
-                searchForUsersByPhone(applicationtokenid, appTokenXml, cellPhone);
+                // TODO Search for user. search both mobile=phoneno and username=phoneno to prevent hitting wrong user.
+                // Lecene doesn't care about the "mobile="- or "username"-part of the query, resulting in a wildcard-search with the phoneno!
+                String usersQuery = "mobile=" + cellPhone; //
+                String adminUserTokenId1 = getWhyDahAdminUserTokenId(applicationtokenid, appTokenXml);
+                // produserer userJson. denne kan inneholde fler users dette er json av
+                String usersJson = new CommandListUsers(useradminservice, applicationtokenid, adminUserTokenId1, usersQuery).execute();
+                UserToken userTokenIdentity = UserTokenFactory.fromUserIdentityJson(usersJson);
+
+                String userId = userTokenIdentity.getUid();
+
                 // create usertoken from useraggregate
+//                String userAggregateJson = new CommandGetUser(useradminservice, applicationtokenid, adminUserTokenId1, userId).execute();
+                String userAggregateJson = new CommandGetUserAggregate(useradminservice, applicationtokenid, adminUserTokenId1, userId).execute();
+
+                UserToken userToken = UserTokenFactory.fromUserAggregateJson(userAggregateJson);
+
                 // add token to active map
+                ActiveUserTokenRepository.addUserToken(userToken,applicationtokenid);
+
+
+                return userToken; // userAggregateJson -> userToken
             } catch (Exception e) {
                 log.error("Problems connecting to {}", useradminservice);
                 throw e;
             }
         }
-        throw new AuthenticationFailedException("APin uthentication failed. Status code ");
-    }
-
-    private void searchForUsersByPhone(String applicationtokenid, String appTokenXml, String phoneno) {
-        String userQuery = "mobile=" + phoneno;
-        String adminUserTokenId = getWhyDahAdminUserTokenId(applicationtokenid, appTokenXml);
-
-        String responsBody = new CommandListUsers(useradminservice, applicationtokenid, adminUserTokenId, userQuery).execute();
-        // produserer userJson
+        throw new AuthenticationFailedException("Pin authentication failed. Status code ");
     }
 
 

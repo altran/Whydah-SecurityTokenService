@@ -265,8 +265,8 @@ public class UserTokenFactory {
     }
 
     //String appTokenXml
-    public static UserToken fromUserAggregateJson(String userAggregateXML) {
-        UserToken userToken = parseUserAggregateJson(userAggregateXML);
+    public static UserToken fromUserAggregateJson(String userAggregateJson) {
+        UserToken userToken = parseUserAggregateJson(userAggregateJson);
         userToken.setTokenid(generateID());
         userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
         String securityLevel = "1"; //UserIdentity as source = securitylevel=0
