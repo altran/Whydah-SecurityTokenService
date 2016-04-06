@@ -6,6 +6,8 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import net.minidev.json.JSONValue;
+import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
@@ -323,6 +325,26 @@ public class UserTokenFactory {
             userToken.setEmail(email);
             userToken.setPersonRef(personRef);
             userToken.setCellPhone(cellPhone);
+
+
+            List<ApplicationRoleEntry> roleList = new ArrayList<>();
+
+            JSONObject json = (JSONObject) JSONValue.parseWithException(userAggregateJSON);
+            JSONArray roles = (JSONArray) json.get("roles");
+            if (roles != null) {
+                for (int i = 0; i < roles.size(); i++) {
+                    JSONObject roleentry = (JSONObject) roles.get(i);
+                    ApplicationRoleEntry role = new ApplicationRoleEntry();
+                    role.setApplicationId((String) roleentry.get("applicationId"));
+                    role.setRoleName((String) roleentry.get("applicationName"));
+                    role.setOrganizationName((String) roleentry.get("organizationName"));
+                    role.setRoleName((String) roleentry.get("applicationRoleName"));
+                    role.setRoleValue((String) roleentry.get("applicationRoleValue"));
+                    roleList.add(role);
+                }
+            }
+            userToken.setRoleList(roleList);
+
 //            userToken.setRoleList(roleList);
             return userToken;
         } catch (Exception e) {
