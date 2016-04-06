@@ -52,7 +52,7 @@ public class DummyUserAuthenticator implements UserAuthenticator {
         throw new IllegalStateException();
     }
 
-    public UserToken logonPinUser(String applicationtokenid, String appTokenXml, String adminUserTokenId,String cellPhone, String pin){
+    public UserToken logonPinUser(String applicationtokenid, String appTokenXml, String adminUserTokenIdparam, String cellPhone, String pin){
         if (ApplicationMode.getApplicationMode().equalsIgnoreCase(ApplicationMode.DEV)) {
             return new UserToken();
         }

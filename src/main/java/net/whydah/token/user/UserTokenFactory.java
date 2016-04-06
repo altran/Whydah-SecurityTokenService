@@ -4,6 +4,8 @@ import com.google.inject.Singleton;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
@@ -21,6 +23,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -214,6 +217,27 @@ public class UserTokenFactory {
         return userToken;
     }
 
+    public static List<UserToken> fromUsersIdentityJson(String usersIdentityJSON) {
+        List<UserToken> userTokens = new ArrayList<>();
+        Object document = Configuration.defaultConfiguration().jsonProvider().parse(usersIdentityJSON);
+        JSONArray users  = JsonPath.read(document, "$.result");
+
+        for (int i = 0; i < users.size(); i++) {
+            LinkedHashMap user = (LinkedHashMap) users.get(i);
+            UserToken userToken = new UserToken();
+            userToken.setUid((String) user.get("uid"));
+            userToken.setUserName((String) user.get("username"));
+            userToken.setFirstName((String) user.get("firstName"));
+            userToken.setLastName((String) user.get("lastName"));
+            userToken.setEmail((String) user.get("email"));
+            userToken.setPersonRef((String) user.get("personRef"));
+            userToken.setCellPhone((String) user.get("cellPhone"));
+            userTokens.add(userToken);
+        }
+
+        return userTokens;
+    }
+
     private static UserToken parseUserIdentityJson(String userIdentityJSON) {
         try {
             DocumentBuilder e = dbf.newDocumentBuilder();
@@ -282,13 +306,14 @@ public class UserTokenFactory {
     private static UserToken parseUserAggregateJson(String userAggregateJSON) {
         try {
             DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
-            String uid = getFieldFromUserAggregateJson("$..uid", userAggregateJSON);
-            String userName = getFieldFromUserAggregateJson("$..username",userAggregateJSON);
-            String firstName = getFieldFromUserAggregateJson("$..firstName",userAggregateJSON);
-            String lastName = getFieldFromUserAggregateJson("$..lastName",userAggregateJSON);
-            String email = getFieldFromUserAggregateJson("$..email",userAggregateJSON);
-            String cellPhone = getFieldFromUserAggregateJson("$..cellPhone",userAggregateJSON);
-            String personRef = getFieldFromUserAggregateJson("$..personRef",userAggregateJSON);
+            //TODO Denne feiler nedenfor. Skriv test
+            String uid = getFieldFromUserAggregateJson("$.uid", userAggregateJSON);
+            String userName = getFieldFromUserAggregateJson("$.username",userAggregateJSON);
+            String firstName = getFieldFromUserAggregateJson("$.firstName",userAggregateJSON);
+            String lastName = getFieldFromUserAggregateJson("$.lastName",userAggregateJSON);
+            String email = getFieldFromUserAggregateJson("$.email",userAggregateJSON);
+            String cellPhone = getFieldFromUserAggregateJson("$.cellPhone",userAggregateJSON);
+            String personRef = getFieldFromUserAggregateJson("$.personRef",userAggregateJSON);
 
             UserToken userToken = new UserToken();
             userToken.setUid(uid);

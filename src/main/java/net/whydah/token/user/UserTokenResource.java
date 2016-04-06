@@ -365,22 +365,26 @@ public class UserTokenResource {
      * Lookup a user by a one-time pin-code distributed to the users registered cellPhone number, usually the first thing we do after receiving a SSO redirect back to
      * an application from SSOLoginWebApplication
      *
-     * @param applicationtokenid  application session
-     * @param appTokenXml   application session data
-     * @param phoneno  user phonenumber
-     * @param pin  user pin
+     * @param applicationtokenid application session
+     * @param appTokenXml        application session data
+     * @param phoneno            user phonenumber
+     * @param pin                user pin
      * @return usertoken
      */
-    @Path("/{applicationtokenid}/{phoneno}/get_usertoken_by_pin_and_logon_user")
+    @Path("/{applicationtokenid}/{userticket}/get_usertoken_by_pin_and_logon_user")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     //TODO Refacor to better name?
     public Response getUserTokenByDistributedPinAndLogonUser(@PathParam("applicationtokenid") String applicationtokenid,
-                                                             @PathParam("phoneno") String phoneno,
+                                                             @PathParam("userticket") String userticket,
                                                              @FormParam("apptoken") String appTokenXml,
+                                                             @FormParam("phoneno") String phoneno,
                                                              @FormParam("pin") String pin) {
-        if (isEmpty(appTokenXml) || isEmpty(pin)) {
+
+        log.trace("getUserTokenByDistributedPinAndLogonUser() called with " + "applicationtokenid = [" + applicationtokenid + "], userticket = [" + userticket + "], appTokenXml = [" + appTokenXml + "], phoneno = [" + phoneno + "], pin = [" + pin + "]");
+
+        if (isEmpty(appTokenXml) || isEmpty(pin) || isEmpty(phoneno)) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing required parameters").build();
         }
 
@@ -396,13 +400,13 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
 
-        final UserToken userToken = userAuthenticator.logonPinUser(applicationtokenid, appTokenXml,"adminUserTokenId",phoneno,pin);
+        final UserToken userToken = userAuthenticator.logonPinUser(applicationtokenid, appTokenXml, "adminusertokenid", phoneno, pin);
         if (userToken == null) {
-                log.warn("getUserTokenByDistributedPinAndLogonUser - attempt to access with non acceptable username, phoneno={}", phoneno);
-                return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
-            }
-        log.info("getUserTokenByDistributedPinAndLogonUser - valid session created for {} ",phoneno);
-            return createUserTokenResponse(applicationtokenid, userToken);
+            log.warn("getUserTokenByDistributedPinAndLogonUser - attempt to access with non acceptable username, phoneno={}", phoneno);
+            return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        }
+        log.info("getUserTokenByDistributedPinAndLogonUser - valid session created for {} ", phoneno);
+        return createUserTokenResponse(applicationtokenid, userToken);
 
     }
 

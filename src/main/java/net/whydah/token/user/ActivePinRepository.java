@@ -41,11 +41,12 @@ public class ActivePinRepository {
     }
 
     public static void setPin(String phoneNr, String pin) {
-        log.info("Adding pin: " + pin + " to phone: "+ phoneNr);
+        log.debug("Adding pin: " + pin + " to phone: "+ phoneNr);
         pinMap.put(phoneNr, pin);
     }
 
     public static boolean usePin(String phoneNr, String pin) {
+        log.debug("Used pin {} for phone {}: "+ pin,  phoneNr);
         if (isValidPin(phoneNr, pin)) {
             log.info("Used pin for phone: "+ phoneNr);
             pinMap.remove(phoneNr);
@@ -59,7 +60,7 @@ public class ActivePinRepository {
 
     private static boolean isValidPin(String phoneNr, String pin) {
         String storedPin = pinMap.get(phoneNr);
-        log.info("isValidPin on pin: " + pin + " storedpin: " + storedPin + " phonenumber: " + phoneNr);
+        log.debug("isValidPin on pin: " + pin + " storedpin: " + storedPin + " phonenumber: " + phoneNr);
         if (storedPin != null && storedPin.equals(pin)) {
             return true;
         }

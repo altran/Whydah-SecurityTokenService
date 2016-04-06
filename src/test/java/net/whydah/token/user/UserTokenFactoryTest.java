@@ -5,6 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -79,6 +80,64 @@ public class UserTokenFactoryTest {
             "    <ns2:link type=\"application/xml\" href=\"https://sso.whydah.no/tokenservice/user/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06\" rel=\"self\"/>\n" +
             "    <hash type=\"MD5\">88e4a2db17733f371e8f78e123108d13</hash>\n" +
             "</usertoken>";
+
+    private final String usersJsonWithOne = "{\n" +
+            "\"rows\":\"1\",\n" +
+            "\"result\":\n" +
+            "[{\n" +
+            " \"personRef\":\"1\",\n" +
+            " \"uid\":\"anders.flaten\",\n" +
+            " \"username\":\"91609953\",\n" +
+            " \"firstName\":\"Anders\",\n" +
+            " \"lastName\":\"Flaten\",\n" +
+            " \"email\":\"anders.flaten@gmail.com\",\n" +
+            " \"cellPhone\":\"+4791609953\",\n" +
+            " \"uri\":\"http://localhost:9995/uib/useradmin/users/anders.flaten\\/\"\n" +
+            "}]\n" +
+            "}";
+
+    private final String usersJsonWithTwo = "{\n" +
+            "\"rows\":\"2\",\n" +
+            "\"result\":\n" +
+            "[{\n" +
+            " \"personRef\":\"\",\n" +
+            " \"uid\":\"a31004eb-6348-436c-a365-d5d8c181aa3b\",\n" +
+            " \"username\":\"bruker1\",\n" +
+            " \"firstName\":\"Bob\",\n" +
+            " \"lastName\":\"Scott\",\n" +
+            " \"email\":\"bob@gmail.com\",\n" +
+            " \"cellPhone\":\"55555501\",\n" +
+            " \"uri\":\"http://localhost:9995/uib/useradmin/users/a31004eb-6348-436c-a365-d5d8c181aa3b\\/\"\n" +
+            "},{\n" +
+            " \"personRef\":\"\",\n" +
+            " \"uid\":\"fc5c8097-e778-4ba4-9a4a-d08347616b51\",\n" +
+            " \"username\":\"bruker2\",\n" +
+            " \"firstName\":\"Ted\",\n" +
+            " \"lastName\":\"Scott\",\n" +
+            " \"email\":\"ted@gmail.com\",\n" +
+            " \"cellPhone\":\"55555502\",\n" +
+            " \"uri\":\"http://localhost:9995/uib/useradmin/users/fc5c8097-e778-4ba4-9a4a-d08347616b51\\/\"\n" +
+            "}]\n" +
+            "}";
+
+    private final String usersJsonWithZeroUsers = "{\n" +
+            "\"rows\":\"0\",\n" +
+            "\"result\":\n" +
+            "[]\n" +
+            "}";
+
+    private final String userAggregateJsonNoRoles = "{\n" +
+            "  \"uid\": \"dd313\",\n" +
+            "  \"username\": \"dduck\",\n" +
+            "  \"firstName\": \"Donald\",\n" +
+            "  \"lastName\": \"Duck\",\n" +
+            "  \"personRef\": \"1\",\n" +
+            "  \"email\": \"donald.duck@gmail.com\",\n" +
+            "  \"cellPhone\": \"12341234\",\n" +
+            "  \"roles\": []\n" +
+            "}";
+
+
     private static UserTokenFactory factory;
 
 
@@ -142,5 +201,43 @@ public class UserTokenFactoryTest {
         assertEquals(roleEntry4.getOrganizationName(), roleEntry3.getOrganizationName());
         assertEquals(roleEntry4.getRoleName(), "Owner");
         assertEquals(roleEntry4.getRoleValue(), "Anders Norman");
+    }
+
+
+    @Test
+    public void testFromUsersIdentityJsonWithOneUser() {
+        List<UserToken> userTokens = UserTokenFactory.fromUsersIdentityJson(usersJsonWithOne);
+
+        assertEquals(1, userTokens.size());
+
+    }
+    @Test
+    public void testFromUsersIdentityJsonWithTwoUsers() {
+        List<UserToken> userTokens = UserTokenFactory.fromUsersIdentityJson(usersJsonWithTwo);
+
+        assertEquals(2, userTokens.size());
+
+    }
+    @Test
+    public void testFromUsersIdentityJsonWithZeroUsers() {
+        List<UserToken> userTokens = UserTokenFactory.fromUsersIdentityJson(usersJsonWithZeroUsers);
+
+        assertEquals(0, userTokens.size());
+
+    }
+
+
+    @Test
+    public void testFromUserAggregateJsonNoRoles() throws Exception {
+        UserToken userToken = UserTokenFactory.fromUserAggregateJson(userAggregateJsonNoRoles);
+
+        assertEquals("dd313", userToken.getUid());
+        assertEquals("dduck", userToken.getUserName());
+        assertEquals("Donald", userToken.getFirstName());
+        assertEquals("Duck", userToken.getLastName());
+        assertEquals("1", userToken.getPersonRef());
+        assertEquals("donald.duck@gmail.com", userToken.getEmail());
+        assertEquals("12341234", userToken.getCellPhone());
+        assertEquals(0, userToken.getRoleList().size());
     }
 }

@@ -6,7 +6,6 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import net.whydah.sso.application.helpers.ApplicationTokenXpathHelper;
-import net.whydah.sso.commands.adminapi.user.CommandGetUser;
 import net.whydah.sso.commands.adminapi.user.CommandGetUserAggregate;
 import net.whydah.sso.commands.adminapi.user.CommandListUsers;
 import net.whydah.token.config.AppConfig;
@@ -16,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
+import java.util.List;
 
 public class UserAuthenticatorImpl implements UserAuthenticator {
     private static final Logger log = LoggerFactory.getLogger(UserAuthenticatorImpl.class);
@@ -27,7 +27,6 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     private final AppConfig appConfig;
     private final WebResource uasResource;
     private final UserTokenFactory userTokenFactory;
-
 
 
     @Inject
@@ -46,7 +45,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
             ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, userCredentialXml);
 
             UserToken userToken = getUserToken(appTokenXml, response);
-            AppConfig.updateApplinks(useradminservice,applicationTokenId,response.toString());
+            AppConfig.updateApplinks(useradminservice, applicationTokenId, response.toString());
 
             return userToken;
         } catch (Exception e) {
@@ -82,7 +81,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
                     UserToken myToken = UserTokenFactory.fromUserIdentityJson(userIdentityJson);
                     myToken.setSecurityLevel("0");  // 3rd party token as source = securitylevel=0
 
-                    ActiveUserTokenRepository.addUserToken(myToken,applicationtokenid);
+                    ActiveUserTokenRepository.addUserToken(myToken, applicationtokenid);
                     return myToken;
                     // return Response.ok(new Viewable("/usertoken.ftl", myToken)).build();
                 }
@@ -95,32 +94,31 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     }
 
     @Override
-    public UserToken logonPinUser(String applicationtokenid, String appTokenXml, String adminUserTokenId,String cellPhone, String pin) {
+    public UserToken logonPinUser(String applicationtokenid, String appTokenXml, String adminUserTokenIdparam, String cellPhone, String pin) {
+        log.trace("logonPinUser() called with " + "applicationtokenid = [" + applicationtokenid + "], appTokenXml = [" + appTokenXml + "], cellPhone = [" + cellPhone + "], pin = [" + pin + "]");
         if (ActivePinRepository.usePin(cellPhone, pin)) {
             try {
-                WebResource uasWR = uasResource.path(applicationtokenid).path(adminUserTokenId).path("user");
+                String adminUserTokenId = getWhyDahAdminUserTokenId(applicationtokenid, appTokenXml);
 
-                // TODO Search for user. search both mobile=phoneno and username=phoneno to prevent hitting wrong user.
-                // Lecene doesn't care about the "mobile="- or "username"-part of the query, resulting in a wildcard-search with the phoneno!
-                String usersQuery = "mobile=" + cellPhone; //
-                String adminUserTokenId1 = getWhyDahAdminUserTokenId(applicationtokenid, appTokenXml);
+
+                String usersQuery = cellPhone;
+
                 // produserer userJson. denne kan inneholde fler users dette er json av
-                String usersJson = new CommandListUsers(useradminservice, applicationtokenid, adminUserTokenId1, usersQuery).execute();
-                UserToken userTokenIdentity = UserTokenFactory.fromUserIdentityJson(usersJson);
+                String usersJson = new CommandListUsers(useradminservice, applicationtokenid, adminUserTokenId, usersQuery).execute();
+                log.trace("CommandListUsers for query {} found users {}", usersQuery, usersJson);
 
-                String userId = userTokenIdentity.getUid();
+                UserToken userTokenIdentity = getFirstMatch(usersJson, cellPhone);
+                log.trace("Found matching UserIdentity {}", userTokenIdentity);
 
-                // create usertoken from useraggregate
-//                String userAggregateJson = new CommandGetUser(useradminservice, applicationtokenid, adminUserTokenId1, userId).execute();
-                String userAggregateJson = new CommandGetUserAggregate(useradminservice, applicationtokenid, adminUserTokenId1, userId).execute();
+                String userAggregateJson = new CommandGetUserAggregate(useradminservice, applicationtokenid, adminUserTokenId, userTokenIdentity.getUid()).execute();
 
                 UserToken userToken = UserTokenFactory.fromUserAggregateJson(userAggregateJson);
 
-                // add token to active map
-                ActiveUserTokenRepository.addUserToken(userToken,applicationtokenid);
+                ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid);
 
+                //TODO Make flow for error handling in case of no userId above
 
-                return userToken; // userAggregateJson -> userToken
+                return userToken;
             } catch (Exception e) {
                 log.error("Problems connecting to {}", useradminservice);
                 throw e;
@@ -129,9 +127,28 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         throw new AuthenticationFailedException("Pin authentication failed. Status code ");
     }
 
+    /**
+     * This is a temporary solution. It should be replaced by a better serarch method in User Identity Backend's Lucene-serarch.
+     * <p>
+     * UIB's Lucene doesn't care about the "mobile="- or "username"-part of the query, resulting in a wildcard-search with the phoneno!
+     *
+     * @param usersJson
+     * @param cellPhone
+     * @return
+     */
+    private UserToken getFirstMatch(String usersJson, String cellPhone) {
+        List<UserToken> userTokens = UserTokenFactory.fromUsersIdentityJson(usersJson);
+        for (UserToken userIdentity : userTokens) {
+            if (cellPhone.equals(userIdentity.getCellPhone()) && cellPhone.equals(userIdentity.getUserName())) {
+                return userIdentity;
+            }
+        }
+        return null;
+    }
+
 
     private UserToken getUserToken(String appTokenXml, ClientResponse response) {
-        if (response.getStatus() == Response.Status.OK.getStatusCode() || response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()){
+        if (response.getStatus() == Response.Status.OK.getStatusCode() || response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
             String userAggregateXML = response.getEntity(String.class);
             log.debug("Response from UserAdminService: {}", userAggregateXML);
             if (userAggregateXML.contains("logonFailed")) {
@@ -143,13 +160,13 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
             ActiveUserTokenRepository.addUserToken(userToken, ApplicationTokenXpathHelper.getApplicationTokenIDFromApplicationToken(appTokenXml));
             return userToken;
 
-        } else  {
+        } else {
             log.error("Response from UAS: {}: {}", response.getStatus(), response.getEntity(String.class));
             throw new AuthenticationFailedException("Authentication failed. Status code " + response.getStatus());
         }
     }
 
-    public String getWhyDahAdminUserTokenId(String applicationtokenid, String appTokenXml) {
+    private String getWhyDahAdminUserTokenId(String applicationtokenid, String appTokenXml) {
 
         String user = appConfig.getProperty("whydah.adminuser.username");
         String password = appConfig.getProperty("whydah.adminuser.password");
