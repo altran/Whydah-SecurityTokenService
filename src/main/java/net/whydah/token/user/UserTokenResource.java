@@ -548,48 +548,6 @@ public class UserTokenResource {
 
     }
 
-
-    /**
-     *
-     *
-     * @param applicationtokenid
-     * @param phoneNo
-     * @param smsPin
-     * @return
-     */
-    @Path("/{applicationtokenid}/send_phone_verification_pin")
-    @POST
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_XML)
-    public Response sendPhoneVerificationPin(@PathParam("applicationtokenid") String applicationtokenid,
-                                @FormParam("appTokenXml") String appTokenXml,
-                               @FormParam("phoneNo") String phoneNo,
-                               @FormParam("smsPin") String smsPin) {
-        log.trace("sendPhoneVerificationPin: phoneNo:" + phoneNo + "smsPin:" + smsPin);
-        ActivePinRepository.setPin(phoneNo, smsPin);
-
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("sendPhoneVerificationPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
-        }
-
-        // Verify calling application
-        if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
-            log.warn("sendPhoneVerificationPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
-        }
-
-        String cellNo = phoneNo;
-        String smsMessage = smsPin;
-        log.info("CommandSendSMSToUser({}, {}, {}, {}, {}, cellNo, smsMessage)", smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam);
-        new CommandSendSMSToUser(smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage).execute();
-        userpinmap.put(phoneNo,smsPin);
-
-        return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
-
-    }
-
-
     /**
      *
      * @param applicationtokenid application session
