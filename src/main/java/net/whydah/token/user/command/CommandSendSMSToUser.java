@@ -28,8 +28,8 @@ public class CommandSendSMSToUser extends HystrixCommand<String> {
         replacedStr = replacedStr.replaceAll("smsserviceusername", username);
         replacedStr = replacedStr.replaceAll("smsservicepassword", password);
         this.queryparam = replacedStr.replaceAll("smscontent", smsMessage.replaceAll(" ", "%20"));
-        if (smsMessage == null || cellNo == null || serviceUrl == null || queryparam == null) {
-            log.error("CommandSendSMSToUser initialized with null-values - will fail - smsMessage:{}, cellNo:{}, serviceUrl:{}, queryparam:{}", smsMessage, cellNo, serviceUrl, queryparam);
+        if (this.smsMessage == null || this.cellNo == null || serviceUrl == null || queryparam == null) {
+            log.error("CommandSendSMSToUser initialized with null-values - will fail - smsMessage:{}, cellNo:{}, serviceUrl:{}, queryparam:{}", this.smsMessage, this.cellNo, serviceUrl, queryparam);
         }
     }
 
