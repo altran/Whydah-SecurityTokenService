@@ -41,6 +41,12 @@ public class UserTokenResource {
     private static Map<String,String> userpinmap = new HashMap();
     private static Map applicationtokenidmap = new HashMap();
 
+    private static final String smsGwServiceURL;
+    private static final String smsGwServiceAccount;
+    private static final String smsGwUsername;
+    private static final String smsGwPassword;
+    private static final String smsGwQueryParam;
+
     static {
 
         AppConfig appConfig = new AppConfig();
@@ -70,7 +76,11 @@ public class UserTokenResource {
         userpinmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "userpinmap");
         log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "userpinmap");
 
-
+        smsGwServiceURL = appConfig.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
+        smsGwServiceAccount = System.getProperty("smsgw.serviceaccount");  //"serviceAccount";
+        smsGwUsername = System.getProperty("smsgw.username");  // "smsserviceusername";
+        smsGwPassword = System.getProperty("smsgw.password");  //"smsservicepassword";
+        smsGwQueryParam = appConfig.getProperty("smsgw.queryparams");   //"serviceId=serviceAccount&me...ssword=smsservicepassword";
     }
 
     public static void initializeDistributedMap() {
@@ -528,19 +538,98 @@ public class UserTokenResource {
         }
 
 
-        String serviceURL = appConfig.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
-        String serviceAccount = appConfig.getProperty("smsgw.serviceaccount");  //"serviceAccount";
-        String username = appConfig.getProperty("smsgw.username");  // "smsserviceusername";
-        String password = appConfig.getProperty("smsgw.password");  //"smsservicepassword";
         String cellNo = phoneNo;
         String smsMessage = smsPin;
-        String queryParam = appConfig.getProperty("smsgw.queryparams");  //"serviceId=serviceAccount&me...ssword=smsservicepassword";
-        log.info("CommandSendSMSToUser({}, {}, {}, {}, {}, cellNo, smsMessage)",serviceURL,serviceAccount,username,password,queryParam);
-        new CommandSendSMSToUser(serviceURL, serviceAccount, username, password, queryParam, cellNo, smsMessage).execute();
+        log.info("CommandSendSMSToUser({}, {}, {}, {}, {}, cellNo, smsMessage)", smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam);
+        new CommandSendSMSToUser(smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage).execute();
         userpinmap.put(phoneNo,smsPin);
 
         return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
 
+    }
+
+
+    /**
+     *
+     *
+     * @param applicationtokenid
+     * @param phoneNo
+     * @param smsPin
+     * @return
+     */
+    @Path("/{applicationtokenid}/send_phone_verification_pin")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_XML)
+    public Response sendPhoneVerificationPin(@PathParam("applicationtokenid") String applicationtokenid,
+                                @FormParam("appTokenXml") String appTokenXml,
+                               @FormParam("phoneNo") String phoneNo,
+                               @FormParam("smsPin") String smsPin) {
+        log.trace("sendPhoneVerificationPin: phoneNo:" + phoneNo + "smsPin:" + smsPin);
+        ActivePinRepository.setPin(phoneNo, smsPin);
+
+        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
+            log.warn("sendPhoneVerificationPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        }
+
+        // Verify calling application
+        if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
+            log.warn("sendPhoneVerificationPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        }
+
+        String cellNo = phoneNo;
+        String smsMessage = smsPin;
+        log.info("CommandSendSMSToUser({}, {}, {}, {}, {}, cellNo, smsMessage)", smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam);
+        new CommandSendSMSToUser(smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage).execute();
+        userpinmap.put(phoneNo,smsPin);
+
+        return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+
+    }
+
+
+    /**
+     *
+     * @param applicationtokenid application session
+     * @param appTokenXml        application session data
+     * @param phoneno            user phonenumber
+     * @param pin                user entered pin
+     * @return usertoken
+     */
+    @Path("/{applicationtokenid}/verify_phone_by_pin")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_XML)
+    public Response verifyPhoneByPin(@PathParam("applicationtokenid") String applicationtokenid,
+                                     @FormParam("appTokenXml") String appTokenXml,
+                                     @FormParam("phoneno") String phoneno,
+                                     @FormParam("pin") String pin) {
+
+        log.trace("verifyPhoneByPin() called with " + "applicationtokenid = [" + applicationtokenid + "], appTokenXml = [" + appTokenXml + "], phoneno = [" + phoneno + "], pin = [" + pin + "]");
+
+        if (isEmpty(appTokenXml) || isEmpty(pin) || isEmpty(phoneno)) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Missing required parameters").build();
+        }
+
+        log.trace("verifyPhoneByPin: applicationtokenid={}, pin={}, appTokenXml={}", applicationtokenid, pin, appTokenXml);
+
+        if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
+            return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
+        }
+
+        // Verify calling application
+        if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
+            log.warn("verifyPhoneByPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        }
+
+        if (ActivePinRepository.usePin(phoneno, pin)) {
+            return Response.status(Response.Status.OK).build();
+        } else {
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+        }
     }
 
     /**
@@ -567,14 +656,9 @@ public class UserTokenResource {
 
 
 
-        String serviceURL = System.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
-        String serviceAccount = System.getProperty("smsgw.serviceaccount");  //"serviceAccount";
-        String username = System.getProperty("smsgw.username");  // "smsserviceusername";
-        String password = System.getProperty("smsgw.password");  //"smsservicepassword";
         String cellNo = phoneNo;
         String smsMessage = smsPin;
-        String queryParam = System.getProperty("smsgw.queryparams");  //"serviceId=serviceAccount&me...ssword=smsservicepassword";
-        String response = new CommandSendSMSToUser(serviceURL, serviceAccount, username, password, queryParam, cellNo, smsMessage).execute();
+        String response = new CommandSendSMSToUser(smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage).execute();
 
         return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
 
