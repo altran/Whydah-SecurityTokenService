@@ -530,13 +530,16 @@ public class UserTokenResource {
                                @FormParam("phoneNo") String phoneNo,
                                @FormParam("smsPin") String smsPin) {
         log.trace("sendSMSPin: phoneNo:" + phoneNo + "smsPin:" + smsPin);
-        ActivePinRepository.setPin(phoneNo, smsPin);
+        if (phoneNo==null || smsPin==null){
+            return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        }
 
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
 
+        ActivePinRepository.setPin(phoneNo, smsPin);
 
         String cellNo = phoneNo;
         String smsMessage = smsPin;
