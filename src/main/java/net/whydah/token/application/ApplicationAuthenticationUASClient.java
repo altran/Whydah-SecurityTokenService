@@ -46,7 +46,7 @@ public class ApplicationAuthenticationUASClient {
         try {
             ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED_TYPE).post(ClientResponse.class, formData);
             uasResponseCode = response.getStatus();
-            log.info("Response from UAS:" + uasResponseCode);
+            log.info("checkAppsecretFromUAS - Response from UAS:" + uasResponseCode);
             if (uasResponseCode == 204) {
                 return true;
             }
@@ -55,7 +55,7 @@ public class ApplicationAuthenticationUASClient {
             throw e;
         }
         log.warn("Illegal application tried to access whydah. ApplicationID: {}, Response from UAS: {}", applicationCredential.getApplicationID(), uasResponseCode);
-        log.warn("Response from UAS:" + uasResponseCode);
+        log.warn("checkAppsecretFromUAS: Response from UAS:" + uasResponseCode);
         return false;
     }
 
