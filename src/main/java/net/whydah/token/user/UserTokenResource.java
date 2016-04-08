@@ -529,8 +529,9 @@ public class UserTokenResource {
     public Response sendSMSPin(@PathParam("applicationtokenid") String applicationtokenid,
                                @FormParam("phoneNo") String phoneNo,
                                @FormParam("smsPin") String smsPin) {
-        log.trace("sendSMSPin: phoneNo:" + phoneNo + "smsPin:" + smsPin);
+        log.info("sendSMSPin: phoneNo:" + phoneNo + "smsPin:" + smsPin);
         if (phoneNo==null || smsPin==null){
+            log.warn("sendSMSPin: attempt to use service with emty parameters");
             return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
 
