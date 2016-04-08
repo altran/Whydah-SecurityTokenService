@@ -25,14 +25,16 @@ public class ApplicationAuthenticationUASClient {
 
     private static final String APPLICATION_AUTH_PATH = "application/auth";
     public static final String APP_CREDENTIAL_XML = "appCredentialXml";
+    private static AppConfig appConfig = new AppConfig();
+    ;
 
-    public static boolean checkAppsecretFromUAS(ApplicationCredential applicationCredential,AppConfig appConfig,ApplicationToken stsToken) {
+    public static boolean checkAppsecretFromUAS(ApplicationCredential applicationCredential) {
         ApplicationToken token = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(applicationCredential));
         token.setBaseuri(appConfig.getProperty("myuri"));
-        token.setExpires(String.valueOf((System.currentTimeMillis() + 10 * new Random().nextInt(500))));
+        token.setExpires(String.valueOf((System.currentTimeMillis() + 100000 * new Random().nextInt(500))));
 
         String useradminservice = appConfig.getProperty("useradminservice");
-        //ApplicationToken stsToken = getSTSApplicationToken();
+        ApplicationToken stsToken = getSTSApplicationToken();
         AuthenticatedApplicationRepository.addApplicationToken(stsToken);
 
         WebResource uasResource = ApacheHttpClient.create().resource(useradminservice);
@@ -53,6 +55,18 @@ public class ApplicationAuthenticationUASClient {
             throw e;
         }
         log.warn("Illegal application tried to access whydah. ApplicationID: {}, Response from UAS: {}", applicationCredential.getApplicationID(), uasResponseCode);
+        log.warn("Response from UAS:" + uasResponseCode);
         return false;
+    }
+
+    private static ApplicationToken getSTSApplicationToken() {
+        String applicationName = appConfig.getProperty("applicationname");
+        String applicationId = appConfig.getProperty("applicationid");
+        String applicationsecret = appConfig.getProperty("applicationsecret");
+        ApplicationCredential ac = new ApplicationCredential(applicationId, applicationName, applicationsecret);
+        ApplicationToken myToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(ac));
+
+        return myToken;
+
     }
 }

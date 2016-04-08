@@ -175,7 +175,7 @@ public class ApplicationAuthenticationResource {
 
             if (expectedAppSecret == null || expectedAppSecret.length() < 2) {
                 log.warn("No application secret in property file for applicationId={} - applicationName: {} - Trying UAS/UIB", applicationCredential.getApplicationID(), applicationCredential.getApplicationName());
-                if (!ApplicationAuthenticationUASClient.checkAppsecretFromUAS(applicationCredential,appConfig,getSTSApplicationToken())) {
+                if (!ApplicationAuthenticationUASClient.checkAppsecretFromUAS(applicationCredential)) {
                     log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret in UIB");
                     return false;
                 } else {
@@ -185,7 +185,7 @@ public class ApplicationAuthenticationResource {
             }
             if (!applicationCredential.getApplicationSecret().equalsIgnoreCase(expectedAppSecret)) {
                 log.info("Incoming applicationSecret does not match applicationSecret from property file. - Trying UAS/UIB");
-                if (!ApplicationAuthenticationUASClient.checkAppsecretFromUAS(applicationCredential,appConfig,getSTSApplicationToken())) {
+                if (!ApplicationAuthenticationUASClient.checkAppsecretFromUAS(applicationCredential)) {
                     log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret in UIB");
                     return false;
                 } else {
@@ -202,15 +202,5 @@ public class ApplicationAuthenticationResource {
 
 
 
-    private ApplicationToken getSTSApplicationToken() {
-        AppConfig appConfig = new AppConfig();
-        String applicationName = appConfig.getProperty("applicationname");
-        String applicationId = appConfig.getProperty("applicationid");
-        String applicationsecret = appConfig.getProperty("applicationsecret");
-        ApplicationCredential ac = new ApplicationCredential(applicationId, applicationName, applicationsecret);
-        ApplicationToken myToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(ac));
 
-        return myToken;
-
-    }
 }
