@@ -38,7 +38,7 @@ public class UserTokenResource {
     private final static Logger log = LoggerFactory.getLogger(UserTokenResource.class);
 
     private static Map userticketmap = new HashMap();
-    private static Map<String,String> userpinmap = new HashMap();
+    private static Map<String, String> userpinmap = new HashMap();
     private static Map applicationtokenidmap = new HashMap();
 
     private static final String smsGwServiceURL;
@@ -77,9 +77,9 @@ public class UserTokenResource {
         log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "userpinmap");
 
         smsGwServiceURL = appConfig.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
-        smsGwServiceAccount = System.getProperty("smsgw.serviceaccount");  //"serviceAccount";
-        smsGwUsername = System.getProperty("smsgw.username");  // "smsserviceusername";
-        smsGwPassword = System.getProperty("smsgw.password");  //"smsservicepassword";
+        smsGwServiceAccount = appConfig.getProperty("smsgw.serviceaccount");  //"serviceAccount";
+        smsGwUsername = appConfig.getProperty("smsgw.username");  // "smsserviceusername";
+        smsGwPassword = appConfig.getProperty("smsgw.password");  //"smsservicepassword";
         smsGwQueryParam = appConfig.getProperty("smsgw.queryparams");   //"serviceId=serviceAccount&me...ssword=smsservicepassword";
     }
 
@@ -111,9 +111,9 @@ public class UserTokenResource {
     /**
      * TODO baardl: rename the param apptoken
      *
-     * @param applicationtokenid  application session
-     * @param appTokenXml   application session data
-     * @param userCredentialXml user credentials i.e. (username / password)
+     * @param applicationtokenid application session
+     * @param appTokenXml        application session data
+     * @param userCredentialXml  user credentials i.e. (username / password)
      * @return userToken - user session data
      */
     @Path("/{applicationtokenid}/usertoken")
@@ -144,10 +144,10 @@ public class UserTokenResource {
     /**
      * Login in user by his/her usercredentials and register its ticket in the ticket-map for session handover
      *
-     * @param applicationtokenid  application session
-     * @param userticket  user session handover ticket
-     * @param appTokenXml   application session data
-     * @param userCredentialXml user credentials i.e. (username / password)
+     * @param applicationtokenid application session
+     * @param userticket         user session handover ticket
+     * @param appTokenXml        application session data
+     * @param userCredentialXml  user credentials i.e. (username / password)
      * @return user session data
      */
     @Path("/{applicationtokenid}/{userticket}/usertoken")
@@ -184,7 +184,7 @@ public class UserTokenResource {
      * a user important and critical processes like monetary transactions
      *
      * @param applicationtokenid - application session id
-     * @param userTokenXml  - user session data
+     * @param userTokenXml       - user session data
      * @return - OK if valid user session exists based upon user session data
      */
     @Path("/{applicationtokenid}/validate_usertoken")
@@ -197,7 +197,7 @@ public class UserTokenResource {
         }
         //UserToken userToken = UserToken.createFromUserTokenXML(userTokenXml);
         UserToken userToken = UserTokenFactory.fromXml(userTokenXml);
-        if (ActiveUserTokenRepository.verifyUserToken(userToken,applicationtokenid)) {
+        if (ActiveUserTokenRepository.verifyUserToken(userToken, applicationtokenid)) {
             return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
         log.warn("validateUserTokenXML failed for usertoken {}", userTokenXml);
@@ -211,7 +211,7 @@ public class UserTokenResource {
             log.warn("validateUserTokenXML - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
-        if (ActiveUserTokenRepository.getUserToken(usertokenid,applicationtokenid) != null) {
+        if (ActiveUserTokenRepository.getUserToken(usertokenid, applicationtokenid) != null) {
             log.trace("Verified {}", usertokenid);
             return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
@@ -222,10 +222,10 @@ public class UserTokenResource {
     /**
      * Used to create a userticket for a user to transfer a session between whydah SSO apps
      *
-     * @param applicationtokenid  application session
-     * @param appTokenXml   application session data
-     * @param userticket  user session handover ticket
-     * @param userTokenId  user session id
+     * @param applicationtokenid application session
+     * @param appTokenXml        application session data
+     * @param userticket         user session handover ticket
+     * @param userTokenId        user session id
      * @return userticket - user session handover ticket
      */
     @Path("/{applicationtokenid}/create_userticket_by_usertokenid")
@@ -242,7 +242,7 @@ public class UserTokenResource {
             log.warn("createUserTicketByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
-        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId,applicationtokenid);
+        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
         if (userToken != null) {
             userticketmap.put(userticket, userToken.getTokenid());
             log.trace("createUserTicketByUserTokenId OK. Response={}", userToken.toString());
@@ -256,9 +256,9 @@ public class UserTokenResource {
     /**
      * Used to get the usertoken from a usertokenid, which the application usually stores in its secure cookie
      *
-     * @param applicationtokenid  application session
-     * @param appTokenXml   application session data
-     * @param userTokenId  user session id
+     * @param applicationtokenid application session
+     * @param appTokenXml        application session data
+     * @param userTokenId        user session id
      * @return usertoken
      */
     @Path("/{applicationtokenid}/get_usertoken_by_usertokenid")
@@ -278,20 +278,20 @@ public class UserTokenResource {
             log.warn("getUserTokenByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
-        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId,applicationtokenid);
+        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
         if (userToken == null) {
             log.warn("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid={}", userTokenId);
             return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
-        log.info("getUserTokenByUserTokenId - valid session found for {} ",userTokenId);
+        log.info("getUserTokenByUserTokenId - valid session found for {} ", userTokenId);
         return createUserTokenResponse(applicationtokenid, userToken);
     }
 
     /**
      * Used to get the lase seend time, which the application usually stores in its secure cookie
      *
-     * @param applicationtokenid  application session
-     * @param userEmail  email of user we try to locate
+     * @param applicationtokenid application session
+     * @param userEmail          email of user we try to locate
      * @return last seen as String
      */
     @Path("/{applicationtokenid}/{email}/last_seen")
@@ -299,7 +299,7 @@ public class UserTokenResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_PLAIN)
     public Response getLastSeenByUserTokenId(@PathParam("applicationtokenid") String applicationtokenid,
-                                              @PathParam("email") String userEmail) {
+                                             @PathParam("email") String userEmail) {
         log.trace("getLastSeenByUserTokenId: applicationtokenid={}, email={}", applicationtokenid, userEmail);
 
         if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
@@ -315,19 +315,18 @@ public class UserTokenResource {
             log.warn("getLastSeenByUserTokenId - attempt to access with non acceptable userEmail={}", userEmail);
             return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
-        log.info("getLastSeenByUserTokenId - valid session found for {} ",userEmail);
+        log.info("getLastSeenByUserTokenId - valid session found for {} ", userEmail);
         return Response.status(Response.Status.OK).entity(userEmail).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
     }
-
 
 
     /**
      * Lookup a user by a one-time userticket, usually the first thing we do after receiving a SSO redirect back to
      * an application from SSOLoginWebApplication
      *
-     * @param applicationtokenid  application session
-     * @param appTokenXml   application session data
-     * @param userticket  user session handover ticket
+     * @param applicationtokenid application session
+     * @param appTokenXml        application session data
+     * @param userticket         user session handover ticket
      * @return usertoken
      */
     @Path("/{applicationtokenid}/get_usertoken_by_userticket")
@@ -358,7 +357,7 @@ public class UserTokenResource {
         }
         log.trace("getUserTokenByUserTicket - Found usertokenid: " + userTokenId);
         userticketmap.remove(userticket);
-        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId,applicationtokenid);
+        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
 
         if (userToken == null) {
             log.warn("getUserTokenByUserTicket - illegal/Null userticket received ");
@@ -421,12 +420,11 @@ public class UserTokenResource {
     }
 
 
-
     /**
      * Force cross-applications/SSO session logout. Use with extreme care as the user's hate the resulting user experience..
      *
-     * @param applicationtokenid  application session
-     * @param usertokenid  user session id
+     * @param applicationtokenid application session
+     * @param usertokenid        user session id
      * @return Response.OK
      */
     @Path("/{applicationtokenid}/release_usertoken")
@@ -444,15 +442,15 @@ public class UserTokenResource {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
         log.trace("releaseUserToken - removed session, usertokenid={}", usertokenid);
-        ActiveUserTokenRepository.removeUserToken(usertokenid,applicationtokenid);
+        ActiveUserTokenRepository.removeUserToken(usertokenid, applicationtokenid);
         return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
     }
 
     /**
      * Request SSO user session renewal.
      *
-     * @param applicationtokenid  application session
-     * @param usertokenid  user session id
+     * @param applicationtokenid application session
+     * @param usertokenid        user session id
      * @return userTokenXml - usertoken with extended lease
      */
     @Path("/{applicationtokenid}/renew_usertoken")
@@ -469,7 +467,7 @@ public class UserTokenResource {
             log.warn("renewUserToken - attempt with no usertokenid: Null");
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
-        ActiveUserTokenRepository.renewUserToken(usertokenid,applicationtokenid);
+        ActiveUserTokenRepository.renewUserToken(usertokenid, applicationtokenid);
 
         log.trace("renewUserToken - session renewed, usertokenid={}", usertokenid);
         return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
@@ -478,10 +476,10 @@ public class UserTokenResource {
     /**
      * This method is for elevating user access to a higher level for the receiving end of a session handover between SSO applications
      *
-     * @param applicationtokenid  calling application session
-     * @param appTokenXml   application session data
-     * @param userTokenXml  user session data
-     * @param newAppTokenId  application session id of receiving application session
+     * @param applicationtokenid calling application session
+     * @param appTokenXml        application session data
+     * @param userTokenXml       user session data
+     * @param newAppTokenId      application session id of receiving application session
      * @return UserTokenXml as seen for the given application session
      */
     @Path("/{applicationtokenid}/transform_usertoken")
@@ -505,7 +503,7 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
         String userTokenId = UserTokenFactory.fromXml(userTokenXml).getTokenid();
-        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId,applicationtokenid);
+        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
         userToken.setDefcon(ApplicationThreatResource.getDEFCON());
         if (userToken == null) {
             log.warn("getUserTokenByUserTokenId - attempt to access with non acceptable userTokenId={}", userTokenId);
@@ -543,18 +541,26 @@ public class UserTokenResource {
 
         ActivePinRepository.setPin(phoneNo, smsPin);
 
+        //String cellNo = phoneNo;
+        //String smsMessage = smsPin;
+        log.info("CommandSendSMSToUser({}, {}, {}, {}, {}, cellNo, smsMessage)", smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam);
+        //new CommandSendSMSToUser(smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage).execute();
+        String serviceURL = appConfig.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
+        String serviceAccount = appConfig.getProperty("smsgw.serviceaccount");  //"serviceAccount";
+        String username = appConfig.getProperty("smsgw.username");  // "smsserviceusername";
+        String password = appConfig.getProperty("smsgw.password");  //"smsservicepassword";
         String cellNo = phoneNo;
         String smsMessage = smsPin;
-        log.info("CommandSendSMSToUser({}, {}, {}, {}, {}, cellNo, smsMessage)", smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam);
-        new CommandSendSMSToUser(smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage).execute();
-        userpinmap.put(phoneNo,smsPin);
+        String queryParam = appConfig.getProperty("smsgw.queryparams");
+        String response = new CommandSendSMSToUser(serviceURL, serviceAccount, username, password, queryParam, cellNo, smsMessage).execute();
+        log.debug("Answer from smsgw: " + response);
+        userpinmap.put(phoneNo, smsPin);
 
         return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
 
     }
 
     /**
-     *
      * @param applicationtokenid application session
      * @param appTokenXml        application session data
      * @param phoneno            user phonenumber
@@ -608,15 +614,14 @@ public class UserTokenResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response sendSMSMessage(@PathParam("applicationtokenid") String applicationtokenid,
-                               @FormParam("phoneNo") String phoneNo,
-                               @FormParam("smsPin") String smsPin) {
+                                   @FormParam("phoneNo") String phoneNo,
+                                   @FormParam("smsPin") String smsPin) {
         log.info("Response sendSMSMessage: phoneNo:" + phoneNo + "smsPin:" + smsPin);
 
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
-
 
 
         String cellNo = phoneNo;
@@ -632,12 +637,12 @@ public class UserTokenResource {
      * the corresponding defaultroles (UAS|UIB) and create a new session with a one-time userticket for handover to receiving
      * SSO applications
      *
-     * @param applicationtokenid  calling application session
-     * @param userticket  user session id
-     * @param appTokenXml   application session data
-     * @param userCredentialXml  user credential  i.e. (username and password)
+     * @param applicationtokenid     calling application session
+     * @param userticket             user session id
+     * @param appTokenXml            application session data
+     * @param userCredentialXml      user credential  i.e. (username and password)
      * @param thirdPartyUserTokenXml typically facebook user-token or other oauth2 usertoken
-     * @return  user session data
+     * @return user session data
      */
     @Path("/{applicationtokenid}/{userticket}/create_user")
     @POST
@@ -667,7 +672,7 @@ public class UserTokenResource {
             userToken.setDefcon(ApplicationThreatResource.getDEFCON());
             userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
             // Report to statistics
-            ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUserName(),"userCreated",applicationtokenid);
+            ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUserName(), "userCreated", applicationtokenid);
             MonitorReporter.reportActivity(observedActivity);
 
             return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
@@ -683,12 +688,12 @@ public class UserTokenResource {
      * the corresponding defaultroles (UAS|UIB) and create a new session with a one-time userticket for handover to receiving
      * SSO applications
      *
-     * @param applicationtokenid  calling application session
-     * @param pin  user session pin
-     * @param appTokenXml   application session data
+     * @param applicationtokenid calling application session
+     * @param pin                user session pin
+     * @param appTokenXml        application session data
      * @param userCredentialXml  user credential  i.e. (username and password)
-     * @param newUserjson a simple userjson for new user
-     * @return  user session data
+     * @param newUserjson        a simple userjson for new user
+     * @return user session data
      */
     @Path("/{applicationtokenid}/{userticket}/{pin}/create_pinverified_user")
     @POST
@@ -714,12 +719,12 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
         try {
-            UserToken userToken = userAuthenticator.createAndLogonPinUser(applicationtokenid,appTokenXml,adminUserTokenId,cellPhone,pin,newUserjson);
+            UserToken userToken = userAuthenticator.createAndLogonPinUser(applicationtokenid, appTokenXml, adminUserTokenId, cellPhone, pin, newUserjson);
             userticketmap.put(userticket, userToken.getTokenid());
             userToken.setDefcon(ApplicationThreatResource.getDEFCON());
             userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
             // Report to statistics
-            ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUserName(),"userCreated",applicationtokenid);
+            ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUserName(), "userCreated", applicationtokenid);
             MonitorReporter.reportActivity(observedActivity);
             return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } catch (AuthenticationFailedException ae) {
