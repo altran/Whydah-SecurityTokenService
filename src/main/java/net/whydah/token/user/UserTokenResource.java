@@ -608,7 +608,7 @@ public class UserTokenResource {
     public Response sendSMSMessage(@PathParam("applicationtokenid") String applicationtokenid,
                                @FormParam("phoneNo") String phoneNo,
                                @FormParam("smsPin") String smsPin) {
-        log.trace("Response sendSMSMessage: phoneNo:" + phoneNo + "smsPin:" + smsPin);
+        log.info("Response sendSMSMessage: phoneNo:" + phoneNo + "smsPin:" + smsPin);
 
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
