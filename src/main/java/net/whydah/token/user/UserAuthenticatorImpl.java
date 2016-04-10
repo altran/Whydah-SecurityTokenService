@@ -44,7 +44,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
             WebResource webResource = uasResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH);
             ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, userCredentialXml);
 
-            UserToken userToken = getUserToken(appTokenXml, response);
+            UserToken userToken = getUserToken(applicationTokenId, appTokenXml, response);
             AppConfig.updateApplinks(useradminservice, applicationTokenId, response.toString());
 
             return userToken;
@@ -61,7 +61,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         log.debug("createAndLogonUser - Calling createandlogon " + webResource.toString());
         ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, fbUserXml);
 
-        UserToken token = getUserToken(appTokenXml, response);
+        UserToken token = getUserToken(applicationtokenid, appTokenXml, response);
         token.setSecurityLevel("0");  // 3rd party token as source = securitylevel=0
         return token;
     }
@@ -147,7 +147,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     }
 
 
-    private UserToken getUserToken(String appTokenXml, ClientResponse response) {
+    private UserToken getUserToken(String applicationtokenid, String appTokenXml, ClientResponse response) {
         if (response.getStatus() == Response.Status.OK.getStatusCode() || response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
             String userAggregateXML = response.getEntity(String.class);
             log.debug("Response from UserAdminService: {}", userAggregateXML);
@@ -157,7 +157,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
             UserToken userToken = userTokenFactory.fromUserAggregate(userAggregateXML);
             userToken.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
-            ActiveUserTokenRepository.addUserToken(userToken, ApplicationTokenXpathHelper.getApplicationTokenIDFromApplicationToken(appTokenXml));
+            ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid);
             return userToken;
 
         } else {
