@@ -99,8 +99,6 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         if (ActivePinRepository.usePin(cellPhone, pin)) {
             try {
                 String adminUserTokenId = getWhyDahAdminUserTokenId(applicationtokenid, appTokenXml);
-
-
                 String usersQuery = cellPhone;
 
                 // produserer userJson. denne kan inneholde fler users dette er json av
@@ -123,6 +121,8 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
                 log.error("Problems connecting to {}", useradminservice);
                 throw e;
             }
+        } else {
+            log.warn("logonPinUser, illegal pin attempted");
         }
         throw new AuthenticationFailedException("Pin authentication failed. Status code ");
     }
