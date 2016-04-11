@@ -21,6 +21,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     private static final Logger log = LoggerFactory.getLogger(UserAuthenticatorImpl.class);
     private static final String USER_AUTHENTICATION_PATH = "/auth/logon/user";
     private static final String CREATE_AND_LOGON_OPERATION = "createandlogon";
+    private static final String defaultlifespan = "245000";
 
 
     private URI useradminservice;
@@ -79,11 +80,12 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
                     log.error(error);
                 } else {
                     String userIdentityJson = uasResponse.getEntity(String.class);
-                    UserToken myToken = UserTokenFactory.fromUserIdentityJson(userIdentityJson);
-                    myToken.setSecurityLevel("0");  // 3rd party token as source = securitylevel=0
+                    UserToken userToken = UserTokenFactory.fromUserIdentityJson(userIdentityJson);
+                    userToken.setSecurityLevel("0");  // 3rd party token as source = securitylevel=0
+                    userToken.setLifespan(defaultlifespan);
 
-                    ActiveUserTokenRepository.addUserToken(myToken, applicationtokenid);
-                    return myToken;
+                    ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid);
+                    return userToken;
                     // return Response.ok(new Viewable("/usertoken.ftl", myToken)).build();
                 }
             } catch (Exception e) {
@@ -112,6 +114,8 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
                 String userAggregateJson = new CommandGetUserAggregate(useradminservice, applicationtokenid, adminUserTokenId, userTokenIdentity.getUid()).execute();
 
                 UserToken userToken = UserTokenFactory.fromUserAggregateJson(userAggregateJson);
+                userToken.setSecurityLevel("0");  // UserIdentity as source = securitylevel=0
+                userToken.setLifespan(defaultlifespan);
 
                 ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid);
 
@@ -158,6 +162,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
             UserToken userToken = userTokenFactory.fromUserAggregate(userAggregateXML);
             userToken.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
+            userToken.setLifespan(defaultlifespan);
             ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid);
             return userToken;
 
