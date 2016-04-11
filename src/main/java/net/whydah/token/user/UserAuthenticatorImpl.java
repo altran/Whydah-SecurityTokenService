@@ -50,6 +50,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
             return userToken;
         } catch (Exception e) {
             log.error("Problems connecting to {}", useradminservice);
+            log.info("Rethrowing exception ", e);
             throw e;
         }
     }
