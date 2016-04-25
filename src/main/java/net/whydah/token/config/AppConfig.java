@@ -99,6 +99,10 @@ public class AppConfig {
 
     public static void updateApplinks(URI userAdminServiceUri, String myAppTokenId, String responseXML) {
         log.trace("updateApplinks(URI userAdminServiceUri:{}, String myAppTokenId:{}, String responseXML:{}",userAdminServiceUri,  myAppTokenId,  responseXML);
+        if (responseXML == null || responseXML.length() < 2) {
+            // Ignore empty responses
+            return;
+        }
         if (shouldUpdate() || getFullTokenApplications() == null || fullTokenApplications.length() < 6) {
             String userTokenId = UserTokenMapper.fromUserTokenXml(responseXML).getTokenid();
             String applicationsJson = new CommandListApplications(userAdminServiceUri, myAppTokenId, userTokenId, "").execute();
