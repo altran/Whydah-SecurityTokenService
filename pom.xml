@@ -83,6 +83,11 @@
             <version>1.2.3</version>
         </dependency>
         <dependency>
+            <groupId>net.whydah.sso</groupId>
+            <artifactId>Whydah-Java-SDK</artifactId>
+            <version>2.1.130</version>
+        </dependency>
+        <dependency>
             <groupId>org.valuereporter</groupId>
             <artifactId>valuereporter-agent</artifactId>
             <version>0.7.1</version>
