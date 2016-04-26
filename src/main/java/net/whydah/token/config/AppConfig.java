@@ -4,6 +4,7 @@ import net.whydah.sso.application.helpers.ApplicationHelper;
 import net.whydah.sso.application.mappers.ApplicationMapper;
 import net.whydah.sso.application.types.Application;
 import net.whydah.sso.user.mappers.UserTokenMapper;
+import net.whydah.sso.user.types.UserToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,8 +105,12 @@ public class AppConfig {
             return;
         }
         if (shouldUpdate() || getFullTokenApplications() == null || fullTokenApplications.length() < 6) {
-            String userTokenId = UserTokenMapper.fromUserTokenXml(responseXML).getTokenid();
-            String applicationsJson = new CommandListApplications(userAdminServiceUri, myAppTokenId, userTokenId, "").execute();
+            UserToken ut = UserTokenMapper.fromUserTokenXml(responseXML);
+            // Handle short responses without NPE
+            if (ut == null) {
+                return;
+            }
+            String applicationsJson = new CommandListApplications(userAdminServiceUri, myAppTokenId, ut.getTokenid(), "").execute();
             log.debug("AppLications returned:" + applicationsJson);
             List<Application> applications = ApplicationMapper.fromJsonList(applicationsJson);
             String fTokenList="";
