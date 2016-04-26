@@ -105,28 +105,32 @@ public class AppConfig {
             return;
         }
         if (shouldUpdate() || getFullTokenApplications() == null || fullTokenApplications.length() < 6) {
-            UserToken ut = UserTokenMapper.fromUserTokenXml(responseXML);
-            // Handle short responses without NPE
-            if (ut == null) {
-                return;
-            }
-            String applicationsJson = new CommandListApplications(userAdminServiceUri, myAppTokenId, ut.getTokenid(), "").execute();
-            log.debug("AppLications returned:" + applicationsJson);
-            List<Application> applications = ApplicationMapper.fromJsonList(applicationsJson);
-            String fTokenList="";
-            for (Application application : applications) {
-                if (application.isFullTokenApplication()){
-                    fTokenList=fTokenList+application.getId()+",";
-                    log.debug("is fulltoken {} appid:{}", application.isFullTokenApplication(), application.getId());
+            try {
+                UserToken ut = UserTokenMapper.fromUserTokenXml(responseXML);
+                // Handle short responses without NPE
+                if (ut == null) {
+                    return;
+                }
+                String applicationsJson = new CommandListApplications(userAdminServiceUri, myAppTokenId, ut.getTokenid(), "").execute();
+                log.debug("AppLications returned:" + applicationsJson);
+                List<Application> applications = ApplicationMapper.fromJsonList(applicationsJson);
+                String fTokenList = "";
+                for (Application application : applications) {
+                    if (application.isFullTokenApplication()) {
+                        fTokenList = fTokenList + application.getId() + ",";
+                        log.debug("is fulltoken {} appid:{}", application.isFullTokenApplication(), application.getId());
+                    }
+
+                }
+                if (fTokenList == null || fTokenList.length() < 3) {
+                    // Some error occured, ignore data
+                    return;
                 }
 
+                setFullTokenApplications(fTokenList.substring(0, fTokenList.length() - 1));
+            } catch (Exception e) {
+                log.warn("updateApplinks - responseXML: {}", responseXML);
             }
-            if (fTokenList==null || fTokenList.length()<3){
-                // Some error occured, ignore data
-                return;
-            }
-
-            setFullTokenApplications(fTokenList.substring(0,fTokenList.length()-1));
         }
     }
 
