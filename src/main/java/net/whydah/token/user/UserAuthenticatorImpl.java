@@ -5,7 +5,6 @@ import com.google.inject.name.Named;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
-import net.whydah.sso.application.helpers.ApplicationTokenXpathHelper;
 import net.whydah.sso.commands.adminapi.user.CommandGetUserAggregate;
 import net.whydah.sso.commands.adminapi.user.CommandListUsers;
 import net.whydah.token.config.AppConfig;

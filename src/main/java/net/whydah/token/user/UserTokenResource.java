@@ -6,12 +6,12 @@ import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.sun.jersey.api.view.Viewable;
+import net.whydah.sso.commands.adminapi.user.CommandSendSMSToUser;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
 import net.whydah.token.config.SSLTool;
-import net.whydah.token.user.command.CommandSendSMSToUser;
 import net.whydah.token.user.statistics.UserSessionObservedActivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -641,7 +641,7 @@ public class UserTokenResource {
      * @param userticket             user session id
      * @param appTokenXml            application session data
      * @param userCredentialXml      user credential  i.e. (username and password)
-     * @param thirdPartyUserTokenXml typically facebook user-token or other oauth2 usertoken
+     * @param thirdPartyUserToknXml typically facebook user-token or other oauth2 usertoken
      * @return user session data
      */
     @Path("/{applicationtokenid}/{userticket}/create_user")
