@@ -375,6 +375,7 @@ public class UserTokenResource {
      * an application from SSOLoginWebApplication
      *
      * @param applicationtokenid application session
+     * @param userticket         one time ticket for the roundtrip of the operation
      * @param appTokenXml        application session data
      * @param phoneno            user phonenumber
      * @param pin                user pin
@@ -515,9 +516,9 @@ public class UserTokenResource {
     /**
      * The backend for PIN signup processes
      *
-     * @param applicationtokenid
-     * @param phoneNo
-     * @param smsPin
+     * @param applicationtokenid   the ID of the application session
+     * @param phoneNo              the callPhone to get the message
+     * @param smsPin               the pin-code massage to send to the user
      * @return
      */
     @Path("/{applicationtokenid}/send_sms_pin")
@@ -604,9 +605,9 @@ public class UserTokenResource {
     /**
      * The backend for sms messages to user
      *
-     * @param applicationtokenid
-     * @param phoneNo
-     * @param smsPin
+     * @param applicationtokenid    The application session ID
+     * @param phoneNo               The cellPhone to send message to
+     * @param smsMessage                 The message to send to the suer
      * @return
      */
     @Path("/{applicationtokenid}/send_sms")
@@ -615,8 +616,8 @@ public class UserTokenResource {
     @Produces(MediaType.APPLICATION_XML)
     public Response sendSMSMessage(@PathParam("applicationtokenid") String applicationtokenid,
                                    @FormParam("phoneNo") String phoneNo,
-                                   @FormParam("smsPin") String smsPin) {
-        log.info("Response sendSMSMessage: phoneNo:" + phoneNo + "smsPin:" + smsPin);
+                                   @FormParam("smsMessage") String smsMessage) {
+        log.info("Response sendSMSMessage: phoneNo:" + phoneNo + "smsMessage:" + smsMessage);
 
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
@@ -625,7 +626,6 @@ public class UserTokenResource {
 
 
         String cellNo = phoneNo;
-        String smsMessage = smsPin;
         String response = new CommandSendSMSToUser(smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage).execute();
 
         return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
@@ -641,7 +641,7 @@ public class UserTokenResource {
      * @param userticket             user session id
      * @param appTokenXml            application session data
      * @param userCredentialXml      user credential  i.e. (username and password)
-     * @param thirdPartyUserToknXml typically facebook user-token or other oauth2 usertoken
+     * @param thirdPartyUserTokenXml typically facebook user-token or other oauth2 usertoken
      * @return user session data
      */
     @Path("/{applicationtokenid}/{userticket}/create_user")
