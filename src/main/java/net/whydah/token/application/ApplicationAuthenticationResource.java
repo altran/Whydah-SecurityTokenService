@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -110,7 +112,7 @@ public class ApplicationAuthenticationResource {
         log.debug("renew session for applicationtokenid {}", applicationtokenid);
         if (AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             ApplicationToken token = AuthenticatedApplicationRepository.renewApplicationTokenId(applicationtokenid);
-            log.info("ApplicationToken for {} extended",token.getApplicationName());
+            log.info("ApplicationToken for {} extended, expires: {}", token.getApplicationName(), new SimpleDateFormat("yy-MM-dd HH:mm:ss").format(new Date(Long.parseLong(token.getExpires(), 10))));
             String applicationTokenXml = ApplicationTokenMapper.toXML(token);
             log.trace("extendApplicationSession returns applicationTokenXml={}", applicationTokenXml);
             return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
