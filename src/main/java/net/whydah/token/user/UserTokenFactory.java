@@ -209,6 +209,25 @@ public class UserTokenFactory {
         return false;
     }
 
+    public static boolean shouldReturnAnonymousUserToken(String applicationID, UserToken userToken) {
+        if ("true".equalsIgnoreCase(appConfig.getProperty("ANONYMOUSTOKEN"))) {
+            List<ApplicationRoleEntry> origRoleList = userToken.getRoleList();
+            List<ApplicationRoleEntry> roleList = new LinkedList<>();
+            log.info("getFilteredUserToken - filtering active");
+
+            for (int i = 0; i < origRoleList.size(); i++) {
+                ApplicationRoleEntry are = origRoleList.get(i);
+                if (are.getApplicationId().equalsIgnoreCase(applicationID)) {
+                    return true;
+                }
+            }
+            return false;
+
+        } else {
+            return true;
+        }
+
+    }
 
     public static UserToken fromUserIdentityJson(String userIdentityJSON) {
         UserToken userToken = parseUserIdentityJson(userIdentityJSON);
@@ -370,6 +389,15 @@ public class UserTokenFactory {
         log.info("getFilteredUserToken - found appid={}",myappid);
         if (shouldReturnFullUserToken(myappid)){
             log.info("getFilteredUserToken - no filtering");
+            return userToken;
+        }
+        if (shouldReturnAnonymousUserToken(myappid, userToken)) {
+            userToken.setCellPhone("");
+            userToken.setEmail("");
+            userToken.setFirstName("");
+            userToken.setLastSeen("");
+            userToken.setUserName("Oslo");
+            userToken.setRoleList(null);
             return userToken;
         } else {
             List<ApplicationRoleEntry> origRoleList = userToken.getRoleList();

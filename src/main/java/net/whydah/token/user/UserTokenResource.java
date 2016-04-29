@@ -132,9 +132,11 @@ public class UserTokenResource {
         }
         try {
             UserToken userToken = userAuthenticator.logonUser(applicationtokenid, appTokenXml, userCredentialXml);
-            userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
-            userToken.setDefcon(ApplicationThreatResource.getDEFCON());
-            return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return createUserTokenResponse(applicationtokenid, userToken);
+
+            //userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
+            //userToken.setDefcon(ApplicationThreatResource.getDEFCON());
+            //return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } catch (AuthenticationFailedException ae) {
             log.warn("getUserToken - User authentication failed");
             return Response.status(Response.Status.FORBIDDEN).entity("User authentication failed").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
@@ -364,10 +366,11 @@ public class UserTokenResource {
             return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build(); //406
         }
         log.trace("getUserTokenByUserTicket OK. Response={}", userToken.toString());
-        userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
-        userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
-        userToken.setDefcon(ApplicationThreatResource.getDEFCON());
-        return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        return createUserTokenResponse(applicationtokenid, userToken);
+        //userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
+        //userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
+        //userToken.setDefcon(ApplicationThreatResource.getDEFCON());
+        //return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
     }
 
     /**
@@ -674,8 +677,10 @@ public class UserTokenResource {
             // Report to statistics
             ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUserName(), "userCreated", applicationtokenid);
             MonitorReporter.reportActivity(observedActivity);
+            return createUserTokenResponse(applicationtokenid, userToken);
 
-            return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+
+            //return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } catch (AuthenticationFailedException ae) {
             log.warn("createAndLogOnUser - Error creating or authenticating user. thirdPartyUserTokenXml={}", thirdPartyUserTokenXml);
             return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
@@ -726,7 +731,9 @@ public class UserTokenResource {
             // Report to statistics
             ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUserName(), "userCreated", applicationtokenid);
             MonitorReporter.reportActivity(observedActivity);
-            return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return createUserTokenResponse(applicationtokenid, userToken);
+
+//            return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } catch (AuthenticationFailedException ae) {
             log.warn("createAndLogOnPinUser - Error creating or authenticating user. jsonuser={}", newUserjson);
             return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
@@ -738,6 +745,7 @@ public class UserTokenResource {
         userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
         userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
         userToken.setDefcon(ApplicationThreatResource.getDEFCON());
+        UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken);
         return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
     }
 
