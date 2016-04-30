@@ -397,7 +397,8 @@ public class UserTokenFactory {
             userToken.setFirstName("");
             userToken.setLastSeen("");
             userToken.setUserName("Oslo");
-            userToken.setRoleList(null);
+            List<ApplicationRoleEntry> roleList = new ArrayList<>();
+            userToken.setRoleList(roleList);
             return userToken;
         } else {
             List<ApplicationRoleEntry> origRoleList = userToken.getRoleList();
