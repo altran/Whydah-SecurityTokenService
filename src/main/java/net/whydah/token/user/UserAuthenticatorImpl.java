@@ -102,13 +102,11 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
             try {
                 String adminUserTokenId = getWhyDahAdminUserTokenId(applicationtokenid, appTokenXml);
                 String usersQuery = cellPhone;
-
                 // produserer userJson. denne kan inneholde fler users dette er json av
                 String usersJson = new CommandListUsers(useradminservice, applicationtokenid, adminUserTokenId, usersQuery).execute();
                 log.trace("CommandListUsers for query {} found users {}", usersQuery, usersJson);
-
                 UserToken userTokenIdentity = getFirstMatch(usersJson, cellPhone);
-                log.trace("Found matching UserIdentity {}", userTokenIdentity);
+                log.info("Found matching UserIdentity {}", userTokenIdentity);
 
                 String userAggregateJson = new CommandGetUserAggregate(useradminservice, applicationtokenid, adminUserTokenId, userTokenIdentity.getUid()).execute();
 
@@ -126,7 +124,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
                 throw e;
             }
         } else {
-            log.warn("logonPinUser, illegal pin attempted");
+            log.warn("logonPinUser, illegal pin attempted - pin not registered");
         }
         throw new AuthenticationFailedException("Pin authentication failed. Status code ");
     }
