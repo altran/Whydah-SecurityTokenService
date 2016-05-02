@@ -134,15 +134,15 @@ public class ActiveUserTokenRepository {
         utoken.setDefcon(ApplicationThreatResource.getDEFCON());
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
         utoken.setLifespan(String.valueOf(60 * new Random().nextInt(100)));
-        addUserToken(utoken,applicationTokenId);
+        addUserToken(utoken, applicationTokenId, "renew");
         ObservedActivity observedActivity = new UserSessionObservedActivity(utoken.getUid(),"userSessionRenewal",applicationTokenId);
         MonitorReporter.reportActivity(observedActivity);
 
     }
 
-    public static void addUserToken(UserToken userToken,String applicationTokenId) {
+    public static void addUserToken(UserToken userToken, String applicationTokenId, String authType) {
         if (userToken.getTokenid() == null) {
-            log.error("Error: token has net tokenid");
+            log.error("Error: UserToken has no usertokenid");
             return;
         }
 
@@ -157,7 +157,13 @@ public class ActiveUserTokenRepository {
         }
         UserToken copy = userToken.copy();
         activeusertokensmap.put(copy.getTokenid(), copy);
-        ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUid(),"userSessionCreated",applicationTokenId);
+        if ("renew".equalsIgnoreCase(authType)) {
+            return;  // alreqdy reported
+        }
+        ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUid(), "userSessionCreatedByPassword", applicationTokenId);
+        if ("pin".equalsIgnoreCase(authType)) {
+            observedActivity = new UserSessionObservedActivity(userToken.getUid(), "userSessionCreatedByPin", applicationTokenId);
+        }
         MonitorReporter.reportActivity(observedActivity);
         log.info("Added token with id {}", copy.getTokenid(), " content:" + copy);
     }

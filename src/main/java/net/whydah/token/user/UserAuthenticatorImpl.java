@@ -83,7 +83,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
                     userToken.setSecurityLevel("0");  // 3rd party token as source = securitylevel=0
                     userToken.setLifespan(defaultlifespan);
 
-                    ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid);
+                    ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
                     return userToken;
                     // return Response.ok(new Viewable("/usertoken.ftl", myToken)).build();
                 }
@@ -114,7 +114,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
                     userToken.setSecurityLevel("0");  // UserIdentity as source = securitylevel=0
                     userToken.setLifespan(defaultlifespan);
 
-                    ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid);
+                    ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
                     return userToken;
 
                 } else {
@@ -184,7 +184,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
             UserToken userToken = userTokenFactory.fromUserAggregate(userAggregateXML);
             userToken.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
             userToken.setLifespan(defaultlifespan);
-            ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid);
+            ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid, "usertokenid");
             return userToken;
 
         } else {
