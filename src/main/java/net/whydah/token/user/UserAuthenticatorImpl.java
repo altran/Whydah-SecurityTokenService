@@ -97,7 +97,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
     @Override
     public UserToken logonPinUser(String applicationtokenid, String appTokenXml, String adminUserTokenId, String cellPhone, String pin) {
-        log.trace("logonPinUser() called with " + "applicationtokenid = [" + applicationtokenid + "], appTokenXml = [" + appTokenXml + "], cellPhone = [" + cellPhone + "], pin = [" + pin + "]");
+        log.info("logonPinUser() called with " + "applicationtokenid = [" + applicationtokenid + "], appTokenXml = [" + appTokenXml + "], cellPhone = [" + cellPhone + "], pin = [" + pin + "]");
         if (ActivePinRepository.usePin(cellPhone, pin)) {
             try {
                 String usersQuery = cellPhone;
