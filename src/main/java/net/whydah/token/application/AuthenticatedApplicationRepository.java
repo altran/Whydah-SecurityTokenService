@@ -26,7 +26,7 @@ public class AuthenticatedApplicationRepository {
 
     public static int SESSION_EXTENSION_TIME_IN_SECONDS = 240;
 
-    private static final Map<String, ApplicationToken> apptokens;
+    private static final Map<String, ApplicationToken> applicationTokenMap;
 
     static {
         AppConfig appConfig = new AppConfig();
@@ -43,46 +43,46 @@ public class AuthenticatedApplicationRepository {
         }
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
-        apptokens = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"_authenticated_apptokens");
-        log.info("Connecting to map {}",appConfig.getProperty("gridprefix")+"_authenticated_apptokens");
+        applicationTokenMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "_authenticated_applicationtokens");
+        log.info("Connecting to map {}", appConfig.getProperty("gridprefix") + "_authenticated_applicationtokens");
     }
 
 
     public static void addApplicationToken(ApplicationToken token) {
-        apptokens.put(token.getApplicationTokenId(), token);
+        applicationTokenMap.put(token.getApplicationTokenId(), token);
     }
 
     public static ApplicationToken getApplicationToken(String applicationtokenid) {
-        return apptokens.get(applicationtokenid);
+        return applicationTokenMap.get(applicationtokenid);
     }
 
 
     public static boolean verifyApplicationToken(ApplicationToken token) {
-        return token.equals(apptokens.get(token.getApplicationTokenId()));
+        return token.equals(applicationTokenMap.get(token.getApplicationTokenId()));
     }
 
     public static boolean verifyApplicationTokenId(String applicationtokenid) {
-        return apptokens.get(applicationtokenid) != null;
+        return applicationTokenMap.get(applicationtokenid) != null;
     }
 
     public static ApplicationToken renewApplicationTokenId(String applicationtokenid) {
-        ApplicationToken temp = apptokens.get(applicationtokenid);
+        ApplicationToken temp = applicationTokenMap.get(applicationtokenid);
         temp.setExpires(updateExpires(temp.getExpires()));
-        apptokens.put(temp.getApplicationTokenId(), temp);
+        applicationTokenMap.put(temp.getApplicationTokenId(), temp);
         return temp;
     }
 
     public static boolean verifyApplicationTokenXml(String applicationtokenXml) {
         try {
-            String appid = getApplocationTokenIdFromApplicationTokenXML(applicationtokenXml);
-            return apptokens.get(appid) != null;
+            String applicationID = getApplocationTokenIdFromApplicationTokenXML(applicationtokenXml);
+            return applicationTokenMap.get(applicationID) != null;
         } catch (StringIndexOutOfBoundsException e) {
             return false;
         }
     }
 
     public static String getApplicationIdFromApplicationTokenID(String applicationtokenid) {
-        ApplicationToken at = apptokens.get(applicationtokenid);
+        ApplicationToken at = applicationTokenMap.get(applicationtokenid);
         if (at!=null) {
             return at.getApplicationID();
         }
