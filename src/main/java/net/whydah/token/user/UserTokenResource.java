@@ -533,15 +533,16 @@ public class UserTokenResource {
                                @FormParam("smsPin") String smsPin) {
         log.info("sendSMSPin: phoneNo:" + phoneNo + ", smsPin:" + smsPin);
 
+        if (phoneNo == null || smsPin == null) {
+            log.warn("sendSMSPin: attempt to use service with emty parameters");
+            return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        }
+
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
 
-        if (phoneNo == null || smsPin == null) {
-            log.warn("sendSMSPin: attempt to use service with emty parameters");
-            return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
-        }
 
         ActivePinRepository.setPin(phoneNo, smsPin);
 

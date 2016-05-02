@@ -38,7 +38,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     }
 
     @Override
-    public UserToken logonUser(final String applicationTokenId, final String appTokenXml, final String userCredentialXml) {
+    public UserToken logonUser(String applicationTokenId, String appTokenXml, final String userCredentialXml) {
         log.trace("logonUser - Calling UserAdminService at " + useradminservice + " appTokenXml:" + appTokenXml + " userCredentialXml:" + userCredentialXml);
         try {
             WebResource webResource = uasResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH);
