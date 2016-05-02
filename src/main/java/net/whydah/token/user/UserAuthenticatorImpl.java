@@ -105,19 +105,24 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
                 String usersJson = new CommandListUsers(useradminservice, applicationtokenid, adminUserTokenId, usersQuery).execute();
                 log.trace("CommandListUsers for query {} found users {}", usersQuery, usersJson);
                 UserToken userTokenIdentity = getFirstMatch(usersJson, cellPhone);
-                log.info("Found matching UserIdentity {}", userTokenIdentity);
+                if (userTokenIdentity != null) {
+                    log.info("Found matching UserIdentity {}", userTokenIdentity);
 
-                String userAggregateJson = new CommandGetUserAggregate(useradminservice, applicationtokenid, adminUserTokenId, userTokenIdentity.getUid()).execute();
+                    String userAggregateJson = new CommandGetUserAggregate(useradminservice, applicationtokenid, adminUserTokenId, userTokenIdentity.getUid()).execute();
 
-                UserToken userToken = UserTokenFactory.fromUserAggregateJson(userAggregateJson);
-                userToken.setSecurityLevel("0");  // UserIdentity as source = securitylevel=0
-                userToken.setLifespan(defaultlifespan);
+                    UserToken userToken = UserTokenFactory.fromUserAggregateJson(userAggregateJson);
+                    userToken.setSecurityLevel("0");  // UserIdentity as source = securitylevel=0
+                    userToken.setLifespan(defaultlifespan);
 
-                ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid);
+                    ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid);
+                    return userToken;
+
+                } else {
+                    log.error("Unable to find a user matching the given phonenumber.");
+                }
 
                 //TODO Make flow for error handling in case of no userId above
 
-                return userToken;
             } catch (Exception e) {
                 log.error("logonPinUser - Problems connecting to {}", useradminservice, e);
                 throw e;
@@ -128,10 +133,13 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         throw new AuthenticationFailedException("Pin authentication failed. Status code ");
     }
 
+
     /**
-     * This is a temporary solution. It should be replaced by a better serarch method in User Identity Backend's Lucene-serarch.
-     * <p>
-     * UIB's Lucene doesn't care about the "mobile="- or "username"-part of the query, resulting in a wildcard-search with the phoneno!
+     * Method to enable pin-logon for whydah users
+     * Implements the following prioritizing
+     * a)  userName+cellPhone = number
+     * b)  userName = number
+     * c)  cellPhone=number
      *
      * @param usersJson
      * @param cellPhone
@@ -139,8 +147,21 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
      */
     private UserToken getFirstMatch(String usersJson, String cellPhone) {
         List<UserToken> userTokens = UserTokenFactory.fromUsersIdentityJson(usersJson);
+        // First lets find complete matches
         for (UserToken userIdentity : userTokens) {
             if (cellPhone.equals(userIdentity.getCellPhone()) && cellPhone.equals(userIdentity.getUserName())) {
+                return userIdentity;
+            }
+        }
+        // The prioritize userName
+        for (UserToken userIdentity : userTokens) {
+            if (cellPhone.equals(userIdentity.getUserName())) {
+                return userIdentity;
+            }
+        }
+        // The and finally cellPhone users
+        for (UserToken userIdentity : userTokens) {
+            if (cellPhone.equals(userIdentity.getCellPhone())) {
                 return userIdentity;
             }
         }
