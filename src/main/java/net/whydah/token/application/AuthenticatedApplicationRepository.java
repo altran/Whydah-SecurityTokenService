@@ -18,14 +18,13 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import java.io.FileNotFoundException;
 import java.io.StringReader;
-import java.util.HashMap;
 import java.util.Map;
 
 
 public class AuthenticatedApplicationRepository {
     private final static Logger log = LoggerFactory.getLogger(AuthenticatedApplicationRepository.class);
 
-    public static int SESSION_EXTENSION_TIME_IN_SECONDS= 120;
+    public static int SESSION_EXTENSION_TIME_IN_SECONDS = 240;
 
     private static final Map<String, ApplicationToken> apptokens;
 
@@ -75,7 +74,7 @@ public class AuthenticatedApplicationRepository {
 
     public static boolean verifyApplicationTokenXml(String applicationtokenXml) {
         try {
-            String appid = getAppTokenIdFromAppTokenXML(applicationtokenXml);
+            String appid = getApplocationTokenIdFromApplicationTokenXML(applicationtokenXml);
             return apptokens.get(appid) != null;
         } catch (StringIndexOutOfBoundsException e) {
             return false;
@@ -87,19 +86,19 @@ public class AuthenticatedApplicationRepository {
         if (at!=null) {
             return at.getApplicationID();
         }
-        log.error("getApplicationIdFromApplicationTokenID - Unable to find applicationID for applkicationtokenid="+applicationtokenid);
+        log.error("getApplicationIdFromApplicationTokenID - Unable to find applicationID for applicationtokenId=" + applicationtokenid);
         return "";
     }
 
-    public static  String getAppTokenIdFromAppTokenXML(String appTokenXML) {
-        String appTokenId = "";
-        if (appTokenXML == null) {
-            log.debug("roleXml was empty, so returning empty orgName.");
+    public static String getApplocationTokenIdFromApplicationTokenXML(String applicationTokenXML) {
+        String applicationTokenId = "";
+        if (applicationTokenXML == null) {
+            log.debug("applicationTokenXML was empty, so returning empty applicationTokenId.");
         } else {
             String expression = "/applicationtoken/params/applicationtokenID[1]";
-            appTokenId = findValue(appTokenXML, expression);
+            applicationTokenId = findValue(applicationTokenXML, expression);
         }
-        return appTokenId;
+        return applicationTokenId;
     }
 
 
