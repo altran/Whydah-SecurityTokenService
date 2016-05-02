@@ -146,6 +146,8 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
      * @return
      */
     private UserToken getFirstMatch(String usersJson, String cellPhone) {
+        log.info("Searching for: ", cellPhone);
+        log.info("Searching in: ", usersJson);
         List<UserToken> userTokens = UserTokenFactory.fromUsersIdentityJson(usersJson);
         // First lets find complete matches
         for (UserToken userIdentity : userTokens) {
@@ -155,12 +157,14 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         }
         // The prioritize userName
         for (UserToken userIdentity : userTokens) {
+            log.info("getFirstMatch: getUserName: " + userIdentity.getUserName());
             if (cellPhone.equals(userIdentity.getUserName())) {
                 return userIdentity;
             }
         }
         // The and finally cellPhone users
         for (UserToken userIdentity : userTokens) {
+            log.info("getFirstMatch: cellPhone: " + userIdentity.getCellPhone());
             if (cellPhone.equals(userIdentity.getCellPhone())) {
                 return userIdentity;
             }
