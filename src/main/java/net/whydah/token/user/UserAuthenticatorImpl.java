@@ -103,8 +103,8 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
                 String usersQuery = cellPhone;
                 // produserer userJson. denne kan inneholde fler users dette er json av
                 String usersJson = new CommandListUsers(useradminservice, applicationtokenid, adminUserTokenId, usersQuery).execute();
-                log.trace("CommandListUsers for query {} found users {}", usersQuery, usersJson);
-                UserToken userTokenIdentity = getFirstMatch(usersJson, cellPhone);
+                log.info("CommandListUsers for query {} found users {}", usersQuery, usersJson);
+                UserToken userTokenIdentity = getFirstMatch(usersJson, usersQuery);
                 if (userTokenIdentity != null) {
                     log.info("Found matching UserIdentity {}", userTokenIdentity);
 
