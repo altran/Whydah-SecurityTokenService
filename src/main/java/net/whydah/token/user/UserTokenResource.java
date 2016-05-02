@@ -391,6 +391,7 @@ public class UserTokenResource {
     //TODO Refacor to better name?
     public Response getUserTokenByDistributedPinAndLogonUser(@PathParam("applicationtokenid") String applicationtokenid,
                                                              @PathParam("userticket") String userticket,
+                                                             @FormParam("adminUserTokenId") String adminUserTokenId,
                                                              @FormParam("apptoken") String appTokenXml,
                                                              @FormParam("phoneno") String phoneno,
                                                              @FormParam("pin") String pin) {
@@ -413,7 +414,7 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
 
-        final UserToken userToken = userAuthenticator.logonPinUser(applicationtokenid, appTokenXml, "adminusertokenid", phoneno, pin);
+        final UserToken userToken = userAuthenticator.logonPinUser(applicationtokenid, appTokenXml, adminUserTokenId, phoneno, pin);
         if (userToken == null) {
             log.warn("getUserTokenByDistributedPinAndLogonUser - attempt to access with non acceptable username, phoneno={}", phoneno);
             return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();

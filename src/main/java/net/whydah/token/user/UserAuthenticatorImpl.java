@@ -88,7 +88,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
                     // return Response.ok(new Viewable("/usertoken.ftl", myToken)).build();
                 }
             } catch (Exception e) {
-                log.error("Problems connecting to {}", useradminservice);
+                log.error("createAndLogonPinUser - Problems connecting to {}", useradminservice);
                 throw e;
             }
         }
@@ -96,11 +96,10 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     }
 
     @Override
-    public UserToken logonPinUser(String applicationtokenid, String appTokenXml, String adminUserTokenIdparam, String cellPhone, String pin) {
+    public UserToken logonPinUser(String applicationtokenid, String appTokenXml, String adminUserTokenId, String cellPhone, String pin) {
         log.trace("logonPinUser() called with " + "applicationtokenid = [" + applicationtokenid + "], appTokenXml = [" + appTokenXml + "], cellPhone = [" + cellPhone + "], pin = [" + pin + "]");
         if (ActivePinRepository.usePin(cellPhone, pin)) {
             try {
-                String adminUserTokenId = getWhyDahAdminUserTokenId(applicationtokenid, appTokenXml);
                 String usersQuery = cellPhone;
                 // produserer userJson. denne kan inneholde fler users dette er json av
                 String usersJson = new CommandListUsers(useradminservice, applicationtokenid, adminUserTokenId, usersQuery).execute();
@@ -120,7 +119,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
                 return userToken;
             } catch (Exception e) {
-                log.error("Problems connecting to {}", useradminservice);
+                log.error("logonPinUser - Problems connecting to {}", useradminservice, e);
                 throw e;
             }
         } else {
