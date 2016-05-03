@@ -372,12 +372,16 @@ public class UserTokenFactory {
         }
     }
 
-    public static String getFieldFromUserAggregateJson(String expression, String jsonString ) throws PathNotFoundException {
+    public static String getFieldFromUserAggregateJson(String expression, String jsonString) {
         //String expression = "$.identity.uid";
         String value = "";
-        Object document = Configuration.defaultConfiguration().jsonProvider().parse(jsonString);
-        String result= JsonPath.read(document, expression);
-        value=result.toString();
+        try {
+            Object document = Configuration.defaultConfiguration().jsonProvider().parse(jsonString);
+            String result = JsonPath.read(document, expression);
+            value = result.toString();
+        } catch (Exception e) {
+            log.warn("getFieldFromUserAggregateJson failed. expression{} and jsonString {}", expression, jsonString);
+        }
 
         return value;
     }
