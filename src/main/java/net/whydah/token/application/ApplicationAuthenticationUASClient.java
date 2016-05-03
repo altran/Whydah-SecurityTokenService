@@ -26,7 +26,6 @@ public class ApplicationAuthenticationUASClient {
     private static final String APPLICATION_AUTH_PATH = "application/auth";
     public static final String APP_CREDENTIAL_XML = "appCredentialXml";
     private static AppConfig appConfig = new AppConfig();
-    ;
 
     public static boolean checkAppsecretFromUAS(ApplicationCredential applicationCredential) {
         ApplicationToken token = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(applicationCredential));

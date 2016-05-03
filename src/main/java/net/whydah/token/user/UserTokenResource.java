@@ -11,6 +11,7 @@ import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
+import net.whydah.token.config.ApplicationModelHelper;
 import net.whydah.token.config.SSLTool;
 import net.whydah.token.user.statistics.UserSessionObservedActivity;
 import org.slf4j.Logger;
@@ -420,6 +421,7 @@ public class UserTokenResource {
             return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
         log.info("getUserTokenByDistributedPinAndLogonUser - valid session created for {} ", phoneno);
+        ApplicationModelHelper.updateApplicationList(applicationtokenid, adminUserTokenId);
         return createUserTokenResponse(applicationtokenid, userToken);
 
     }
@@ -698,7 +700,6 @@ public class UserTokenResource {
      * @param applicationtokenid calling application session
      * @param pin                user session pin
      * @param appTokenXml        application session data
-     * @param userCredentialXml  user credential  i.e. (username and password)
      * @param newUserjson        a simple userjson for new user
      * @return user session data
      */
@@ -711,10 +712,9 @@ public class UserTokenResource {
                                           @PathParam("pin") String pin,
                                           @FormParam("apptoken") String appTokenXml,
                                           @FormParam("adminUserTokenId") String adminUserTokenId,
-                                          @FormParam("usercredential") String userCredentialXml,
                                           @FormParam("cellPhone") String cellPhone,
                                           @FormParam("jsonuser") String newUserjson) {
-        log.info("Response createAndLogOnPinUser: usercredential:" + userCredentialXml + "jsonuser:" + newUserjson);
+        log.info("Response createAndLogOnPinUser:  jsonuser:" + newUserjson);
 
         if (ApplicationMode.getApplicationMode() == ApplicationMode.DEV) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);

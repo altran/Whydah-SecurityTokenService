@@ -45,7 +45,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
             ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, userCredentialXml);
 
             UserToken userToken = getUserToken(applicationTokenId, appTokenXml, response);
-            AppConfig.updateApplinks(useradminservice, applicationTokenId, response.toString());
+            AppConfig.updateFullTokenApplicationList(useradminservice, applicationTokenId, response.toString());
 
             return userToken;
         } catch (Exception e) {

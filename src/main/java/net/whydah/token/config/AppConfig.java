@@ -98,20 +98,15 @@ public class AppConfig {
     }
 
 
-    public static void updateApplinks(URI userAdminServiceUri, String myAppTokenId, String responseXML) {
-        log.trace("updateApplinks(URI userAdminServiceUri:{}, String myAppTokenId:{}, String responseXML:{}",userAdminServiceUri,  myAppTokenId,  responseXML);
-        if (responseXML == null || responseXML.length() < 2) {
+    public static void updateFullTokenApplicationList(URI userAdminServiceUri, String myAppTokenId, String userTokenId) {
+        log.trace("updateFullTokenApplicationList(URI userAdminServiceUri:{}, String myAppTokenId:{}, String userTokenId:{}", userAdminServiceUri, myAppTokenId, userTokenId);
+        if (userTokenId == null || userTokenId.length() < 2) {
             // Ignore empty responses
             return;
         }
         if (shouldUpdate() || getFullTokenApplications() == null || fullTokenApplications.length() < 6) {
             try {
-                UserToken ut = UserTokenMapper.fromUserTokenXml(responseXML);
-                // Handle short responses without NPE
-                if (ut == null) {
-                    return;
-                }
-                String applicationsJson = new CommandListApplications(userAdminServiceUri, myAppTokenId, ut.getTokenid(), "").execute();
+                String applicationsJson = new CommandListApplications(userAdminServiceUri, myAppTokenId, userTokenId, "").execute();
                 log.debug("AppLications returned:" + applicationsJson);
                 List<Application> applications = ApplicationMapper.fromJsonList(applicationsJson);
                 String fTokenList = "";
@@ -129,9 +124,10 @@ public class AppConfig {
 
                 setFullTokenApplications(fTokenList.substring(0, fTokenList.length() - 1));
             } catch (Exception e) {
-                log.warn("updateApplinks - responseXML: {}", responseXML);
+                log.warn("updateFullTokenApplicationList - userTokenId: {}", userTokenId);
             }
         }
+        ApplicationModelHelper.updateApplicationList(myAppTokenId, userTokenId);
     }
 
 
