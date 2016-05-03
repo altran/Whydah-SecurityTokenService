@@ -31,7 +31,7 @@ public class ApplicationModelHelper {
         }
     }
 
-    public static boolean forcedUpdateApplicationList(URI userAdminServiceUri, String myAppTokenId, String userTokenXML) {
+    public static void forcedUpdateApplicationList(URI userAdminServiceUri, String myAppTokenId, String userTokenXML) {
         String userTokenId = UserTokenMapper.fromUserTokenXml(userTokenXML).getTokenid();
         String applicationsJson = new net.whydah.sso.commands.adminapi.application.CommandListApplications(userAdminServiceUri, myAppTokenId, userTokenId, "").execute();
         log.debug("AppLications returned:" + applicationsJson);
