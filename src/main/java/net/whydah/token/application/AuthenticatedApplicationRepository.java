@@ -6,6 +6,7 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.token.config.AppConfig;
+import net.whydah.token.config.ApplicationModelHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -67,7 +68,7 @@ public class AuthenticatedApplicationRepository {
 
     public static ApplicationToken renewApplicationTokenId(String applicationtokenid) {
         ApplicationToken temp = applicationTokenMap.get(applicationtokenid);
-        temp.setExpires(updateExpires(temp.getExpires()));
+        temp.setExpires(updateExpires(temp.getExpires(), temp.getApplicationID()));
         applicationTokenMap.put(temp.getApplicationTokenId(), temp);
         return temp;
     }
@@ -102,8 +103,9 @@ public class AuthenticatedApplicationRepository {
     }
 
 
-    private static String updateExpires(String oldExpiry){
-        // Simplified method, extend session with SESSION_EXTENSION_TIME_IN_SECONDS from NOW
+    private static String updateExpires(String oldExpiry, String applicationID) {
+        String applicationMaxSessionTime = ApplicationModelHelper.getParameterForApplication(ApplicationModelHelper.maxSessionTimoutSeconds, applicationID);
+        log.info("maxSessionTimoutSeconds: {} for applicationID: {}", applicationMaxSessionTime, applicationID);
         return String.valueOf(System.currentTimeMillis() + SESSION_EXTENSION_TIME_IN_SECONDS*1000);
     }
 
