@@ -5,6 +5,7 @@ import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import net.whydah.sso.application.types.ApplicationToken;
+import net.whydah.sso.util.ApplicationModelUtil;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationModelHelper;
 import org.slf4j.Logger;
@@ -104,7 +105,7 @@ public class AuthenticatedApplicationRepository {
 
 
     private static String updateExpires(String oldExpiry, String applicationID) {
-        String applicationMaxSessionTime = ApplicationModelHelper.getParameterForApplication(ApplicationModelHelper.maxSessionTimeoutSeconds, applicationID);
+        String applicationMaxSessionTime = ApplicationModelHelper.getParameterForApplication(ApplicationModelUtil.maxSessionTimeoutSeconds, applicationID);
         log.info("maxSessionTimeoutSeconds: {} for applicationID: {}", applicationMaxSessionTime, applicationID);
         if (applicationMaxSessionTime != null && (Long.parseLong(applicationMaxSessionTime) > 0)) {
             // Set to application configured maxSessionTimeoutSeconds if found and shave off 10 seconds
