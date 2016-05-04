@@ -15,7 +15,7 @@ public class ApplicationModelHelper {
     private static URI userAdminServiceUri = null;
     private static AppConfig appConfig = new AppConfig();
 
-    public static final String maxSessionTimoutSeconds = "$.security.maxSessionTimoutSeconds";
+    public static final String maxSessionTimeoutSeconds = "$.security.maxSessionTimoutSeconds";
     public static final String minDEFCON = "$.security.minDEFCON";
     public static final String minSecurityLevel = "$.security.minSecurityLevel";
 
@@ -30,7 +30,7 @@ public class ApplicationModelHelper {
         return applications;
     }
 
-    // TODO - complete implementation
+    // JsonPath query against Application.json to find value, empty string if not found
     public static String getParameterForApplication(String param, String applicationID) {
         if (applications == null) {
             return "";
