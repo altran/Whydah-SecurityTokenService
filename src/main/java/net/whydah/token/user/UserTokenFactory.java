@@ -217,9 +217,11 @@ public class UserTokenFactory {
             for (int i = 0; i < origRoleList.size(); i++) {
                 ApplicationRoleEntry are = origRoleList.get(i);
                 if (are.getApplicationId().equalsIgnoreCase(applicationID)) {
+                    // Role found, no ANONYMOUSTOKEN filtering
                     return false;
                 }
             }
+            // Role not found,ANONYMOUSTOKEN flag set - we should ANONYMOUSTOKEN
             return true;
 
         } else {
