@@ -217,12 +217,13 @@ public class UserTokenFactory {
             for (int i = 0; i < origRoleList.size(); i++) {
                 ApplicationRoleEntry are = origRoleList.get(i);
                 if (are.getApplicationId().equalsIgnoreCase(applicationID)) {
-                    return true;
+                    return false;
                 }
             }
-            return false;
+            return true;
 
         } else {
+            // No ANONYMOUSTOKEN configured
             return false;
         }
 
