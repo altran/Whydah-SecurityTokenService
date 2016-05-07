@@ -70,15 +70,15 @@ public class UserTokenTest {
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
         utoken.setTokenid(UUID.randomUUID().toString());
         utoken.setPersonRef("78125637812638");
-        utoken.setLifespan(String.valueOf(2*60 * 60 * new Random().nextInt(100)));
+        utoken.setLifespan(String.valueOf(2 * 60 * 60 * new Random().nextInt(100)));
 
         ActiveUserTokenRepository.addUserToken(utoken, "", "");
-        assertTrue("Verification of valid token failed", ActiveUserTokenRepository.verifyUserToken(utoken,""));
+        assertTrue("Verification of valid token failed", ActiveUserTokenRepository.verifyUserToken(utoken, ""));
 
         utoken.setFirstName("Pelle");
         String token = freemarkerProcessor.toXml(utoken);
         assertTrue("Token not updated", token.indexOf("Pelle") > 0);
-        assertFalse("Verification of in-valid token successful", ActiveUserTokenRepository.verifyUserToken(utoken,""));
+        assertFalse("Verification of in-valid token successful", ActiveUserTokenRepository.verifyUserToken(utoken, ""));
     }
 
     @Test
@@ -92,7 +92,7 @@ public class UserTokenTest {
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis() - 1000));
         utoken.setLifespan("0");
         ActiveUserTokenRepository.addUserToken(utoken, "", "");
-        assertFalse("Verification of timed-out token successful", ActiveUserTokenRepository.verifyUserToken(utoken,""));
+        assertFalse("Verification of timed-out token successful", ActiveUserTokenRepository.verifyUserToken(utoken, ""));
     }
 
     @Test
@@ -206,7 +206,7 @@ public class UserTokenTest {
 
         UserToken userToken = new UserTokenFactory("0").fromUserAggregate(identityXML);
 
-                //System.out.printf(userToken.toString());
+        //System.out.printf(userToken.toString());
         //String xml = freemarkerProcessor.toXml(userToken);
         //System.out.println(freemarkerProcessor.toXml(userToken));
 
@@ -282,6 +282,7 @@ public class UserTokenTest {
         assertTrue(roleList.size() == 4);
 
     }
+
     @Test
     public void testUserTokenFullUserToken() throws Exception {
         assertTrue(UserTokenFactory.shouldReturnFullUserToken("2211"));
@@ -349,18 +350,17 @@ public class UserTokenTest {
         assertTrue(freemarkerProcessor.toXml(userToken).indexOf("UserAdmin") > 0);
         assertTrue(freemarkerProcessor.toXml(userToken).indexOf("WhydahUserAdmin") > 0);
 
-        ApplicationCredential cred = new ApplicationCredential("19","myapp","dummy");
+        ApplicationCredential cred = new ApplicationCredential("19", "myapp", "dummy");
         ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
         AuthenticatedApplicationRepository.addApplicationToken(imp);
-
 
 
         List<ApplicationRoleEntry> origRoleList = userToken.getRoleList();
         List<ApplicationRoleEntry> roleList = new LinkedList<>();
         String myappid = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(imp.getApplicationTokenId());
-        for (int i=0;i<origRoleList.size();i++){
+        for (int i = 0; i < origRoleList.size(); i++) {
             ApplicationRoleEntry are = origRoleList.get(i);
-            if (are.getApplicationId().equalsIgnoreCase(myappid)){
+            if (are.getApplicationId().equalsIgnoreCase(myappid)) {
                 roleList.add(are);
             }
         }
@@ -368,4 +368,4 @@ public class UserTokenTest {
 
     }
 
-    }
+}

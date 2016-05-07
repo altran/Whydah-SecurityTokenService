@@ -17,6 +17,9 @@ public class ApplicationModelHelper {
 
 
     public static Application getApplication(String applicationID) {
+        if (getApplicationList() == null) {
+            return null;
+        }
         return ApplicationModelUtil.getApplication(applicationID);
     }
 
