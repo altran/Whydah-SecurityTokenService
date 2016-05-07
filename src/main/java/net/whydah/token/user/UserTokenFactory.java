@@ -207,9 +207,11 @@ public class UserTokenFactory {
             }
         }
         // Check if the application has been configured without filtering
-        if ("false".equalsIgnoreCase(ApplicationModelHelper.getApplication(applicationID).getSecurity().getUserTokenFilter())) {
-            log.info("shouldReturnFullUserToken from UIB=true");
-            return true;
+        if (ApplicationModelHelper.getApplication(applicationID) != null) {
+            if ("false".equalsIgnoreCase(ApplicationModelHelper.getApplication(applicationID).getSecurity().getUserTokenFilter())) {
+                log.info("shouldReturnFullUserToken from UIB=true");
+                return true;
+            }
         }
         log.trace("shouldReturnFullUserToken=false");
         return false;
