@@ -368,10 +368,6 @@ public class UserTokenResource {
         }
         log.trace("getUserTokenByUserTicket OK. Response={}", userToken.toString());
         return createUserTokenResponse(applicationtokenid, userToken);
-        //userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
-        //userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
-        //userToken.setDefcon(ApplicationThreatResource.getDEFCON());
-        //return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
     }
 
     /**

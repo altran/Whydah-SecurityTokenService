@@ -11,6 +11,7 @@ import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
+import net.whydah.token.config.ApplicationModelHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -201,9 +202,14 @@ public class UserTokenFactory {
         String[] applicationIDs = AppConfig.getFullTokenApplications().split(",");
         for (int i = 0; i < applicationIDs.length; i++){
             if (applicationIDs[i].equalsIgnoreCase(applicationID)) {
-                log.info("shouldReturnFullUserToken=true");
+                log.info("shouldReturnFullUserToken from properties=true");
                 return true;
             }
+        }
+        // Check if the application has been configured without filtering
+        if ("false".equalsIgnoreCase(ApplicationModelHelper.getApplication(applicationID).getSecurity().getUserTokenFilter())) {
+            log.info("shouldReturnFullUserToken from UIB=true");
+            return true;
         }
         log.trace("shouldReturnFullUserToken=false");
         return false;

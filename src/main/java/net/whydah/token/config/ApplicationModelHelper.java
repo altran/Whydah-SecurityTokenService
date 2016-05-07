@@ -1,9 +1,13 @@
 package net.whydah.token.config;
 
+import net.whydah.sso.application.mappers.ApplicationMapper;
 import net.whydah.sso.application.types.Application;
+import net.whydah.sso.basehelpers.JsonPathHelper;
 import net.whydah.sso.util.ApplicationModelUtil;
 import java.net.URI;
 import java.util.List;
+
+import static net.whydah.sso.util.ApplicationModelUtil.getApplicationList;
 
 public class ApplicationModelHelper {
     private static URI userAdminServiceUri = null;
@@ -13,8 +17,16 @@ public class ApplicationModelHelper {
         userAdminServiceUri = URI.create(appConfig.getProperty("myuri"));
     }
 
+    public static Application getApplication(String applicationID) {
+        for (Application application : getApplicationList()) {
+            return application;
+        }
+        return null;
+    }
+
+    // TODO temp override
     public static List<Application> getApplicationList() {
-        return ApplicationModelUtil.getApplicationList();
+        return getApplicationList();
     }
 
     // JsonPath query against Application.json to find value, empty string if not found
