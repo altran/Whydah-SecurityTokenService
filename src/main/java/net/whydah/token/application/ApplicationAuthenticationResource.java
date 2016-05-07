@@ -117,7 +117,7 @@ public class ApplicationAuthenticationResource {
             log.trace("extendApplicationSession returns applicationTokenXml={}", applicationTokenXml);
             return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
-            log.info("applicationtokenid not valid");
+            log.warn("applicationtokenid not valid");
             return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
     }
