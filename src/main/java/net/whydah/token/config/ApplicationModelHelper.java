@@ -15,11 +15,11 @@ public class ApplicationModelHelper {
         userAdminServiceUri = URI.create(appConfig.getProperty("myuri"));
     }
 
+
     public static Application getApplication(String applicationID) {
-        ApplicationModelUtil.getApplication(applicationID);
+        return ApplicationModelUtil.getApplication(applicationID);
     }
 
-    // TODO temp override
     public static List<Application> getApplicationList() {
         return ApplicationModelUtil.getApplicationList();
     }
