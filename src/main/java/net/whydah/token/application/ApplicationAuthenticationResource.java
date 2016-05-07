@@ -79,7 +79,7 @@ public class ApplicationAuthenticationResource {
     public Response logonApplication(@FormParam("applicationcredential") String appCredentialXml) {
         log.trace("logonApplication with applicationcredential={}", appCredentialXml);
         if (!verifyApplicationCredentials(appCredentialXml)) {
-            log.warn("logonApplication - illegal applicationcredential, returning FORBIDDEN");
+            log.warn("logonApplication - illegal applicationcredential applicationID:{} , returning FORBIDDEN", ApplicationCredentialMapper.fromXml(appCredentialXml).getApplicationID());
             return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
         ApplicationToken token = ApplicationTokenMapper.fromApplicationCredentialXML(appCredentialXml);
