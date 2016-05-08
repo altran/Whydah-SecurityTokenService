@@ -29,12 +29,12 @@
     <logger name="org.apache.commons.httpclient" level="WARN" />
 
     <logger name="net.whydah.token.file.StaticFiles" level="INFO" />
-    <logger name="net.whydah.token.config.FreemarkerViewProcessor" level="INFO" />
+    <logger name="net.whydah.token.config.FreemarkerViewProcessor" level="WARN"/>
     <logger name="net.whydah.token.file.StaticFileViewProcessor" level="INFO" />
     <logger name="net.whydah.token.application.ApplicationToken" level="INFO" />
-    <logger name="net.whydah" level="INFO" />
+    <logger name="net.whydah" level="DEBUG"/>
 
-    <root level="INFO">
+    <root level="DEBUG">
 <!--        <appender-ref ref="STDOUT" />   -->
         <appender-ref ref="FILE" />
     </root>
