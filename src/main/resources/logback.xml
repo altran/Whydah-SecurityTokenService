@@ -32,6 +32,8 @@
     <logger name="net.whydah.token.config.FreemarkerViewProcessor" level="WARN"/>
     <logger name="net.whydah.token.file.StaticFileViewProcessor" level="INFO" />
     <logger name="net.whydah.token.application.ApplicationToken" level="INFO" />
+    <logger name="org.valuereporter.agent.activity" level="WARN"/>
+
     <logger name="net.whydah" level="DEBUG"/>
 
     <root level="DEBUG">
