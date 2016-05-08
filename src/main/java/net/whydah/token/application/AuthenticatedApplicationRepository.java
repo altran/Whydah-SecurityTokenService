@@ -26,7 +26,7 @@ import java.util.Map;
 public class AuthenticatedApplicationRepository {
     private final static Logger log = LoggerFactory.getLogger(AuthenticatedApplicationRepository.class);
 
-    public static int DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = 240;
+    public static int DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = 2400;
 
     private static final Map<String, ApplicationToken> applicationTokenMap;
 
