@@ -287,7 +287,9 @@ public class UserTokenFactory {
             userToken.setEmail(email);
             userToken.setPersonRef(personRef);
             userToken.setCellPhone(cellPhone);
-            return userToken;
+            if (uid != null && uid.length() > 5) {
+                return userToken;
+            }
         } catch (Exception var10) {
             log.error("Error parsing userAggregateJSON " + userIdentityJSON, var10);
         }
