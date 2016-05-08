@@ -69,7 +69,9 @@ public class AuthenticatedApplicationRepository {
 
     public static ApplicationToken renewApplicationTokenId(String applicationtokenid) {
         ApplicationToken temp = applicationTokenMap.get(applicationtokenid);
+        String oldExpires = temp.getExpiresFormatted();
         temp.setExpires(updateExpires(temp.getExpires(), temp.getApplicationID()));
+        log.info("Updated expiry for applicationID:{}  oldExpiry:{}, newExpiry: {}", applicationtokenid, oldExpires, temp.getExpiresFormatted());
         applicationTokenMap.put(temp.getApplicationTokenId(), temp);
         return temp;
     }
@@ -107,7 +109,7 @@ public class AuthenticatedApplicationRepository {
     private static String updateExpires(String oldExpiry, String applicationID) {
         String applicationMaxSessionTime = ApplicationModelHelper.getParameterForApplication(ApplicationModelUtil.maxSessionTimeoutSeconds, applicationID);
         if (applicationMaxSessionTime != null && (Long.parseLong(applicationMaxSessionTime) > 0)) {
-            log.info("maxSessionTimeoutSeconds found: {} for applicationID: {}", Long.parseLong(applicationMaxSessionTime) * 1000 - 10 * 1000, applicationID);
+            log.info("maxSessionTimeoutSeconds found: {} for applicationID: {}", Long.parseLong(applicationMaxSessionTime), applicationID);
             // Set to application configured maxSessionTimeoutSeconds if found and shave off 10 seconds
             return String.valueOf(System.currentTimeMillis() + Long.parseLong(applicationMaxSessionTime) * 1000 - 10 * 1000);
 
