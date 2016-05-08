@@ -84,7 +84,7 @@ public class ApplicationAuthenticationResource {
         }
         ApplicationToken token = ApplicationTokenMapper.fromApplicationCredentialXML(appCredentialXml);
         token.setBaseuri(appConfig.getProperty("myuri"));
-        token.setExpires(String.valueOf((System.currentTimeMillis() + 10 * new Random().nextInt(500))));
+        token.setExpires(String.valueOf((System.currentTimeMillis() + AuthenticatedApplicationRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000)));
         AuthenticatedApplicationRepository.addApplicationToken(token);
         String applicationTokenXml = ApplicationTokenMapper.toXML(token);
         log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
@@ -109,12 +109,12 @@ public class ApplicationAuthenticationResource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response extendApplicationSession(@PathParam("applicationtokenid") String applicationtokenid) {
-        log.debug("renew session for applicationtokenid {}", applicationtokenid);
+        log.debug("renew session for applicationtokenid: {}", applicationtokenid);
         if (AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             ApplicationToken token = AuthenticatedApplicationRepository.renewApplicationTokenId(applicationtokenid);
-            log.info("ApplicationToken for {} extended, expires: {}", token.getApplicationName(), new SimpleDateFormat("yy-MM-dd HH:mm:ss").format(new Date(Long.parseLong(token.getExpires(), 10))));
+            log.info("ApplicationToken for {} extended, expires: {}", token.getApplicationName(), token.getExpiresFormatted());
             String applicationTokenXml = ApplicationTokenMapper.toXML(token);
-            log.trace("extendApplicationSession returns applicationTokenXml={}", applicationTokenXml);
+            log.debug("extendApplicationSession returns applicationTokenXml={}", applicationTokenXml);
             return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
             log.warn("applicationtokenid not valid");
