@@ -1,11 +1,11 @@
 <usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="ca544816-cdec-4cde-b2c3-fee8d283ac30">
-    <uid></uid>
+    <uid>useradmin</uid>
     <timestamp></timestamp>
     <lifespan>3600000</lifespan>
     <issuer>/token/issuer/tokenverifier</issuer>
     <securitylevel>0</securitylevel>
     <DEFCON>DEFCON5</DEFCON>
-    <username></username>
+    <username><useradmin/username>
     <firstname>Olav</firstname>
     <lastname>Nordmann</lastname>
     <email></email>
