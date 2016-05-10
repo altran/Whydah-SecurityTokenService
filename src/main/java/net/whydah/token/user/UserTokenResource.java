@@ -41,6 +41,7 @@ public class UserTokenResource {
     private static Map userticketmap = new HashMap();
     private static Map<String, String> userpinmap = new HashMap();
     private static Map applicationtokenidmap = new HashMap();
+    private static java.util.Random generator = new java.util.Random();
 
     private static final String smsGwServiceURL;
     private static final String smsGwServiceAccount;
@@ -565,6 +566,54 @@ public class UserTokenResource {
     }
 
     /**
+     * The backend for PIN signup processes
+     *
+     * @param applicationtokenid the ID of the application session
+     * @param phoneNo            the callPhone to get the message
+     * @return
+     */
+    @Path("/{applicationtokenid}/generate_pin_and_send_sms_pin")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_XML)
+    public Response sendgenerateAndSendSMSPin(@PathParam("applicationtokenid") String applicationtokenid,
+                                              @FormParam("phoneNo") String phoneNo) {
+        log.info("sendgenerateAndSendSMSPin: phoneNo:" + phoneNo);
+
+        String smsPin = generatePin();
+        if (phoneNo == null || smsPin == null) {
+            log.warn("sendSMSPin: attempt to use service with emty parameters");
+            return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        }
+
+        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
+            log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        }
+
+
+        ActivePinRepository.setPin(phoneNo, smsPin);
+
+        //String cellNo = phoneNo;
+        //String smsMessage = smsPin;
+        log.info("CommandSendSMSToUser({}, {}, {}, {}, {}, cellNo, smsMessage)", smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam);
+        //new CommandSendSMSToUser(smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage).execute();
+        String serviceURL = appConfig.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
+        String serviceAccount = appConfig.getProperty("smsgw.serviceaccount");  //"serviceAccount";
+        String username = appConfig.getProperty("smsgw.username");  // "smsserviceusername";
+        String password = appConfig.getProperty("smsgw.password");  //"smsservicepassword";
+        String cellNo = phoneNo;
+        String smsMessage = smsPin;
+        String queryParam = appConfig.getProperty("smsgw.queryparams");
+        String response = new CommandSendSMSToUser(serviceURL, serviceAccount, username, password, queryParam, cellNo, smsMessage).execute();
+        log.debug("Answer from smsgw: " + response);
+        userpinmap.put(phoneNo, smsPin);
+
+        return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+
+    }
+
+    /**
      * @param applicationtokenid application session
      * @param appTokenXml        application session data
      * @param phoneno            user phonenumber
@@ -754,6 +803,15 @@ public class UserTokenResource {
             isEmpty = true;
         }
         return isEmpty;
+    }
+
+    public static String generatePin() {
+        generator.setSeed(System.currentTimeMillis());
+        int i = generator.nextInt(10000) % 10000;
+
+        java.text.DecimalFormat f = new java.text.DecimalFormat("0000");
+        return f.format(i);
+
     }
 
 }
