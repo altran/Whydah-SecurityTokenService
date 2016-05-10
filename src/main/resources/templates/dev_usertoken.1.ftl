@@ -5,7 +5,7 @@
     <issuer>/token/issuer/tokenverifier</issuer>
     <securitylevel>0</securitylevel>
     <DEFCON>DEFCON5</DEFCON>
-    <username><useradmin/username>
+    <username>useradmin</username>
     <firstname>Olav</firstname>
     <lastname>Nordmann</lastname>
     <email></email>
