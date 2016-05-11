@@ -4,6 +4,7 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import net.whydah.sso.commands.adminapi.user.CommandGetUserAggregate;
 import net.whydah.sso.user.helpers.UserTokenXpathHelper;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.config.AppConfig;
@@ -140,6 +141,13 @@ public class ActiveUserTokenRepository {
 
     }
 
+    public static void refreshUserToken(String usertokenid, String applicationTokenId, UserToken refreshedUserToken) {
+        UserToken oldusertoken = ActiveUserTokenRepository.getUserToken(usertokenid, applicationTokenId);
+        refreshedUserToken.setTokenid(oldusertoken.getTokenid());
+        addUserToken(refreshedUserToken, applicationTokenId, "refresh");
+
+    }
+
     public static void addUserToken(UserToken userToken, String applicationTokenId, String authType) {
         if (userToken.getTokenid() == null) {
             log.error("Error: UserToken has no usertokenid");
@@ -158,6 +166,9 @@ public class ActiveUserTokenRepository {
         UserToken copy = userToken.copy();
         activeusertokensmap.put(copy.getTokenid(), copy);
         if ("renew".equalsIgnoreCase(authType)) {
+            return;  // alreqdy reported
+        }
+        if ("refresh".equalsIgnoreCase(authType)) {
             return;  // alreqdy reported
         }
         ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUid(), "userSessionCreatedByPassword", applicationTokenId);

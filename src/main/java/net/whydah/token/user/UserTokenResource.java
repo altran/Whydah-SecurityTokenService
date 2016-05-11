@@ -6,6 +6,7 @@ import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.sun.jersey.api.view.Viewable;
+import net.whydah.sso.commands.adminapi.user.CommandGetUserAggregate;
 import net.whydah.sso.commands.adminapi.user.CommandSendSMSToUser;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
@@ -471,11 +472,42 @@ public class UserTokenResource {
             log.warn("renewUserToken - attempt with no usertokenid: Null");
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
+
         ActiveUserTokenRepository.renewUserToken(usertokenid, applicationtokenid);
 
         log.trace("renewUserToken - session renewed, usertokenid={}", usertokenid);
         return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
     }
+
+    /**
+     * Request SSO user session renewal.
+     *
+     * @param applicationtokenid application session
+     * @param usertokenid        user session id
+     * @return
+     */
+    @Path("/{applicationtokenid}/refresh_usertoken")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response refreshUserToken(@PathParam("applicationtokenid") String applicationtokenid,
+                                     @FormParam("usertokenid") String usertokenid) {
+        log.trace("refresh_usertoken - entry.  usertokenid={}", usertokenid);
+        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
+            log.warn("refresh_usertoken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        }
+        if (usertokenid == null) {
+            log.warn("refresh_usertoken - attempt with no usertokenid: Null");
+            return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        }
+        UserToken refreshedUserToken = userAuthenticator.getRefreshedUserToken(usertokenid);
+        ActiveUserTokenRepository.refreshUserToken(usertokenid, applicationtokenid, refreshedUserToken);
+        final UserToken userToken = ActiveUserTokenRepository.getUserToken(usertokenid, applicationtokenid);
+
+        log.trace("refresh_usertoken - usertoken refreshed, usertokenid={}", usertokenid);
+        return createUserTokenResponse(applicationtokenid, userToken);
+    }
+
 
     /**
      * This method is for elevating user access to a higher level for the receiving end of a session handover between SSO applications

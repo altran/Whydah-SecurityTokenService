@@ -5,8 +5,12 @@ import com.google.inject.name.Named;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
+import net.whydah.sso.application.mappers.ApplicationTokenMapper;
+import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.commands.adminapi.user.CommandGetUserAggregate;
 import net.whydah.sso.commands.adminapi.user.CommandListUsers;
+import net.whydah.token.application.ApplicationAuthenticationUASClient;
+import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,6 +97,22 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
             }
         }
         throw new AuthenticationFailedException("APin uthentication failed. Status code ");
+    }
+
+    public UserToken getRefreshedUserToken(String usertokenid) {
+        ApplicationToken stsToken = ApplicationAuthenticationUASClient.getSTSApplicationToken();
+        AuthenticatedApplicationRepository.addApplicationToken(stsToken);
+        String user = appConfig.getProperty("whydah.adminuser.username");
+        String password = appConfig.getProperty("whydah.adminuser.password");
+        UserCredential userCredential = new UserCredential(user, password);
+        UserToken whyDahUserAdminUserToken = logonUser(stsToken.getApplicationTokenId(), ApplicationTokenMapper.toXML(stsToken), userCredential.toXML());
+
+        UserToken oldUserToken = ActiveUserTokenRepository.getUserToken(usertokenid, stsToken.getApplicationTokenId());
+
+        String userAggregateJson = new CommandGetUserAggregate(useradminservice, stsToken.getApplicationTokenId(), whyDahUserAdminUserToken.getTokenid(), oldUserToken.getUid()).execute();
+        UserToken refreshedUserToken = UserTokenFactory.fromUserAggregateJson(userAggregateJson);
+        return refreshedUserToken;
+
     }
 
     @Override
@@ -193,14 +213,4 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         }
     }
 
-    private String getWhyDahAdminUserTokenId(String applicationtokenid, String appTokenXml) {
-
-        String user = appConfig.getProperty("whydah.adminuser.username");
-        String password = appConfig.getProperty("whydah.adminuser.password");
-        UserCredential userCredential = new UserCredential(user, password);
-        UserToken whyDahUserAdminUserToken = logonUser(applicationtokenid, appTokenXml, userCredential.toXML());
-
-
-        return whyDahUserAdminUserToken.getTokenid();
-    }
 }

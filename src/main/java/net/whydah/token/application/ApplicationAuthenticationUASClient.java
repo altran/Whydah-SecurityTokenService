@@ -58,7 +58,7 @@ public class ApplicationAuthenticationUASClient {
         return false;
     }
 
-    private static ApplicationToken getSTSApplicationToken() {
+    public static ApplicationToken getSTSApplicationToken() {
         String applicationName = appConfig.getProperty("applicationname");
         String applicationId = appConfig.getProperty("applicationid");
         String applicationsecret = appConfig.getProperty("applicationsecret");
