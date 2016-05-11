@@ -59,6 +59,14 @@ public class DummyUserAuthenticator implements UserAuthenticator {
         throw new IllegalStateException();
     }
 
+    public UserToken getRefreshedUserToken(String uid) {
+        if (ApplicationMode.getApplicationMode().equalsIgnoreCase(ApplicationMode.DEV)) {
+            return new UserToken();
+        }
+        throw new IllegalStateException();
+    }
+
+
     private static String loadFromFile(String dummytokenuser) throws IOException {
         String xmlToken;
         try (BufferedReader br = new BufferedReader(new FileReader("t_" + dummytokenuser + ".token"))) {
