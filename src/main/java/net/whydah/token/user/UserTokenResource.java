@@ -6,8 +6,8 @@ import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.sun.jersey.api.view.Viewable;
-import net.whydah.sso.commands.adminapi.user.CommandGetUserAggregate;
 import net.whydah.sso.commands.adminapi.user.CommandSendSMSToUser;
+import net.whydah.sso.util.DelayedSendSMSTask;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
@@ -20,13 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.valuereporter.agent.MonitorReporter;
 import org.valuereporter.agent.activity.ObservedActivity;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -701,16 +695,49 @@ public class UserTokenResource {
     public Response sendSMSMessage(@PathParam("applicationtokenid") String applicationtokenid,
                                    @FormParam("phoneNo") String phoneNo,
                                    @FormParam("smsMessage") String smsMessage) {
-        log.info("Response sendSMSMessage: phoneNo:" + phoneNo + "smsMessage:" + smsMessage);
+        log.info("Response sendSMSMessage: phoneNo:{}, smsMessage:{}", phoneNo, smsMessage);
 
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+            log.warn("sendSMSMessage - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
 
 
         String cellNo = phoneNo;
         String response = new CommandSendSMSToUser(smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage).execute();
+
+
+        return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+
+    }
+
+    /**
+     * The backend for sms messages to user
+     *
+     * @param applicationtokenid    The application session ID
+     * @param timestamp               The timestamp of when to send the message
+     * @param phoneNo               The cellPhone to send message to
+     * @param smsMessage                 The message to send to the suer
+     * @return
+     */
+    @Path("/{applicationtokenid}/send_scheduled_sms")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_XML)
+    public Response sendScheduledSMSMessage(@PathParam("applicationtokenid") String applicationtokenid,
+                                            @FormParam("timestamp") String timestamp,
+                                            @FormParam("phoneNo") String phoneNo,
+                                            @FormParam("smsMessage") String smsMessage) {
+        log.info("Response sendScheduledSMSMessage: timestamp:{}, phoneNo:{}, smsMessage:{}", timestamp, phoneNo, smsMessage);
+
+        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
+            log.warn("sendScheduledSMSMessage - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        }
+
+
+        String cellNo = phoneNo;
+        new DelayedSendSMSTask(Long.parseLong(timestamp), smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage);
 
         return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
 
