@@ -31,12 +31,12 @@
     <logger name="net.whydah.token.file.StaticFiles" level="INFO" />
     <logger name="net.whydah.token.config.FreemarkerViewProcessor" level="WARN"/>
     <logger name="net.whydah.token.file.StaticFileViewProcessor" level="INFO" />
-    <logger name="net.whydah.token.application.ApplicationToken" level="INFO" />
+    <logger name="net.whydah.token.application.ApplicationToken" level="DEBUG"/>
     <logger name="org.valuereporter.agent.activity" level="WARN"/>
 
-    <logger name="net.whydah" level="DEBUG"/>
+    <logger name="net.whydah" level="TRACE"/>
 
-    <root level="DEBUG">
+    <root level="TRACE">
 <!--        <appender-ref ref="STDOUT" />   -->
         <appender-ref ref="FILE" />
     </root>

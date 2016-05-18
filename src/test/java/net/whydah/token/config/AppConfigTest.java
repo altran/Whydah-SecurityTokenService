@@ -7,11 +7,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 
-import static org.junit.Assert.*;
-import static org.slf4j.LoggerFactory.getLogger;
-
 import java.io.IOException;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class AppConfigTest {
 
@@ -26,7 +26,6 @@ public class AppConfigTest {
     @Test
     public void readProperties() throws IOException {
         AppConfig appConfig = new AppConfig();
-        assertEquals("value", appConfig.getProperty("property")); //fra testconfig
         assertEquals("9998", appConfig.getProperty("service.port")); //fra securitytokenservice.TEST.properties
     }
 

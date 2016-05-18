@@ -485,7 +485,7 @@ public class UserTokenResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response refreshUserToken(@PathParam("applicationtokenid") String applicationtokenid,
                                      @FormParam("usertokenid") String usertokenid) {
-        log.trace("refresh_usertoken - entry.  usertokenid={}", usertokenid);
+        log.debug("refresh_usertoken - entry.  usertokenid={}", usertokenid);
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("refresh_usertoken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
@@ -498,7 +498,7 @@ public class UserTokenResource {
         ActiveUserTokenRepository.refreshUserToken(usertokenid, applicationtokenid, refreshedUserToken);
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(usertokenid, applicationtokenid);
 
-        log.trace("refresh_usertoken - usertoken refreshed, usertokenid={}", usertokenid);
+        log.debug("refresh_usertoken - usertoken refreshed, usertokenid={}", usertokenid);
         return createUserTokenResponse(applicationtokenid, userToken);
     }
 
