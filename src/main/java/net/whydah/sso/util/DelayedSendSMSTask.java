@@ -37,13 +37,13 @@ public class DelayedSendSMSTask {
         timer = new Timer();
         //log.debug("timestamp{} - new Date().getTime(){}");
         long milliseconds = timestamp - new Date().getTime();
-        log.debug("Milliseconds:{}", milliseconds);
+        log.debug("Task started, waiting {} milliseconds", milliseconds);
         timer.schedule(new RemindTask(), milliseconds);
     }
 
     class RemindTask extends TimerTask {
         public void run() {
-            log.debug("Task running." + new Date().toString());
+            log.debug("Task completed. cellNo:{}   message:{}   time:{}", cellNo, smsMessage, new Date().toString());
             String response = new CommandSendSMSToUser(smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage).execute();
             toolkit.beep();
             timer.cancel(); //Not necessary because we call System.exit
