@@ -5,7 +5,7 @@ import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import net.whydah.sso.application.types.ApplicationToken;
-import net.whydah.sso.util.ApplicationModelUtil;
+import net.whydah.sso.session.baseclasses.ApplicationModelUtil;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationModelHelper;
 import org.slf4j.Logger;
