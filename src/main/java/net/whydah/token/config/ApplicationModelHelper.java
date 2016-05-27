@@ -1,11 +1,11 @@
 package net.whydah.token.config;
 
 import net.whydah.sso.application.types.Application;
-import net.whydah.sso.util.ApplicationModelUtil;
+import net.whydah.sso.session.baseclasses.ApplicationModelUtil;
+
 import java.net.URI;
 import java.util.List;
 
-import static net.whydah.sso.util.ApplicationModelUtil.getApplicationList;
 
 public class ApplicationModelHelper {
     private static URI userAdminServiceUri = null;
