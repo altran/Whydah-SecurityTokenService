@@ -22,9 +22,9 @@
     </appender>
 
 
-    <logger name="com.hazelcast" level="INFO" />
+    <logger name="com.hazelcast" level="TRACE"/>
     <logger name="com.sun.jersey.api.client" level="INFO" />
-    <logger name="com.hazelcast" level="WARN" />
+    <logger name="com.hazelcast" level="TRACE"/>
     <logger name="httpclient.wire" level="WARN" />
     <logger name="org.apache.commons.httpclient" level="WARN" />
 
