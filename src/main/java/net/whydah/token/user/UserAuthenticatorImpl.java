@@ -5,18 +5,22 @@ import com.google.inject.name.Named;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
+
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.commands.adminapi.user.CommandGetUserAggregate;
 import net.whydah.sso.commands.adminapi.user.CommandListUsers;
 import net.whydah.token.application.ApplicationAuthenticationUASClient;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
+import net.whydah.token.application.SessionHelper;
 import net.whydah.token.config.AppConfig;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.net.URI;
 import java.util.List;
 
@@ -47,7 +51,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         try {
             WebResource webResource = uasResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH);
             ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, userCredentialXml);
-
+            
             UserToken userToken = getUserToken(applicationTokenId, appTokenXml, response);
             AppConfig.updateFullTokenApplicationList(useradminservice, applicationTokenId, response.toString());
 
@@ -85,7 +89,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
                     String userIdentityJson = uasResponse.getEntity(String.class);
                     UserToken userToken = UserTokenFactory.fromUserIdentityJson(userIdentityJson);
                     userToken.setSecurityLevel("0");  // 3rd party token as source = securitylevel=0
-                    userToken.setLifespan(defaultlifespan);
+                    userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
 
                     ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
                     return userToken;
@@ -132,7 +136,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
                     UserToken userToken = UserTokenFactory.fromUserAggregateJson(userAggregateJson);
                     userToken.setSecurityLevel("0");  // UserIdentity as source = securitylevel=0
-                    userToken.setLifespan(defaultlifespan);
+                    userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
 
                     ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
                     return userToken;
@@ -203,7 +207,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
             UserToken userToken = userTokenFactory.fromUserAggregate(userAggregateXML);
             userToken.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
-            userToken.setLifespan(defaultlifespan);
+            userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
             ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid, "usertokenid");
             return userToken;
 

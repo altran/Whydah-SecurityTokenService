@@ -4,11 +4,14 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+
 import net.whydah.sso.commands.adminapi.user.CommandGetUserAggregate;
 import net.whydah.sso.user.helpers.UserTokenXpathHelper;
 import net.whydah.token.application.ApplicationThreatResource;
+import net.whydah.token.application.SessionHelper;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.user.statistics.UserSessionObservedActivity;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.valuereporter.agent.MonitorReporter;
@@ -134,7 +137,10 @@ public class ActiveUserTokenRepository {
         UserToken utoken = ActiveUserTokenRepository.getUserToken(usertokenid,applicationTokenId);
         utoken.setDefcon(ApplicationThreatResource.getDEFCON());
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
-        utoken.setLifespan(String.valueOf(60 * new Random().nextInt(100)));
+        
+        //WHY do we set randomly? ://time span is not a gamble
+        //utoken.setLifespan(String.valueOf(60 * new Random().nextInt(100)));
+        utoken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationTokenId)));
         addUserToken(utoken, applicationTokenId, "renew");
         ObservedActivity observedActivity = new UserSessionObservedActivity(utoken.getUid(),"userSessionRenewal",applicationTokenId);
         MonitorReporter.reportActivity(observedActivity);

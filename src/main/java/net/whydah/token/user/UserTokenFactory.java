@@ -4,14 +4,17 @@ import com.google.inject.Singleton;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
+
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
+import net.whydah.token.application.SessionHelper;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationModelHelper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -24,6 +27,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
+
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -143,7 +147,7 @@ public class UserTokenFactory {
         userToken.setDefcon(defcon);
         //String issuer = extractIssuer(appTokenXml);
         userToken.setIssuer(TOKEN_ISSUER);
-        userToken.setLifespan(lifespanMs);
+        userToken.setLifespan(String.valueOf(SessionHelper.defaultlifespan));
         return userToken;
     }
 
@@ -332,7 +336,7 @@ public class UserTokenFactory {
         userToken.setDefcon(defcon);
         //String issuer = extractIssuer(appTokenXml);
         userToken.setIssuer(TOKEN_ISSUER);
-        userToken.setLifespan(lifespanMs);
+        userToken.setLifespan(String.valueOf(SessionHelper.defaultlifespan));
         return userToken;
     }
 
