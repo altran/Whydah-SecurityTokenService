@@ -108,7 +108,7 @@ public class AuthenticatedApplicationRepository {
 
     private static String updateExpires(String oldExpiry, String applicationID) {
         String applicationMaxSessionTime = ApplicationModelHelper.getParameterForApplication(ApplicationModelUtil.maxSessionTimeoutSeconds, applicationID);
-        if (applicationMaxSessionTime != null && (Long.parseLong(applicationMaxSessionTime) > 0)) {
+        if (applicationMaxSessionTime != null && (applicationMaxSessionTime.length() > 0) && (Long.parseLong(applicationMaxSessionTime) > 0)) {
             log.info("maxSessionTimeoutSeconds found: {} for applicationID: {}", Long.parseLong(applicationMaxSessionTime), applicationID);
             // Set to application configured maxSessionTimeoutSeconds if found and shave off 10 seconds
             return String.valueOf(System.currentTimeMillis() + Long.parseLong(applicationMaxSessionTime) * 1000 - 10 * 1000);
