@@ -3,18 +3,14 @@ package net.whydah.token.user;
 import com.google.inject.Singleton;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.PathNotFoundException;
-
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
-import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.application.SessionHelper;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationModelHelper;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -27,13 +23,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
-
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author <a href="mailto:erik-dev@fjas.no">Erik Drolshammer</a> 03.11.14
@@ -230,6 +221,7 @@ public class UserTokenFactory {
                 ApplicationRoleEntry are = origRoleList.get(i);
                 if (are.getApplicationId().equalsIgnoreCase(applicationID)) {
                     // Role found, no ANONYMOUSTOKEN filtering
+                    log.info("shouldReturnAnonymousUserToken - found expected role, returning false");
                     return false;
                 }
             }
@@ -417,6 +409,7 @@ public class UserTokenFactory {
             userToken.setEmail("");
             userToken.setFirstName("");
             userToken.setLastName("Demographics: Oslo");
+            log.info("getFilteredUserToken - returning anonymous token");
             List<ApplicationRoleEntry> roleList = new ArrayList<>();
             userToken.setRoleList(roleList);
             return userToken;
