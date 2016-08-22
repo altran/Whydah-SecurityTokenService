@@ -4,24 +4,18 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-
-import net.whydah.sso.commands.adminapi.user.CommandGetUserAggregate;
-import net.whydah.sso.user.helpers.UserTokenXpathHelper;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.SessionHelper;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.user.statistics.UserSessionObservedActivity;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.valuereporter.agent.MonitorReporter;
 import org.valuereporter.agent.activity.ObservedActivity;
 
 import java.io.FileNotFoundException;
-import java.sql.Time;
 import java.util.Date;
 import java.util.Map;
-import java.util.Random;
 
 public class ActiveUserTokenRepository {
     private final static Logger log = LoggerFactory.getLogger(ActiveUserTokenRepository.class);
@@ -134,7 +128,8 @@ public class ActiveUserTokenRepository {
     }
 
     public static void renewUserToken(String usertokenid,String applicationTokenId){
-        UserToken utoken = ActiveUserTokenRepository.getUserToken(usertokenid,applicationTokenId);
+        UserToken utoken = activeusertokensmap.remove(usertokenid);
+//        UserToken utoken = ActiveUserTokenRepository.getUserToken(usertokenid,applicationTokenId);
         utoken.setDefcon(ApplicationThreatResource.getDEFCON());
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
         
@@ -148,7 +143,8 @@ public class ActiveUserTokenRepository {
     }
 
     public static void refreshUserToken(String usertokenid, String applicationTokenId, UserToken refreshedUserToken) {
-        UserToken oldusertoken = ActiveUserTokenRepository.getUserToken(usertokenid, applicationTokenId);
+        UserToken oldusertoken = activeusertokensmap.remove(usertokenid);
+//        UserToken oldusertoken = ActiveUserTokenRepository.getUserToken(usertokenid, applicationTokenId);
         refreshedUserToken.setTokenid(oldusertoken.getTokenid());
         addUserToken(refreshedUserToken, applicationTokenId, "refresh");
 
