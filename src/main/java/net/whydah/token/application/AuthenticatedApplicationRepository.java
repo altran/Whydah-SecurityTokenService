@@ -68,7 +68,7 @@ public class AuthenticatedApplicationRepository {
     }
 
     public static ApplicationToken renewApplicationTokenId(String applicationtokenid) {
-        ApplicationToken temp = applicationTokenMap.get(applicationtokenid);
+        ApplicationToken temp = applicationTokenMap.remove(applicationtokenid);
         String oldExpires = temp.getExpiresFormatted();
         temp.setExpires(updateExpires(temp.getExpires(), temp.getApplicationID()));
         log.info("Updated expiry for applicationID:{}  oldExpiry:{}, newExpiry: {}", applicationtokenid, oldExpires, temp.getExpiresFormatted());
