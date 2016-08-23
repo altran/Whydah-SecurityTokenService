@@ -824,6 +824,9 @@ public class UserTokenResource {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
 
+        if (pin == null || pin.length() < 4) {
+            pin = generatePin();
+        }
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             // TODO:  Limit this operation to SSOLoginWebApplication ONLY
             log.warn("createAndLogOnPinUser - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
