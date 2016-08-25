@@ -5,9 +5,11 @@ import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.token.config.ApplicationModelHelper;
 
 public class SessionHelper {
-	
-	public static int defaultlifespan = 245000;
-	public static int getApplicationLifeSpan(String applicationtokenid){
+
+    public static int defaultlifespan = 14 * 24 * 60 * 60 * 1000;  // 14 days  245000 = 4 seconds;
+
+    // String.valueOf(14 * 24 * 60 * 60 * 1000);
+    public static int getApplicationLifeSpan(String applicationtokenid){
 
 		ApplicationToken appToken = AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid);
 		
