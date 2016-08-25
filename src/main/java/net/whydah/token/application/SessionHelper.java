@@ -28,9 +28,15 @@ public class SessionHelper {
 	
 	public static int getApplicationLifeSpan(Application app) {
 		//TODO: a correlation between securityLevel and lifespan?
-		//return Integer.valueOf(app.getSecurity().getMaxSessionTimeoutSeconds());
-		
-		return defaultlifespan;
+        if (app.getSecurity() != null) {
+            int maxUserSessionFromApplication = Integer.valueOf(app.getSecurity().getMaxSessionTimeoutSeconds());
+            if (maxUserSessionFromApplication > 22450000) {
+                return maxUserSessionFromApplication;
+            }
+        }
+        //return
+
+        return defaultlifespan;
 	}
 
 }
