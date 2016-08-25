@@ -3,8 +3,13 @@ package net.whydah.token.application;
 import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.token.config.ApplicationModelHelper;
+import net.whydah.token.user.UserToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SessionHelper {
+
+    private static final Logger log = LoggerFactory.getLogger(UserToken.class);
 
     public static int defaultlifespan = 14 * 24 * 60 * 60 * 1000;  // 14 days  245000 = 4 seconds;
 
@@ -31,6 +36,7 @@ public class SessionHelper {
         if (app.getSecurity() != null) {
             int maxUserSessionFromApplication = Integer.valueOf(app.getSecurity().getMaxSessionTimeoutSeconds());
             if (maxUserSessionFromApplication > 22450000) {
+                log.debug("Returning MaxSessionTimeoutSeconds:{} for Application:{}", maxUserSessionFromApplication, app.getName());
                 return maxUserSessionFromApplication;
             }
         }
