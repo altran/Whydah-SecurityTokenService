@@ -129,12 +129,9 @@ public class ActiveUserTokenRepository {
 
     public static void renewUserToken(String usertokenid,String applicationTokenId){
         UserToken utoken = activeusertokensmap.remove(usertokenid);
-//        UserToken utoken = ActiveUserTokenRepository.getUserToken(usertokenid,applicationTokenId);
         utoken.setDefcon(ApplicationThreatResource.getDEFCON());
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
         
-        //WHY do we set randomly? ://time span is not a gamble
-        //utoken.setLifespan(String.valueOf(60 * new Random().nextInt(100)));
         utoken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationTokenId)));
         addUserToken(utoken, applicationTokenId, "renew");
         ObservedActivity observedActivity = new UserSessionObservedActivity(utoken.getUid(),"userSessionRenewal",applicationTokenId);
@@ -144,7 +141,6 @@ public class ActiveUserTokenRepository {
 
     public static void refreshUserToken(String usertokenid, String applicationTokenId, UserToken refreshedUserToken) {
         UserToken oldusertoken = activeusertokensmap.remove(usertokenid);
-//        UserToken oldusertoken = ActiveUserTokenRepository.getUserToken(usertokenid, applicationTokenId);
         refreshedUserToken.setTokenid(oldusertoken.getTokenid());
         addUserToken(refreshedUserToken, applicationTokenId, "refresh");
 
