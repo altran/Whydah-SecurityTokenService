@@ -1,6 +1,7 @@
 package net.whydah.admin.health;
 
 import net.whydah.token.application.ApplicationThreatResource;
+import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.user.ActiveUserTokenRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,9 @@ public class HealthResource {
     public static String  getHealthText(){
         return "Status: OK"+
                 "\nDEFCON: "+ ApplicationThreatResource.getDEFCON()+
-                "\nActiveUserTokenMapSize: "+ ActiveUserTokenRepository.getMapSize();
+                "\nActiveUserTokenMapSize: " + ActiveUserTokenRepository.getMapSize() +
+                "\nLastSeenMapSize: " + ActiveUserTokenRepository.getLastSeenMapSize() +
+                "\nAuthenticatedApplicationRepositoryMapSize: " + AuthenticatedApplicationRepository.getMapSize();
     }
+
 }

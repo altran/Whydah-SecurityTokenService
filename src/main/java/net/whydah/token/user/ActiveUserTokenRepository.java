@@ -190,4 +190,8 @@ public class ActiveUserTokenRepository {
     public static int getMapSize(){
         return activeusertokensmap.size();
     }
+
+    public static int getLastSeenMapSize() {
+        return lastSeenMap.size();
+    }
 }
