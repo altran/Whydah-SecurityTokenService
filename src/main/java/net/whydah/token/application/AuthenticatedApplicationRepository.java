@@ -46,7 +46,7 @@ public class AuthenticatedApplicationRepository {
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         applicationTokenMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "authenticated_applicationtokens");
-        log.info("Connecting to map {}", appConfig.getProperty("gridprefix") + "authenticated_applicationtokens");
+        log.info("Connecting to map {} - map size: {}", appConfig.getProperty("gridprefix") + "authenticated_applicationtokens", getMapSize());
     }
 
 
