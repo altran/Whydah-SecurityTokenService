@@ -110,10 +110,10 @@ public class ApplicationAuthenticationResource {
             ApplicationToken token = AuthenticatedApplicationRepository.renewApplicationTokenId(applicationtokenid);
             log.info("ApplicationToken for {} extended, expires: {}", token.getApplicationName(), token.getExpiresFormatted());
             String applicationTokenXml = ApplicationTokenMapper.toXML(token);
-            log.debug("extendApplicationSession returns applicationTokenXml={}", applicationTokenXml);
+            log.trace("extendApplicationSession returns applicationTokenXml={}", applicationTokenXml);
             return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
-            log.warn("applicationtokenid not valid");
+            log.warn("applicationtokenid={} not valid", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
     }
