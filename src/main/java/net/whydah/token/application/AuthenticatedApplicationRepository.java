@@ -87,7 +87,7 @@ public class AuthenticatedApplicationRepository {
 
     public static String getApplicationIdFromApplicationTokenID(String applicationtokenid) {
         ApplicationToken at = applicationTokenMap.get(applicationtokenid);
-        if (at!=null) {
+        if (at != null) {
             return at.getApplicationID();
         }
         log.error("getApplicationIdFromApplicationTokenID - Unable to find applicationID for applicationtokenId=" + applicationtokenid);
@@ -119,7 +119,7 @@ public class AuthenticatedApplicationRepository {
     }
 
 
-    private static String findValue(String xmlString,  String expression) {
+    private static String findValue(String xmlString, String expression) {
         String value = "";
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -138,6 +138,14 @@ public class AuthenticatedApplicationRepository {
 
     public static int getMapSize() {
         return applicationTokenMap.size();
+    }
+
+    public static String getActiveApplications() {
+        String returnString = "";
+        for (Map.Entry<String, ApplicationToken> entry : applicationTokenMap.entrySet()) {
+            returnString = returnString + entry.getValue().getApplicationName() + ", ";
+        }
+        return returnString;
     }
 
 }

@@ -41,7 +41,7 @@ public class HealthResource {
                 "\nDEFCON: "+ ApplicationThreatResource.getDEFCON()+
                 "\nActiveUserTokenMapSize: " + ActiveUserTokenRepository.getMapSize() +
                 "\nLastSeenMapSize: " + ActiveUserTokenRepository.getLastSeenMapSize() +
-                "\nAuthenticatedApplicationRepositoryMapSize: " + AuthenticatedApplicationRepository.getMapSize();
+                "\nAuthenticatedApplicationRepositoryMapSize: " + AuthenticatedApplicationRepository.getMapSize() +
+                "\nActive Applications: " + AuthenticatedApplicationRepository.getActiveApplications();
     }
-
 }
