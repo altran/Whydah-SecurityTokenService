@@ -10,17 +10,13 @@ import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationMode;
 import net.whydah.token.user.UserCredential;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Random;
 
 @Path("/")
 public class ApplicationAuthenticationResource {
@@ -100,7 +96,7 @@ public class ApplicationAuthenticationResource {
             log.debug("applicationtokenid:{} is valid", applicationtokenid);
             return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
-            log.debug("applicationtokenid:{} is not valid", applicationtokenid);
+            log.debug("applicationtokenid:{} for applicationname:{} is not valid", applicationtokenid, AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid).getApplicationName());
             return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
     }
