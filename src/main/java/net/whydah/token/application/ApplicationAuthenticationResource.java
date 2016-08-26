@@ -91,9 +91,9 @@ public class ApplicationAuthenticationResource {
     @GET
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response validateApplicationTokenId(@PathParam("applicationtokenid") String applicationtokenid) {
-        log.debug("validate applicationtokenid:{}", applicationtokenid);
+        log.trace("validate applicationtokenid:{}", applicationtokenid);
         if (AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.debug("applicationtokenid:{} is valid", applicationtokenid);
+            log.debug("applicationtokenid:{} for applicationname:{} is valid", applicationtokenid, AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid).getApplicationName());
             return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
             log.debug("applicationtokenid:{} for applicationname:{} is not valid", applicationtokenid, AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid).getApplicationName());
