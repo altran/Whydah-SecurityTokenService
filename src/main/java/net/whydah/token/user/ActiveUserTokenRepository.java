@@ -193,11 +193,11 @@ public class ActiveUserTokenRepository {
     }
 
     public static void logUserTokenMap() {
-        String returnString = "";
+        String logString = "";
         for (Map.Entry<String, UserToken> entry : activeusertokensmap.entrySet()) {
-            returnString = returnString + entry.getValue().getTokenid() + "(" + entry.getValue().getUserName() + "), ";
+            logString = logString + entry.getValue().getTokenid() + "(" + entry.getValue().getUserName() + "), ";
         }
-        log.debug("UserToken map:{}", returnString);
+        log.debug("UserToken map:{}", logString);
     }
 
     public static int getLastSeenMapSize() {

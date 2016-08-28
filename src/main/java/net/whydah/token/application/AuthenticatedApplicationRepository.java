@@ -145,7 +145,16 @@ public class AuthenticatedApplicationRepository {
         for (Map.Entry<String, ApplicationToken> entry : applicationTokenMap.entrySet()) {
             returnString = returnString + entry.getValue().getApplicationName() + ", ";
         }
+        logActiveApplicationTokenIDs();
         return returnString;
     }
 
+
+    public static void logActiveApplicationTokenIDs() {
+        String lognString = "";
+        for (Map.Entry<String, ApplicationToken> entry : applicationTokenMap.entrySet()) {
+            lognString = lognString + entry.getValue().getApplicationTokenId() + "(" + entry.getValue().getApplicationName() + "), ";
+        }
+        log.debug("Active applicationTokenIDs: " + lognString);
+    }
 }
