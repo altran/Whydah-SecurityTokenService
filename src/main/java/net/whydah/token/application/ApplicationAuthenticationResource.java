@@ -79,6 +79,9 @@ public class ApplicationAuthenticationResource {
             return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
         ApplicationToken token = ApplicationTokenMapper.fromApplicationCredentialXML(appCredentialXml);
+        if (token.getApplicationName() == null || token.getApplicationName().length() < 1) {
+            log.warn("Old Whydah ApplicationCredential received, please inform application owner to update the ApplicationCredential. ApplicationCredential:" + appCredentialXml);
+        }
         token.setBaseuri(appConfig.getProperty("myuri"));
         token.setExpires(String.valueOf((System.currentTimeMillis() + AuthenticatedApplicationRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000)));
         AuthenticatedApplicationRepository.addApplicationToken(token);
