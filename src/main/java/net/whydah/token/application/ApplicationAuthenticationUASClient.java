@@ -26,6 +26,8 @@ public class ApplicationAuthenticationUASClient {
     private static final String APPLICATION_AUTH_PATH = "application/auth";
     public static final String APP_CREDENTIAL_XML = "appCredentialXml";
     private static AppConfig appConfig = new AppConfig();
+    private static String stsApplicationTokenID = "";
+    private static ApplicationToken myToken;
 
     public static boolean checkAppsecretFromUAS(ApplicationCredential applicationCredential) {
         ApplicationToken token = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(applicationCredential));
@@ -58,13 +60,19 @@ public class ApplicationAuthenticationUASClient {
         return false;
     }
 
+    /**
+     * @return a singleton STSToken
+     */
     public static ApplicationToken getSTSApplicationToken() {
         String applicationName = appConfig.getProperty("applicationname");
         String applicationId = appConfig.getProperty("applicationid");
         String applicationsecret = appConfig.getProperty("applicationsecret");
-        ApplicationCredential ac = new ApplicationCredential(applicationId, applicationName, applicationsecret);
-        ApplicationToken myToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(ac));
-
+        // Do not create duplicate sts sessions
+        if (stsApplicationTokenID == "") {
+            ApplicationCredential ac = new ApplicationCredential(applicationId, applicationName, applicationsecret);
+            myToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(ac));
+            stsApplicationTokenID = myToken.getApplicationTokenId();
+        }
         return myToken;
 
     }
