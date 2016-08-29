@@ -20,6 +20,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import java.io.FileNotFoundException;
 import java.io.StringReader;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -142,11 +143,18 @@ public class AuthenticatedApplicationRepository {
 
     public static String getActiveApplications() {
         String returnString = "";
+        Map<String, Integer> applicationMap = new HashMap<>();
         for (Map.Entry<String, ApplicationToken> entry : applicationTokenMap.entrySet()) {
             returnString = returnString + entry.getValue().getApplicationName() + ", ";
+            if (applicationMap.get(entry.getValue().getApplicationName()) != null) {
+                applicationMap.put(entry.getValue().getApplicationName(), 1 + applicationMap.get(entry.getValue().getApplicationName()));
+            } else {
+                applicationMap.put(entry.getValue().getApplicationName(), 1);
+            }
         }
+        log.debug("ApplicationMap");
         logActiveApplicationTokenIDs();
-        return returnString;
+        return applicationMap.toString() + " -" + returnString;
     }
 
 
