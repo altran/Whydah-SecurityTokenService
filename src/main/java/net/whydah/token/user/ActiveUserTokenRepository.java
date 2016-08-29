@@ -16,11 +16,13 @@ import org.valuereporter.agent.activity.ObservedActivity;
 import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 
 public class ActiveUserTokenRepository {
     private final static Logger log = LoggerFactory.getLogger(ActiveUserTokenRepository.class);
     private static Map<String, UserToken> activeusertokensmap;
     private static Map<String, Date> lastSeenMap;
+    private static int noOfClusterMembers = 0;
 
     static {
         AppConfig appConfig = new AppConfig();
@@ -41,6 +43,8 @@ public class ActiveUserTokenRepository {
         log.info("Connecting to map {} - size: {}", appConfig.getProperty("gridprefix") + "activeusertokensmap", getMapSize());
         lastSeenMap= hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"lastSeenMap");
         log.info("Connecting to map {} - size: {}", appConfig.getProperty("gridprefix") + "lastSeenMap", getLastSeenMapSize());
+        Set clusterMembers = hazelcastInstance.getCluster().getMembers();
+        noOfClusterMembers = clusterMembers.size();
     }
 
 
@@ -202,5 +206,9 @@ public class ActiveUserTokenRepository {
 
     public static int getLastSeenMapSize() {
         return lastSeenMap.size();
+    }
+
+    public static int getNoOfClusterMembers() {
+        return noOfClusterMembers;
     }
 }

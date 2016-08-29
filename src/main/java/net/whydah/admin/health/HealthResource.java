@@ -39,6 +39,7 @@ public class HealthResource {
     public static String  getHealthText(){
         return "Status: OK"+
                 "\nDEFCON: "+ ApplicationThreatResource.getDEFCON()+
+                "\nClusterSize: " + ActiveUserTokenRepository.getNoOfClusterMembers() +
                 "\nActiveUserTokenMapSize: " + ActiveUserTokenRepository.getMapSize() +
                 "\nLastSeenMapSize: " + ActiveUserTokenRepository.getLastSeenMapSize() +
                 "\nAuthenticatedApplicationRepositoryMapSize: " + AuthenticatedApplicationRepository.getMapSize() +
