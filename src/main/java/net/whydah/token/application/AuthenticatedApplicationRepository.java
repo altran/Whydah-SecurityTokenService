@@ -154,7 +154,7 @@ public class AuthenticatedApplicationRepository {
         }
         log.debug("ApplicationMap");
         logActiveApplicationTokenIDs();
-        return applicationMap.toString() + " -" + returnString;
+        return applicationMap.toString(); // + " -" + returnString;
     }
 
 
