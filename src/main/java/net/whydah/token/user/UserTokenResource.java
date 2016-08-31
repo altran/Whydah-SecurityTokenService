@@ -225,7 +225,7 @@ public class UserTokenResource {
      * @param appTokenXml        application session data
      * @param userticket         user session handover ticket
      * @param userTokenId        user session id
-     * @return userticket - user session handover ticket
+     * @return usertoken - user session h
      */
     @Path("/{applicationtokenid}/create_userticket_by_usertokenid")
     @POST
@@ -818,7 +818,7 @@ public class UserTokenResource {
                                           @FormParam("adminUserTokenId") String adminUserTokenId,
                                           @FormParam("cellPhone") String cellPhone,
                                           @FormParam("jsonuser") String newUserjson) {
-        log.info("Response createAndLogOnPinUser:  jsonuser:" + newUserjson);
+        log.info("Request createAndLogOnPinUser:  jsonuser:" + newUserjson);
 
         if (ApplicationMode.getApplicationMode() == ApplicationMode.DEV) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
@@ -835,6 +835,7 @@ public class UserTokenResource {
         try {
             UserToken userToken = userAuthenticator.createAndLogonPinUser(applicationtokenid, appTokenXml, adminUserTokenId, cellPhone, pin, newUserjson);
             userticketmap.put(userticket, userToken.getTokenid());
+            log.debug("createAndLogOnPinUser Added ticket:{} for usertoken:{}", userticket, userToken.getTokenid());
             userToken.setDefcon(ApplicationThreatResource.getDEFCON());
             userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
             // Report to statistics
