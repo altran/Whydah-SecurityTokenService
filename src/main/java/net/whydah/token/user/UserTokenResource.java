@@ -66,12 +66,12 @@ public class UserTokenResource {
         }
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
-        userticketmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "_userticket_map");
-        log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "_userticketmap");
-        applicationtokenidmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "_applicationtokenid_map");
-        log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "_applicationtokenid_map");
-        userpinmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "_userpin_map");
-        log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "_userpin_map");
+        userticketmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "userticket_map");
+        log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "userticket_map");
+        applicationtokenidmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "applicationtokenid_map");
+        log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "applicationtokenid_map");
+        userpinmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "userpin_map");
+        log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "userpin_map");
 
         smsGwServiceURL = appConfig.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
         smsGwServiceAccount = appConfig.getProperty("smsgw.serviceaccount");  //"serviceAccount";
