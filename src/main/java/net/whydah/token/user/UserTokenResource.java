@@ -835,7 +835,7 @@ public class UserTokenResource {
         try {
             UserToken userToken = userAuthenticator.createAndLogonPinUser(applicationtokenid, appTokenXml, adminUserTokenId, cellPhone, pin, newUserjson);
             userticketmap.put(userticket, userToken.getTokenid());
-            log.debug("createAndLogOnPinUser Added ticket:{} for usertoken:{}", userticket, userToken.getTokenid());
+            log.debug("createAndLogOnPinUser Added ticket:{} for usertoken:{} username: {}", userticket, userToken.getTokenid(), userToken.getUserName());
             userToken.setDefcon(ApplicationThreatResource.getDEFCON());
             userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
             // Report to statistics
