@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 public class AuthenticatedApplicationRepository {
@@ -152,17 +153,21 @@ public class AuthenticatedApplicationRepository {
                 applicationMap.put(entry.getValue().getApplicationName(), 1);
             }
         }
-        log.debug("ApplicationMap");
         logActiveApplicationTokenIDs();
         return applicationMap.toString(); // + " -" + returnString;
     }
 
 
     public static void logActiveApplicationTokenIDs() {
-        String lognString = "";
-        for (Map.Entry<String, ApplicationToken> entry : applicationTokenMap.entrySet()) {
-            lognString = lognString + entry.getValue().getApplicationTokenId() + "(" + entry.getValue().getApplicationName() + "), ";
+
+        // Do not mess up the log completely...  :)
+        if (ThreadLocalRandom.current().nextInt(1, 100 + 1) < 2) {
+            String lognString = "";
+            for (Map.Entry<String, ApplicationToken> entry : applicationTokenMap.entrySet()) {
+                lognString = lognString + entry.getValue().getApplicationTokenId() + "(" + entry.getValue().getApplicationName() + "), ";
+            }
+            log.trace("Active applicationTokenIDs: " + lognString);
+
         }
-        log.debug("Active applicationTokenIDs: " + lognString);
     }
 }
