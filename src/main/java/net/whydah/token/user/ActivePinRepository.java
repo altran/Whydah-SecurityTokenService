@@ -37,6 +37,7 @@ public class ActivePinRepository {
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         pinMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"pinMap");
         log.info("Connecting to map {}",appConfig.getProperty("gridprefix")+"pinMap");
+        log.info("Loaded pin-Map size=" + pinMap.size());
 
     }
 
@@ -46,7 +47,7 @@ public class ActivePinRepository {
     }
 
     public static boolean usePin(String phoneNr, String pin) {
-        log.debug("Used pin {} for phone {}: "+ pin,  phoneNr);
+        log.debug("Used pin {} for phone {}: ", pin, phoneNr);
         if (isValidPin(phoneNr, pin)) {
             log.info("Used pin for phone: "+ phoneNr);
             pinMap.remove(phoneNr);
@@ -64,6 +65,8 @@ public class ActivePinRepository {
         if (storedPin != null && storedPin.equals(pin)) {
             return true;
         }
+        log.warn("Illegal pin logon attempted. PhoneNo: {} ibvalid pin: {}", phoneNr, pin);
         return false;
     }
+
 }

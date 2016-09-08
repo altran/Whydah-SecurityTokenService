@@ -622,7 +622,6 @@ public class UserTokenResource {
 
         //String cellNo = phoneNo;
         //String smsMessage = smsPin;
-        log.info("CommandSendSMSToUser({}, {}, {}, {}, {}, cellNo, smsMessage)", smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam);
         //new CommandSendSMSToUser(smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage).execute();
         String serviceURL = appConfig.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
         String serviceAccount = appConfig.getProperty("smsgw.serviceaccount");  //"serviceAccount";
@@ -631,6 +630,7 @@ public class UserTokenResource {
         String cellNo = phoneNo;
         String smsMessage = smsPin;
         String queryParam = appConfig.getProperty("smsgw.queryparams");
+        log.info("CommandSendSMSToUser - ({}, {}, {}, {}, {}, cellNo, smsMessage)", smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam);
         String response = new CommandSendSMSToUser(serviceURL, serviceAccount, username, password, queryParam, cellNo, smsMessage).execute();
         log.debug("Answer from smsgw: " + response);
         userpinmap.put(phoneNo, smsPin);

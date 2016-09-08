@@ -2,6 +2,7 @@ package net.whydah.admin.health;
 
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
+import net.whydah.token.user.ActivePinRepository;
 import net.whydah.token.user.ActiveUserTokenRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,7 @@ public class HealthResource {
                 "\nClusterSize: " + ActiveUserTokenRepository.getNoOfClusterMembers() +
                 "\nActiveUserTokenMapSize: " + ActiveUserTokenRepository.getMapSize() +
                 "\nLastSeenMapSize: " + ActiveUserTokenRepository.getLastSeenMapSize() +
+                "\nPinMapSize: " + ActivePinRepository.getPinMap().size() +
                 "\nAuthenticatedApplicationRepositoryMapSize: " + AuthenticatedApplicationRepository.getMapSize() +
                 "\nActive Applications: " + AuthenticatedApplicationRepository.getActiveApplications();
     }
