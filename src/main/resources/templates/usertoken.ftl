@@ -15,7 +15,7 @@
     <#list it.roleList as app>
     <application ID="${app.applicationId!?xml}">
         <applicationName>${app.applicationName!?xml}</applicationName>
-        <organizationName>${app.organizationName!?xml}</organizationName>
+        <organizationName>${app.orgName!?xml}</organizationName>
         <role name="${app.roleName?xml}" value="${app.roleValue!?xml}"/>
     </application>
 </#list>
