@@ -204,7 +204,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
                 throw new AuthenticationFailedException("Authentication failed.");
             }
 
-            UserToken userToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
+            UserToken userToken = UserTokenMapper.fromUserAggregateXml(userAggregateJson);
             userToken.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
             userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
             ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid, "usertokenid");
