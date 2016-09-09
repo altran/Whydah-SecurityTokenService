@@ -848,6 +848,9 @@ public class UserTokenResource {
         } catch (AuthenticationFailedException ae) {
             log.warn("createAndLogOnPinUser - Error creating or authenticating user. jsonuser={}", newUserjson);
             return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        } catch (Exception e) {
+            log.error("Unhandled exception: ", e);
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("Error creating or authenticating user.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
     }
 
