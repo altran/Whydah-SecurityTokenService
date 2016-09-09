@@ -7,6 +7,8 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.sun.jersey.api.view.Viewable;
 import net.whydah.sso.commands.adminapi.user.CommandSendSMSToUser;
+import net.whydah.sso.user.mappers.UserTokenMapper;
+import net.whydah.sso.user.types.UserToken;
 import net.whydah.sso.util.DelayedSendSMSTask;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
@@ -195,7 +197,7 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
         //UserToken userToken = UserToken.createFromUserTokenXML(userTokenXml);
-        UserToken userToken = UserTokenFactory.fromXml(userTokenXml);
+        UserToken userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
         if (ActiveUserTokenRepository.verifyUserToken(userToken, applicationtokenid)) {
             return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
@@ -532,7 +534,7 @@ public class UserTokenResource {
             log.warn("getUserTokenByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
-        String userTokenId = UserTokenFactory.fromXml(userTokenXml).getTokenid();
+        String userTokenId = UserTokenMapper.fromUserTokenXml(userTokenXml).getTokenid();
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
         userToken.setDefcon(ApplicationThreatResource.getDEFCON());
         if (userToken == null) {

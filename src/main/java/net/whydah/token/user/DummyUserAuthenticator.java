@@ -1,5 +1,7 @@
 package net.whydah.token.user;
 
+import net.whydah.sso.user.mappers.UserTokenMapper;
+import net.whydah.sso.user.types.UserToken;
 import net.whydah.token.config.ApplicationMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +30,7 @@ public class DummyUserAuthenticator implements UserAuthenticator {
             UserToken ut = null;
             try {
                 String xml = loadFromFile(parseUsernameFromUserCredential(userCredentialXml));
-                ut = UserTokenFactory.fromXml(xml);
+                ut = UserTokenMapper.fromUserTokenXml(xml);
             } catch (Exception ioe) {
                 log.info("Could not load dummy token for username. " + ioe);
             }

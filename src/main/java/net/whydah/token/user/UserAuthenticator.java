@@ -1,5 +1,7 @@
 package net.whydah.token.user;
 
+import net.whydah.sso.user.types.UserToken;
+
 public interface UserAuthenticator {
     UserToken logonUser(String applicationTokenId, String appTokenXml, String userCredentialXml);
 

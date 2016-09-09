@@ -1,5 +1,8 @@
 package net.whydah.token.user;
 
+import net.whydah.sso.user.mappers.UserTokenMapper;
+import net.whydah.sso.user.types.UserApplicationRoleEntry;
+import net.whydah.sso.user.types.UserToken;
 import net.whydah.token.config.ApplicationMode;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -153,7 +156,7 @@ public class UserTokenFactoryTest {
 
     @Test
     public void testFromXml1() {
-        UserToken userToken = factory.fromXml(userTokenXml1);
+        UserToken userToken = UserTokenMapper.fromUserTokenXml(userTokenXml1);
         assertEquals(userToken.getUid(), "uid1");
         assertEquals(userToken.getUserName(), "username1");
         assertEquals(userToken.getIssuer(), "https://sso.whydah.no/tokenservice/user/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06");
@@ -165,7 +168,7 @@ public class UserTokenFactoryTest {
 
     @Test
     public void testFromXmlWithSeveralRoles() {
-        UserToken userToken = factory.fromXml(userTokenXmlWithFourRoles);
+        UserToken userToken = UserTokenMapper.fromUserTokenXml(userTokenXmlWithFourRoles);
         assertEquals(userToken.getUid(), "8d563960-7b4f-4c44-a241-1ac359999b63");
         assertEquals(userToken.getUserName(), "anders.norman@company.com");
         assertEquals(userToken.getIssuer(), "https://sso.whydah.no/tokenservice/user/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06");
@@ -174,31 +177,31 @@ public class UserTokenFactoryTest {
         assertEquals(userToken.getLifespan(), "3600000");
         assertEquals(userToken.getRoleList().size(), 4);
 
-        ApplicationRoleEntry roleEntry1 = userToken.getRoleList().get(0);
+        UserApplicationRoleEntry roleEntry1 = userToken.getRoleList().get(0);
         assertEquals(roleEntry1.getApplicationId(), "99");
         assertEquals(roleEntry1.getApplicationName(), "WhydahTestWebApplication");
-        assertEquals(roleEntry1.getOrganizationName(), "Whydah");
+        assertEquals(roleEntry1.getOrgName(), "Whydah");
         assertEquals(roleEntry1.getRoleName(), "WhydahDefaultUser");
         assertEquals(roleEntry1.getRoleValue(), "anders.norman@company.com");
 
-        ApplicationRoleEntry roleEntry2 = userToken.getRoleList().get(1);
+        UserApplicationRoleEntry roleEntry2 = userToken.getRoleList().get(1);
         assertEquals(roleEntry2.getApplicationId(), "100");
         assertEquals(roleEntry2.getApplicationName(), "ACS");
-        assertEquals(roleEntry2.getOrganizationName(), "Company");
+        assertEquals(roleEntry2.getOrgName(), "Company");
         assertEquals(roleEntry2.getRoleName(), "Employee");
         assertEquals(roleEntry2.getRoleValue(), "anders.norman@company.com");
 
-        ApplicationRoleEntry roleEntry3 = userToken.getRoleList().get(2);
+        UserApplicationRoleEntry roleEntry3 = userToken.getRoleList().get(2);
         assertEquals(roleEntry3.getApplicationId(), roleEntry2.getApplicationId());
         assertEquals(roleEntry3.getApplicationName(), roleEntry2.getApplicationName());
-        assertEquals(roleEntry3.getOrganizationName(), "AnotherCompany");
+        assertEquals(roleEntry3.getOrgName(), "AnotherCompany");
         assertEquals(roleEntry3.getRoleName(), "BoardMember");
         assertEquals(roleEntry3.getRoleValue(), "andersn");
 
-        ApplicationRoleEntry roleEntry4 = userToken.getRoleList().get(3);
+        UserApplicationRoleEntry roleEntry4 = userToken.getRoleList().get(3);
         assertEquals(roleEntry4.getApplicationId(), roleEntry2.getApplicationId());
         assertEquals(roleEntry4.getApplicationName(), roleEntry2.getApplicationName());
-        assertEquals(roleEntry4.getOrganizationName(), roleEntry3.getOrganizationName());
+        assertEquals(roleEntry4.getOrgName(), roleEntry3.getOrgName());
         assertEquals(roleEntry4.getRoleName(), "Owner");
         assertEquals(roleEntry4.getRoleValue(), "Anders Norman");
     }
@@ -229,7 +232,7 @@ public class UserTokenFactoryTest {
 
     @Test
     public void testFromUserAggregateJsonNoRoles() throws Exception {
-        UserToken userToken = UserTokenFactory.fromUserAggregateJson(userAggregateJsonNoRoles);
+        UserToken userToken = UserTokenMapper.fromUserAggregateJson(userAggregateJsonNoRoles);
 
         assertEquals("dd313", userToken.getUid());
         assertEquals("dduck", userToken.getUserName());

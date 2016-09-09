@@ -5,22 +5,21 @@ import com.google.inject.name.Named;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
-
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.commands.adminapi.user.CommandGetUserAggregate;
 import net.whydah.sso.commands.adminapi.user.CommandListUsers;
+import net.whydah.sso.user.mappers.UserTokenMapper;
+import net.whydah.sso.user.types.UserToken;
 import net.whydah.token.application.ApplicationAuthenticationUASClient;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.application.SessionHelper;
 import net.whydah.token.config.AppConfig;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import java.net.URI;
 import java.util.List;
 
@@ -114,7 +113,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         UserToken oldUserToken = ActiveUserTokenRepository.getUserToken(usertokenid, stsToken.getApplicationTokenId());
 
         String userAggregateJson = new CommandGetUserAggregate(useradminservice, stsToken.getApplicationTokenId(), whyDahUserAdminUserToken.getTokenid(), oldUserToken.getUid()).execute();
-        UserToken refreshedUserToken = UserTokenFactory.fromUserAggregateJson(userAggregateJson);
+        UserToken refreshedUserToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
         return refreshedUserToken;
 
     }
@@ -134,7 +133,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
                     String userAggregateJson = new CommandGetUserAggregate(useradminservice, applicationtokenid, adminUserTokenId, userTokenIdentity.getUid()).execute();
 
-                    UserToken userToken = UserTokenFactory.fromUserAggregateJson(userAggregateJson);
+                    UserToken userToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
                     userToken.setSecurityLevel("0");  // UserIdentity as source = securitylevel=0
                     userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
 
@@ -199,13 +198,13 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
     private UserToken getUserToken(String applicationtokenid, String appTokenXml, ClientResponse response) {
         if (response.getStatus() == Response.Status.OK.getStatusCode() || response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
-            String userAggregateXML = response.getEntity(String.class);
-            log.debug("Response from UserAdminService: {}", userAggregateXML);
-            if (userAggregateXML.contains("logonFailed")) {
+            String userAggregateJson = response.getEntity(String.class);
+            log.debug("Response from UserAdminService: {}", userAggregateJson);
+            if (userAggregateJson.contains("logonFailed")) {
                 throw new AuthenticationFailedException("Authentication failed.");
             }
 
-            UserToken userToken = userTokenFactory.fromUserAggregate(userAggregateXML);
+            UserToken userToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
             userToken.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
             userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
             ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid, "usertokenid");

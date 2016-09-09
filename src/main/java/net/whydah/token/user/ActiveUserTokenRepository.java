@@ -4,6 +4,7 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import net.whydah.sso.user.types.UserToken;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.SessionHelper;
 import net.whydah.token.config.AppConfig;

@@ -1,6 +1,6 @@
 package net.whydah.token.application;
 
-import net.whydah.token.user.UserToken;
+import net.whydah.sso.user.types.UserToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

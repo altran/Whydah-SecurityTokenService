@@ -4,6 +4,9 @@ import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
+import net.whydah.sso.user.mappers.UserTokenMapper;
+import net.whydah.sso.user.types.UserApplicationRoleEntry;
+import net.whydah.sso.user.types.UserToken;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
@@ -54,7 +57,7 @@ public class UserTokenTest {
         utoken.setTokenid(UUID.randomUUID().toString());
         String xml = freemarkerProcessor.toXml(utoken);
 
-        UserToken copyToken = UserTokenFactory.fromXml(xml);
+        UserToken copyToken = UserTokenMapper.fromUserTokenXml(xml);
         String copyxml = freemarkerProcessor.toXml(copyToken);
         //assertTrue("The generated user token is wrong.", xml.equalsIgnoreCase(copyxml));
 
@@ -103,18 +106,18 @@ public class UserTokenTest {
         utoken.setLastName("Nordmann");
         utoken.setEmail("test2@whydah.net");
         utoken.setTokenid(UUID.randomUUID().toString());
-        utoken.addApplicationRoleEntry(new ApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 1", "Boardmember", "Diktator"));
-        utoken.addApplicationRoleEntry(new ApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 2", "tester", "ansatt"));
-        utoken.addApplicationRoleEntry(new ApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 3", "Boardmember", ""));
-        utoken.addApplicationRoleEntry(new ApplicationRoleEntry("appa", "whydag.org", "Kunde 1", "President", "Valla"));
+        utoken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 1", "Boardmember", "Diktator"));
+        utoken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 2", "tester", "ansatt"));
+        utoken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 3", "Boardmember", ""));
+        utoken.addApplicationRoleEntry(new UserApplicationRoleEntry("appa", "whydag.org", "Kunde 1", "President", "Valla"));
         String tokenxml = freemarkerProcessor.toXml(utoken);
 
-        UserToken copyToken = UserTokenFactory.fromXml(tokenxml);
+        UserToken copyToken = UserTokenMapper.fromUserTokenXml(tokenxml);
         String copyxml = freemarkerProcessor.toXml(copyToken);
         //System.out.println("FROM: " + tokenxml);
         //System.out.println("TO: " + copyxml);
         assertEquals(tokenxml, copyxml);
-        UserToken copyToken2 = UserTokenFactory.fromXml(tokenxml);
+        UserToken copyToken2 = UserTokenMapper.fromUserTokenXml(tokenxml);
         copyToken2.setApplicationID("2349785543");
         String copyxml2 = freemarkerProcessor.toXml(copyToken2);
         //System.out.println("FILTERED: " + copyxml2);
@@ -129,13 +132,13 @@ public class UserTokenTest {
         utoken.setLastName("Nordmann");
         utoken.setEmail("test2@whydah.net");
         utoken.setTokenid(UUID.randomUUID().toString());
-        utoken.addApplicationRoleEntry(new ApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 1", "Boardmember", "Diktator"));
-        utoken.addApplicationRoleEntry(new ApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 2", "tester", "ansatt"));
-        utoken.addApplicationRoleEntry(new ApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 3", "Boardmember", ""));
-        utoken.addApplicationRoleEntry(new ApplicationRoleEntry("appa", "whydag.org", "Kunde 1", "President", "Valla"));
+        utoken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 1", "Boardmember", "Diktator"));
+        utoken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 2", "tester", "ansatt"));
+        utoken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 3", "Boardmember", ""));
+        utoken.addApplicationRoleEntry(new UserApplicationRoleEntry("appa", "whydag.org", "Kunde 1", "President", "Valla"));
         String tokenxml = freemarkerProcessor.toXml(utoken);
 
-        UserToken copyToken = UserTokenFactory.fromXml(tokenxml);
+        UserToken copyToken = UserTokenMapper.fromUserTokenXml(tokenxml);
         UserToken copy2Token = copyToken.copy();
         assertTrue(copy2Token.toString().equalsIgnoreCase(copyToken.toString()));
     }
@@ -150,7 +153,7 @@ public class UserTokenTest {
                 "        <email>useradmin@getwhydah.com</email>\n" +
                 "        <firstname>User</firstname>\n" +
                 "        <lastname>Admin</lastname>\n" +
-                "        <personRef>0</personRef>\n" +
+                "        <personref>0</personref>\n" +
                 "        <UID>useradmin</UID>\n" +
                 "    </identity>\n" +
                 "    <applications>\n" +
@@ -204,7 +207,7 @@ public class UserTokenTest {
                 " </token>\n";
         //UserToken2 userToken = UserToken2.createUserTokenFromUserAggregate(appXML, identityXML);
 
-        UserToken userToken = new UserTokenFactory("0").fromUserAggregate(identityXML);
+        UserToken userToken = UserTokenMapper.fromUserAggregateXml(identityXML);
 
         //System.out.printf(userToken.toString());
         //String xml = freemarkerProcessor.toXml(userToken);
@@ -229,7 +232,7 @@ public class UserTokenTest {
                 "        <email>useradmin@getwhydah.com</email>\n" +
                 "        <firstname>User</firstname>\n" +
                 "        <lastname>Admin</lastname>\n" +
-                "        <personRef>0</personRef>\n" +
+                "        <personref>0</personref>\n" +
                 "        <UID>useradmin</UID>\n" +
                 "    </identity>\n" +
                 "    <applications>\n" +
@@ -263,16 +266,16 @@ public class UserTokenTest {
                 "        </application>\n" +
                 "    </applications>\n" +
                 "</whydahuser>\n";
-        List<ApplicationRoleEntry> roleList = new LinkedList<>();
+        List<UserApplicationRoleEntry> roleList = new LinkedList<>();
 
         DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
         Document doc = documentBuilder.parse(new InputSource(new StringReader(identityXML)));
         XPath xPath = XPathFactory.newInstance().newXPath();
         NodeList applicationNodes = (NodeList) xPath.evaluate("/whydahuser/applications/application/appId", doc, XPathConstants.NODESET);
         for (int i = 1; i < applicationNodes.getLength() + 1; i++) {
-            ApplicationRoleEntry role = new ApplicationRoleEntry();
+            UserApplicationRoleEntry role = new UserApplicationRoleEntry();
             role.setApplicationId((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/appId", doc, XPathConstants.STRING));
-            role.setOrganizationName((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/orgName", doc, XPathConstants.STRING));
+            role.setOrgName((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/orgName", doc, XPathConstants.STRING));
             role.setRoleName((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/roleName", doc, XPathConstants.STRING));
             role.setRoleValue((String) xPath.evaluate("/whydahuser/applications/application[" + i + "]/roleValue", doc, XPathConstants.STRING));
             //System.out.println(role);
@@ -300,7 +303,7 @@ public class UserTokenTest {
                 "        <email>useradmin@getwhydah.com</email>\n" +
                 "        <firstname>User</firstname>\n" +
                 "        <lastname>Admin</lastname>\n" +
-                "        <personRef>0</personRef>\n" +
+                "        <personref>0</personref>\n" +
                 "        <UID>useradmin</UID>\n" +
                 "    </identity>\n" +
                 "    <applications>\n" +
@@ -336,7 +339,7 @@ public class UserTokenTest {
                 "</whydahuser>\n";
 
 
-        UserToken userToken = new UserTokenFactory("0").fromUserAggregate(identityXML);
+        UserToken userToken = UserTokenMapper.fromUserAggregateXml(identityXML);
 
         //System.out.printf(userToken.toString());
         //String xml = freemarkerProcessor.toXml(userToken);
@@ -355,11 +358,11 @@ public class UserTokenTest {
         AuthenticatedApplicationRepository.addApplicationToken(imp);
 
 
-        List<ApplicationRoleEntry> origRoleList = userToken.getRoleList();
-        List<ApplicationRoleEntry> roleList = new LinkedList<>();
+        List<UserApplicationRoleEntry> origRoleList = userToken.getRoleList();
+        List<UserApplicationRoleEntry> roleList = new LinkedList<>();
         String myappid = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(imp.getApplicationTokenId());
         for (int i = 0; i < origRoleList.size(); i++) {
-            ApplicationRoleEntry are = origRoleList.get(i);
+            UserApplicationRoleEntry are = origRoleList.get(i);
             if (are.getApplicationId().equalsIgnoreCase(myappid)) {
                 roleList.add(are);
             }
