@@ -34,7 +34,7 @@ public class UserTokenResource {
     private final static Logger log = LoggerFactory.getLogger(UserTokenResource.class);
 
     private static Map userticketmap = new HashMap();
-    private static Map<String, String> userpinmap = new HashMap();
+    //private static Map<String, String> userpinmap = new HashMap();
     private static Map applicationtokenidmap = new HashMap();
     private static java.util.Random generator = new java.util.Random();
 
@@ -70,8 +70,8 @@ public class UserTokenResource {
         log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "userticket_map");
         applicationtokenidmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "applicationtokenid_map");
         log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "applicationtokenid_map");
-        userpinmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "userpin_map");
-        log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "userpin_map");
+        //       userpinmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "userpin_map");
+        //       log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "userpin_map");
 
         smsGwServiceURL = appConfig.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
         smsGwServiceAccount = appConfig.getProperty("smsgw.serviceaccount");  //"serviceAccount";
@@ -570,7 +570,6 @@ public class UserTokenResource {
         }
 
 
-        ActivePinRepository.setPin(phoneNo, smsPin);
 
         //String cellNo = phoneNo;
         //String smsMessage = smsPin;
@@ -585,7 +584,8 @@ public class UserTokenResource {
         String queryParam = appConfig.getProperty("smsgw.queryparams");
         String response = new CommandSendSMSToUser(serviceURL, serviceAccount, username, password, queryParam, cellNo, smsMessage).execute();
         log.debug("Answer from smsgw: " + response);
-        userpinmap.put(phoneNo, smsPin);
+        ActivePinRepository.setPin(phoneNo, smsPin);
+//        userpinmap.put(phoneNo, smsPin);
 
         return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
 
@@ -618,7 +618,6 @@ public class UserTokenResource {
         }
 
 
-        ActivePinRepository.setPin(phoneNo, smsPin);
 
         //String cellNo = phoneNo;
         //String smsMessage = smsPin;
@@ -630,10 +629,11 @@ public class UserTokenResource {
         String cellNo = phoneNo;
         String smsMessage = smsPin;
         String queryParam = appConfig.getProperty("smsgw.queryparams");
-        log.info("CommandSendSMSToUser - ({}, {}, {}, {}, {}, cellNo, smsMessage)", smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam);
+        log.trace("CommandSendSMSToUser - ({}, {}, {}, {}, {}, {}, {})", smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage);
         String response = new CommandSendSMSToUser(serviceURL, serviceAccount, username, password, queryParam, cellNo, smsMessage).execute();
-        log.debug("Answer from smsgw: " + response);
-        userpinmap.put(phoneNo, smsPin);
+        log.trace("Answer from smsgw: " + response);
+        ActivePinRepository.setPin(phoneNo, smsPin);
+//        userpinmap.put(phoneNo, smsPin);
 
         return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
 
