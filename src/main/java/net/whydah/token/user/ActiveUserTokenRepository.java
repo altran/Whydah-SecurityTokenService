@@ -18,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class ActiveUserTokenRepository {
     private final static Logger log = LoggerFactory.getLogger(ActiveUserTokenRepository.class);
@@ -151,10 +152,14 @@ public class ActiveUserTokenRepository {
 
     }
 
+    private static String generateID() {
+        return UUID.randomUUID().toString();
+    }
+
     public static void addUserToken(UserToken userToken, String applicationTokenId, String authType) {
         if (userToken.getTokenid() == null) {
             log.error("Error: UserToken has no usertokenid");
-            return;
+            userToken.setTokenid(generateID());
         }
 
         if (userToken.getEmail()!=null){
