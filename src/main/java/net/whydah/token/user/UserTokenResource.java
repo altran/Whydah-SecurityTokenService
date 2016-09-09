@@ -826,6 +826,7 @@ public class UserTokenResource {
 
         if (pin == null || pin.length() < 4) {
             pin = generatePin();
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal pin").build();
         }
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             // TODO:  Limit this operation to SSOLoginWebApplication ONLY
