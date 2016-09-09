@@ -162,6 +162,11 @@ public class ActiveUserTokenRepository {
             userToken.setTokenid(generateID());
         }
 
+        if (userToken.getLifespan() == null) {
+            log.debug("addUserToken: UserToken has no lifespan");
+            userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationTokenId)));
+        }
+
         if (userToken.getEmail()!=null){
             userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
             lastSeenMap.put(userToken.getEmail(),new Date());
