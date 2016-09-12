@@ -57,7 +57,7 @@ public class HealthResource {
                 "  \"LastSeenMapSize\": " + ActiveUserTokenRepository.getLastSeenMapSize() + ",\n" +
                 "  \"PinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
                 "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationRepository.getMapSize() + ",\n" +
-                "  \"Active Applications\": \"" + AuthenticatedApplicationRepository.getActiveApplications() + "\",\n" +
+                "  \"Active Applications\": \"" + AuthenticatedApplicationRepository.getActiveApplications() + "\"\n" +
                 "}\n";
     }
 }
