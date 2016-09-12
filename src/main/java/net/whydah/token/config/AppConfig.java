@@ -20,8 +20,8 @@ import java.util.Set;
  * Helper methods for reading configuration.
  */
 public class AppConfig {
-    public final static String IAM_CONFIG_KEY = "IAM_CONFIG";
-    private final static Logger log = LoggerFactory.getLogger(AppConfig.class);
+    public static final String IAM_CONFIG_KEY = "IAM_CONFIG";
+    private static final Logger log = LoggerFactory.getLogger(AppConfig.class);
 
     private static Properties properties=null;
     private static String fullTokenApplications = "2210,2211,2212,2215,2219";
@@ -67,7 +67,7 @@ public class AppConfig {
         InputStream is = AppConfig.class.getClassLoader().getResourceAsStream(propertyfile);
         if(is == null) {
             log.error("Error reading {} from classpath.", propertyfile);
-            System.exit(3);
+
         }
         properties.load(is);
         return properties;
@@ -81,7 +81,6 @@ public class AppConfig {
             properties.load(new FileInputStream(file));
         } else {
             log.error("Config file {} specified by System property {} not found.", configfilename, IAM_CONFIG_KEY);
-            System.exit(3);
         }
     }
 
