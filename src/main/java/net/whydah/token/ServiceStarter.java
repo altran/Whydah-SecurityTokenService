@@ -28,12 +28,14 @@ public class ServiceStarter {
 
 
     public static void main(String[] args) throws IOException {
+        version = ServiceStarter.class.getPackage().getImplementationVersion();
         ServiceStarter serviceStarter = new ServiceStarter();
         serviceStarter.startServer();
         try {
             // wait forever...
             Thread.currentThread().join();
         } catch (InterruptedException ie) {
+            log.error("Running served killed by interrupt");
         }
         serviceStarter.stop();
     }
@@ -41,7 +43,6 @@ public class ServiceStarter {
     protected void startServer() throws IOException {
         String appMode = ApplicationMode.getApplicationMode();
         AppConfig appConfig = new AppConfig();
-        version = this.getClass().getPackage().getImplementationVersion();
 
         Injector injector = Guice.createInjector(new SecurityTokenServiceModule(appConfig, appMode));
 
