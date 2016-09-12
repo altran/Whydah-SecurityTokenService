@@ -24,18 +24,18 @@ public class ServiceStarter {
     private HttpServer httpServer;
     private int webappPort;
     private final String contextpath="/tokenservice";
-    public static String version;
+    public static final String version = ServiceStarter.class.getPackage().getImplementationVersion();
+    ;
 
 
     public static void main(String[] args) throws IOException {
-        version = ServiceStarter.class.getPackage().getImplementationVersion();
         ServiceStarter serviceStarter = new ServiceStarter();
         serviceStarter.startServer();
         try {
             // wait forever...
             Thread.currentThread().join();
         } catch (InterruptedException ie) {
-            log.error("Running served killed by interrupt");
+            log.error("Running server killed by interrupt");
         }
         serviceStarter.stop();
     }
@@ -79,9 +79,9 @@ public class ServiceStarter {
         httpServer.start();
 
         ActiveUserTokenRepository.initializeDistributedMap();  // Kick-off hazelcast distributed tokensession-map
-        //  UserTokenResource.generatePin(); // Kick off static initializer
 
         log.info("SecurityTokenService started on port {}, IAM_MODE = {}", webappPort, ApplicationMode.getApplicationMode());
+        log.info("Version: {}", version);
         log.info("Status: http://localhost:{}{}/", webappPort, contextpath);
         log.info("Health: http://localhost:{}{}/health", webappPort, contextpath);
         log.info("WADL:   http://localhost:{}{}/application.wadl", webappPort, contextpath);
