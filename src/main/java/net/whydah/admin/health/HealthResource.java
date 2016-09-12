@@ -25,12 +25,12 @@ public class HealthResource {
 
     @GET
     @Path("/")
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response isHealthy() {
         boolean ok = true;
         log.trace("isHealthy={}", getHealthText());
         if (ok) {
-            return Response.ok(getHealthText()).build();
+            return Response.ok(getHealthTextJson()).build();
         } else {
             //Intentionally not returning anything the client can use to determine what's the error for security reasons.
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -46,5 +46,18 @@ public class HealthResource {
                 "\nPinMapSize: " + ActivePinRepository.getPinMap().size() +
                 "\nAuthenticatedApplicationRepositoryMapSize: " + AuthenticatedApplicationRepository.getMapSize() +
                 "\nActive Applications: " + AuthenticatedApplicationRepository.getActiveApplications();
+    }
+
+    public static String getHealthTextJson() {
+        return "{\n" +
+                "  \"Status\": OK,\n" +
+                "  \"DEFCON\": \"" + ApplicationThreatResource.getDEFCON() + "\",\n" +
+                "  \"ClusterSize\": " + ActiveUserTokenRepository.getNoOfClusterMembers() + ",\n" +
+                "  \"ActiveUserTokenMapSize\": " + ActiveUserTokenRepository.getMapSize() + ",\n" +
+                "  \"LastSeenMapSize\": " + ActiveUserTokenRepository.getLastSeenMapSize() + ",\n" +
+                "  \"PinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
+                "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationRepository.getMapSize() + ",\n" +
+                "  \"Active Applications\": \"" + AuthenticatedApplicationRepository.getActiveApplications() + "\",\n" +
+                "}\n";
     }
 }
