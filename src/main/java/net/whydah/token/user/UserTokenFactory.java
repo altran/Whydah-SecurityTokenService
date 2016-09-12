@@ -25,12 +25,9 @@ public class UserTokenFactory {
 
     private static final Logger log = LoggerFactory.getLogger(UserTokenFactory.class);
     private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-    //private static Random rand = new Random();
     private static String defcon = UserToken.DEFCON.DEFCON5.toString();
     private static String lifespanMs;
-    //private String lifespanMs = String.valueOf(60 * 60 * rand.nextInt(1000));
 
-    //ED: I do not like this dependency...
     private static AppConfig appConfig = new AppConfig();
 
     @Deprecated
@@ -40,11 +37,8 @@ public class UserTokenFactory {
 
     public UserTokenFactory(String defcon) {
         this.defcon = defcon;
-        //lifespanMs = String.valueOf(60 * 60 * rand.nextInt(100));
         lifespanMs = String.valueOf(14 * 24 * 60 * 60 * 1000); //14 days, reduce when refresh is implemented.
     }
-
-
 
     private static String generateID() {
         return UUID.randomUUID().toString();
@@ -171,7 +165,7 @@ public class UserTokenFactory {
             return AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid);
         } else {
             log.warn("verifyApplicationToken - not expecting null values applicationtokenid {}, applicationtokenXml {}", applicationtokenid, applicationtokenXml);
-            return false;
+            return validAppToken;
         }
     }
 
