@@ -20,10 +20,10 @@ import org.valuereporter.agent.http.HttpObservationDistributer;
 import java.io.IOException;
 
 public class ServiceStarter {
-    private final static Logger log = LoggerFactory.getLogger(ServiceStarter.class);
+    private static final Logger log = LoggerFactory.getLogger(ServiceStarter.class);
     private HttpServer httpServer;
     private int webappPort;
-    private final String contextpath="/tokenservice";
+    private static final String CONTEXTPATH = "/tokenservice";
     public static final String IMPLEMENTATION_VERSION = ServiceStarter.class.getPackage().getImplementationVersion();
     ;
 
@@ -60,7 +60,7 @@ public class ServiceStarter {
 
 
         ServletHandler adapter = new ServletHandler();
-        adapter.setContextPath(contextpath);
+        adapter.setContextPath(CONTEXTPATH);
         adapter.addInitParameter("com.sun.jersey.config.property.packages", "net.whydah");
         adapter.setProperty(ServletHandler.LOAD_ON_STARTUP, "1");
 
@@ -82,10 +82,10 @@ public class ServiceStarter {
 
         log.info("SecurityTokenService started on port {}, IAM_MODE = {}", webappPort, ApplicationMode.getApplicationMode());
         log.info("Version: {}", IMPLEMENTATION_VERSION);
-        log.info("Status: http://localhost:{}{}/", webappPort, contextpath);
-        log.info("Health: http://localhost:{}{}/health", webappPort, contextpath);
-        log.info("WADL:   http://localhost:{}{}/application.wadl", webappPort, contextpath);
-        log.info("Testpage = {}, TestDriverWeb:   http://localhost:{}{}/",appConfig.getProperty("testpage"), webappPort, contextpath);
+        log.info("Status: http://localhost:{}{}/", webappPort, CONTEXTPATH);
+        log.info("Health: http://localhost:{}{}/health", webappPort, CONTEXTPATH);
+        log.info("WADL:   http://localhost:{}{}/application.wadl", webappPort, CONTEXTPATH);
+        log.info("Testpage = {}, TestDriverWeb:   http://localhost:{}{}/", appConfig.getProperty("testpage"), webappPort, CONTEXTPATH);
     }
 
     public int getPort() {
