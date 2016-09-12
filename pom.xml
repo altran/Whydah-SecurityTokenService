@@ -154,7 +154,7 @@
         <dependency>
             <groupId>com.netflix.hystrix</groupId>
             <artifactId>hystrix-core</artifactId>
-            <version>1.5.3</version>
+            <IMPLEMENTATION_VERSION>1.5.3</IMPLEMENTATION_VERSION>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>

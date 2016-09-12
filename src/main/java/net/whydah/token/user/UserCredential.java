@@ -11,7 +11,7 @@ public class UserCredential {
     private final String password;
 
     public String toXML(){
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \n " +
+        return "<?xml IMPLEMENTATION_VERSION=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \n " +
         "<usercredential>\n" +
         "    <params>\n" +
         "        <username>"+userName+"</username>\n" +

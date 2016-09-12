@@ -14,7 +14,7 @@ public class UserAuthenticatorTest {
 
 
     String applicationTokenId = "81dc9bdb52d04dc20036dbd8313ed055";
-    String appTokenXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><token>\n" +
+    String appTokenXml = "<?xml IMPLEMENTATION_VERSION=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><token>\n" +
             "     <params>\n" +
             "         <applicationtokenID>81dc9bdb52d04dc20036dbd8313ed055</applicationtokenID>\n" +
             "         <applicationid>23</applicationid>\n" +
@@ -23,7 +23,7 @@ public class UserAuthenticatorTest {
             "     </params> \n" +
             "     <Url type=\"application/xml\" method=\"POST\" template=\"http://localhost:9998/tokenservice/user/81dc9bdb52d04dc20036dbd8313ed055/get_usertoken_by_usertokenid\"/> \n" +
             " </token>";
-    String userCredentialXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \n" +
+    String userCredentialXml = "<?xml IMPLEMENTATION_VERSION=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \n" +
             " <usercredential>\n" +
             "    <params>\n" +
             "        <username>test@hotmail.com</username>\n" +

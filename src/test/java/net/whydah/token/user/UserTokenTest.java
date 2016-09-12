@@ -145,7 +145,7 @@ public class UserTokenTest {
 
     @Test
     public void createFromUserIdentityXML() {
-        String identityXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+        String identityXML = "<?xml IMPLEMENTATION_VERSION=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
                 "<whydahuser>\n" +
                 "    <identity>\n" +
                 "        <username>admin</username>\n" +
@@ -196,7 +196,7 @@ public class UserTokenTest {
                 "</whydahuser>\n";
 
 
-        String appXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \n " +
+        String appXML = "<?xml IMPLEMENTATION_VERSION=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \n " +
                 " <token>\n" +
                 "     <params>\n" +
                 "         <applicationtoken>123123123123</applicationtoken>\n" +
@@ -224,7 +224,7 @@ public class UserTokenTest {
 
     @Test
     public void testUserAggregateParsing() throws Exception {
-        String identityXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+        String identityXML = "<?xml IMPLEMENTATION_VERSION=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
                 "<whydahuser>\n" +
                 "    <identity>\n" +
                 "        <username>admin</username>\n" +
@@ -295,7 +295,7 @@ public class UserTokenTest {
 
     @Test
     public void testUserTokenFiltering() throws Exception {
-        String identityXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+        String identityXML = "<?xml IMPLEMENTATION_VERSION=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
                 "<whydahuser>\n" +
                 "    <identity>\n" +
                 "        <username>admin</username>\n" +
