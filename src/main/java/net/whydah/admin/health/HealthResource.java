@@ -50,7 +50,7 @@ public class HealthResource {
 
     public static String getHealthTextJson() {
         return "{\n" +
-                "  \"Status\": OK,\n" +
+                "  \"Status\": \"OK\",\n" +
                 "  \"DEFCON\": \"" + ApplicationThreatResource.getDEFCON() + "\",\n" +
                 "  \"ClusterSize\": " + ActiveUserTokenRepository.getNoOfClusterMembers() + ",\n" +
                 "  \"ActiveUserTokenMapSize\": " + ActiveUserTokenRepository.getMapSize() + ",\n" +
