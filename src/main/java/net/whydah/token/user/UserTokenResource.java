@@ -36,7 +36,6 @@ public class UserTokenResource {
     private final static Logger log = LoggerFactory.getLogger(UserTokenResource.class);
 
     private static Map userticketmap = new HashMap();
-    //private static Map<String, String> userpinmap = new HashMap();
     private static Map applicationtokenidmap = new HashMap();
     private static java.util.Random generator = new java.util.Random();
 
@@ -78,9 +77,6 @@ public class UserTokenResource {
         smsGwUsername = appConfig.getProperty("smsgw.username");  // "smsserviceusername";
         smsGwPassword = appConfig.getProperty("smsgw.password");  //"smsservicepassword";
         smsGwQueryParam = appConfig.getProperty("smsgw.queryparams");   //"serviceId=serviceAccount&me...ssword=smsservicepassword";
-    }
-
-    public static void initializeDistributedMap() {
     }
 
 
@@ -565,9 +561,6 @@ public class UserTokenResource {
         }
 
 
-
-        //String cellNo = phoneNo;
-        //String smsMessage = smsPin;
         String serviceURL = appConfig.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
         String serviceAccount = appConfig.getProperty("smsgw.serviceaccount");  //"serviceAccount";
         String username = appConfig.getProperty("smsgw.username");  // "smsserviceusername";
@@ -579,8 +572,6 @@ public class UserTokenResource {
         String response = new CommandSendSMSToUser(serviceURL, serviceAccount, username, password, queryParam, cellNo, smsMessage).execute();
         log.debug("Answer from smsgw: " + response);
         ActivePinRepository.setPin(phoneNo, smsPin);
-//        userpinmap.put(phoneNo, smsPin);
-
         return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
 
     }
@@ -622,8 +613,6 @@ public class UserTokenResource {
         String response = new CommandSendSMSToUser(serviceURL, serviceAccount, username, password, queryParam, cellNo, smsMessage).execute();
         log.trace("Answer from smsgw: " + response);
         ActivePinRepository.setPin(phoneNo, smsPin);
-//        userpinmap.put(phoneNo, smsPin);
-
         return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
 
     }
@@ -690,8 +679,6 @@ public class UserTokenResource {
             log.warn("sendSMSMessage - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
-
-
         String cellNo = phoneNo;
         new CommandSendSMSToUser(smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage).execute();
         return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
@@ -721,11 +708,8 @@ public class UserTokenResource {
             log.warn("sendScheduledSMSMessage - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
-
-
         String cellNo = phoneNo;
         new DelayedSendSMSTask(Long.parseLong(timestamp), smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage);
-
         return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
 
     }
@@ -810,7 +794,7 @@ public class UserTokenResource {
 
         if (pin == null || pin.length() < 4) {
             pin = generatePin();
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal pin").build();
+            log.info("createAndLogOnPinUser - empty pin in request, gererating internal pin and use it");
         }
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             // TODO:  Limit this operation to SSOLoginWebApplication ONLY
