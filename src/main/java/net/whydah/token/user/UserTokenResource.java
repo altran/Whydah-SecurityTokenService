@@ -297,7 +297,6 @@ public class UserTokenResource {
      */
     @Path("/{applicationtokenid}/{email}/last_seen")
     @GET
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_PLAIN)
     public Response getLastSeenByUserTokenId(@PathParam("applicationtokenid") String applicationtokenid,
                                              @PathParam("email") String userEmail) {
@@ -317,7 +316,7 @@ public class UserTokenResource {
             return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
         log.info("getLastSeenByUserTokenId - valid session found for {} ", userEmail);
-        return Response.status(Response.Status.OK).entity(userEmail).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        return Response.status(Response.Status.OK).entity(lastSeen).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
     }
 
 
