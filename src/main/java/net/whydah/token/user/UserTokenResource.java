@@ -40,11 +40,11 @@ public class UserTokenResource {
     private static Map applicationtokenidmap = new HashMap();
     private static java.util.Random generator = new java.util.Random();
 
-    private static final String smsGwServiceURL;
-    private static final String smsGwServiceAccount;
-    private static final String smsGwUsername;
-    private static final String smsGwPassword;
-    private static final String smsGwQueryParam;
+    private static String smsGwServiceURL;
+    private static String smsGwServiceAccount;
+    private static String smsGwUsername;
+    private static String smsGwPassword;
+    private static String smsGwQueryParam;
 
     static {
 
@@ -72,8 +72,6 @@ public class UserTokenResource {
         log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "userticket_map");
         applicationtokenidmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "applicationtokenid_map");
         log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "applicationtokenid_map");
-        //       userpinmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "userpin_map");
-        //       log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "userpin_map");
 
         smsGwServiceURL = appConfig.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
         smsGwServiceAccount = appConfig.getProperty("smsgw.serviceaccount");  //"serviceAccount";
@@ -133,9 +131,6 @@ public class UserTokenResource {
             UserToken userToken = userAuthenticator.logonUser(applicationtokenid, appTokenXml, userCredentialXml);
             return createUserTokenResponse(applicationtokenid, userToken);
 
-            //userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
-            //userToken.setDefcon(ApplicationThreatResource.getDEFCON());
-            //return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } catch (AuthenticationFailedException ae) {
             log.warn("getUserToken - User authentication failed");
             return Response.status(Response.Status.FORBIDDEN).entity("User authentication failed").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
@@ -196,7 +191,6 @@ public class UserTokenResource {
             log.warn("validateUserTokenXML - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
-        //UserToken userToken = UserToken.createFromUserTokenXML(userTokenXml);
         UserToken userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
         if (ActiveUserTokenRepository.verifyUserToken(userToken, applicationtokenid)) {
             return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
@@ -574,8 +568,6 @@ public class UserTokenResource {
 
         //String cellNo = phoneNo;
         //String smsMessage = smsPin;
-        log.info("CommandSendSMSToUser({}, {}, {}, {}, {}, cellNo, smsMessage)", smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam);
-        //new CommandSendSMSToUser(smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage).execute();
         String serviceURL = appConfig.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
         String serviceAccount = appConfig.getProperty("smsgw.serviceaccount");  //"serviceAccount";
         String username = appConfig.getProperty("smsgw.username");  // "smsserviceusername";
@@ -583,6 +575,7 @@ public class UserTokenResource {
         String cellNo = phoneNo;
         String smsMessage = smsPin;
         String queryParam = appConfig.getProperty("smsgw.queryparams");
+        log.info("CommandSendSMSToUser({}, {}, {}, {}, {}, {}, {})", smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage);
         String response = new CommandSendSMSToUser(serviceURL, serviceAccount, username, password, queryParam, cellNo, smsMessage).execute();
         log.debug("Answer from smsgw: " + response);
         ActivePinRepository.setPin(phoneNo, smsPin);
@@ -618,11 +611,6 @@ public class UserTokenResource {
             return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
 
-
-
-        //String cellNo = phoneNo;
-        //String smsMessage = smsPin;
-        //new CommandSendSMSToUser(smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage).execute();
         String serviceURL = appConfig.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
         String serviceAccount = appConfig.getProperty("smsgw.serviceaccount");  //"serviceAccount";
         String username = appConfig.getProperty("smsgw.username");  // "smsserviceusername";
@@ -705,9 +693,7 @@ public class UserTokenResource {
 
 
         String cellNo = phoneNo;
-        String response = new CommandSendSMSToUser(smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage).execute();
-
-
+        new CommandSendSMSToUser(smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage).execute();
         return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
 
     }
@@ -787,9 +773,6 @@ public class UserTokenResource {
             ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUserName(), "userCreated", applicationtokenid);
             MonitorReporter.reportActivity(observedActivity);
             return createUserTokenResponse(applicationtokenid, userToken);
-
-
-            //return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } catch (AuthenticationFailedException ae) {
             log.warn("createAndLogOnUser - Error creating or authenticating user. thirdPartyUserTokenXml={}", thirdPartyUserTokenXml);
             return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
@@ -844,8 +827,6 @@ public class UserTokenResource {
             ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUserName(), "userCreated", applicationtokenid);
             MonitorReporter.reportActivity(observedActivity);
             return createUserTokenResponse(applicationtokenid, userToken);
-
-//            return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } catch (AuthenticationFailedException ae) {
             log.warn("createAndLogOnPinUser - Error creating or authenticating user. jsonuser={}", newUserjson);
             return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
