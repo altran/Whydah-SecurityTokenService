@@ -81,12 +81,11 @@ public class UserTokenResource {
         applicationtokenidmap = hazelcastInstance.getMap(appConfig.getProperty(GRIDPREFIX) + "applicationtokenid_map");
         log.info("Connectiong to map {}", appConfig.getProperty(GRIDPREFIX) + "applicationtokenid_map");
 
-        SMS_GW_SERVICE_URL = appConfig.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
-        SMS_GW_SERVICE_ACCOUNT = appConfig.getProperty("smsgw.serviceaccount");  //"serviceAccount";
-        SMS_GW_USERNAME = appConfig.getProperty("smsgw.username");  // "smsserviceusername";
-        SMS_GW_PASSWORD = appConfig.getProperty("smsgw.password");  //"smsservicepassword";
-        SMS_GW_QUERY_PARAM = appConfig.getProperty("smsgw.queryparams");   //"serviceId=serviceAccount&me...ssword=smsservicepassword";
-
+        SMS_GW_SERVICE_URL = appConfig.getProperty("smsgw.serviceurl");  //URL https://smsgw.somewhere/../sendMessages/
+        SMS_GW_SERVICE_ACCOUNT = appConfig.getProperty("smsgw.serviceaccount");  //serviceAccount
+        SMS_GW_USERNAME = appConfig.getProperty("smsgw.username");  //smsserviceusername
+        SMS_GW_PASSWORD = appConfig.getProperty("smsgw.password");  //msservicepassword
+        SMS_GW_QUERY_PARAM = appConfig.getProperty("smsgw.queryparams");   //serviceId=serviceAccount&me...ssword=smsservicepassword
     }
 
 
@@ -382,13 +381,12 @@ public class UserTokenResource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
-    //TODO Refacor to better name?
-    public Response getUserTokenByDistributedPinAndLogonUser(@PathParam("applicationtokenid") String applicationtokenid,
-                                                             @PathParam("userticket") String userticket,
-                                                             @FormParam("adminUserTokenId") String adminUserTokenId,
-                                                             @FormParam("apptoken") String appTokenXml,
-                                                             @FormParam("phoneno") String phoneno,
-                                                             @FormParam("pin") String pin) {
+    public Response getUserTokenByPinAndLogonUser(@PathParam("applicationtokenid") String applicationtokenid,
+                                                  @PathParam("userticket") String userticket,
+                                                  @FormParam("adminUserTokenId") String adminUserTokenId,
+                                                  @FormParam("apptoken") String appTokenXml,
+                                                  @FormParam("phoneno") String phoneno,
+                                                  @FormParam("pin") String pin) {
 
         log.trace("getUserTokenByDistributedPinAndLogonUser() called with " + "applicationtokenid = [" + applicationtokenid + "], userticket = [" + userticket + "], appTokenXml = [" + appTokenXml + "], phoneno = [" + phoneno + "], pin = [" + pin + "]");
 
@@ -835,9 +833,7 @@ public class UserTokenResource {
     }
 
     public static String generatePin() {
-        generator.setSeed(System.currentTimeMillis());
         int i = generator.nextInt(10000) % 10000;
-
         java.text.DecimalFormat f = new java.text.DecimalFormat("0000");
         return f.format(i);
 

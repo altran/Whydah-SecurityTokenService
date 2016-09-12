@@ -25,7 +25,7 @@ public class ServiceStarter {
     private int webappPort;
     private static final String CONTEXTPATH = "/tokenservice";
     public static final String IMPLEMENTATION_VERSION = ServiceStarter.class.getPackage().getImplementationVersion();
-    
+
 
     public static void main(String[] args) throws IOException {
         ServiceStarter serviceStarter = new ServiceStarter();

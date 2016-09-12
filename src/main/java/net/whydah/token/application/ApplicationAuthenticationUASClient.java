@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import java.util.Random;
+import java.security.SecureRandom;
 
 
 
@@ -28,11 +28,13 @@ public class ApplicationAuthenticationUASClient {
     private static AppConfig appConfig = new AppConfig();
     private static String stsApplicationTokenID = "";
     private static ApplicationToken myToken;
+    private static java.util.Random generator = new SecureRandom();
+
 
     public static boolean checkAppsecretFromUAS(ApplicationCredential applicationCredential) {
         ApplicationToken token = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(applicationCredential));
         token.setBaseuri(appConfig.getProperty("myuri"));
-        token.setExpires(String.valueOf((System.currentTimeMillis() + 100000 * new Random().nextInt(500))));
+        token.setExpires(String.valueOf((System.currentTimeMillis() + 100000 * generator.nextInt(500))));
 
         String useradminservice = appConfig.getProperty("useradminservice");
         ApplicationToken stsToken = getSTSApplicationToken();

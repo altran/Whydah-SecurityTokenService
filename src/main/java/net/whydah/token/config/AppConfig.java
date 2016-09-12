@@ -11,9 +11,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Properties;
-import java.util.Random;
 import java.util.Set;
 
 /**
@@ -25,7 +25,7 @@ public class AppConfig {
 
     private static Properties properties=null;
     private static String fullTokenApplications = "2210,2211,2212,2215,2219";
-    Random rand = new Random();
+    private static java.util.Random rand = new SecureRandom();
 
     public String getProperty(String key) {
         return properties.getProperty(key);

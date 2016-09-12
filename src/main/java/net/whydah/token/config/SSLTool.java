@@ -1,10 +1,5 @@
 package net.whydah.token.config;
 
-/**
- * Created by totto on 11/23/14.
- */
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
