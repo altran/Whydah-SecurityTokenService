@@ -143,10 +143,10 @@ public class AuthenticatedApplicationRepository {
     }
 
     public static String getActiveApplications() {
-        String applicationIdentifier = "";
         Map<String, Integer> applicationMap = new HashMap<>();
         for (Map.Entry<String, ApplicationToken> entry : applicationTokenMap.entrySet()) {
             // Let us use ApplicationID to identify applications without applicationName
+            String applicationIdentifier;
             if (entry.getValue().getApplicationName() == null || entry.getValue().getApplicationName().length() < 2) {
                 applicationIdentifier = entry.getValue().getApplicationID();
             } else {
@@ -159,7 +159,7 @@ public class AuthenticatedApplicationRepository {
             }
         }
         logActiveApplicationTokenIDs();
-        return applicationMap.toString(); // + " -" + returnString;
+        return applicationMap.toString();
     }
 
 
