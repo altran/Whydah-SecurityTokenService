@@ -143,19 +143,19 @@ public class AuthenticatedApplicationRepository {
     }
 
     public static String getActiveApplications() {
-        String returnString = "";
+        String applicationIdentifier = "";
         Map<String, Integer> applicationMap = new HashMap<>();
         for (Map.Entry<String, ApplicationToken> entry : applicationTokenMap.entrySet()) {
             // Let us use ApplicationID to identify applications without applicationName
             if (entry.getValue().getApplicationName() == null || entry.getValue().getApplicationName().length() < 2) {
-                returnString = returnString + entry.getValue().getApplicationID() + ", ";
+                applicationIdentifier = entry.getValue().getApplicationID() + ", ";
             } else {
-                returnString = returnString + entry.getValue().getApplicationName() + ", ";
+                applicationIdentifier = entry.getValue().getApplicationName() + ", ";
             }
-            if (applicationMap.get(entry.getValue().getApplicationName()) != null) {
-                applicationMap.put(entry.getValue().getApplicationName(), 1 + applicationMap.get(entry.getValue().getApplicationName()));
+            if (applicationMap.get(applicationIdentifier) != null) {
+                applicationMap.put(applicationIdentifier, 1 + applicationMap.get(applicationIdentifier));
             } else {
-                applicationMap.put(entry.getValue().getApplicationName(), 1);
+                applicationMap.put(applicationIdentifier, 1);
             }
         }
         logActiveApplicationTokenIDs();
