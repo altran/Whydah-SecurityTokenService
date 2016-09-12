@@ -41,61 +41,60 @@ public class ActiveUserTokenRepository {
         }
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
-        activeusertokensmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"activeusertokensmap");
+        activeusertokensmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "activeusertokensmap");
         log.info("Connecting to map {} - size: {}", appConfig.getProperty("gridprefix") + "activeusertokensmap", getMapSize());
-        lastSeenMap= hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"lastSeenMap");
+        lastSeenMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "lastSeenMap");
         log.info("Connecting to map {} - size: {}", appConfig.getProperty("gridprefix") + "lastSeenMap", getLastSeenMapSize());
         Set clusterMembers = hazelcastInstance.getCluster().getMembers();
         noOfClusterMembers = clusterMembers.size();
     }
 
     public static void setLastSeen(UserToken userToken) {
+        if (userToken != null && userToken.getEmail() != null) {
+            lastSeenMap.put(userToken.getEmail(), new Date());
+        }
+    }
+
+
+    public static String getLastSeen(UserToken userToken) {
         if (userToken != null) {
-            if (userToken.getEmail() != null) {
-                lastSeenMap.put(userToken.getEmail(), new Date());
-            }
-        }
-    }
-
-
-    public static String getLastSeen(UserToken userToken){
-        if (userToken!=null) {
             Date d = lastSeenMap.get(userToken.getEmail());
-            if (d!=null){
+            if (d != null) {
                 return d.toString();
             }
         }
         return "Not seen";
     }
 
-    public static String getLastSeenByEmail(String email){
-        if (email!=null) {
+    public static String getLastSeenByEmail(String email) {
+        if (email != null) {
             Date d = lastSeenMap.get(email);
-            if (d!=null){
+            if (d != null) {
                 return d.toString();
             }
         }
         return "Not seen";
     }
+
     /**
      * Get UserToken from UserTokenRepository. If token is not found or is not valid/timed out, null is returned.
      *
      * @param usertokenId userTokenId
      * @return UserToken if found and valid, null if not.
      */
-    public static UserToken getUserToken(String usertokenId,String applicationTokenId) {
+    public static UserToken getUserToken(String usertokenId, String applicationTokenId) {
         log.debug("getUserToken with userTokenid=" + usertokenId);
         if (usertokenId == null) {
             return null;
         }
         UserToken resToken = activeusertokensmap.get(usertokenId);
-        if (resToken != null && verifyUserToken(resToken,applicationTokenId)) {
+        if (resToken != null && verifyUserToken(resToken, applicationTokenId)) {
             resToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(resToken));
-            lastSeenMap.put(resToken.getEmail(),new Date());
+            lastSeenMap.put(resToken.getEmail(), new Date());
             log.info("Valid userToken found: " + resToken);
             log.debug("userToken=" + resToken);
 
-            ObservedActivity observedActivity = new UserSessionObservedActivity(resToken.getUid(),"userSessionAccess",applicationTokenId);
+            ObservedActivity observedActivity = new UserSessionObservedActivity(resToken.getUid(), "userSessionAccess", applicationTokenId);
             MonitorReporter.reportActivity(observedActivity);
             log.trace("Adding activity to statistics cache {}", observedActivity);
 
@@ -111,13 +110,13 @@ public class ActiveUserTokenRepository {
      * @param userToken UserToken
      * @return true if token is valid.
      */
-    public static boolean verifyUserToken(UserToken userToken,String applicationTokenId) {
+    public static boolean verifyUserToken(UserToken userToken, String applicationTokenId) {
         if (userToken.getTokenid() == null) {
             log.info("UserToken not valid, missing tokenId");
             return false;
         }
-        if (userToken.getEmail()!=null){
-            lastSeenMap.put(userToken.getEmail(),new Date());
+        if (userToken.getEmail() != null) {
+            lastSeenMap.put(userToken.getEmail(), new Date());
 
         }
         UserToken resToken = activeusertokensmap.get(userToken.getTokenid());
@@ -135,20 +134,20 @@ public class ActiveUserTokenRepository {
             log.info("UserToken not valid: not the same as in repo. token: {}  repotoken: {}", userToken, resToken);
             return false;
         }
-        ObservedActivity observedActivity = new UserSessionObservedActivity(resToken.getUid(),"userSessionVerification",applicationTokenId);
+        ObservedActivity observedActivity = new UserSessionObservedActivity(resToken.getUid(), "userSessionVerification", applicationTokenId);
         MonitorReporter.reportActivity(observedActivity);
 
         return true;
     }
 
-    public static void renewUserToken(String usertokenid,String applicationTokenId){
+    public static void renewUserToken(String usertokenid, String applicationTokenId) {
         UserToken utoken = activeusertokensmap.remove(usertokenid);
         utoken.setDefcon(ApplicationThreatResource.getDEFCON());
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
-        
+
         utoken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationTokenId)));
         addUserToken(utoken, applicationTokenId, "renew");
-        ObservedActivity observedActivity = new UserSessionObservedActivity(utoken.getUid(),"userSessionRenewal",applicationTokenId);
+        ObservedActivity observedActivity = new UserSessionObservedActivity(utoken.getUid(), "userSessionRenewal", applicationTokenId);
         MonitorReporter.reportActivity(observedActivity);
 
     }
@@ -175,9 +174,9 @@ public class ActiveUserTokenRepository {
             userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationTokenId)));
         }
 
-        if (userToken.getEmail()!=null){
+        if (userToken.getEmail() != null) {
             userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
-            lastSeenMap.put(userToken.getEmail(),new Date());
+            lastSeenMap.put(userToken.getEmail(), new Date());
 
         }
         if (activeusertokensmap.containsKey(userToken.getTokenid())) {
@@ -200,9 +199,9 @@ public class ActiveUserTokenRepository {
         log.info("Added token with id {}", copy.getTokenid(), " content:" + copy);
     }
 
-    public static void removeUserToken(String userTokenId,String applicationTokenId) {
+    public static void removeUserToken(String userTokenId, String applicationTokenId) {
         UserToken removedToken = activeusertokensmap.remove(userTokenId);
-        ObservedActivity observedActivity = new UserSessionObservedActivity(removedToken.getUid(),"userSessionRemoved",applicationTokenId);
+        ObservedActivity observedActivity = new UserSessionObservedActivity(removedToken.getUid(), "userSessionRemoved", applicationTokenId);
         MonitorReporter.reportActivity(observedActivity);
 
     }
@@ -210,7 +209,7 @@ public class ActiveUserTokenRepository {
     public static void initializeDistributedMap() {
     }
 
-    public static int getMapSize(){
+    public static int getMapSize() {
         logUserTokenMap();
         return activeusertokensmap.size();
     }
