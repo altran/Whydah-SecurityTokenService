@@ -148,9 +148,9 @@ public class AuthenticatedApplicationRepository {
         for (Map.Entry<String, ApplicationToken> entry : applicationTokenMap.entrySet()) {
             // Let us use ApplicationID to identify applications without applicationName
             if (entry.getValue().getApplicationName() == null || entry.getValue().getApplicationName().length() < 2) {
-                applicationIdentifier = entry.getValue().getApplicationID() + ", ";
+                applicationIdentifier = entry.getValue().getApplicationID();
             } else {
-                applicationIdentifier = entry.getValue().getApplicationName() + ", ";
+                applicationIdentifier = entry.getValue().getApplicationName();
             }
             if (applicationMap.get(applicationIdentifier) != null) {
                 applicationMap.put(applicationIdentifier, 1 + applicationMap.get(applicationIdentifier));
