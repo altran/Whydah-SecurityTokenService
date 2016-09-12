@@ -146,7 +146,12 @@ public class AuthenticatedApplicationRepository {
         String returnString = "";
         Map<String, Integer> applicationMap = new HashMap<>();
         for (Map.Entry<String, ApplicationToken> entry : applicationTokenMap.entrySet()) {
-            returnString = returnString + entry.getValue().getApplicationName() + ", ";
+            // Let us use ApplicationID to identify applications without applicationName
+            if (entry.getValue().getApplicationName() == null || entry.getValue().getApplicationName().length() < 2) {
+                returnString = returnString + entry.getValue().getApplicationID() + ", ";
+            } else {
+                returnString = returnString + entry.getValue().getApplicationName() + ", ";
+            }
             if (applicationMap.get(entry.getValue().getApplicationName()) != null) {
                 applicationMap.put(entry.getValue().getApplicationName(), 1 + applicationMap.get(entry.getValue().getApplicationName()));
             } else {
