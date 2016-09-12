@@ -861,6 +861,7 @@ public class UserTokenResource {
         userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
         userToken.setDefcon(ApplicationThreatResource.getDEFCON());
         UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken);
+        ActiveUserTokenRepository.setLastSeen(userToken);
         return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
     }
 

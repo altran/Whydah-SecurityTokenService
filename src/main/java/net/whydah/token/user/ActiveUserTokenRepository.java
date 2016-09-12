@@ -49,6 +49,14 @@ public class ActiveUserTokenRepository {
         noOfClusterMembers = clusterMembers.size();
     }
 
+    public static void setLastSeen(UserToken userToken) {
+        if (userToken != null) {
+            if (userToken.getEmail() != null) {
+                lastSeenMap.put(userToken.getEmail(), new Date());
+            }
+        }
+    }
+
 
     public static String getLastSeen(UserToken userToken){
         if (userToken!=null) {
