@@ -24,7 +24,7 @@ public class ServiceStarter {
     private HttpServer httpServer;
     private int webappPort;
     private final String contextpath="/tokenservice";
-    public static final String IMPLEMENTATION_VERSION = ServiceStarter.class.getPackage().getImplementationVersion();
+    public static final String version = ServiceStarter.class.getPackage().getImplementationVersion();
     ;
 
 
@@ -46,7 +46,7 @@ public class ServiceStarter {
 
         Injector injector = Guice.createInjector(new SecurityTokenServiceModule(appConfig, appMode));
 
-        log.info("Starting SecurityTokenService... IMPLEMENTATION_VERSION:{}", IMPLEMENTATION_VERSION);
+        log.info("Starting SecurityTokenService... version:{}",version);
 
 
         //Start Valuereporter event distributer.
@@ -81,7 +81,7 @@ public class ServiceStarter {
         ActiveUserTokenRepository.initializeDistributedMap();  // Kick-off hazelcast distributed tokensession-map
 
         log.info("SecurityTokenService started on port {}, IAM_MODE = {}", webappPort, ApplicationMode.getApplicationMode());
-        log.info("Version: {}", IMPLEMENTATION_VERSION);
+        log.info("Version: {}", version);
         log.info("Status: http://localhost:{}{}/", webappPort, contextpath);
         log.info("Health: http://localhost:{}{}/health", webappPort, contextpath);
         log.info("WADL:   http://localhost:{}{}/application.wadl", webappPort, contextpath);

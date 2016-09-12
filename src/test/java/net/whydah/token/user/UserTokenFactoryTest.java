@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
  * @author <a href="mailto:erik-dev@fjas.no">Erik Drolshammer</a> 2014-11-04
  */
 public class UserTokenFactoryTest {
-    private final String userTokenXml1 = "<?xml IMPLEMENTATION_VERSION=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+    private final String userTokenXml1 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"+
             "<usertoken xmlns:ns2=\"http://www.w3.org/1999/xhtml\" id=\"6f04e78e-bb75-4214-a786-2be7657bb38a\">\n"+
             "    <uid>uid1</uid>\n"+
             "    <timestamp>1415091487335</timestamp>\n"+
@@ -46,7 +46,7 @@ public class UserTokenFactoryTest {
             "</usertoken>\n"+
             "\n";
 
-    private final String userTokenXmlWithFourRoles = "<?xml IMPLEMENTATION_VERSION=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+    private final String userTokenXmlWithFourRoles = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
             "<usertoken xmlns:ns2=\"http://www.w3.org/1999/xhtml\" id=\"8e4020b6-ea61-44f1-8b31-ecdd84869784\">\n" +
             "    <uid>8d563960-7b4f-4c44-a241-1ac359999b63</uid>\n" +
             "    <timestamp>1415091757670</timestamp>\n" +

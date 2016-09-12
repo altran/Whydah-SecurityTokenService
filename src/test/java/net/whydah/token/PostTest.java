@@ -47,7 +47,7 @@ public class PostTest {
 
     @Test
     public void testLogonApplication() {
-        String appCredential = "<?xml IMPLEMENTATION_VERSION='1.0' encoding='UTF-8' standalone='yes'?><applicationcredential><appid>app123</appid><appsecret>123123</appsecret></applicationcredential>";
+        String appCredential = "<?xml version='1.0' encoding='UTF-8' standalone='yes'?><applicationcredential><appid>app123</appid><appsecret>123123</appsecret></applicationcredential>";
         String responseXML = logonApplication(appCredential);
         assertTrue(responseXML.contains("applicationtoken"));
         assertTrue(responseXML.contains("applicationid"));
