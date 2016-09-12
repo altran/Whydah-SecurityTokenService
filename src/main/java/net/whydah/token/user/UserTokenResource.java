@@ -28,6 +28,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.FileNotFoundException;
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,10 +40,11 @@ public class UserTokenResource {
     public static final String GET_POST_DELETE_PUT = "GET, POST, DELETE, PUT";
     public static final String USER_AUTHENTICATION_FAILED = "User authentication failed";
     public static final String APPLICATION_AUTHENTICATION_NOT_VALID = "Application authentication not valid.";
+    public static final String ILLEGAL_APPLICATION_FOR_THIS_SERVICE = "Illegal application for this service";
 
     private static Map userticketmap = new HashMap();
     private static Map applicationtokenidmap = new HashMap();
-    private static java.util.Random generator = new java.util.Random();
+    private static java.util.Random generator = new SecureRandom();
 
     private static final String SMS_GW_SERVICE_URL;
     private static final String SMS_GW_SERVICE_ACCOUNT;
@@ -84,6 +86,7 @@ public class UserTokenResource {
         SMS_GW_USERNAME = appConfig.getProperty("smsgw.username");  // "smsserviceusername";
         SMS_GW_PASSWORD = appConfig.getProperty("smsgw.password");  //"smsservicepassword";
         SMS_GW_QUERY_PARAM = appConfig.getProperty("smsgw.queryparams");   //"serviceId=serviceAccount&me...ssword=smsservicepassword";
+
     }
 
 
@@ -238,7 +241,7 @@ public class UserTokenResource {
 
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             log.warn("createUserTicketByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
         if (userToken != null) {
@@ -274,7 +277,7 @@ public class UserTokenResource {
 
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             log.warn("getUserTokenByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
         if (userToken == null) {
@@ -305,7 +308,7 @@ public class UserTokenResource {
 
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, "")) {
             log.warn("getLastSeenByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         String lastSeen = ActiveUserTokenRepository.getLastSeenByEmail(userEmail);
         if (lastSeen == null) {
@@ -345,7 +348,7 @@ public class UserTokenResource {
 
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             log.warn("getUserTokenByUserTicket - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         String userTokenId = (String) userticketmap.get(userticket);
         if (userTokenId == null) {
@@ -402,7 +405,7 @@ public class UserTokenResource {
         // Verify calling application
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             log.warn("getUserTokenByUserTicket - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
 
         final UserToken userToken = userAuthenticator.logonPinUser(applicationtokenid, appTokenXml, adminUserTokenId, phoneno, pin);
@@ -528,7 +531,7 @@ public class UserTokenResource {
 
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             log.warn("getUserTokenByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         String userTokenId = UserTokenMapper.fromUserTokenXml(userTokenXml).getTokenid();
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
@@ -564,19 +567,11 @@ public class UserTokenResource {
 
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
 
-
-        String serviceURL = appConfig.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
-        String serviceAccount = appConfig.getProperty("smsgw.serviceaccount");  //"serviceAccount";
-        String username = appConfig.getProperty("smsgw.username");  // "smsserviceusername";
-        String password = appConfig.getProperty("smsgw.password");  //"smsservicepassword";
-        String cellNo = phoneNo;
-        String smsMessage = smsPin;
-        String queryParam = appConfig.getProperty("smsgw.queryparams");
-        log.info("CommandSendSMSToUser({}, {}, {}, {}, {}, {}, {})", SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, cellNo, smsMessage);
-        String response = new CommandSendSMSToUser(serviceURL, serviceAccount, username, password, queryParam, cellNo, smsMessage).execute();
+        log.trace("CommandSendSMSToUser - ({}, {}, {}, {}, {}, {}, {})", SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin);
+        String response = new CommandSendSMSToUser(SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin).execute();
         log.debug("Answer from smsgw: " + response);
         ActivePinRepository.setPin(phoneNo, smsPin);
         return Response.ok().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
@@ -606,18 +601,11 @@ public class UserTokenResource {
 
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
 
-        String serviceURL = appConfig.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
-        String serviceAccount = appConfig.getProperty("smsgw.serviceaccount");  //"serviceAccount";
-        String username = appConfig.getProperty("smsgw.username");  // "smsserviceusername";
-        String password = appConfig.getProperty("smsgw.password");  //"smsservicepassword";
-        String cellNo = phoneNo;
-        String smsMessage = smsPin;
-        String queryParam = appConfig.getProperty("smsgw.queryparams");
-        log.trace("CommandSendSMSToUser - ({}, {}, {}, {}, {}, {}, {})", SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, cellNo, smsMessage);
-        String response = new CommandSendSMSToUser(serviceURL, serviceAccount, username, password, queryParam, cellNo, smsMessage).execute();
+        log.trace("CommandSendSMSToUser - ({}, {}, {}, {}, {}, {}, {})", SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin);
+        String response = new CommandSendSMSToUser(SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin).execute();
         log.trace("Answer from smsgw: " + response);
         ActivePinRepository.setPin(phoneNo, smsPin);
         return Response.ok().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
@@ -655,7 +643,7 @@ public class UserTokenResource {
         // Verify calling application
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             log.warn("verifyPhoneByPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
 
         if (ActivePinRepository.usePin(phoneno, pin)) {
@@ -684,7 +672,7 @@ public class UserTokenResource {
 
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("sendSMSMessage - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         String cellNo = phoneNo;
         new CommandSendSMSToUser(SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, cellNo, smsMessage).execute();
@@ -713,7 +701,7 @@ public class UserTokenResource {
 
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("sendScheduledSMSMessage - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         String cellNo = phoneNo;
         new DelayedSendSMSTask(Long.parseLong(timestamp), SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, cellNo, smsMessage);
