@@ -2,6 +2,7 @@ package net.whydah.token.config;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
+import net.whydah.sso.config.ApplicationMode;
 import net.whydah.token.user.DummyUserAuthenticator;
 import net.whydah.token.user.UserAuthenticator;
 import net.whydah.token.user.UserAuthenticatorImpl;

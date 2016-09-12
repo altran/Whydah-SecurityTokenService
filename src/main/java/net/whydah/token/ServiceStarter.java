@@ -4,8 +4,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
+import net.whydah.sso.config.ApplicationMode;
 import net.whydah.token.config.AppConfig;
-import net.whydah.token.config.ApplicationMode;
 import net.whydah.token.config.SecurityTokenServiceModule;
 import net.whydah.token.user.ActiveUserTokenRepository;
 import org.glassfish.grizzly.http.server.HttpServer;
@@ -78,6 +78,7 @@ public class ServiceStarter {
         httpServer.start();
 
         ActiveUserTokenRepository.initializeDistributedMap();  // Kick-off hazelcast distributed tokensession-map
+        //  UserTokenResource.generatePin(); // Kick off static initializer
 
         log.info("SecurityTokenService started on port {}, IAM_MODE = {}", webappPort, ApplicationMode.getApplicationMode());
         log.info("Status: http://localhost:{}{}/", webappPort, contextpath);

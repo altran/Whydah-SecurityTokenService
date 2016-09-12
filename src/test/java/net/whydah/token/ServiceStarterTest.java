@@ -3,7 +3,7 @@ package net.whydah.token;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
-import net.whydah.token.config.ApplicationMode;
+import net.whydah.sso.config.ApplicationMode;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;

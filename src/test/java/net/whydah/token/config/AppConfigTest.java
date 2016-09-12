@@ -3,6 +3,7 @@ package net.whydah.token.config;
 import net.whydah.sso.application.helpers.ApplicationHelper;
 import net.whydah.sso.application.mappers.ApplicationMapper;
 import net.whydah.sso.application.types.Application;
+import net.whydah.sso.config.ApplicationMode;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;

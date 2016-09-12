@@ -2,6 +2,7 @@ package net.whydah.token.config;
 
 import net.whydah.sso.application.mappers.ApplicationMapper;
 import net.whydah.sso.application.types.Application;
+import net.whydah.sso.config.ApplicationMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

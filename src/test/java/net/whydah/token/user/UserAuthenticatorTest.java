@@ -1,7 +1,7 @@
 package net.whydah.token.user;
 
+import net.whydah.sso.config.ApplicationMode;
 import net.whydah.sso.user.types.UserToken;
-import net.whydah.token.config.ApplicationMode;
 import org.junit.Test;
 
 import java.util.HashMap;
