@@ -34,16 +34,23 @@ import java.util.Map;
 @Path("/user")
 public class UserTokenResource {
     private final static Logger log = LoggerFactory.getLogger(UserTokenResource.class);
+    public static final String ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
+    public static final String ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods";
+    public static final String GET_POST_DELETE_PUT = "GET, POST, DELETE, PUT";
+    public static final String USER_AUTHENTICATION_FAILED = "User authentication failed";
+    public static final String APPLICATION_AUTHENTICATION_NOT_VALID = "Application authentication not valid.";
 
     private static Map userticketmap = new HashMap();
     private static Map applicationtokenidmap = new HashMap();
     private static java.util.Random generator = new java.util.Random();
 
-    private static String smsGwServiceURL;
-    private static String smsGwServiceAccount;
-    private static String smsGwUsername;
-    private static String smsGwPassword;
-    private static String smsGwQueryParam;
+    private static final String SMS_GW_SERVICE_URL;
+    private static final String SMS_GW_SERVICE_ACCOUNT;
+    private static final String SMS_GW_USERNAME;
+    private static final String SMS_GW_PASSWORD;
+    private static final String SMS_GW_QUERY_PARAM;
+
+    public static final String GRIDPREFIX = "gridprefix";
 
     static {
 
@@ -67,16 +74,16 @@ public class UserTokenResource {
         }
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
-        userticketmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "userticket_map");
-        log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "userticket_map");
-        applicationtokenidmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "applicationtokenid_map");
-        log.info("Connectiong to map {}", appConfig.getProperty("gridprefix") + "applicationtokenid_map");
+        userticketmap = hazelcastInstance.getMap(appConfig.getProperty(GRIDPREFIX) + "userticket_map");
+        log.info("Connectiong to map {}", appConfig.getProperty(GRIDPREFIX) + "userticket_map");
+        applicationtokenidmap = hazelcastInstance.getMap(appConfig.getProperty(GRIDPREFIX) + "applicationtokenid_map");
+        log.info("Connectiong to map {}", appConfig.getProperty(GRIDPREFIX) + "applicationtokenid_map");
 
-        smsGwServiceURL = appConfig.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
-        smsGwServiceAccount = appConfig.getProperty("smsgw.serviceaccount");  //"serviceAccount";
-        smsGwUsername = appConfig.getProperty("smsgw.username");  // "smsserviceusername";
-        smsGwPassword = appConfig.getProperty("smsgw.password");  //"smsservicepassword";
-        smsGwQueryParam = appConfig.getProperty("smsgw.queryparams");   //"serviceId=serviceAccount&me...ssword=smsservicepassword";
+        SMS_GW_SERVICE_URL = appConfig.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
+        SMS_GW_SERVICE_ACCOUNT = appConfig.getProperty("smsgw.serviceaccount");  //"serviceAccount";
+        SMS_GW_USERNAME = appConfig.getProperty("smsgw.username");  // "smsserviceusername";
+        SMS_GW_PASSWORD = appConfig.getProperty("smsgw.password");  //"smsservicepassword";
+        SMS_GW_QUERY_PARAM = appConfig.getProperty("smsgw.queryparams");   //"serviceId=serviceAccount&me...ssword=smsservicepassword";
     }
 
 
@@ -121,7 +128,7 @@ public class UserTokenResource {
         }
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             log.warn("getUserToken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity(APPLICATION_AUTHENTICATION_NOT_VALID).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         try {
             UserToken userToken = userAuthenticator.logonUser(applicationtokenid, appTokenXml, userCredentialXml);
@@ -129,7 +136,7 @@ public class UserTokenResource {
 
         } catch (AuthenticationFailedException ae) {
             log.warn("getUserToken - User authentication failed");
-            return Response.status(Response.Status.FORBIDDEN).entity("User authentication failed").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity(USER_AUTHENTICATION_FAILED).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
     }
 
@@ -156,7 +163,7 @@ public class UserTokenResource {
 
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             log.warn("getUserTokenAndStoreUserTicket - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         try {
             UserToken userToken = userAuthenticator.logonUser(applicationtokenid, appTokenXml, userCredentialXml);
@@ -166,7 +173,7 @@ public class UserTokenResource {
             return createUserTokenResponse(applicationtokenid, userToken);
         } catch (AuthenticationFailedException ae) {
             log.warn("getUserTokenAndStoreUserTicket - User authentication failed");
-            return Response.status(Response.Status.FORBIDDEN).entity("User authentication failed").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity(USER_AUTHENTICATION_FAILED).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
     }
 
@@ -185,14 +192,14 @@ public class UserTokenResource {
     public Response validateUserTokenXML(@PathParam("applicationtokenid") String applicationtokenid, @FormParam("usertoken") String userTokenXml) {
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("validateUserTokenXML - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         UserToken userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
         if (ActiveUserTokenRepository.verifyUserToken(userToken, applicationtokenid)) {
-            return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.ok().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         log.warn("validateUserTokenXML failed for usertoken {}", userTokenXml);
-        return Response.status(Response.Status.UNAUTHORIZED).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        return Response.status(Response.Status.UNAUTHORIZED).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
     }
 
     @Path("/{applicationtokenid}/validate_usertokenid/{usertokenid}")
@@ -200,14 +207,14 @@ public class UserTokenResource {
     public Response validateUserTokenID(@PathParam("applicationtokenid") String applicationtokenid, @PathParam("usertokenid") String usertokenid) {
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("validateUserTokenXML - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         if (ActiveUserTokenRepository.getUserToken(usertokenid, applicationtokenid) != null) {
             log.trace("Verified {}", usertokenid);
-            return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.ok().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         log.warn("Usertoken not ok: {}", usertokenid);
-        return Response.status(Response.Status.UNAUTHORIZED).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        return Response.status(Response.Status.UNAUTHORIZED).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
     }
 
     /**
@@ -231,7 +238,7 @@ public class UserTokenResource {
 
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             log.warn("createUserTicketByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
         if (userToken != null) {
@@ -267,12 +274,12 @@ public class UserTokenResource {
 
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             log.warn("getUserTokenByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
         if (userToken == null) {
             log.warn("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid={}", userTokenId);
-            return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         log.info("getUserTokenByUserTokenId - valid session found for {} ", userTokenId);
         return createUserTokenResponse(applicationtokenid, userToken);
@@ -298,15 +305,15 @@ public class UserTokenResource {
 
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, "")) {
             log.warn("getLastSeenByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         String lastSeen = ActiveUserTokenRepository.getLastSeenByEmail(userEmail);
         if (lastSeen == null) {
             log.warn("getLastSeenByUserTokenId - attempt to access with non acceptable userEmail={}", userEmail);
-            return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         log.info("getLastSeenByUserTokenId - valid session found for {} ", userEmail);
-        return Response.status(Response.Status.OK).entity(lastSeen).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        return Response.status(Response.Status.OK).entity(lastSeen).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
     }
 
 
@@ -338,12 +345,12 @@ public class UserTokenResource {
 
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             log.warn("getUserTokenByUserTicket - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         String userTokenId = (String) userticketmap.get(userticket);
         if (userTokenId == null) {
             log.warn("getUserTokenByUserTicket - Attempt to resolve non-existing userticket={}", userticket);
-            return Response.status(Response.Status.GONE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build(); //410
+            return Response.status(Response.Status.GONE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build(); //410
         }
         log.trace("getUserTokenByUserTicket - Found usertokenid: " + userTokenId);
         userticketmap.remove(userticket);
@@ -351,7 +358,7 @@ public class UserTokenResource {
 
         if (userToken == null) {
             log.warn("getUserTokenByUserTicket - illegal/Null userticket received ");
-            return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build(); //406
+            return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build(); //406
         }
         log.trace("getUserTokenByUserTicket OK. Response={}", userToken.toString());
         return createUserTokenResponse(applicationtokenid, userToken);
@@ -395,13 +402,13 @@ public class UserTokenResource {
         // Verify calling application
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             log.warn("getUserTokenByUserTicket - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
 
         final UserToken userToken = userAuthenticator.logonPinUser(applicationtokenid, appTokenXml, adminUserTokenId, phoneno, pin);
         if (userToken == null) {
             log.warn("getUserTokenByDistributedPinAndLogonUser - attempt to access with non acceptable username, phoneno={}", phoneno);
-            return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         log.info("getUserTokenByDistributedPinAndLogonUser - valid session created for {} ", phoneno);
         ApplicationModelHelper.updateApplicationList(applicationtokenid, adminUserTokenId);
@@ -425,15 +432,15 @@ public class UserTokenResource {
         log.trace("releaseUserToken - entry.  usertokenid={}", usertokenid);
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("releaseUserToken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         if (usertokenid == null) {
             log.warn("releaseUserToken - attempt with no usertokenid: Null");
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         log.trace("releaseUserToken - removed session, usertokenid={}", usertokenid);
         ActiveUserTokenRepository.removeUserToken(usertokenid, applicationtokenid);
-        return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        return Response.ok().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
     }
 
     /**
@@ -451,17 +458,17 @@ public class UserTokenResource {
         log.trace("renewUserToken - entry.  usertokenid={}", usertokenid);
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("renewUserToken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         if (usertokenid == null) {
             log.warn("renewUserToken - attempt with no usertokenid: Null");
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
 
         ActiveUserTokenRepository.renewUserToken(usertokenid, applicationtokenid);
 
         log.trace("renewUserToken - session renewed, usertokenid={}", usertokenid);
-        return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        return Response.ok().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
     }
 
     /**
@@ -479,11 +486,11 @@ public class UserTokenResource {
         log.debug("refresh_usertoken - entry.  usertokenid={}", usertokenid);
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("refresh_usertoken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         if (usertokenid == null) {
             log.warn("refresh_usertoken - attempt with no usertokenid: Null");
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         UserToken refreshedUserToken = userAuthenticator.getRefreshedUserToken(usertokenid);
         ActiveUserTokenRepository.refreshUserToken(usertokenid, applicationtokenid, refreshedUserToken);
@@ -521,14 +528,14 @@ public class UserTokenResource {
 
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             log.warn("getUserTokenByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         String userTokenId = UserTokenMapper.fromUserTokenXml(userTokenXml).getTokenid();
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
         userToken.setDefcon(ApplicationThreatResource.getDEFCON());
         if (userToken == null) {
             log.warn("getUserTokenByUserTokenId - attempt to access with non acceptable userTokenId={}", userTokenId);
-            return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         return createUserTokenResponse(newAppTokenId, userToken);
     }
@@ -552,12 +559,12 @@ public class UserTokenResource {
 
         if (phoneNo == null || smsPin == null) {
             log.warn("sendSMSPin: attempt to use service with emty parameters");
-            return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
 
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
 
 
@@ -568,11 +575,11 @@ public class UserTokenResource {
         String cellNo = phoneNo;
         String smsMessage = smsPin;
         String queryParam = appConfig.getProperty("smsgw.queryparams");
-        log.info("CommandSendSMSToUser({}, {}, {}, {}, {}, {}, {})", smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage);
+        log.info("CommandSendSMSToUser({}, {}, {}, {}, {}, {}, {})", SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, cellNo, smsMessage);
         String response = new CommandSendSMSToUser(serviceURL, serviceAccount, username, password, queryParam, cellNo, smsMessage).execute();
         log.debug("Answer from smsgw: " + response);
         ActivePinRepository.setPin(phoneNo, smsPin);
-        return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        return Response.ok().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
 
     }
 
@@ -594,12 +601,12 @@ public class UserTokenResource {
         String smsPin = generatePin();
         if (phoneNo == null || smsPin == null) {
             log.warn("sendSMSPin: attempt to use service with emty parameters");
-            return Response.status(Response.Status.NOT_ACCEPTABLE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
 
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
 
         String serviceURL = appConfig.getProperty("smsgw.serviceurl");  //"https://smsgw.somewhere/../sendMessages/";
@@ -609,11 +616,11 @@ public class UserTokenResource {
         String cellNo = phoneNo;
         String smsMessage = smsPin;
         String queryParam = appConfig.getProperty("smsgw.queryparams");
-        log.trace("CommandSendSMSToUser - ({}, {}, {}, {}, {}, {}, {})", smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage);
+        log.trace("CommandSendSMSToUser - ({}, {}, {}, {}, {}, {}, {})", SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, cellNo, smsMessage);
         String response = new CommandSendSMSToUser(serviceURL, serviceAccount, username, password, queryParam, cellNo, smsMessage).execute();
         log.trace("Answer from smsgw: " + response);
         ActivePinRepository.setPin(phoneNo, smsPin);
-        return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        return Response.ok().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
 
     }
 
@@ -648,7 +655,7 @@ public class UserTokenResource {
         // Verify calling application
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             log.warn("verifyPhoneByPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
 
         if (ActivePinRepository.usePin(phoneno, pin)) {
@@ -677,11 +684,11 @@ public class UserTokenResource {
 
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("sendSMSMessage - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         String cellNo = phoneNo;
-        new CommandSendSMSToUser(smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage).execute();
-        return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        new CommandSendSMSToUser(SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, cellNo, smsMessage).execute();
+        return Response.ok().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
 
     }
 
@@ -706,11 +713,11 @@ public class UserTokenResource {
 
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("sendScheduledSMSMessage - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Illegal application for this service").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         String cellNo = phoneNo;
-        new DelayedSendSMSTask(Long.parseLong(timestamp), smsGwServiceURL, smsGwServiceAccount, smsGwUsername, smsGwPassword, smsGwQueryParam, cellNo, smsMessage);
-        return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        new DelayedSendSMSTask(Long.parseLong(timestamp), SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, cellNo, smsMessage);
+        return Response.ok().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
 
     }
 
@@ -744,7 +751,7 @@ public class UserTokenResource {
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             // TODO:  Limit this operation to SSOLoginWebApplication ONLY
             log.warn("createAndLogOnUser - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
 
         try {
@@ -759,7 +766,7 @@ public class UserTokenResource {
             return createUserTokenResponse(applicationtokenid, userToken);
         } catch (AuthenticationFailedException ae) {
             log.warn("createAndLogOnUser - Error creating or authenticating user. thirdPartyUserTokenXml={}", thirdPartyUserTokenXml);
-            return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
     }
 
@@ -799,7 +806,7 @@ public class UserTokenResource {
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             // TODO:  Limit this operation to SSOLoginWebApplication ONLY
             log.warn("createAndLogOnPinUser - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         try {
             UserToken userToken = userAuthenticator.createAndLogonPinUser(applicationtokenid, appTokenXml, adminUserTokenId, cellPhone, pin, newUserjson);
@@ -813,10 +820,10 @@ public class UserTokenResource {
             return createUserTokenResponse(applicationtokenid, userToken);
         } catch (AuthenticationFailedException ae) {
             log.warn("createAndLogOnPinUser - Error creating or authenticating user. jsonuser={}", newUserjson);
-            return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         } catch (Exception e) {
             log.error("Unhandled exception: ", e);
-            return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("Error creating or authenticating user.").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("Error creating or authenticating user.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
     }
 
@@ -827,7 +834,7 @@ public class UserTokenResource {
         userToken.setDefcon(ApplicationThreatResource.getDEFCON());
         UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken);
         ActiveUserTokenRepository.setLastSeen(userToken);
-        return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
     }
 
 
