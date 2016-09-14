@@ -12,6 +12,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Properties;
 
 /**
  * Endpoint for health check
@@ -51,6 +54,7 @@ public class HealthResource {
     public static String getHealthTextJson() {
         return "{\n" +
                 "  \"Status\": \"OK\",\n" +
+                "  \"Version\": \"" + getVersion() + "\",\n" +
                 "  \"DEFCON\": \"" + ApplicationThreatResource.getDEFCON() + "\",\n" +
                 "  \"ClusterSize\": " + ActiveUserTokenRepository.getNoOfClusterMembers() + ",\n" +
                 "  \"ActiveUserTokenMapSize\": " + ActiveUserTokenRepository.getMapSize() + ",\n" +
@@ -59,5 +63,20 @@ public class HealthResource {
                 "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationRepository.getMapSize() + ",\n" +
                 "  \"Active Applications\": \"" + AuthenticatedApplicationRepository.getActiveApplications() + "\"\n" +
                 "}\n";
+    }
+
+    private static String getVersion() {
+        Properties mavenProperties = new Properties();
+        String resourcePath = "/META-INF/maven/net.whydah.token/SecurityTokenService/pom.properties";
+        URL mavenVersionResource = HealthResource.class.getResource(resourcePath);
+        if (mavenVersionResource != null) {
+            try {
+                mavenProperties.load(mavenVersionResource.openStream());
+                return mavenProperties.getProperty("version", "missing version info in " + resourcePath);
+            } catch (IOException e) {
+                log.warn("Problem reading version resource from classpath: ", e);
+            }
+        }
+        return "(DEV VERSION)";
     }
 }
