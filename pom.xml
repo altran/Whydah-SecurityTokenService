@@ -84,6 +84,18 @@
             <artifactId>Whydah-Java-SDK</artifactId>
             <version>2.2-beta-15</version>
         </dependency>
+        <!-- Downgrade json-path to 2.0.0 to be compatible with asm 3.1 from jersey-server -->
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <version>2.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <dependency>
             <groupId>org.valuereporter</groupId>
@@ -269,6 +281,17 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <filters>
+                                <!-- Excluding signed manifest files from dependencies. -->
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ComponentsXmlResourceTransformer" />
