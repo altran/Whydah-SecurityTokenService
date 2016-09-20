@@ -92,7 +92,7 @@
             <version>2.0.0</version>
             <exclusions>
                 <exclusion>
-                    <groupId>org.ow2.asm</groupId>
+                    <groupId>asm</groupId>
                     <artifactId>asm</artifactId>
                 </exclusion>
             </exclusions>
