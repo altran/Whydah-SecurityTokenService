@@ -57,6 +57,7 @@
         <jersey-version>1.19.2</jersey-version>
         <grizzy-version>2.3.27</grizzy-version>
         <guice-version>4.1.0</guice-version>
+        <slf4j.version>1.7.21</slf4j.version>
         <jetty.plugin.version>8.0.3.v20111011</jetty.plugin.version>
     </properties>
 
@@ -77,6 +78,7 @@
 
 
     <dependencies>
+        <!-- mvn org.codehaus.mojo:versions-maven-plugin:2.2:display-dependency-updates -->
         <dependency>
             <groupId>net.whydah.sso</groupId>
             <artifactId>Whydah-Java-SDK</artifactId>
@@ -135,6 +137,12 @@
             <groupId>com.sun.jersey.contribs</groupId>
             <artifactId>jersey-apache-client</artifactId>
             <version>${jersey-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- guice -->
         <dependency>
@@ -148,7 +156,6 @@
             <version>${guice-version}</version>
         </dependency>
         
-        <!-- misc -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
@@ -189,6 +196,30 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <!-- httpclient, jersey-apache-client use Commons logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <!-- Jersey use jul -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>

@@ -1,25 +1,26 @@
 package net.whydah.token;
 
-import java.io.IOException;
-
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.servlet.GuiceFilter;
+import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import net.whydah.sso.config.ApplicationMode;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.SecurityTokenServiceModule;
 import net.whydah.token.user.ActiveUserTokenRepository;
-
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.grizzly.servlet.ServletRegistration;
 import org.glassfish.grizzly.servlet.WebappContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.valuereporter.agent.activity.ObservedActivityDistributer;
 import org.valuereporter.agent.http.HttpObservationDistributer;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.servlet.GuiceFilter;
-import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
 
 public class ServiceStarter {
     private static final Logger log = LoggerFactory.getLogger(ServiceStarter.class);
@@ -30,6 +31,12 @@ public class ServiceStarter {
 
 
     public static void main(String[] args) throws IOException {
+        //http://www.slf4j.org/legacy.html#jul-to-slf4j
+        LogManager.getLogManager().reset();
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+        LogManager.getLogManager().getLogger("").setLevel(Level.INFO);
+
         ServiceStarter serviceStarter = new ServiceStarter();
         serviceStarter.startServer();
         try {
