@@ -1,9 +1,11 @@
 package net.whydah.admin.health;
 
+import net.whydah.errorhandling.AppException;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.user.ActivePinRepository;
 import net.whydah.token.user.ActiveUserTokenRepository;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
@@ -29,15 +32,11 @@ public class HealthResource {
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response isHealthy() {
-        boolean ok = true;
+    public Response isHealthy() throws Exception {
+        
         log.trace("isHealthy={}", getHealthText());
-        if (ok) {
-            return Response.ok(getHealthTextJson()).build();
-        } else {
-            //Intentionally not returning anything the client can use to determine what's the error for security reasons.
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
+        return Response.ok(getHealthTextJson()).build();
+        
     }
 
     public static String  getHealthText(){

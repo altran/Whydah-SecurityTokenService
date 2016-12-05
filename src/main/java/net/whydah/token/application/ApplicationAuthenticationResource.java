@@ -2,6 +2,9 @@ package net.whydah.token.application;
 
 import com.google.inject.Inject;
 import com.sun.jersey.api.view.Viewable;
+
+import net.whydah.errorhandling.AppException;
+import net.whydah.errorhandling.AppExceptionCode;
 import net.whydah.sso.application.helpers.ApplicationCredentialHelper;
 import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
@@ -10,12 +13,14 @@ import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.config.ApplicationMode;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.user.UserCredential;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.util.HashMap;
 
 @Path("/")
@@ -68,15 +73,60 @@ public class ApplicationAuthenticationResource {
         return Response.ok().entity(template.toXML()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
     }
 
+    /**
+	 * @throws AppException 
+	 * @api {post} logon logonApplication
+	 * @apiName logon
+	 * @apiGroup Security Token Service (STS)
+	 * @apiDescription Log on my application and get the application specification 
+	 * 
+	 * @apiParam {String} applicationcredential A label for this address.
+	 * @apiParamExample {xml} Request-Example:
+	 * &lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt; 
+ 	 * &lt;applicationcredential&gt;
+     * &lt;params&gt;
+     * &lt;applicationID&gt;101&lt;/applicationID&gt;
+     *  &lt;applicationName&gt;Whydah-SystemTests&lt;/applicationName&gt;
+     *   &lt;applicationSecret&gt;55fhRM6nbKZ2wfC6RMmMuzXpk&lt;/applicationSecret&gt;
+     * &lt;/params&gt;
+	 * &lt;/applicationcredential&gt;
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *	HTTP/1.1 200 OK
+	 *	&lt;applicationtoken&gt;
+     * 		&lt;params&gt;
+     *		    &lt;applicationtokenID&gt;1d58b70dc0fdc98b5cdce4745fb086c4&lt;/applicationtokenID&gt;
+     *		    &lt;applicationid&gt;101&lt;/applicationid&gt;
+     *			&lt;applicationname&gt;Whydah-SystemTests&lt;/applicationname&gt;
+     *			&lt;expires&gt;1480931112185&lt;/expires&gt;
+     *		&lt;/params&gt; 
+     * 		&lt;Url type="application/xml" method="POST" template="https://whydahdev.cantara.no/tokenservice/user/1d58b70dc0fdc98b5cdce4745fb086c4/get_usertoken_by_usertokenid"/&gt; 
+ 	 *	&lt;/applicationtoken&gt;
+	 *
+	 *
+	 * @apiError 403/7000 Application is invalid.
+	 * @apiError 500/9999 A generic exception or an unexpected error 
+	 *
+	 * @apiErrorExample Error-Response:
+	 *     HTTP/1.1 403 Forbidden
+	 *     {
+	 *  		"status": 403,
+	 *  		"code": 7000,
+	 *  		"message": "Illegal Application.",
+	 *  		"link": "",
+	 *  		"developerMessage": "Application is invalid."
+	 *		}
+	 */
     @Path("/logon")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
-    public Response logonApplication(@FormParam("applicationcredential") String appCredentialXml) {
+    public Response logonApplication(@FormParam("applicationcredential") String appCredentialXml) throws AppException {
         log.trace("logonApplication with applicationcredential={}", appCredentialXml);
         if (!verifyApplicationCredentials(appCredentialXml)) {
             log.warn("logonApplication - illegal applicationcredential applicationID:{} , returning FORBIDDEN", ApplicationCredentialMapper.fromXml(appCredentialXml).getApplicationID());
-            return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            //return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
         }
         ApplicationToken token = ApplicationTokenMapper.fromApplicationCredentialXML(appCredentialXml);
         if (token.getApplicationName() == null || token.getApplicationName().length() < 1) {
@@ -90,24 +140,84 @@ public class ApplicationAuthenticationResource {
         return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
     }
 
+    /**
+   	 * @throws AppException 
+   	 * @api {get} :applicationtokenid/validate validateApplicationTokenId
+   	 * @apiName validateApplicationTokenId
+   	 * @apiGroup Security Token Service (STS)
+   	 * @apiDescription Validate application by an application token id 
+   	 * 
+   	 * @apiSuccessExample Success-Response:
+   	 *	HTTP/1.1 200 OK
+	 *	{
+	 *  	"result": "true"
+	 *	}
+   	 *
+   	 *
+   	 * @apiError 403/7000 Application is invalid.
+   	 * @apiError 500/9999 A generic exception or an unexpected error 
+   	 *
+   	 * @apiErrorExample Error-Response:
+   	 *     HTTP/1.1 403 Forbidden
+   	 *     {
+   	 *  		"status": 403,
+   	 *  		"code": 7000,
+   	 *  		"message": "Illegal Application.",
+   	 *  		"link": "",
+   	 *  		"developerMessage": "Application is invalid."
+   	 *		}
+   	 */
     @Path("{applicationtokenid}/validate")
     @GET
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response validateApplicationTokenId(@PathParam("applicationtokenid") String applicationtokenid) {
+    public Response validateApplicationTokenId(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
         log.trace("validateApplicationTokenId - validate applicationtokenid:{}", applicationtokenid);
         if (AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.debug("validateApplicationTokenId - applicationtokenid:{} for applicationname:{} is valid", applicationtokenid, AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid).getApplicationName());
-            return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.ok("{\"result\": \"true\"}").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
             log.warn("validateApplicationTokenId - applicationtokenid:{}  is not valid", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
+            //return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
     }
 
+    /**
+   	 * @throws AppException 
+   	 * @api {post} :applicationtokenid/renew_applicationtoken extendApplicationSession
+   	 * @apiName extendApplicationSession
+   	 * @apiGroup Security Token Service (STS)
+   	 * @apiDescription Extend my application session
+   	 * 
+   	 * @apiSuccessExample Success-Response:
+	 *	HTTP/1.1 200 OK
+	 *	&lt;applicationtoken&gt;
+     * 		&lt;params&gt;
+     *		    &lt;applicationtokenID&gt;1d58b70dc0fdc98b5cdce4745fb086c4&lt;/applicationtokenID&gt;
+     *		    &lt;applicationid&gt;101&lt;/applicationid&gt;
+     *			&lt;applicationname&gt;Whydah-SystemTests&lt;/applicationname&gt;
+     *			&lt;expires&gt;1480931112185&lt;/expires&gt;
+     *		&lt;/params&gt; 
+     * 		&lt;Url type="application/xml" method="POST" template="https://whydahdev.cantara.no/tokenservice/user/1d58b70dc0fdc98b5cdce4745fb086c4/get_usertoken_by_usertokenid"/&gt; 
+ 	 *	&lt;/applicationtoken&gt;
+   	 *
+   	 * @apiError 403/7000 Application is invalid.
+   	 * @apiError 500/9999 A generic exception or an unexpected error 
+   	 *
+   	 * @apiErrorExample Error-Response:
+   	 *     HTTP/1.1 403 Forbidden
+   	 *     {
+   	 *  		"status": 403,
+   	 *  		"code": 7000,
+   	 *  		"message": "Illegal Application.",
+   	 *  		"link": "",
+   	 *  		"developerMessage": "Application is invalid."
+   	 *		}
+   	 */
     @Path("{applicationtokenid}/renew_applicationtoken")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response extendApplicationSession(@PathParam("applicationtokenid") String applicationtokenid) {
+    public Response extendApplicationSession(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
         log.debug("renew session for applicationtokenid: {}", applicationtokenid);
         if (AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             ApplicationToken token = AuthenticatedApplicationRepository.renewApplicationTokenId(applicationtokenid);
@@ -117,14 +227,39 @@ public class ApplicationAuthenticationResource {
             return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
             log.warn("applicationtokenid={} not valid", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
+            //return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
     }
 
+    /**
+   	 * @throws AppException 
+   	 * @api {get} :applicationtokenid/get_application_id getApplicationId
+   	 * @apiName getApplicationIdFromApplicationTokenId
+   	 * @apiGroup Security Token Service (STS)
+   	 * @apiDescription Get my application id from an application token id
+   	 * 
+   	 * @apiSuccessExample Success-Response:
+	 *	HTTP/1.1 200 OK plain/text
+	 *	101
+   	 *
+   	 * @apiError 403/7000 Application is invalid.
+   	 * @apiError 500/9999 A generic exception or an unexpected error 
+   	 *
+   	 * @apiErrorExample Error-Response:
+   	 *     HTTP/1.1 403 Forbidden
+   	 *     {
+   	 *  		"status": 403,
+   	 *  		"code": 7000,
+   	 *  		"message": "Illegal Application.",
+   	 *  		"link": "",
+   	 *  		"developerMessage": "Application is invalid."
+   	 *		}
+   	 */
     @Path("{applicationtokenid}/get_application_id")
     @GET
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response getApplicationIdFromApplicationTokenId(@PathParam("applicationtokenid") String applicationtokenid) {
+    public Response getApplicationIdFromApplicationTokenId(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
         log.debug("verify apptokenid {}", applicationtokenid);
         ApplicationToken myApp = AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid);
         if (myApp != null || myApp.toString().length() > 10) {
@@ -132,14 +267,39 @@ public class ApplicationAuthenticationResource {
             return Response.ok(myApp.getApplicationID()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
             log.debug("Apptokenid not valid");
-            return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            //return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
         }
     }
 
+    /**
+   	 * @throws AppException 
+   	 * @api {get} :applicationtokenid/get_application_name getApplicationName
+   	 * @apiName getApplicationNameFromApplicationTokenId
+   	 * @apiGroup Security Token Service (STS)
+   	 * @apiDescription Get my application name from an application token id
+   	 * 
+   	 * @apiSuccessExample Success-Response:
+	 *	HTTP/1.1 200 OK plain/text
+	 *	Whydah-SystemTests
+   	 *
+   	 * @apiError 403/7000 Application is invalid.
+   	 * @apiError 500/9999 A generic exception or an unexpected error 
+   	 *
+   	 * @apiErrorExample Error-Response:
+   	 *     HTTP/1.1 403 Forbidden
+   	 *     {
+   	 *  		"status": 403,
+   	 *  		"code": 7000,
+   	 *  		"message": "Illegal Application.",
+   	 *  		"link": "",
+   	 *  		"developerMessage": "Application is invalid."
+   	 *		}
+   	 */
     @Path("{applicationtokenid}/get_application_name")
     @GET
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response getApplicationNameFromApplicationTokenId(@PathParam("applicationtokenid") String applicationtokenid) {
+    public Response getApplicationNameFromApplicationTokenId(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
         log.debug("verify apptokenid {}", applicationtokenid);
         ApplicationToken myApp = AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid);
         if (myApp != null || myApp.toString().length() > 10) {
@@ -147,7 +307,8 @@ public class ApplicationAuthenticationResource {
             return Response.ok(myApp.getApplicationName()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
             log.debug("Apptokenid not valid");
-            return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            //return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
         }
     }
 
