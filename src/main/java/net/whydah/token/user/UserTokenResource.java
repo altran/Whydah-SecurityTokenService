@@ -132,7 +132,7 @@ public class UserTokenResource {
      *			&lt;expires&gt;1480931112185&lt;/expires&gt;
      *		&lt;/params&gt; 
      * 		&lt;Url type="application/xml" method="POST" template="https://whydahdev.cantara.no/tokenservice/user/1d58b70dc0fdc98b5cdce4745fb086c4/get_usertoken_by_usertokenid"/&gt; 
- 	 *	&lt;/applicationtoken&gt;gt;
+ 	 *	&lt;/applicationtoken&gt;
  	 *
  	 *	@apiParam {String} usercredential User Credential XML
  	 *	@apiParamExample {xml} Request-Example:
@@ -143,32 +143,31 @@ public class UserTokenResource {
      *  			&lt;password&gt;YOUR_PASSWORD&lt;/password&gt;
      *		&lt;/params&gt; 
 	 *	&lt;/usercredential&gt;
-
 	 *
 	 * @apiSuccessExample Success-Response:
 	 *	HTTP/1.1 200 OK
-	 *	<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-	 * <usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="16987d1a-f305-4a98-a3dc-2ce9a97e8424">
-	 *	<uid>systest</uid>
-	 *	<timestamp>1480935597694</timestamp>
-	 *	<lifespan>1209600000</lifespan>
-     *	<issuer>https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424</issuer>
-     *	<securitylevel>1</securitylevel>
-     *	<DEFCON></DEFCON>
-     *	<username>systest</username>
-     *	<firstname>SystemTestUser</firstname>
-     *	<lastname>UserAdminWebApp</lastname>
-     *	<cellphone>87654321</cellphone>
-     *	<email>whydahadmin@getwhydah.com</email>
-     *	<personref>42</personref>
-     *	<application ID="101">
-     *    <applicationName>ACSResource</applicationName>
-     *    <organizationName>Opplysningen 1881</organizationName>
-     *    <role name="INNDATA" value="MY_ADDRESS_JSON"/>
-     *	</application>
-     *	<ns2:link type="application/xml" href="https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424" rel="self"/>
-     *	<hash type="MD5">57755c9efa6337dc9739fe5cb719a9b4</hash>
-     *	</usertoken>
+	 *	&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+	 * &lt;usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="16987d1a-f305-4a98-a3dc-2ce9a97e8424"&gt;
+	 *	&lt;uid&gt;systest&lt;/uid&gt;
+	 *	&lt;timestamp&gt;1480935597694&lt;/timestamp&gt;
+	 *	&lt;lifespan&gt;1209600000&lt;/lifespan&gt;
+     *	&lt;issuer&gt;https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424&lt;/issuer&gt;
+     *	&lt;securitylevel&gt;1&lt;/securitylevel&gt;
+     *	&lt;DEFCON&gt;&lt;/DEFCON&gt;
+     *	&lt;username&gt;systest&lt;/username&gt;
+     *	&lt;firstname&gt;SystemTestUser&lt;/firstname&gt;
+     *	&lt;lastname&gt;UserAdminWebApp&lt;/lastname&gt;
+     *	&lt;cellphone&gt;87654321&lt;/cellphone&gt;
+     *	&lt;email&gt;whydahadmin@getwhydah.com&lt;/email&gt;
+     *	&lt;personref&gt;42&lt;/personref&gt;
+     *	&lt;application ID="101"&gt;
+     *    &lt;applicationName&gt;ACSResource&lt;/applicationName&gt;
+     *    &lt;organizationName&gt;Opplysningen 1881&lt;/organizationName&gt;
+     *    &lt;role name="INNDATA" value="MY_ADDRESS_JSON"/&gt;
+     *	&lt;/application&gt;
+     *	&lt;ns2:link type="application/xml" href="https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424" rel="self"/&gt;
+     *	&lt;hash type="MD5"&gt;57755c9efa6337dc9739fe5cb719a9b4&lt;/hash&gt;
+     *	&lt;/usertoken&gt;
 	 *
 	 *
 	 * @apiError 403/7000 Application is invalid.
@@ -228,7 +227,7 @@ public class UserTokenResource {
      *			&lt;expires&gt;1480931112185&lt;/expires&gt;
      *		&lt;/params&gt; 
      * 		&lt;Url type="application/xml" method="POST" template="https://whydahdev.cantara.no/tokenservice/user/1d58b70dc0fdc98b5cdce4745fb086c4/get_usertoken_by_usertokenid"/&gt; 
- 	 *	&lt;/applicationtoken&gt;gt;
+ 	 *	&lt;/applicationtoken&gt;
  	 *
  	 *	@apiParam {String} usercredential User Credential XML
  	 *	@apiParamExample {xml} Request-Example:
@@ -243,28 +242,28 @@ public class UserTokenResource {
 	 *
 	 * @apiSuccessExample Success-Response:
 	 *	HTTP/1.1 200 OK
-	 *	<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-	 * <usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="16987d1a-f305-4a98-a3dc-2ce9a97e8424">
-	 *	<uid>systest</uid>
-	 *	<timestamp>1480935597694</timestamp>
-	 *	<lifespan>1209600000</lifespan>
-     *	<issuer>https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424</issuer>
-     *	<securitylevel>1</securitylevel>
-     *	<DEFCON></DEFCON>
-     *	<username>systest</username>
-     *	<firstname>SystemTestUser</firstname>
-     *	<lastname>UserAdminWebApp</lastname>
-     *	<cellphone>87654321</cellphone>
-     *	<email>whydahadmin@getwhydah.com</email>
-     *	<personref>42</personref>
-     *	<application ID="101">
-     *    <applicationName>ACSResource</applicationName>
-     *    <organizationName>Opplysningen 1881</organizationName>
-     *    <role name="INNDATA" value="MY_ADDRESS_JSON"/>
-     *	</application>
-     *	<ns2:link type="application/xml" href="https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424" rel="self"/>
-     *	<hash type="MD5">57755c9efa6337dc9739fe5cb719a9b4</hash>
-     *	</usertoken>
+	 *	&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+	 * &lt;usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="16987d1a-f305-4a98-a3dc-2ce9a97e8424"&gt;
+	 *	&lt;uid&gt;systest&lt;/uid&gt;
+	 *	&lt;timestamp&gt;1480935597694&lt;/timestamp&gt;
+	 *	&lt;lifespan&gt;1209600000&lt;/lifespan&gt;
+     *	&lt;issuer&gt;https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424&lt;/issuer&gt;
+     *	&lt;securitylevel&gt;1&lt;/securitylevel&gt;
+     *	&lt;DEFCON&gt;&lt;/DEFCON&gt;
+     *	&lt;username&gt;systest&lt;/username&gt;
+     *	&lt;firstname&gt;SystemTestUser&lt;/firstname&gt;
+     *	&lt;lastname&gt;UserAdminWebApp&lt;/lastname&gt;
+     *	&lt;cellphone&gt;87654321&lt;/cellphone&gt;
+     *	&lt;email&gt;whydahadmin@getwhydah.com&lt;/email&gt;
+     *	&lt;personref&gt;42&lt;/personref&gt;
+     *	&lt;application ID="101"&gt;
+     *    &lt;applicationName&gt;ACSResource&lt;/applicationName&gt;
+     *    &lt;organizationName&gt;Opplysningen 1881&lt;/organizationName&gt;
+     *    &lt;role name="INNDATA" value="MY_ADDRESS_JSON"/&gt;
+     *	&lt;/application&gt;
+     *	&lt;ns2:link type="application/xml" href="https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424" rel="self"/&gt;
+     *	&lt;hash type="MD5"&gt;57755c9efa6337dc9739fe5cb719a9b4&lt;/hash&gt;
+     *	&lt;/usertoken&gt;
 	 *
 	 *
 	 * @apiError 403/7000 Application is invalid.
@@ -320,28 +319,28 @@ public class UserTokenResource {
 	 * 
 	 * @apiParam {String} usertoken User Token XML.
 	 * @apiParamExample {xml} Request-Example:
-	 * <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-	 * <usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="16987d1a-f305-4a98-a3dc-2ce9a97e8424">
-	 *	<uid>systest</uid>
-	 *	<timestamp>1480935597694</timestamp>
-	 *	<lifespan>1209600000</lifespan>
-     *	<issuer>https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424</issuer>
-     *	<securitylevel>1</securitylevel>
-     *	<DEFCON></DEFCON>
-     *	<username>systest</username>
-     *	<firstname>SystemTestUser</firstname>
-     *	<lastname>UserAdminWebApp</lastname>
-     *	<cellphone>87654321</cellphone>
-     *	<email>whydahadmin@getwhydah.com</email>
-     *	<personref>42</personref>
-     *	<application ID="101">
-     *    <applicationName>ACSResource</applicationName>
-     *    <organizationName>Opplysningen 1881</organizationName>
-     *    <role name="INNDATA" value="MY_ADDRESS_JSON"/>
-     *	</application>
-     *	<ns2:link type="application/xml" href="https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424" rel="self"/>
-     *	<hash type="MD5">57755c9efa6337dc9739fe5cb719a9b4</hash>
-     *	</usertoken>
+	 *	&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+	 * &lt;usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="16987d1a-f305-4a98-a3dc-2ce9a97e8424"&gt;
+	 *	&lt;uid&gt;systest&lt;/uid&gt;
+	 *	&lt;timestamp&gt;1480935597694&lt;/timestamp&gt;
+	 *	&lt;lifespan&gt;1209600000&lt;/lifespan&gt;
+     *	&lt;issuer&gt;https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424&lt;/issuer&gt;
+     *	&lt;securitylevel&gt;1&lt;/securitylevel&gt;
+     *	&lt;DEFCON&gt;&lt;/DEFCON&gt;
+     *	&lt;username&gt;systest&lt;/username&gt;
+     *	&lt;firstname&gt;SystemTestUser&lt;/firstname&gt;
+     *	&lt;lastname&gt;UserAdminWebApp&lt;/lastname&gt;
+     *	&lt;cellphone&gt;87654321&lt;/cellphone&gt;
+     *	&lt;email&gt;whydahadmin@getwhydah.com&lt;/email&gt;
+     *	&lt;personref&gt;42&lt;/personref&gt;
+     *	&lt;application ID="101"&gt;
+     *    &lt;applicationName&gt;ACSResource&lt;/applicationName&gt;
+     *    &lt;organizationName&gt;Opplysningen 1881&lt;/organizationName&gt;
+     *    &lt;role name="INNDATA" value="MY_ADDRESS_JSON"/&gt;
+     *	&lt;/application&gt;
+     *	&lt;ns2:link type="application/xml" href="https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424" rel="self"/&gt;
+     *	&lt;hash type="MD5"&gt;57755c9efa6337dc9739fe5cb719a9b4&lt;/hash&gt;
+     *	&lt;/usertoken&gt;
  	 *
 	 *
 	 * @apiSuccessExample Success-Response:
@@ -429,40 +428,97 @@ public class UserTokenResource {
         //return Response.status(Response.Status.UNAUTHORIZED).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         throw AppExceptionCode.USER_VALIDATE_FAILED_6001.setDeveloperMessage("validateUserTokenID failed for usertokenid " +  usertokenid); 
     }
-
+    
     /**
-     * Used to create a userticket for a user to transfer a session between whydah SSO apps
-     *
-     * @param applicationtokenid application session
-     * @param appTokenXml        application session data
-     * @param userticket         user session handover ticket
-     * @param userTokenId        user session id
-     * @return usertoken - user session h
-     */
+	 * @throws AppException 
+	 * @api {post} :applicationtokenid/create_userticket_by_usertokenid createUserTicketByUserTokenId
+	 * @apiName createUserTicketByUserTokenId
+	 * @apiGroup Security Token Service (STS)
+	 * @apiDescription This is used to create a userticket for a user to transfer a session between whydah SSO apps
+	 * 
+	 * @apiParam {String} apptoken Application Token XML.
+	 * @apiParamExample {xml} Request-Example:
+	 *	&lt;applicationtoken&gt;
+     * 		&lt;params&gt;
+     *		    &lt;applicationtokenID&gt;1d58b70dc0fdc98b5cdce4745fb086c4&lt;/applicationtokenID&gt;
+     *		    &lt;applicationid&gt;101&lt;/applicationid&gt;
+     *			&lt;applicationname&gt;Whydah-SystemTests&lt;/applicationname&gt;
+     *			&lt;expires&gt;1480931112185&lt;/expires&gt;
+     *		&lt;/params&gt; 
+     * 		&lt;Url type="application/xml" method="POST" template="https://whydahdev.cantara.no/tokenservice/user/1d58b70dc0fdc98b5cdce4745fb086c4/get_usertoken_by_usertokenid"/&gt; 
+ 	 *	&lt;/applicationtoken&gt;
+ 	 *
+ 	 * @apiParam {String} userticket user session handover ticket
+ 	 * @apiParam {String} usertokenid user session id
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *	HTTP/1.1 200 OK
+	 *	&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+	 * &lt;usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="16987d1a-f305-4a98-a3dc-2ce9a97e8424"&gt;
+	 *	&lt;uid&gt;systest&lt;/uid&gt;
+	 *	&lt;timestamp&gt;1480935597694&lt;/timestamp&gt;
+	 *	&lt;lifespan&gt;1209600000&lt;/lifespan&gt;
+     *	&lt;issuer&gt;https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424&lt;/issuer&gt;
+     *	&lt;securitylevel&gt;1&lt;/securitylevel&gt;
+     *	&lt;DEFCON&gt;&lt;/DEFCON&gt;
+     *	&lt;username&gt;systest&lt;/username&gt;
+     *	&lt;firstname&gt;SystemTestUser&lt;/firstname&gt;
+     *	&lt;lastname&gt;UserAdminWebApp&lt;/lastname&gt;
+     *	&lt;cellphone&gt;87654321&lt;/cellphone&gt;
+     *	&lt;email&gt;whydahadmin@getwhydah.com&lt;/email&gt;
+     *	&lt;personref&gt;42&lt;/personref&gt;
+     *	&lt;application ID="101"&gt;
+     *    &lt;applicationName&gt;ACSResource&lt;/applicationName&gt;
+     *    &lt;organizationName&gt;Opplysningen 1881&lt;/organizationName&gt;
+     *    &lt;role name="INNDATA" value="MY_ADDRESS_JSON"/&gt;
+     *	&lt;/application&gt;
+     *	&lt;ns2:link type="application/xml" href="https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424" rel="self"/&gt;
+     *	&lt;hash type="MD5"&gt;57755c9efa6337dc9739fe5cb719a9b4&lt;/hash&gt;
+     *	&lt;/usertoken&gt;
+	 *
+	 *
+	 * @apiError 403/7000 Application is invalid.
+	 * @apiError 406/6002 Attempt to access with non acceptable usertokenid.
+	 * @apiError 500/9999 A generic exception or an unexpected error 
+	 *
+	 * @apiErrorExample Error-Response:
+	 *     HTTP/1.1 403 Forbidden
+	 *     {
+	 *  		"status": 403,
+	 *  		"code": 7000,
+	 *  		"message": "Illegal Application.",
+	 *  		"link": "",
+	 *  		"developerMessage": "Application is invalid."
+	 *		}
+	 */
     @Path("/{applicationtokenid}/create_userticket_by_usertokenid")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response createUserTicketByUserTokenId(@PathParam("applicationtokenid") String applicationtokenid,
                                                   @FormParam("apptoken") String appTokenXml,
                                                   @FormParam("userticket") String userticket,
-                                                  @FormParam("usertokenid") String userTokenId) {
+                                                  @FormParam("usertokenid") String userTokenId) throws AppException {
         log.trace("createUserTicketByUserTokenId: applicationtokenid={}, userticket={}, usertokenid={}, appTokenXml={}", applicationtokenid, userticket, userTokenId, appTokenXml);
 
 
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             log.warn("createUserTicketByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.APP_ILLEGAL_7000; 
         }
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
-        if (userToken != null) {
+        if (userToken == null) {
+        	log.warn("createUserTicketByUserTokenId - attempt to access with non acceptable usertokenid {}", userTokenId);
+            //return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+            throw AppExceptionCode.USER_INVALID_USERTOKENID_6002.setDeveloperMessage("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid=" + userTokenId);
+        }
+        else {
             userticketmap.put(userticket, userToken.getTokenid());
             log.trace("createUserTicketByUserTokenId OK. Response={}", userToken.toString());
             return createUserTokenResponse(applicationtokenid, userToken);
         }
-        log.warn("createUserTicketByUserTokenId - attempt to access with non acceptable usertokenid {}", userTokenId);
-        return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+     
     }
-
 
     /**
 	 * @throws AppException 
@@ -481,38 +537,38 @@ public class UserTokenResource {
      *			&lt;expires&gt;1480931112185&lt;/expires&gt;
      *		&lt;/params&gt; 
      * 		&lt;Url type="application/xml" method="POST" template="https://whydahdev.cantara.no/tokenservice/user/1d58b70dc0fdc98b5cdce4745fb086c4/get_usertoken_by_usertokenid"/&gt; 
- 	 *	&lt;/applicationtoken&gt;gt;
+ 	 *	&lt;/applicationtoken&gt;
  	 *
- 	 * @apiParam {String} usertokenid UserTokenId
+ 	 * @apiParam {String} usertokenid The user session id
 	 *
 	 * @apiSuccessExample Success-Response:
 	 *	HTTP/1.1 200 OK
-	 *	<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-	 * <usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="16987d1a-f305-4a98-a3dc-2ce9a97e8424">
-	 *	<uid>systest</uid>
-	 *	<timestamp>1480935597694</timestamp>
-	 *	<lifespan>1209600000</lifespan>
-     *	<issuer>https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424</issuer>
-     *	<securitylevel>1</securitylevel>
-     *	<DEFCON></DEFCON>
-     *	<username>systest</username>
-     *	<firstname>SystemTestUser</firstname>
-     *	<lastname>UserAdminWebApp</lastname>
-     *	<cellphone>87654321</cellphone>
-     *	<email>whydahadmin@getwhydah.com</email>
-     *	<personref>42</personref>
-     *	<application ID="101">
-     *    <applicationName>ACSResource</applicationName>
-     *    <organizationName>Opplysningen 1881</organizationName>
-     *    <role name="INNDATA" value="MY_ADDRESS_JSON"/>
-     *	</application>
-     *	<ns2:link type="application/xml" href="https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424" rel="self"/>
-     *	<hash type="MD5">57755c9efa6337dc9739fe5cb719a9b4</hash>
-     *	</usertoken>
+	 *	&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+	 * &lt;usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="16987d1a-f305-4a98-a3dc-2ce9a97e8424"&gt;
+	 *	&lt;uid&gt;systest&lt;/uid&gt;
+	 *	&lt;timestamp&gt;1480935597694&lt;/timestamp&gt;
+	 *	&lt;lifespan&gt;1209600000&lt;/lifespan&gt;
+     *	&lt;issuer&gt;https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424&lt;/issuer&gt;
+     *	&lt;securitylevel&gt;1&lt;/securitylevel&gt;
+     *	&lt;DEFCON&gt;&lt;/DEFCON&gt;
+     *	&lt;username&gt;systest&lt;/username&gt;
+     *	&lt;firstname&gt;SystemTestUser&lt;/firstname&gt;
+     *	&lt;lastname&gt;UserAdminWebApp&lt;/lastname&gt;
+     *	&lt;cellphone&gt;87654321&lt;/cellphone&gt;
+     *	&lt;email&gt;whydahadmin@getwhydah.com&lt;/email&gt;
+     *	&lt;personref&gt;42&lt;/personref&gt;
+     *	&lt;application ID="101"&gt;
+     *    &lt;applicationName&gt;ACSResource&lt;/applicationName&gt;
+     *    &lt;organizationName&gt;Opplysningen 1881&lt;/organizationName&gt;
+     *    &lt;role name="INNDATA" value="MY_ADDRESS_JSON"/&gt;
+     *	&lt;/application&gt;
+     *	&lt;ns2:link type="application/xml" href="https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424" rel="self"/&gt;
+     *	&lt;hash type="MD5"&gt;57755c9efa6337dc9739fe5cb719a9b4&lt;/hash&gt;
+     *	&lt;/usertoken&gt;
 	 *
 	 *
 	 * @apiError 403/7000 Application is invalid.
-	 * @apiError 406/6002 Authentication failed.
+	 * @apiError 406/6002 Attempt to access with non acceptable usertokenid.
 	 * @apiError 500/9999 A generic exception or an unexpected error 
 	 *
 	 * @apiErrorExample Error-Response:
@@ -552,19 +608,63 @@ public class UserTokenResource {
         log.info("getUserTokenByUserTokenId - valid session found for {} ", userTokenId);
         return createUserTokenResponse(applicationtokenid, userToken);
     }
-
+    
     /**
-     * Used to get the lase seend time, which the application usually stores in its secure cookie
-     *
-     * @param applicationtokenid application session
-     * @param userEmail          email of user we try to locate
-     * @return last seen as String
-     */
+	 * @throws AppException 
+	 * @api {post} :applicationtokenid/:email/last_seen getLastSeenByUserTokenId
+	 * @apiName getLastSeenByUserTokenId
+	 * @apiGroup Security Token Service (STS)
+	 * @apiDescription This is used to get the last sent time. The result is a string of the form: dow mon dd hh:mm:ss zzz yyyy converted from Date object (See Date().toString())
+	 * 
+	 * @apiParam {String} usertoken User Token XML.
+	 * @apiParamExample {xml} Request-Example:
+	 *	&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+	 *  &lt;usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="16987d1a-f305-4a98-a3dc-2ce9a97e8424"&gt;
+	 *	&lt;uid&gt;systest&lt;/uid&gt;
+	 *	&lt;timestamp&gt;1480935597694&lt;/timestamp&gt;
+	 *	&lt;lifespan&gt;1209600000&lt;/lifespan&gt;
+     *	&lt;issuer&gt;https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424&lt;/issuer&gt;
+     *	&lt;securitylevel&gt;1&lt;/securitylevel&gt;
+     *	&lt;DEFCON&gt;&lt;/DEFCON&gt;
+     *	&lt;username&gt;systest&lt;/username&gt;
+     *	&lt;firstname&gt;SystemTestUser&lt;/firstname&gt;
+     *	&lt;lastname&gt;UserAdminWebApp&lt;/lastname&gt;
+     *	&lt;cellphone&gt;87654321&lt;/cellphone&gt;
+     *	&lt;email&gt;whydahadmin@getwhydah.com&lt;/email&gt;
+     *	&lt;personref&gt;42&lt;/personref&gt;
+     *	&lt;application ID="101"&gt;
+     *    &lt;applicationName&gt;ACSResource&lt;/applicationName&gt;
+     *    &lt;organizationName&gt;Opplysningen 1881&lt;/organizationName&gt;
+     *    &lt;role name="INNDATA" value="MY_ADDRESS_JSON"/&gt;
+     *	&lt;/application&gt;
+     *	&lt;ns2:link type="application/xml" href="https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424" rel="self"/&gt;
+     *	&lt;hash type="MD5"&gt;57755c9efa6337dc9739fe5cb719a9b4&lt;/hash&gt;
+     *	&lt;/usertoken&gt;
+ 	 *
+	 *
+	 * @apiSuccessExample Success-Response:
+   	 *	Thu Jan 10 02:00:00 EET 1992
+	 *
+	 *
+	 * @apiError 403/7000 Application is invalid.
+	 * @apiError 406/6005 Attempt to access with non acceptable user's email.
+	 * @apiError 500/9999 A generic exception or an unexpected error
+	 *
+	 * @apiErrorExample Error-Response:
+	 *     HTTP/1.1 403 Forbidden
+	 *     {
+	 *  		"status": 403,
+	 *  		"code": 7000,
+	 *  		"message": "Illegal Application.",
+	 *  		"link": "",
+	 *  		"developerMessage": "Application is invalid."
+	 *		}
+	 */
     @Path("/{applicationtokenid}/{email}/last_seen")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response getLastSeenByUserTokenId(@PathParam("applicationtokenid") String applicationtokenid,
-                                             @PathParam("email") String userEmail) {
+                                             @PathParam("email") String userEmail) throws AppException {
         log.trace("getLastSeenByUserTokenId: applicationtokenid={}, email={}", applicationtokenid, userEmail);
 
         if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
@@ -573,27 +673,19 @@ public class UserTokenResource {
 
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, "")) {
             log.warn("getLastSeenByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
         }
         String lastSeen = ActiveUserTokenRepository.getLastSeenByEmail(userEmail);
         if (lastSeen == null) {
             log.warn("getLastSeenByUserTokenId - attempt to access with non acceptable userEmail={}", userEmail);
-            return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.USER_USER_EMAIL_NOTFOUND_6005;
         }
         log.info("getLastSeenByUserTokenId - valid session found for {} ", userEmail);
         return Response.status(Response.Status.OK).entity(lastSeen).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
     }
 
-
-    /**
-     * Lookup a user by a one-time userticket, usually the first thing we do after receiving a SSO redirect back to
-     * an application from SSOLoginWebApplication
-     *
-     * @param applicationtokenid application session
-     * @param appTokenXml        application session data
-     * @param userticket         user session handover ticket
-     * @return usertoken
-     */
     /**
 	 * @throws AppException 
 	 * @api {post} :applicationtokenid/get_usertoken_by_userticket getUserTokenByUserTicket
@@ -611,34 +703,34 @@ public class UserTokenResource {
      *			&lt;expires&gt;1480931112185&lt;/expires&gt;
      *		&lt;/params&gt; 
      * 		&lt;Url type="application/xml" method="POST" template="https://whydahdev.cantara.no/tokenservice/user/1d58b70dc0fdc98b5cdce4745fb086c4/get_usertoken_by_usertokenid"/&gt; 
- 	 *	&lt;/applicationtoken&gt;gt;
+ 	 *	&lt;/applicationtoken&gt;
  	 *
  	 * @apiParam {String} userticket The userticket which is redirected back from SSO Logon service
 	 *
 	 * @apiSuccessExample Success-Response:
 	 *	HTTP/1.1 200 OK
-	 *	<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-	 * <usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="16987d1a-f305-4a98-a3dc-2ce9a97e8424">
-	 *	<uid>systest</uid>
-	 *	<timestamp>1480935597694</timestamp>
-	 *	<lifespan>1209600000</lifespan>
-     *	<issuer>https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424</issuer>
-     *	<securitylevel>1</securitylevel>
-     *	<DEFCON></DEFCON>
-     *	<username>systest</username>
-     *	<firstname>SystemTestUser</firstname>
-     *	<lastname>UserAdminWebApp</lastname>
-     *	<cellphone>87654321</cellphone>
-     *	<email>whydahadmin@getwhydah.com</email>
-     *	<personref>42</personref>
-     *	<application ID="101">
-     *    <applicationName>ACSResource</applicationName>
-     *    <organizationName>Opplysningen 1881</organizationName>
-     *    <role name="INNDATA" value="MY_ADDRESS_JSON"/>
-     *	</application>
-     *	<ns2:link type="application/xml" href="https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424" rel="self"/>
-     *	<hash type="MD5">57755c9efa6337dc9739fe5cb719a9b4</hash>
-     *	</usertoken>
+	 *	&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+	 * &lt;usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="16987d1a-f305-4a98-a3dc-2ce9a97e8424"&gt;
+	 *	&lt;uid&gt;systest&lt;/uid&gt;
+	 *	&lt;timestamp&gt;1480935597694&lt;/timestamp&gt;
+	 *	&lt;lifespan&gt;1209600000&lt;/lifespan&gt;
+     *	&lt;issuer&gt;https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424&lt;/issuer&gt;
+     *	&lt;securitylevel&gt;1&lt;/securitylevel&gt;
+     *	&lt;DEFCON&gt;&lt;/DEFCON&gt;
+     *	&lt;username&gt;systest&lt;/username&gt;
+     *	&lt;firstname&gt;SystemTestUser&lt;/firstname&gt;
+     *	&lt;lastname&gt;UserAdminWebApp&lt;/lastname&gt;
+     *	&lt;cellphone&gt;87654321&lt;/cellphone&gt;
+     *	&lt;email&gt;whydahadmin@getwhydah.com&lt;/email&gt;
+     *	&lt;personref&gt;42&lt;/personref&gt;
+     *	&lt;application ID="101"&gt;
+     *    &lt;applicationName&gt;ACSResource&lt;/applicationName&gt;
+     *    &lt;organizationName&gt;Opplysningen 1881&lt;/organizationName&gt;
+     *    &lt;role name="INNDATA" value="MY_ADDRESS_JSON"/&gt;
+     *	&lt;/application&gt;
+     *	&lt;ns2:link type="application/xml" href="https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424" rel="self"/&gt;
+     *	&lt;hash type="MD5"&gt;57755c9efa6337dc9739fe5cb719a9b4&lt;/hash&gt;
+     *	&lt;/usertoken&gt;
 	 *
 	 *
 	 * @apiError 403/7000 Application is invalid.
@@ -700,16 +792,68 @@ public class UserTokenResource {
     }
 
     /**
-     * Lookup a user by a one-time pin-code distributed to the users registered cellPhone number, usually the first thing we do after receiving a SSO redirect back to
-     * an application from SSOLoginWebApplication
+   	 * @throws AppException 
+   	 * @api {post} :applicationtokenid/:userticket/get_usertoken_by_pin_and_logon_user getUserTokenByPinAndLogonUser
+   	 * @apiName getUserTokenByPinAndLogonUser
+   	 * @apiGroup Security Token Service (STS)
+   	 * @apiDescription Lookup a user by a one-time pin-code distributed to the users registered cellPhone number, usually the first thing we do after receiving a SSO redirect back to
+   	 * 
+   	 * @apiParam {String} apptoken Application Token XML.
+   	 * @apiParamExample {xml} Request-Example:
+   	 *	&lt;applicationtoken&gt;
+     * 		&lt;params&gt;
+     *		    &lt;applicationtokenID&gt;1d58b70dc0fdc98b5cdce4745fb086c4&lt;/applicationtokenID&gt;
+     *		    &lt;applicationid&gt;101&lt;/applicationid&gt;
+     *			&lt;applicationname&gt;Whydah-SystemTests&lt;/applicationname&gt;
+     *			&lt;expires&gt;1480931112185&lt;/expires&gt;
+     *		&lt;/params&gt; 
+     * 		&lt;Url type="application/xml" method="POST" template="https://whydahdev.cantara.no/tokenservice/user/1d58b70dc0fdc98b5cdce4745fb086c4/get_usertoken_by_usertokenid"/&gt; 
+     *	&lt;/applicationtoken&gt;
      *
-     * @param applicationtokenid application session
-     * @param userticket         one time ticket for the roundtrip of the operation
-     * @param appTokenXml        application session data
-     * @param phoneno            user phonenumber
-     * @param pin                user pin
-     * @return usertoken
-     */
+     * @apiParam {String} adminUserTokenId The UserTokenId
+     * @apiParam {String} phoneno The phone number to which a pin-code is sent
+     * @apiParam {String} pin The pin-code is distributred to the registered cellPhone number
+   	 *
+   	 * @apiSuccessExample Success-Response:
+	 *	HTTP/1.1 200 OK
+	 *	&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+	 * &lt;usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="16987d1a-f305-4a98-a3dc-2ce9a97e8424"&gt;
+	 *	&lt;uid&gt;systest&lt;/uid&gt;
+	 *	&lt;timestamp&gt;1480935597694&lt;/timestamp&gt;
+	 *	&lt;lifespan&gt;1209600000&lt;/lifespan&gt;
+     *	&lt;issuer&gt;https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424&lt;/issuer&gt;
+     *	&lt;securitylevel&gt;1&lt;/securitylevel&gt;
+     *	&lt;DEFCON&gt;&lt;/DEFCON&gt;
+     *	&lt;username&gt;systest&lt;/username&gt;
+     *	&lt;firstname&gt;SystemTestUser&lt;/firstname&gt;
+     *	&lt;lastname&gt;UserAdminWebApp&lt;/lastname&gt;
+     *	&lt;cellphone&gt;87654321&lt;/cellphone&gt;
+     *	&lt;email&gt;whydahadmin@getwhydah.com&lt;/email&gt;
+     *	&lt;personref&gt;42&lt;/personref&gt;
+     *	&lt;application ID="101"&gt;
+     *    &lt;applicationName&gt;ACSResource&lt;/applicationName&gt;
+     *    &lt;organizationName&gt;Opplysningen 1881&lt;/organizationName&gt;
+     *    &lt;role name="INNDATA" value="MY_ADDRESS_JSON"/&gt;
+     *	&lt;/application&gt;
+     *	&lt;ns2:link type="application/xml" href="https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424" rel="self"/&gt;
+     *	&lt;hash type="MD5"&gt;57755c9efa6337dc9739fe5cb719a9b4&lt;/hash&gt;
+     *	&lt;/usertoken&gt;
+   	 *
+   	 * @apiError 403/7000 Application is invalid.
+   	 * @apiError 406/6004 Attempt to access with non acceptable username/phoneno.
+   	 * @apiError 400/9998 Missing required parameters 
+   	 * @apiError 500/9999 A generic exception or an unexpected error 
+   	 *
+   	 * @apiErrorExample Error-Response:
+   	 *     HTTP/1.1 403 Forbidden
+   	 *     {
+   	 *  		"status": 403,
+   	 *  		"code": 7000,
+   	 *  		"message": "Illegal Application.",
+   	 *  		"link": "",
+   	 *  		"developerMessage": "Application is invalid."
+   	 *		}
+   	 */
     @Path("/{applicationtokenid}/{userticket}/get_usertoken_by_pin_and_logon_user")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -719,12 +863,13 @@ public class UserTokenResource {
                                                   @FormParam("adminUserTokenId") String adminUserTokenId,
                                                   @FormParam("apptoken") String appTokenXml,
                                                   @FormParam("phoneno") String phoneno,
-                                                  @FormParam("pin") String pin) {
+                                                  @FormParam("pin") String pin) throws AppException {
 
         log.trace("getUserTokenByDistributedPinAndLogonUser() called with " + "applicationtokenid = [" + applicationtokenid + "], userticket = [" + userticket + "], appTokenXml = [" + appTokenXml + "], phoneno = [" + phoneno + "], pin = [" + pin + "]");
 
         if (isEmpty(appTokenXml) || isEmpty(pin) || isEmpty(phoneno)) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing required parameters").build();
+            //return Response.status(Response.Status.BAD_REQUEST).entity("Missing required parameters").build();
+        	throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
         }
 
         log.trace("getUserTokenByDistributedPinAndLogonUser: applicationtokenid={}, pin={}, appTokenXml={}", applicationtokenid, pin, appTokenXml);
@@ -736,114 +881,295 @@ public class UserTokenResource {
         // Verify calling application
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             log.warn("getUserTokenByUserTicket - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
         }
+        
+        try {
+        	UserToken userToken = userAuthenticator.logonPinUser(applicationtokenid, appTokenXml, adminUserTokenId, phoneno, pin);
+        	ApplicationModelHelper.updateApplicationList(applicationtokenid, adminUserTokenId);
+            return createUserTokenResponse(applicationtokenid, userToken);
 
-        final UserToken userToken = userAuthenticator.logonPinUser(applicationtokenid, appTokenXml, adminUserTokenId, phoneno, pin);
-        if (userToken == null) {
-            log.warn("getUserTokenByDistributedPinAndLogonUser - attempt to access with non acceptable username, phoneno={}", phoneno);
-            return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+        } catch (AuthenticationFailedException ae) {
+            log.warn("getUserToken - User authentication failed");
+            //return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.USER_LOGIN_PIN_FAILED_6004.setDeveloperMessage(ae.getMessage());
         }
-        log.info("getUserTokenByDistributedPinAndLogonUser - valid session created for {} ", phoneno);
-        ApplicationModelHelper.updateApplicationList(applicationtokenid, adminUserTokenId);
-        return createUserTokenResponse(applicationtokenid, userToken);
+        
+        
 
     }
-
-
+   
     /**
-     * Force cross-applications/SSO session logout. Use with extreme care as the user's hate the resulting user experience..
+   	 * @throws AppException 
+   	 * @api {post} :applicationtokenid/releaseUserToken releaseUserToken
+   	 * @apiName releaseUserToken
+   	 * @apiGroup Security Token Service (STS)
+   	 * @apiDescription Force cross-applications/SSO session logout.
      *
-     * @param applicationtokenid application session
-     * @param usertokenid        user session id
-     * @return Response.OK
-     */
+     * @apiParam {String} usertokenid The UserTokenId
+     * 
+   	 * @apiSuccessExample Success-Response:
+   	 *	HTTP/1.1 200 OK
+	 *	{
+	 *  	"result": "true"
+	 *	}
+   	 *
+   	 *
+   	 * @apiError 403/7000 Application is invalid.
+   	 * @apiError 400/9998 Missing required parameters 
+   	 * @apiError 500/9999 A generic exception or an unexpected error 
+   	 *
+   	 * @apiErrorExample Error-Response:
+   	 *     HTTP/1.1 403 Forbidden
+   	 *     {
+   	 *  		"status": 403,
+   	 *  		"code": 7000,
+   	 *  		"message": "Illegal Application.",
+   	 *  		"link": "",
+   	 *  		"developerMessage": "Application is invalid."
+   	 *		}
+   	 */
     @Path("/{applicationtokenid}/release_usertoken")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response releaseUserToken(@PathParam("applicationtokenid") String applicationtokenid,
-                                     @FormParam("usertokenid") String usertokenid) {
+                                     @FormParam("usertokenid") String usertokenid) throws AppException {
         log.trace("releaseUserToken - entry.  usertokenid={}", usertokenid);
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("releaseUserToken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
         }
         if (usertokenid == null) {
             log.warn("releaseUserToken - attempt with no usertokenid: Null");
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
         }
         log.trace("releaseUserToken - removed session, usertokenid={}", usertokenid);
         ActiveUserTokenRepository.removeUserToken(usertokenid, applicationtokenid);
-        return Response.ok().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+        return Response.ok("{\"result\": \"true\"}").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
     }
 
     /**
-     * Request SSO user session renewal.
+   	 * @throws AppException 
+   	 * @api {post} :applicationtokenid/renew_usertoken renewUserToken
+   	 * @apiName renewUserToken
+   	 * @apiGroup Security Token Service (STS)
+   	 * @apiDescription Request SSO user session renewal.
      *
-     * @param applicationtokenid application session
-     * @param usertokenid        user session id
-     * @return userTokenXml - usertoken with extended lease
-     */
+     * @apiParam {String} usertokenid The UserTokenId
+     * 
+   	 * @apiSuccessExample Success-Response:
+   	 *	HTTP/1.1 200 OK
+	 *	{
+	 *  	"result": "true"
+	 *	}
+   	 *
+   	 *
+   	 * @apiError 403/7000 Application is invalid.
+   	 * @apiError 400/9998 Missing required parameters 
+   	 * @apiError 500/9999 A generic exception or an unexpected error 
+   	 *
+   	 * @apiErrorExample Error-Response:
+   	 *     HTTP/1.1 403 Forbidden
+   	 *     {
+   	 *  		"status": 403,
+   	 *  		"code": 7000,
+   	 *  		"message": "Illegal Application.",
+   	 *  		"link": "",
+   	 *  		"developerMessage": "Application is invalid."
+   	 *		}
+   	 */
     @Path("/{applicationtokenid}/renew_usertoken")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response renewUserToken(@PathParam("applicationtokenid") String applicationtokenid,
-                                   @FormParam("usertokenid") String usertokenid) {
+                                   @FormParam("usertokenid") String usertokenid) throws AppException {
         log.trace("renewUserToken - entry.  usertokenid={}", usertokenid);
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("renewUserToken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
         }
-        if (usertokenid == null) {
+        if (isEmpty(usertokenid)) {
             log.warn("renewUserToken - attempt with no usertokenid: Null");
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
         }
 
         ActiveUserTokenRepository.renewUserToken(usertokenid, applicationtokenid);
 
         log.trace("renewUserToken - session renewed, usertokenid={}", usertokenid);
-        return Response.ok().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+        return Response.ok("{\"result\": \"true\"}").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
     }
 
     /**
-     * Request SSO user session renewal.
+   	 * @throws AppException 
+   	 * @api {post} :applicationtokenid/refresh_usertoken refreshUserToken
+   	 * @apiName refreshUserToken
+   	 * @apiGroup Security Token Service (STS)
+   	 * @apiDescription Refresh SSO user session.
      *
-     * @param applicationtokenid application session
-     * @param usertokenid        user session id
-     * @return
-     */
+     * @apiParam {String} usertokenid The UserTokenId
+     * 
+   	 * @apiSuccessExample Success-Response:
+	 *	HTTP/1.1 200 OK
+	 *	&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+	 * &lt;usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="16987d1a-f305-4a98-a3dc-2ce9a97e8424"&gt;
+	 *	&lt;uid&gt;systest&lt;/uid&gt;
+	 *	&lt;timestamp&gt;1480935597694&lt;/timestamp&gt;
+	 *	&lt;lifespan&gt;1209600000&lt;/lifespan&gt;
+     *	&lt;issuer&gt;https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424&lt;/issuer&gt;
+     *	&lt;securitylevel&gt;1&lt;/securitylevel&gt;
+     *	&lt;DEFCON&gt;&lt;/DEFCON&gt;
+     *	&lt;username&gt;systest&lt;/username&gt;
+     *	&lt;firstname&gt;SystemTestUser&lt;/firstname&gt;
+     *	&lt;lastname&gt;UserAdminWebApp&lt;/lastname&gt;
+     *	&lt;cellphone&gt;87654321&lt;/cellphone&gt;
+     *	&lt;email&gt;whydahadmin@getwhydah.com&lt;/email&gt;
+     *	&lt;personref&gt;42&lt;/personref&gt;
+     *	&lt;application ID="101"&gt;
+     *    &lt;applicationName&gt;ACSResource&lt;/applicationName&gt;
+     *    &lt;organizationName&gt;Opplysningen 1881&lt;/organizationName&gt;
+     *    &lt;role name="INNDATA" value="MY_ADDRESS_JSON"/&gt;
+     *	&lt;/application&gt;
+     *	&lt;ns2:link type="application/xml" href="https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424" rel="self"/&gt;
+     *	&lt;hash type="MD5"&gt;57755c9efa6337dc9739fe5cb719a9b4&lt;/hash&gt;
+     *	&lt;/usertoken&gt;
+   	 *
+   	 *
+   	 * @apiError 403/7000 Application is invalid.
+   	 * @apiError 400/9998 Missing required parameters.
+   	 * @apiError 403/6000 Authentication failed.
+   	 * @apiError 500/9999 A generic exception or an unexpected error. 
+   	 *
+   	 * @apiErrorExample Error-Response:
+   	 *     HTTP/1.1 403 Forbidden
+   	 *     {
+   	 *  		"status": 403,
+   	 *  		"code": 7000,
+   	 *  		"message": "Illegal Application.",
+   	 *  		"link": "",
+   	 *  		"developerMessage": "Application is invalid."
+   	 *		}
+   	 */
     @Path("/{applicationtokenid}/refresh_usertoken")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response refreshUserToken(@PathParam("applicationtokenid") String applicationtokenid,
-                                     @FormParam("usertokenid") String usertokenid) {
+                                     @FormParam("usertokenid") String usertokenid) throws AppException {
         log.debug("refresh_usertoken - entry.  usertokenid={}", usertokenid);
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("refresh_usertoken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
         }
         if (usertokenid == null) {
             log.warn("refresh_usertoken - attempt with no usertokenid: Null");
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
         }
-        UserToken refreshedUserToken = userAuthenticator.getRefreshedUserToken(usertokenid);
-        ActiveUserTokenRepository.refreshUserToken(usertokenid, applicationtokenid, refreshedUserToken);
-        final UserToken userToken = ActiveUserTokenRepository.getUserToken(usertokenid, applicationtokenid);
-
-        log.debug("refresh_usertoken - usertoken refreshed, usertokenid={}", usertokenid);
-        return createUserTokenResponse(applicationtokenid, userToken);
+        
+        try {
+        	 UserToken refreshedUserToken = userAuthenticator.getRefreshedUserToken(usertokenid);
+             ActiveUserTokenRepository.refreshUserToken(usertokenid, applicationtokenid, refreshedUserToken);
+             final UserToken userToken = ActiveUserTokenRepository.getUserToken(usertokenid, applicationtokenid);
+             log.debug("refresh_usertoken - usertoken refreshed, usertokenid={}", usertokenid);
+             return createUserTokenResponse(applicationtokenid, userToken);
+        } catch (AuthenticationFailedException ae) {
+            throw AppExceptionCode.USER_AUTHENTICATION_FAILED_6000.setDeveloperMessage(ae.getMessage());
+        }
+        
+       
     }
 
-
     /**
-     * This method is for elevating user access to a higher level for the receiving end of a session handover between SSO applications
+	 * @throws AppException 
+	 * @api {post} :applicationtokenid/transform_usertoken transformUserToken
+	 * @apiName transformUserToken
+	 * @apiGroup Security Token Service (STS)
+	 * @apiDescription This method is for elevating user access to a higher level for the receiving end of a session handover between SSO applications
+	 * 
+	 * @apiParam {String} apptoken Application Token XML.
+	 * @apiParamExample {xml} Request-Example:
+	 *	&lt;applicationtoken&gt;
+     * 		&lt;params&gt;
+     *		    &lt;applicationtokenID&gt;1d58b70dc0fdc98b5cdce4745fb086c4&lt;/applicationtokenID&gt;
+     *		    &lt;applicationid&gt;101&lt;/applicationid&gt;
+     *			&lt;applicationname&gt;Whydah-SystemTests&lt;/applicationname&gt;
+     *			&lt;expires&gt;1480931112185&lt;/expires&gt;
+     *		&lt;/params&gt; 
+     * 		&lt;Url type="application/xml" method="POST" template="https://whydahdev.cantara.no/tokenservice/user/1d58b70dc0fdc98b5cdce4745fb086c4/get_usertoken_by_usertokenid"/&gt; 
+ 	 *	&lt;/applicationtoken&gt;
+ 	 *
+ 	 * @apiParam {String} usertoken User Token XML to transfer.
+	 * @apiParamExample {xml} Request-Example:
+	 *	&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+	 * &lt;usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="16987d1a-f305-4a98-a3dc-2ce9a97e8424"&gt;
+	 *	&lt;uid&gt;systest&lt;/uid&gt;
+	 *	&lt;timestamp&gt;1480935597694&lt;/timestamp&gt;
+	 *	&lt;lifespan&gt;1209600000&lt;/lifespan&gt;
+     *	&lt;issuer&gt;https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424&lt;/issuer&gt;
+     *	&lt;securitylevel&gt;1&lt;/securitylevel&gt;
+     *	&lt;DEFCON&gt;&lt;/DEFCON&gt;
+     *	&lt;username&gt;systest&lt;/username&gt;
+     *	&lt;firstname&gt;SystemTestUser&lt;/firstname&gt;
+     *	&lt;lastname&gt;UserAdminWebApp&lt;/lastname&gt;
+     *	&lt;cellphone&gt;87654321&lt;/cellphone&gt;
+     *	&lt;email&gt;whydahadmin@getwhydah.com&lt;/email&gt;
+     *	&lt;personref&gt;42&lt;/personref&gt;
+     *	&lt;application ID="101"&gt;
+     *    &lt;applicationName&gt;ACSResource&lt;/applicationName&gt;
+     *    &lt;organizationName&gt;Opplysningen 1881&lt;/organizationName&gt;
+     *    &lt;role name="INNDATA" value="MY_ADDRESS_JSON"/&gt;
+     *	&lt;/application&gt;
+     *	&lt;ns2:link type="application/xml" href="https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424" rel="self"/&gt;
+     *	&lt;hash type="MD5"&gt;57755c9efa6337dc9739fe5cb719a9b4&lt;/hash&gt;
+     *	&lt;/usertoken&gt;
      *
-     * @param applicationtokenid calling application session
-     * @param appTokenXml        application session data
-     * @param userTokenXml       user session data
-     * @param newAppTokenId      application session id of receiving application session
-     * @return UserTokenXml as seen for the given application session
-     */
+ 	 * @apiParam {String} to_apptokenid New application receiving this user token
+	 *
+	 * @apiSuccessExample Success-Response:
+	 *	HTTP/1.1 200 OK
+	 *	&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+	 * &lt;usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="16987d1a-f305-4a98-a3dc-2ce9a97e8424"&gt;
+	 *	&lt;uid&gt;systest&lt;/uid&gt;
+	 *	&lt;timestamp&gt;1480935597694&lt;/timestamp&gt;
+	 *	&lt;lifespan&gt;1209600000&lt;/lifespan&gt;
+     *	&lt;issuer&gt;https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424&lt;/issuer&gt;
+     *	&lt;securitylevel&gt;1&lt;/securitylevel&gt;
+     *	&lt;DEFCON&gt;&lt;/DEFCON&gt;
+     *	&lt;username&gt;systest&lt;/username&gt;
+     *	&lt;firstname&gt;SystemTestUser&lt;/firstname&gt;
+     *	&lt;lastname&gt;UserAdminWebApp&lt;/lastname&gt;
+     *	&lt;cellphone&gt;87654321&lt;/cellphone&gt;
+     *	&lt;email&gt;whydahadmin@getwhydah.com&lt;/email&gt;
+     *	&lt;personref&gt;42&lt;/personref&gt;
+     *	&lt;application ID="101"&gt;
+     *    &lt;applicationName&gt;ACSResource&lt;/applicationName&gt;
+     *    &lt;organizationName&gt;Opplysningen 1881&lt;/organizationName&gt;
+     *    &lt;role name="INNDATA" value="MY_ADDRESS_JSON"/&gt;
+     *	&lt;/application&gt;
+     *	&lt;ns2:link type="application/xml" href="https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424" rel="self"/&gt;
+     *	&lt;hash type="MD5"&gt;57755c9efa6337dc9739fe5cb719a9b4&lt;/hash&gt;
+     *	&lt;/usertoken&gt;
+	 *
+	 *
+	 * @apiError 403/7000 Application is invalid.
+	 * @apiError 406/6002 Attempt to access with non acceptable usertokenid.
+	 * @apiError 500/9999 A generic exception or an unexpected error 
+	 *
+	 * @apiErrorExample Error-Response:
+	 *     HTTP/1.1 403 Forbidden
+	 *     {
+	 *  		"status": 403,
+	 *  		"code": 7000,
+	 *  		"message": "Illegal Application.",
+	 *  		"link": "",
+	 *  		"developerMessage": "Application is invalid."
+	 *		}
+	 */
     @Path("/{applicationtokenid}/transform_usertoken")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -851,7 +1177,7 @@ public class UserTokenResource {
     public Response transformUserToken(@PathParam("applicationtokenid") String applicationtokenid,
                                        @FormParam("apptoken") String appTokenXml,
                                        @FormParam("usertoken") String userTokenXml,
-                                       @FormParam("to_apptokenid") String newAppTokenId) {
+                                       @FormParam("to_apptokenid") String newAppTokenId) throws AppException {
         if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
@@ -862,94 +1188,181 @@ public class UserTokenResource {
 
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             log.warn("getUserTokenByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
         }
         String userTokenId = UserTokenMapper.fromUserTokenXml(userTokenXml).getTokenid();
         final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
-        userToken.setDefcon(ApplicationThreatResource.getDEFCON());
+       
         if (userToken == null) {
             log.warn("getUserTokenByUserTokenId - attempt to access with non acceptable userTokenId={}", userTokenId);
-            return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.USER_INVALID_USERTOKENID_6002;
         }
+        userToken.setDefcon(ApplicationThreatResource.getDEFCON());
         return createUserTokenResponse(newAppTokenId, userToken);
     }
 
     /**
-     * The backend for PIN signup processes
+     * @apiIgnore The backend for PIN signup processes
+   	 * @throws AppException 
+   	 * @api {post} :applicationtokenid/send_sms_pin sendSMSPin
+   	 * @apiName sendSMSPin
+   	 * @apiGroup Security Token Service (STS)
+   	 * @apiDescription The backend for PIN signup processes
      *
-     * @param applicationtokenid   the ID of the application session
-     * @param phoneNo              the callPhone to get the message
-     * @param smsPin               the pin-code massage to send to the user
-     * @return
-     */
+     * @apiParam {String} phoneNo The phone number to which a pin-code is sent
+     * @apiParam {String} smsPin The pin-code massage to send to the user
+   	 *
+   	 * @apiSuccessExample Success-Response:
+   	 *	HTTP/1.1 200 OK
+	 *	{
+	 *  	"result": "true"
+	 *	}
+   	 *
+   	 * @apiError 403/7000 Application is invalid.
+   	 * @apiError 400/9998 Missing required parameters 
+   	 * @apiError 500/9999 A generic exception or an unexpected error 
+   	 *
+   	 * @apiErrorExample Error-Response:
+   	 *     HTTP/1.1 403 Forbidden
+   	 *     {
+   	 *  		"status": 403,
+   	 *  		"code": 7000,
+   	 *  		"message": "Illegal Application.",
+   	 *  		"link": "",
+   	 *  		"developerMessage": "Application is invalid."
+   	 *		}
+   	 */
     @Path("/{applicationtokenid}/send_sms_pin")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response sendSMSPin(@PathParam("applicationtokenid") String applicationtokenid,
                                @FormParam("phoneNo") String phoneNo,
-                               @FormParam("smsPin") String smsPin) {
+                               @FormParam("smsPin") String smsPin) throws AppException {
         log.info("sendSMSPin: phoneNo:" + phoneNo + ", smsPin:" + smsPin);
 
         if (phoneNo == null || smsPin == null) {
             log.warn("sendSMSPin: attempt to use service with emty parameters");
-            return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
         }
 
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
         }
 
         log.trace("CommandSendSMSToUser - ({}, {}, {}, {}, {}, {}, {})", SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin);
         String response = new CommandSendSMSToUser(SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin).execute();
         log.debug("Answer from smsgw: " + response);
         ActivePinRepository.setPin(phoneNo, smsPin);
-        return Response.ok().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+        return Response.ok("{\"result\": \"true\"}").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
 
     }
 
     /**
-     * The backend for PIN signup processes
+   	 * @throws AppException 
+   	 * @api {post} :applicationtokenid/generate_pin_and_send_sms_pin sendgenerateAndSendSMSPin
+   	 * @apiName sendgenerateAndSendSMSPin
+   	 * @apiGroup Security Token Service (STS)
+   	 * @apiDescription The backend for PIN signup processes
      *
-     * @param applicationtokenid the ID of the application session
-     * @param phoneNo            the callPhone to get the message
-     * @return
-     */
+     * @apiParam {String} phoneNo The phone number to which a pin-code is sent
+   	 *
+   	 * @apiSuccessExample Success-Response:
+   	 *	HTTP/1.1 200 OK
+	 *	{
+	 *  	"result": "true"
+	 *	}
+   	 *
+   	 * @apiError 403/7000 Application is invalid.
+   	 * @apiError 400/9998 Missing required parameters 
+   	 * @apiError 500/9999 A generic exception or an unexpected error 
+   	 *
+   	 * @apiErrorExample Error-Response:
+   	 *     HTTP/1.1 403 Forbidden
+   	 *     {
+   	 *  		"status": 403,
+   	 *  		"code": 7000,
+   	 *  		"message": "Illegal Application.",
+   	 *  		"link": "",
+   	 *  		"developerMessage": "Application is invalid."
+   	 *		}
+   	 */
     @Path("/{applicationtokenid}/generate_pin_and_send_sms_pin")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response sendgenerateAndSendSMSPin(@PathParam("applicationtokenid") String applicationtokenid,
-                                              @FormParam("phoneNo") String phoneNo) {
+                                              @FormParam("phoneNo") String phoneNo) throws AppException {
         log.info("sendgenerateAndSendSMSPin: phoneNo:" + phoneNo);
 
         String smsPin = generatePin();
-        if (phoneNo == null || smsPin == null) {
+        if (isEmpty(phoneNo)) {
             log.warn("sendSMSPin: attempt to use service with emty parameters");
-            return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
         }
 
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
-        }
+            //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;     }
 
         log.trace("CommandSendSMSToUser - ({}, {}, {}, {}, {}, {}, {})", SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin);
         String response = new CommandSendSMSToUser(SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin).execute();
         log.trace("Answer from smsgw: " + response);
         ActivePinRepository.setPin(phoneNo, smsPin);
-        return Response.ok().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+        return Response.ok("{\"result\": \"true\"}").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
 
     }
 
     /**
-     * @param applicationtokenid application session
-     * @param appTokenXml        application session data
-     * @param phoneno            user phonenumber
-     * @param pin                user entered pin
-     * @return usertoken
-     */
+   	 * @throws AppException 
+   	 * @api {post} :applicationtokenid/verify_phone_by_pin verifyPhoneByPin
+   	 * @apiName verifyPhoneByPin
+   	 * @apiGroup Security Token Service (STS)
+   	 * @apiDescription verify a one-time pin-code distributed to the user's registered cellPhone number
+   	 * 
+   	 * @apiParam {String} appTokenXml Application Token XML.
+   	 * @apiParamExample {xml} Request-Example:
+   	 *	&lt;applicationtoken&gt;
+     * 		&lt;params&gt;
+     *		    &lt;applicationtokenID&gt;1d58b70dc0fdc98b5cdce4745fb086c4&lt;/applicationtokenID&gt;
+     *		    &lt;applicationid&gt;101&lt;/applicationid&gt;
+     *			&lt;applicationname&gt;Whydah-SystemTests&lt;/applicationname&gt;
+     *			&lt;expires&gt;1480931112185&lt;/expires&gt;
+     *		&lt;/params&gt; 
+     * 		&lt;Url type="application/xml" method="POST" template="https://whydahdev.cantara.no/tokenservice/user/1d58b70dc0fdc98b5cdce4745fb086c4/get_usertoken_by_usertokenid"/&gt; 
+     *	&lt;/applicationtoken&gt;
+     *
+     * @apiParam {String} phoneno The phone number to which a pin-code is sent
+     * @apiParam {String} pin The pin-code is distributred to the registered cellPhone number
+   	 *
+   	 * @apiSuccessExample Success-Response:
+   	 *	HTTP/1.1 200 OK
+	 *	{
+	 *  	"result": "true"
+	 *	}
+   	 *
+   	 * @apiError 403/7000 Application is invalid.
+   	 * @apiError 406/6006 Invalid pin code.
+   	 * @apiError 400/9998 Missing required parameters 
+   	 * @apiError 500/9999 A generic exception or an unexpected error 
+   	 *
+   	 * @apiErrorExample Error-Response:
+   	 *     HTTP/1.1 403 Forbidden
+   	 *     {
+   	 *  		"status": 403,
+   	 *  		"code": 7000,
+   	 *  		"message": "Illegal Application.",
+   	 *  		"link": "",
+   	 *  		"developerMessage": "Application is invalid."
+   	 *		}
+   	 */
     @Path("/{applicationtokenid}/verify_phone_by_pin")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -957,12 +1370,13 @@ public class UserTokenResource {
     public Response verifyPhoneByPin(@PathParam("applicationtokenid") String applicationtokenid,
                                      @FormParam("appTokenXml") String appTokenXml,
                                      @FormParam("phoneno") String phoneno,
-                                     @FormParam("pin") String pin) {
+                                     @FormParam("pin") String pin) throws AppException {
 
         log.trace("verifyPhoneByPin() called with " + "applicationtokenid = [" + applicationtokenid + "], appTokenXml = [" + appTokenXml + "], phoneno = [" + phoneno + "], pin = [" + pin + "]");
 
         if (isEmpty(appTokenXml) || isEmpty(pin) || isEmpty(phoneno)) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing required parameters").build();
+            //return Response.status(Response.Status.BAD_REQUEST).entity("Missing required parameters").build();
+        	throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
         }
 
         log.trace("verifyPhoneByPin: applicationtokenid={}, pin={}, appTokenXml={}", applicationtokenid, pin, appTokenXml);
@@ -974,52 +1388,101 @@ public class UserTokenResource {
         // Verify calling application
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             log.warn("verifyPhoneByPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
         }
 
         if (ActivePinRepository.usePin(phoneno, pin)) {
-            return Response.status(Response.Status.OK).build();
+            return Response.ok("{\"result\": \"true\"}").build();
         } else {
-            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+            //return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+        	throw AppExceptionCode.USER_INVALID_PINCODE_6006;
         }
     }
 
+    
     /**
-     * The backend for sms messages to user
+   	 * @apiIgnore The backend for sms messages to the user
+   	 * @api {post} :applicationtokenid/send_sms sendSMSMessage
+   	 * @apiName sendSMSMessage
+   	 * @apiGroup Security Token Service (STS)
+   	 * @apiDescription The backend for sms messages to the user
      *
-     * @param applicationtokenid    The application session ID
-     * @param phoneNo               The cellPhone to send message to
-     * @param smsMessage                 The message to send to the suer
-     * @return
-     */
+     * @apiParam {String} phoneNo The cellPhone to send message to
+     * @apiParam {String} smsMessage The message to send to the user
+     * 
+   	 * @apiSuccessExample Success-Response:
+   	 *	HTTP/1.1 200 OK
+	 *	{
+	 *  	"result": "true"
+	 *	}
+   	 *
+   	 *
+   	 * @apiError 403/7000 Application is invalid.
+   	 * @apiError 500/9999 A generic exception or an unexpected error 
+   	 *
+   	 * @apiErrorExample Error-Response:
+   	 *     HTTP/1.1 403 Forbidden
+   	 *     {
+   	 *  		"status": 403,
+   	 *  		"code": 7000,
+   	 *  		"message": "Illegal Application.",
+   	 *  		"link": "",
+   	 *  		"developerMessage": "Application is invalid."
+   	 *		}
+   	 */
     @Path("/{applicationtokenid}/send_sms")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response sendSMSMessage(@PathParam("applicationtokenid") String applicationtokenid,
                                    @FormParam("phoneNo") String phoneNo,
-                                   @FormParam("smsMessage") String smsMessage) {
+                                   @FormParam("smsMessage") String smsMessage) throws AppException {
         log.info("Response sendSMSMessage: phoneNo:{}, smsMessage:{}", phoneNo, smsMessage);
 
         if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
             log.warn("sendSMSMessage - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
         }
         String cellNo = phoneNo;
         new CommandSendSMSToUser(SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, cellNo, smsMessage).execute();
-        return Response.ok().header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+        return Response.ok("{\"result\": \"true\"}").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
 
     }
 
     /**
-     * The backend for sms messages to user
+   	 * @apiIgnore The backend for scheduling sms messages sent to the user
+   	 * @api {post} :applicationtokenid/send_scheduled_sms sendScheduledSMSMessage
+   	 * @apiName sendScheduledSMSMessage
+   	 * @apiGroup Security Token Service (STS)
+   	 * @apiDescription The backend for sms messages to the user
      *
-     * @param applicationtokenid    The application session ID
-     * @param timestamp               The timestamp of when to send the message
-     * @param phoneNo               The cellPhone to send message to
-     * @param smsMessage                 The message to send to the suer
-     * @return
-     */
+     * @apiParam {String} phoneNo The cellPhone to send message to
+     * @apiParam {String} smsMessage The message to send to the user
+     * @apiParam {String} timestamp The timestamp of when to send the message
+     * 
+   	 * @apiSuccessExample Success-Response:
+   	 *	HTTP/1.1 200 OK
+	 *	{
+	 *  	"result": "true"
+	 *	}
+   	 *
+   	 *
+   	 * @apiError 403/7000 Application is invalid.
+   	 * @apiError 400/9998 Missing required parameters 
+   	 * @apiError 500/9999 A generic exception or an unexpected error 
+   	 *
+   	 * @apiErrorExample Error-Response:
+   	 *     HTTP/1.1 403 Forbidden
+   	 *     {
+   	 *  		"status": 403,
+   	 *  		"code": 7000,
+   	 *  		"message": "Illegal Application.",
+   	 *  		"link": "",
+   	 *  		"developerMessage": "Application is invalid."
+   	 *		}
+   	 */
     @Path("/{applicationtokenid}/send_scheduled_sms")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -1041,17 +1504,77 @@ public class UserTokenResource {
     }
 
     /**
-     * The SSOLoginWebApplication backend for 3rd party UserTokens. Receive a new user, create a Whydah UserIdentity with
+   	 * @throws AppException 
+   	 * @api {post} :applicationtokenid/:userticket/create_user createAndLogOnUser
+   	 * @apiName createAndLogOnUser
+   	 * @apiGroup Security Token Service (STS)
+   	 * @apiDescription The SSOLoginWebApplication backend for 3rd party UserTokens. Receive a new user, create a Whydah UserIdentity with
      * the corresponding defaultroles (UAS|UIB) and create a new session with a one-time userticket for handover to receiving
      * SSO applications
+   	 * 
+   	 * @apiParam {String} apptoken Application Token XML.
+   	 * @apiParamExample {xml} Request-Example:
+   	 *	&lt;applicationtoken&gt;
+     * 		&lt;params&gt;
+     *		    &lt;applicationtokenID&gt;1d58b70dc0fdc98b5cdce4745fb086c4&lt;/applicationtokenID&gt;
+     *		    &lt;applicationid&gt;101&lt;/applicationid&gt;
+     *			&lt;applicationname&gt;Whydah-SystemTests&lt;/applicationname&gt;
+     *			&lt;expires&gt;1480931112185&lt;/expires&gt;
+     *		&lt;/params&gt; 
+     * 		&lt;Url type="application/xml" method="POST" template="https://whydahdev.cantara.no/tokenservice/user/1d58b70dc0fdc98b5cdce4745fb086c4/get_usertoken_by_usertokenid"/&gt; 
+     *	&lt;/applicationtoken&gt;
      *
-     * @param applicationtokenid     calling application session
-     * @param userticket             user session id
-     * @param appTokenXml            application session data
-     * @param userCredentialXml      user credential  i.e. (username and password)
-     * @param thirdPartyUserTokenXml typically facebook user-token or other oauth2 usertoken
-     * @return user session data
-     */
+     * @apiParam {String} usercredential user credential  i.e. (username and password)
+     * @apiParamExample {xml} Request-Example:
+ 	 *  &lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt; 
+ 	 *		&lt;usercredential&gt;
+     *			&lt;params&gt;
+     *   			&lt;username&gt;YOUR_USER_NAME&lt;/username&gt;
+     *  			&lt;password&gt;YOUR_PASSWORD&lt;/password&gt;
+     *		&lt;/params&gt; 
+	 *	&lt;/usercredential&gt;
+	 *
+     * @apiParam {String} fbuser The typical facebook user-token or other oauth2 usertoken
+   	 *
+   	 * @apiSuccessExample Success-Response:
+	 *	HTTP/1.1 200 OK
+	 *	&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+	 * &lt;usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="16987d1a-f305-4a98-a3dc-2ce9a97e8424"&gt;
+	 *	&lt;uid&gt;systest&lt;/uid&gt;
+	 *	&lt;timestamp&gt;1480935597694&lt;/timestamp&gt;
+	 *	&lt;lifespan&gt;1209600000&lt;/lifespan&gt;
+     *	&lt;issuer&gt;https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424&lt;/issuer&gt;
+     *	&lt;securitylevel&gt;1&lt;/securitylevel&gt;
+     *	&lt;DEFCON&gt;&lt;/DEFCON&gt;
+     *	&lt;username&gt;systest&lt;/username&gt;
+     *	&lt;firstname&gt;SystemTestUser&lt;/firstname&gt;
+     *	&lt;lastname&gt;UserAdminWebApp&lt;/lastname&gt;
+     *	&lt;cellphone&gt;87654321&lt;/cellphone&gt;
+     *	&lt;email&gt;whydahadmin@getwhydah.com&lt;/email&gt;
+     *	&lt;personref&gt;42&lt;/personref&gt;
+     *	&lt;application ID="101"&gt;
+     *    &lt;applicationName&gt;ACSResource&lt;/applicationName&gt;
+     *    &lt;organizationName&gt;Opplysningen 1881&lt;/organizationName&gt;
+     *    &lt;role name="INNDATA" value="MY_ADDRESS_JSON"/&gt;
+     *	&lt;/application&gt;
+     *	&lt;ns2:link type="application/xml" href="https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424" rel="self"/&gt;
+     *	&lt;hash type="MD5"&gt;57755c9efa6337dc9739fe5cb719a9b4&lt;/hash&gt;
+     *	&lt;/usertoken&gt;
+   	 *
+   	 * @apiError 403/7000 Application is invalid.
+   	 * @apiError 403/6000 Authentication failed.
+   	 * @apiError 500/9999 A generic exception or an unexpected error 
+   	 *
+   	 * @apiErrorExample Error-Response:
+   	 *     HTTP/1.1 403 Forbidden
+   	 *     {
+   	 *  		"status": 403,
+   	 *  		"code": 7000,
+   	 *  		"message": "Illegal Application.",
+   	 *  		"link": "",
+   	 *  		"developerMessage": "Application is invalid."
+   	 *		}
+   	 */
     @Path("/{applicationtokenid}/{userticket}/create_user")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -1060,7 +1583,7 @@ public class UserTokenResource {
                                        @PathParam("userticket") String userticket,
                                        @FormParam("apptoken") String appTokenXml,
                                        @FormParam("usercredential") String userCredentialXml,
-                                       @FormParam("fbuser") String thirdPartyUserTokenXml) {
+                                       @FormParam("fbuser") String thirdPartyUserTokenXml) throws AppException {
         log.trace("Response createAndLogOnUser: usercredential:" + userCredentialXml + "fbuser:" + thirdPartyUserTokenXml);
 
         if (ApplicationMode.getApplicationMode() == ApplicationMode.DEV) {
@@ -1070,7 +1593,8 @@ public class UserTokenResource {
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             // TODO:  Limit this operation to SSOLoginWebApplication ONLY
             log.warn("createAndLogOnUser - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.APP_ILLEGAL_7000; 
         }
 
         try {
@@ -1085,22 +1609,77 @@ public class UserTokenResource {
             return createUserTokenResponse(applicationtokenid, userToken);
         } catch (AuthenticationFailedException ae) {
             log.warn("createAndLogOnUser - Error creating or authenticating user. thirdPartyUserTokenXml={}", thirdPartyUserTokenXml);
-            return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.USER_AUTHENTICATION_FAILED_6000.setDeveloperMessage(ae.getMessage());
         }
     }
 
-
     /**
-     * The SSOLoginWebApplication backend for 3rd party UserTokens. Receive a new user, create a Whydah UserIdentity with
+   	 * @throws AppException 
+   	 * @api {post} :applicationtokenid/:userticket/:pin/create_pinverified_user createAndLogOnPinUser
+   	 * @apiName createAndLogOnPinUser
+   	 * @apiGroup Security Token Service (STS)
+   	 * @apiDescription The SSOLoginWebApplication backend for 3rd party UserTokens. Receive a new user, create a Whydah UserIdentity with
      * the corresponding defaultroles (UAS|UIB) and create a new session with a one-time userticket for handover to receiving
      * SSO applications
+   	 * 
+   	 * @apiParam {String} apptoken Application Token XML.
+   	 * @apiParamExample {xml} Request-Example:
+   	 *	&lt;applicationtoken&gt;
+     * 		&lt;params&gt;
+     *		    &lt;applicationtokenID&gt;1d58b70dc0fdc98b5cdce4745fb086c4&lt;/applicationtokenID&gt;
+     *		    &lt;applicationid&gt;101&lt;/applicationid&gt;
+     *			&lt;applicationname&gt;Whydah-SystemTests&lt;/applicationname&gt;
+     *			&lt;expires&gt;1480931112185&lt;/expires&gt;
+     *		&lt;/params&gt; 
+     * 		&lt;Url type="application/xml" method="POST" template="https://whydahdev.cantara.no/tokenservice/user/1d58b70dc0fdc98b5cdce4745fb086c4/get_usertoken_by_usertokenid"/&gt; 
+     *	&lt;/applicationtoken&gt;
      *
-     * @param applicationtokenid calling application session
-     * @param pin                user session pin
-     * @param appTokenXml        application session data
-     * @param newUserjson        a simple userjson for new user
-     * @return user session data
-     */
+     * @apiParam {String} adminUserTokenId The userTokenId
+     * @apiParam {String} cellPhone The phone number to which the pin code was sent
+     * @apiParam {String} jsonuser a simple userjson for new user
+     * 
+   	 *
+   	 * @apiSuccessExample Success-Response:
+	 *	HTTP/1.1 200 OK
+	 *	&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+	 * &lt;usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="16987d1a-f305-4a98-a3dc-2ce9a97e8424"&gt;
+	 *	&lt;uid&gt;systest&lt;/uid&gt;
+	 *	&lt;timestamp&gt;1480935597694&lt;/timestamp&gt;
+	 *	&lt;lifespan&gt;1209600000&lt;/lifespan&gt;
+     *	&lt;issuer&gt;https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424&lt;/issuer&gt;
+     *	&lt;securitylevel&gt;1&lt;/securitylevel&gt;
+     *	&lt;DEFCON&gt;&lt;/DEFCON&gt;
+     *	&lt;username&gt;systest&lt;/username&gt;
+     *	&lt;firstname&gt;SystemTestUser&lt;/firstname&gt;
+     *	&lt;lastname&gt;UserAdminWebApp&lt;/lastname&gt;
+     *	&lt;cellphone&gt;87654321&lt;/cellphone&gt;
+     *	&lt;email&gt;whydahadmin@getwhydah.com&lt;/email&gt;
+     *	&lt;personref&gt;42&lt;/personref&gt;
+     *	&lt;application ID="101"&gt;
+     *    &lt;applicationName&gt;ACSResource&lt;/applicationName&gt;
+     *    &lt;organizationName&gt;Opplysningen 1881&lt;/organizationName&gt;
+     *    &lt;role name="INNDATA" value="MY_ADDRESS_JSON"/&gt;
+     *	&lt;/application&gt;
+     *	&lt;ns2:link type="application/xml" href="https://whydahdev.cantara.no/tokenservice/user/0700445a583e014102affd92c8d896a0/validate_usertokenid/16987d1a-f305-4a98-a3dc-2ce9a97e8424" rel="self"/&gt;
+     *	&lt;hash type="MD5"&gt;57755c9efa6337dc9739fe5cb719a9b4&lt;/hash&gt;
+     *	&lt;/usertoken&gt;
+   	 *
+   	 * @apiError 403/7000 Application is invalid.
+   	 * @apiError 400/9998 Missing required parameters
+   	 * @apiError 403/6000 Authentication failed.
+   	 * @apiError 500/9999 A generic exception or an unexpected error 
+   	 *
+   	 * @apiErrorExample Error-Response:
+   	 *     HTTP/1.1 403 Forbidden
+   	 *     {
+   	 *  		"status": 403,
+   	 *  		"code": 7000,
+   	 *  		"message": "Illegal Application.",
+   	 *  		"link": "",
+   	 *  		"developerMessage": "Application is invalid."
+   	 *		}
+   	 */
     @Path("/{applicationtokenid}/{userticket}/{pin}/create_pinverified_user")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -1111,13 +1690,17 @@ public class UserTokenResource {
                                           @FormParam("apptoken") String appTokenXml,
                                           @FormParam("adminUserTokenId") String adminUserTokenId,
                                           @FormParam("cellPhone") String cellPhone,
-                                          @FormParam("jsonuser") String newUserjson) {
+                                          @FormParam("jsonuser") String newUserjson) throws AppException {
         log.info("Request createAndLogOnPinUser:  jsonuser:" + newUserjson);
 
         if (ApplicationMode.getApplicationMode() == ApplicationMode.DEV) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
         }
 
+        if (isEmpty(adminUserTokenId) || isEmpty(cellPhone) || isEmpty(newUserjson)) {
+        	throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
+        }
+        
         if (pin == null || pin.length() < 4) {
             pin = generatePin();
             log.info("createAndLogOnPinUser - empty pin in request, gererating internal pin and use it");
@@ -1125,7 +1708,8 @@ public class UserTokenResource {
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
             // TODO:  Limit this operation to SSOLoginWebApplication ONLY
             log.warn("createAndLogOnPinUser - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
-            return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
         }
         try {
             UserToken userToken = userAuthenticator.createAndLogonPinUser(applicationtokenid, appTokenXml, adminUserTokenId, cellPhone, pin, newUserjson);
@@ -1139,10 +1723,8 @@ public class UserTokenResource {
             return createUserTokenResponse(applicationtokenid, userToken);
         } catch (AuthenticationFailedException ae) {
             log.warn("createAndLogOnPinUser - Error creating or authenticating user. jsonuser={}", newUserjson);
-            return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
-        } catch (Exception e) {
-            log.error("Unhandled exception: ", e);
-            return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("Error creating or authenticating user.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            //return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.USER_AUTHENTICATION_FAILED_6000;
         }
     }
 
@@ -1155,7 +1737,6 @@ public class UserTokenResource {
         ActiveUserTokenRepository.setLastSeen(userToken);
         return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
     }
-
 
     boolean isEmpty(String userticket) {
         boolean isEmpty = false;

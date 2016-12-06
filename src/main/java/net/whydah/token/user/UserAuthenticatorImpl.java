@@ -124,38 +124,32 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 	public UserToken logonPinUser(String applicationtokenid, String appTokenXml, String adminUserTokenId, String cellPhone, String pin) {
 		log.info("logonPinUser() called with " + "applicationtokenid = [" + applicationtokenid + "], appTokenXml = [" + appTokenXml + "], cellPhone = [" + cellPhone + "], pin = [" + pin + "]");
 		if (ActivePinRepository.usePin(cellPhone, pin)) {
-			try {
-				String usersQuery = cellPhone;
-				// produserer userJson. denne kan inneholde fler users dette er json av
-				String usersJson = new CommandListUsers(useradminservice, applicationtokenid, adminUserTokenId, usersQuery).execute();
-				log.info("CommandListUsers for query {} found users {}", usersQuery, usersJson);
-				UserToken userTokenIdentity = getFirstMatch(usersJson, usersQuery);
-				if (userTokenIdentity != null) {
-					log.info("Found matching UserIdentity {}", userTokenIdentity);
+			String usersQuery = cellPhone;
+			// produserer userJson. denne kan inneholde fler users dette er json av
+			String usersJson = new CommandListUsers(useradminservice, applicationtokenid, adminUserTokenId, usersQuery).execute();
+			log.info("CommandListUsers for query {} found users {}", usersQuery, usersJson);
+			UserToken userTokenIdentity = getFirstMatch(usersJson, usersQuery);
+			if (userTokenIdentity != null) {
+				log.info("Found matching UserIdentity {}", userTokenIdentity);
 
-					String userAggregateJson = new CommandGetUserAggregate(useradminservice, applicationtokenid, adminUserTokenId, userTokenIdentity.getUid()).execute();
+				String userAggregateJson = new CommandGetUserAggregate(useradminservice, applicationtokenid, adminUserTokenId, userTokenIdentity.getUid()).execute();
 
-					UserToken userToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
-					userToken.setSecurityLevel("0");  // UserIdentity as source = securitylevel=0
-					userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
+				UserToken userToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
+				userToken.setSecurityLevel("0");  // UserIdentity as source = securitylevel=0
+				userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
 
-					ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
-					return userToken;
+				ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
+				return userToken;
 
-				} else {
-					log.error("Unable to find a user matching the given phonenumber.");
-				}
-
-				//TODO Make flow for error handling in case of no userId above
-
-			} catch (Exception e) {
-				log.error("logonPinUser - Problems connecting to {}", useradminservice, e);
-				throw e;
+			} else {
+				log.error("Unable to find a user matching the given phonenumber.");
+				throw new AuthenticationFailedException("Unable to find a user matching the given phonenumber.");
 			}
 		} else {
 			log.warn("logonPinUser, illegal pin attempted - pin not registered");
+			throw new AuthenticationFailedException("Pin authentication failed. Status code ");
 		}
-		throw new AuthenticationFailedException("Pin authentication failed. Status code ");
+
 	}
 
 
