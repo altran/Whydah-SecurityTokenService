@@ -26,7 +26,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
 		errorMessage.setLink("");
 				
 		return Response.status(errorMessage.getStatus())
-				.entity(errorMessage)
+				.entity(ExceptionConfig.handleSecurity(errorMessage))
 				.type(MediaType.APPLICATION_JSON)
 				.build();	
 	}
