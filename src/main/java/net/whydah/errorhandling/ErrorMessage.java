@@ -1,6 +1,8 @@
 package net.whydah.errorhandling;
 
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -12,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 
-
+@Produces("application/xml")
 @XmlRootElement
 public class ErrorMessage {
 	
@@ -78,6 +80,7 @@ public class ErrorMessage {
 	
 	public ErrorMessage(AppException ex){
 		BeanUtils.copyProperties(ex,this);
+		this.status = ex.getStatus().getStatusCode();
 	}
 	
 	public ErrorMessage(NotFoundException ex){

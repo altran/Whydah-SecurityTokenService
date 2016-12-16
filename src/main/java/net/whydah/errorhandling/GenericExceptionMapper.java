@@ -3,6 +3,7 @@ package net.whydah.errorhandling;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -10,6 +11,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 @Provider
+@Produces(MediaType.APPLICATION_JSON)
 public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
  
 
@@ -26,7 +28,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
 		errorMessage.setLink("");
 				
 		return Response.status(errorMessage.getStatus())
-				.entity(ExceptionConfig.handleSecurity(errorMessage))
+				.entity(ExceptionConfig.handleSecurity(errorMessage).toString())
 				.type(MediaType.APPLICATION_JSON)
 				.build();	
 	}

@@ -92,6 +92,7 @@ public class ServiceStarter {
         final ServletRegistration servletRegistration = context.addServlet("ServletContainer", container);
         servletRegistration.addMapping("/*");
         servletRegistration.setInitParameter("com.sun.jersey.config.property.packages", "net.whydah");
+        servletRegistration.setInitParameter("com.sun.jersey.api.json.POJOMappingFeature", "true");
         context.addFilter("guiceFilter", GuiceFilter.class);
         
       
