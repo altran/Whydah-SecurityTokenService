@@ -33,7 +33,7 @@ public class ApplicationFullTokenTest {
 		config = new SystemTestBaseConfig();
 	}
 
-	@Ignore
+	//@Ignore
 	@Test
 	public void testValidFullTokenApplications() {
 
@@ -53,11 +53,23 @@ public class ApplicationFullTokenTest {
 			//update full token application list
 			List<Application> updateList = ApplicationModelUtil.getApplicationList(); //NOTHING NOW
 			assertTrue(updateList==null || updateList.size()==0); //NOTHING NOW
+			AppConfig.setFullTokenApplications("");//MAKE SURE NOTHING NOW IN THE LIST
 			AppConfig.updateFullTokenApplicationList(config.userAdminServiceUri, myApplicationTokenID, userTokenId);
 			//check if the list has been updated
 			updateList = ApplicationModelUtil.getApplicationList();//APPLICATIONS WERE ADDED
 			assertTrue(updateList.size()>0);//SOMETHING IN THE LIST
-
+			boolean haveOneFullTokenApplication = false;
+			for (Application application : updateList) {
+               if(application.isFullTokenApplication()){
+            	   haveOneFullTokenApplication = true;
+            	   break;
+               }
+            }
+			if(haveOneFullTokenApplication){
+				assertTrue(AppConfig.getFullTokenApplications().length()>0); //THIS SHOULD INDICATE THAT WE HAVE ATLEAST ONE FULL TOKEN APPLICATION
+			}
+			
+			
 			//assume the testing application with a full token one 
 			for (Application application : updateList) {
                 if(application.getId().equals(config.appCredential.getApplicationID())){
