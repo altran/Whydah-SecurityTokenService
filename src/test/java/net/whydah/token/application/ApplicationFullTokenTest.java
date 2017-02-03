@@ -33,7 +33,7 @@ public class ApplicationFullTokenTest {
 		config = new SystemTestBaseConfig();
 	}
 
-	//@Ignore
+	@Ignore //WORK LOCALLY
 	@Test
 	public void testValidFullTokenApplications() {
 
