@@ -48,7 +48,7 @@ public class ApplicationFullTokenTest {
 			assertTrue(userTokenId != null && userTokenId.length() > 5);
 			
 			//Initialize properties for this integration test
-			System.setProperty("IAM_MODE", "TEST");
+			System.setProperty("IAM_MODE", "TEST_LOCALHOST");
 			
 			//update full token application list
 			List<Application> updateList = ApplicationModelUtil.getApplicationList(); //NOTHING NOW
