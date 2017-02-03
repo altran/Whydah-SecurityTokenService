@@ -1733,9 +1733,9 @@ public class UserTokenResource {
         userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
         userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
         userToken.setDefcon(ApplicationThreatResource.getDEFCON());
-        UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken);
-        ActiveUserTokenRepository.setLastSeen(userToken);
-        return Response.ok(new Viewable("/usertoken.ftl", UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken))).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+        UserToken filteredUserToken = UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken);
+        ActiveUserTokenRepository.setLastSeen(filteredUserToken);
+        return Response.ok(new Viewable("/usertoken.ftl", filteredUserToken)).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
     }
 
     boolean isEmpty(String userticket) {

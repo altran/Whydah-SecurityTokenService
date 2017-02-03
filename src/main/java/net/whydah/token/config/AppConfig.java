@@ -2,7 +2,9 @@ package net.whydah.token.config;
 
 import net.whydah.sso.application.mappers.ApplicationMapper;
 import net.whydah.sso.application.types.Application;
+import net.whydah.sso.commands.adminapi.application.CommandListApplications;
 import net.whydah.sso.config.ApplicationMode;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +44,18 @@ public class AppConfig {
             }
         }
     }
-
+    
+    static {
+    	if (properties==null) {  // reload properties on 5% of the calls or if not loaded
+            try {
+                properties = readProperties(ApplicationMode.getApplicationMode());
+                fullTokenApplications = properties.getProperty("fulltokenapplications");
+            } catch (IOException e) {
+                throw new RuntimeException(e.getLocalizedMessage(), e);
+            }
+        }
+    }
+    
     private void logProperties(Properties properties) {
         Set keys = properties.keySet();
         for (Object key : keys) {
@@ -101,11 +114,17 @@ public class AppConfig {
             // Ignore empty responses
             return;
         }
-        if (shouldUpdate() || getFullTokenApplications() == null || fullTokenApplications.length() < 6) {
+        
+       
+        
+        if (shouldUpdate() || getFullTokenApplications() == null || getFullTokenApplications().length() < 1) {
             try {
-                String applicationsJson = new CommandListApplications(userAdminServiceUri, myAppTokenId, userTokenId, "").execute();
-                log.debug("AppLications returned:" + applicationsJson.substring(0, 80) + ".....");
-                List<Application> applications = ApplicationMapper.fromJsonList(applicationsJson);
+            	//HUYDO: Why do we keep calling this? it is quite a costly process 
+//                String applicationsJson = new CommandListApplications(userAdminServiceUri, myAppTokenId).execute();
+//                log.debug("AppLications returned:" + applicationsJson.substring(0, 80) + ".....");
+//                List<Application> applications = ApplicationMapper.fromJsonList(applicationsJson);
+            	ApplicationModelHelper.updateApplicationList(myAppTokenId, userTokenId);
+            	List<Application> applications = ApplicationModelHelper.getApplicationList();
                 String fTokenList = "";
                 for (Application application : applications) {
                     if (application.isFullTokenApplication()) {
@@ -124,7 +143,7 @@ public class AppConfig {
                 log.warn("updateFullTokenApplicationList - userTokenId: {}", userTokenId);
             }
         }
-        ApplicationModelHelper.updateApplicationList(myAppTokenId, userTokenId);
+       
     }
 
 

@@ -12,7 +12,7 @@ public class ApplicationModelHelper {
     private static AppConfig appConfig = new AppConfig();
 
     static {
-        userAdminServiceUri = URI.create(appConfig.getProperty("myuri"));
+        userAdminServiceUri = URI.create(appConfig.getProperty("useradminservice"));
     }
 
 
@@ -37,8 +37,8 @@ public class ApplicationModelHelper {
         ApplicationModelUtil.updateApplicationList(userAdminServiceUri, myAppTokenId, userTokenId);
     }
 
-    public static void forcedUpdateApplicationList(String myAppTokenId, String userTokenId) {
-        ApplicationModelUtil.forcedUpdateApplicationList(userAdminServiceUri, myAppTokenId, userTokenId);
-    }
+//    public static void forcedUpdateApplicationList(String myAppTokenId, String userTokenId) {
+//        ApplicationModelUtil.forcedUpdateApplicationList(userAdminServiceUri, myAppTokenId, userTokenId);
+//    }
 
 }

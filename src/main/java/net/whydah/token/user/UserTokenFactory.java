@@ -3,17 +3,21 @@ package net.whydah.token.user;
 import com.google.inject.Singleton;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
+
 import net.minidev.json.JSONArray;
+import net.whydah.sso.application.types.Application;
 import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationModelHelper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import java.util.*;
 
 /**
@@ -49,6 +53,10 @@ public class UserTokenFactory {
     }
 
     public static boolean shouldReturnFullUserToken(String applicationID) {
+    	if(applicationID==null || applicationID.length()==0){
+    		return false;
+    	}
+    	//check from the property files first
         String[] applicationIDs = AppConfig.getFullTokenApplications().split(",");
         for (int i = 0; i < applicationIDs.length; i++){
             if (applicationIDs[i].equalsIgnoreCase(applicationID)) {
@@ -56,14 +64,11 @@ public class UserTokenFactory {
                 return true;
             }
         }
-        // Check if the application has been configured without filtering
-        if (applicationID != null && ApplicationModelHelper.getApplication(applicationID) != null && ApplicationModelHelper.getApplication(applicationID).getSecurity() != null) {
-            if ("false".equalsIgnoreCase(ApplicationModelHelper.getApplication(applicationID).getSecurity().getUserTokenFilter())) {
-                log.info("shouldReturnFullUserToken from UIB=true");
-                return true;
-            }
+        //check if the application has been configured without filtering
+        Application app = ApplicationModelHelper.getApplication(applicationID);
+        if(app!=null){
+        	return app.isFullTokenApplication();
         }
-        log.trace("shouldReturnFullUserToken=false");
         return false;
     }
 
