@@ -4,10 +4,14 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+
+import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationToken;
+import net.whydah.sso.commands.adminapi.application.CommandSearchForApplications;
 import net.whydah.sso.session.baseclasses.ApplicationModelUtil;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationModelHelper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -18,6 +22,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
+
 import java.io.FileNotFoundException;
 import java.io.StringReader;
 import java.util.HashMap;
@@ -175,4 +180,22 @@ public class AuthenticatedApplicationRepository {
 
         }
     }
+
+	
+    
+    public static boolean verifyUASAccess(String applicationtokenid) {
+    	ApplicationToken token = applicationTokenMap.get(applicationtokenid);
+    	if(token!=null){
+    		Application app = ApplicationModelHelper.getApplication(token.getApplicationID());
+    		if(app!=null && app.getSecurity()!=null){
+    			boolean hasUASAccess = app.getSecurity().isWhydahUASAccess();
+    			return hasUASAccess;
+    		} else {
+    			log.warn(ApplicationModelHelper.getApplicationList().size()>0? "App not found" : "Application list is empty");
+    		} 
+    	} else {
+			log.warn("Application token id " + applicationtokenid + " can not be found in the map");
+    	}
+    	return false;
+	}
 }

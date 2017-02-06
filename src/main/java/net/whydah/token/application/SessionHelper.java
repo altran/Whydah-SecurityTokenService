@@ -14,7 +14,7 @@ public class SessionHelper {
     public static int defaultlifespan = 14 * 24 * 60 * 60 * 1000;  // 14 days  245000 = 4 seconds;
 
     // String.valueOf(14 * 24 * 60 * 60 * 1000);
-    public static int getApplicationLifeSpan(String applicationtokenid){
+    public static long getApplicationLifeSpan(String applicationtokenid){
 
 		ApplicationToken appToken = AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid);
 		
@@ -31,10 +31,10 @@ public class SessionHelper {
 		return defaultlifespan;
 	}
 	
-	public static int getApplicationLifeSpan(Application app) {
+	public static long getApplicationLifeSpan(Application app) {
 		//TODO: a correlation between securityLevel and lifespan?
         if (app.getSecurity() != null) {
-            int maxUserSessionFromApplication = Integer.valueOf(app.getSecurity().getMaxSessionTimeoutSeconds());
+            long maxUserSessionFromApplication = Long.valueOf(app.getSecurity().getMaxSessionTimeoutSeconds());
             if (maxUserSessionFromApplication > 22450000) {
                 log.debug("Returning MaxSessionTimeoutSeconds:{} for Application:{}", maxUserSessionFromApplication, app.getName());
                 return maxUserSessionFromApplication;

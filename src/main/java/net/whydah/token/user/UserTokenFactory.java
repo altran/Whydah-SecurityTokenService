@@ -9,6 +9,7 @@ import net.whydah.sso.application.types.Application;
 import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
+import net.whydah.sso.whydah.DEFCON;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.ApplicationModelHelper;
@@ -29,7 +30,7 @@ public class UserTokenFactory {
 
     private static final Logger log = LoggerFactory.getLogger(UserTokenFactory.class);
     private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-    private static String defcon = UserToken.DEFCON.DEFCON5.toString();
+    private static String defcon = DEFCON.DEFCON5.toString();
     private static String lifespanMs;
 
     private static AppConfig appConfig = new AppConfig();

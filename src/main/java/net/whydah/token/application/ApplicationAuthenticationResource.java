@@ -362,7 +362,20 @@ public class ApplicationAuthenticationResource {
         return true;
     }
 
-
+    @Path("{applicationtokenid}/hasUASAccess")
+    @GET
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response hasUASAccess(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
+        log.trace("validateApplicationTokenId - validate applicationtokenid:{}", applicationtokenid);
+        if (AuthenticatedApplicationRepository.verifyUASAccess(applicationtokenid)) {
+            log.debug("validateApplicationTokenId - applicationtokenid:{} for applicationname:{} is valid", applicationtokenid, AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid).getApplicationName());
+            return Response.ok("{\"result\": \"true\"}").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        } else {
+            log.warn("validateApplicationTokenId - applicationtokenid:{}  is not valid", applicationtokenid);
+            throw AppExceptionCode.APP_ILLEGAL_7000;
+            //return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        }
+    }
 
 
 }
