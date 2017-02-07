@@ -11,9 +11,11 @@ import net.whydah.sso.application.types.Application;
 import net.whydah.sso.commands.appauth.CommandLogonApplication;
 import net.whydah.sso.commands.systemtestbase.SystemTestBaseConfig;
 import net.whydah.sso.commands.userauth.CommandLogonUserByUserCredential;
+import net.whydah.sso.config.ApplicationMode;
 import net.whydah.sso.session.baseclasses.ApplicationModelUtil;
 import net.whydah.sso.user.helpers.UserXpathHelper;
 import net.whydah.token.config.AppConfig;
+import net.whydah.token.config.ApplicationModelHelper;
 import net.whydah.token.user.UserTokenFactory;
 
 import org.junit.BeforeClass;
@@ -33,7 +35,6 @@ public class ApplicationFullTokenTest {
 		config = new SystemTestBaseConfig();
 	}
 
-	@Ignore //WORK LOCALLY
 	@Test
 	public void testValidFullTokenApplications() {
 
@@ -48,7 +49,8 @@ public class ApplicationFullTokenTest {
 			assertTrue(userTokenId != null && userTokenId.length() > 5);
 			
 			//Initialize properties for this integration test
-			System.setProperty("IAM_MODE", "TEST_LOCALHOST");
+			System.setProperty(ApplicationMode.IAM_MODE_KEY, ApplicationMode.DEV);
+			ApplicationModelHelper.userAdminServiceUri = config.userAdminServiceUri;
 			
 			//update full token application list
 			List<Application> updateList = ApplicationModelUtil.getApplicationList(); //NOTHING NOW

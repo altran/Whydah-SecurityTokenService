@@ -8,7 +8,7 @@ import java.util.List;
 
 
 public class ApplicationModelHelper {
-    private static URI userAdminServiceUri = null;
+    public static URI userAdminServiceUri = null;
     private static AppConfig appConfig = new AppConfig();
 
     static {

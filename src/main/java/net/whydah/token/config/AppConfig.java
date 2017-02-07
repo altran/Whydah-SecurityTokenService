@@ -122,7 +122,6 @@ public class AppConfig {
 //                String applicationsJson = new CommandListApplications(userAdminServiceUri, myAppTokenId).execute();
 //                log.debug("AppLications returned:" + applicationsJson.substring(0, 80) + ".....");
 //                List<Application> applications = ApplicationMapper.fromJsonList(applicationsJson);
-            	 
                 ApplicationModelHelper.updateApplicationList(myAppTokenId, userTokenId);
             	List<Application> applications = ApplicationModelHelper.getApplicationList();
                 String fTokenList = "";
