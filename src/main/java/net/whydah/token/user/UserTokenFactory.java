@@ -10,9 +10,9 @@ import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.sso.whydah.DEFCON;
+import net.whydah.token.application.ApplicationModelFacade;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
-import net.whydah.token.config.ApplicationModelHelper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +66,7 @@ public class UserTokenFactory {
             }
         }
         //check if the application has been configured without filtering
-        Application app = ApplicationModelHelper.getApplication(applicationID);
+        Application app = ApplicationModelFacade.getApplication(applicationID);
         if(app!=null){
         	return app.isFullTokenApplication();
         }

@@ -362,6 +362,33 @@ public class ApplicationAuthenticationResource {
         return true;
     }
 
+    /**
+   	 * @throws AppException 
+   	 * @api {get} :applicationtokenid/hasUASAccess hasUASAccess
+   	 * @apiName hasUASAccess
+   	 * @apiGroup Security Token Service (STS)
+   	 * @apiDescription Check if an application has UAS access 
+   	 * 
+   	 * @apiSuccessExample Success-Response:
+   	 *	HTTP/1.1 200 OK
+	 *	{
+	 *  	"result": "true"
+	 *	}
+   	 *
+   	 *
+   	 * @apiError 403/7000 Application is invalid.
+   	 * @apiError 500/9999 A generic exception or an unexpected error 
+   	 *
+   	 * @apiErrorExample Error-Response:
+   	 *     HTTP/1.1 403 Forbidden
+   	 *     {
+   	 *  		"status": 403,
+   	 *  		"code": 7000,
+   	 *  		"message": "Illegal Application.",
+   	 *  		"link": "",
+   	 *  		"developerMessage": "Application is invalid."
+   	 *		}
+   	 */
     @Path("{applicationtokenid}/hasUASAccess")
     @GET
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -371,9 +398,8 @@ public class ApplicationAuthenticationResource {
             log.debug("validateApplicationTokenId - applicationtokenid:{} for applicationname:{} is valid", applicationtokenid, AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid).getApplicationName());
             return Response.ok("{\"result\": \"true\"}").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
-            log.warn("validateApplicationTokenId - applicationtokenid:{}  is not valid", applicationtokenid);
+            log.warn("validateApplicationTokenId - applicationtokenid:{}  does not have UAS access", applicationtokenid);
             throw AppExceptionCode.APP_ILLEGAL_7000;
-            //return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
     }
 

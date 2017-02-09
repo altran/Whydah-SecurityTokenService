@@ -3,7 +3,7 @@ package net.whydah.token.application;
 import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.user.types.UserToken;
-import net.whydah.token.config.ApplicationModelHelper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +19,7 @@ public class SessionHelper {
 		ApplicationToken appToken = AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid);
 		
 		if(appToken!=null){
-			Application app = ApplicationModelHelper.getApplication(appToken.getApplicationID());
+			Application app = ApplicationModelFacade.getApplication(appToken.getApplicationID());
 
 			//set the correct timeout depends on the application's security
 			if(app!=null){

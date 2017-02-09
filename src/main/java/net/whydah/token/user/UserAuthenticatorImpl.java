@@ -15,6 +15,7 @@ import net.whydah.sso.commands.adminapi.user.CommandListUsers;
 import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.token.application.ApplicationAuthenticationUASClient;
+import net.whydah.token.application.ApplicationModelFacade;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.application.SessionHelper;
 import net.whydah.token.config.AppConfig;
@@ -56,10 +57,9 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
 		WebResource webResource = uasResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH);
 		ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, userCredentialXml);
-
 		UserToken userToken = getUserToken(applicationTokenId, appTokenXml, response);
-		AppConfig.updateFullTokenApplicationList(useradminservice, applicationTokenId, userToken.getTokenid());
-
+		//huy: remove, this code is none sense, it will try to update when this method ApplicationModelFacade.getApplicationList(); is called
+		//AppConfig.updateFullTokenApplicationList(useradminservice, applicationTokenId, userToken.getTokenid());
 		return userToken;
 
 	}

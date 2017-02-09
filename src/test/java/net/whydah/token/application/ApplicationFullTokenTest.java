@@ -1,25 +1,27 @@
 package net.whydah.token.application;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import net.whydah.sso.application.helpers.ApplicationXpathHelper;
+import net.whydah.sso.application.mappers.ApplicationMapper;
 import net.whydah.sso.application.types.Application;
+import net.whydah.sso.commands.adminapi.application.CommandListApplications;
 import net.whydah.sso.commands.appauth.CommandLogonApplication;
+import net.whydah.sso.commands.appauth.CommandVerifyUASAccessByApplicationTokenId;
 import net.whydah.sso.commands.systemtestbase.SystemTestBaseConfig;
 import net.whydah.sso.commands.userauth.CommandLogonUserByUserCredential;
 import net.whydah.sso.config.ApplicationMode;
 import net.whydah.sso.session.baseclasses.ApplicationModelUtil;
 import net.whydah.sso.user.helpers.UserXpathHelper;
 import net.whydah.token.config.AppConfig;
-import net.whydah.token.config.ApplicationModelHelper;
 import net.whydah.token.user.UserTokenFactory;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public class ApplicationFullTokenTest {
 
 	private static final Logger log = LoggerFactory.getLogger(ApplicationFullTokenTest.class);
-	   
+
 	static SystemTestBaseConfig config;
 
 	@BeforeClass
@@ -37,7 +39,7 @@ public class ApplicationFullTokenTest {
 
 	@Test
 	public void testValidFullTokenApplications() {
-
+		//config.setLocalTest();
 		if (config.isSystemTestEnabled()) {
 
 			String myAppTokenXml = new CommandLogonApplication(config.tokenServiceUri, config.appCredential).execute();
@@ -47,55 +49,50 @@ public class ApplicationFullTokenTest {
 			String userToken = new CommandLogonUserByUserCredential(config.tokenServiceUri, myApplicationTokenID, myAppTokenXml, config.userCredential, userticket).execute();
 			String userTokenId = UserXpathHelper.getUserTokenId(userToken);
 			assertTrue(userTokenId != null && userTokenId.length() > 5);
-			
-			//Initialize properties for this integration test
-			System.setProperty(ApplicationMode.IAM_MODE_KEY, ApplicationMode.DEV);
-			ApplicationModelHelper.userAdminServiceUri = config.userAdminServiceUri;
-			
-			//update full token application list
-			List<Application> updateList = ApplicationModelUtil.getApplicationList(); //NOTHING NOW
-			assertTrue(updateList==null || updateList.size()==0); //NOTHING NOW
-			AppConfig.setFullTokenApplications("");//MAKE SURE NOTHING NOW IN THE LIST
-			AppConfig.updateFullTokenApplicationList(config.userAdminServiceUri, myApplicationTokenID, userTokenId);
-			//check if the list has been updated
-			updateList = ApplicationModelUtil.getApplicationList();//APPLICATIONS WERE ADDED
-			assertTrue(updateList.size()>0);//SOMETHING IN THE LIST
-			boolean haveOneFullTokenApplication = false;
-			for (Application application : updateList) {
-               if(application.isFullTokenApplication()){
-            	   haveOneFullTokenApplication = true;
-            	   break;
-               }
-            }
-			if(haveOneFullTokenApplication){
-				assertTrue(AppConfig.getFullTokenApplications().length()>0); //THIS SHOULD INDICATE THAT WE HAVE ATLEAST ONE FULL TOKEN APPLICATION
+
+			boolean hasAccess = new CommandVerifyUASAccessByApplicationTokenId(config.tokenServiceUri.toString(), myApplicationTokenID).execute();
+			if(hasAccess){
+
+				//update full token application list, but we do need to set whydahUASAccess=true
+				String appjson = new CommandListApplications(config.userAdminServiceUri, myApplicationTokenID).execute();
+				if(appjson!=null){
+					List<Application> updateList = ApplicationMapper.fromJsonList(appjson);
+					//2210,2211,2212,2215,2219 should have userTokenFilter=false by default
+					//100 has userTokenFilter=true by default
+					//101 has whydahUASAccess=true b/c it executed CommandListApplications successfully
+					for (Application application : updateList) {
+						if(application.getId().equals("101")){
+							assertTrue(application.getSecurity().isWhydahUASAccess());
+						}
+						if(application.getId().equals("2210")){
+							assertFalse(application.getSecurity().getUserTokenFilter());
+						}
+						if(application.getId().equals("2211")){
+							assertFalse(application.getSecurity().getUserTokenFilter());
+						}
+						if(application.getId().equals("2212")){
+							assertFalse(application.getSecurity().getUserTokenFilter());
+						}
+						if(application.getId().equals("2215")){
+							assertFalse(application.getSecurity().getUserTokenFilter());
+						}
+						if(application.getId().equals("2219")){
+							assertFalse(application.getSecurity().getUserTokenFilter());
+						}
+						if(application.getId().equals("100")){
+							assertTrue(application.getSecurity().getUserTokenFilter());
+						}
+					}
+				}
 			}
-			
-			
-			//assume the testing application with a full token one 
-			for (Application application : updateList) {
-                if(application.getId().equals(config.appCredential.getApplicationID())){
-                	application.getSecurity().setUserTokenFilter("false");
-                }
-            }
-			//expectation: should return a full user token
-			assertTrue(UserTokenFactory.shouldReturnFullUserToken(config.appCredential.getApplicationID()));
-			
-			
-			
-			//assume that we set back as a normal application without having a full token 
-			for (Application application : updateList) {
-                if(application.getId().equals(config.appCredential.getApplicationID())){
-                	application.getSecurity().setUserTokenFilter("true");
-                }
-            }
-			//expectation: should not return a full user token
-			assertFalse(UserTokenFactory.shouldReturnFullUserToken(config.appCredential.getApplicationID()));
+
+
+
 
 		}
 	}
-	
-	
+
+
 
 
 

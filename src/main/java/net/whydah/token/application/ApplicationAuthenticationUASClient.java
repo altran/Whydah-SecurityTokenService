@@ -12,7 +12,6 @@ import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.commands.adminapi.application.CommandSearchForApplications;
 import net.whydah.token.config.AppConfig;
-import net.whydah.token.config.ApplicationModelHelper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

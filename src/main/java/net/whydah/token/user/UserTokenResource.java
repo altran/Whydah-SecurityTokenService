@@ -14,10 +14,10 @@ import net.whydah.sso.config.ApplicationMode;
 import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.sso.util.DelayedSendSMSTask;
+import net.whydah.token.application.ApplicationModelFacade;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
-import net.whydah.token.config.ApplicationModelHelper;
 import net.whydah.token.config.SSLTool;
 import net.whydah.token.user.statistics.UserSessionObservedActivity;
 
@@ -887,7 +887,7 @@ public class UserTokenResource {
         
         try {
         	UserToken userToken = userAuthenticator.logonPinUser(applicationtokenid, appTokenXml, adminUserTokenId, phoneno, pin);
-        	ApplicationModelHelper.updateApplicationList(applicationtokenid, adminUserTokenId);
+        	ApplicationModelFacade.updateApplicationList(applicationtokenid, adminUserTokenId);
             return createUserTokenResponse(applicationtokenid, userToken);
 
         } catch (AuthenticationFailedException ae) {

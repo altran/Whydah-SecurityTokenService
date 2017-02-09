@@ -10,7 +10,6 @@ import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.commands.adminapi.application.CommandSearchForApplications;
 import net.whydah.sso.session.baseclasses.ApplicationModelUtil;
 import net.whydah.token.config.AppConfig;
-import net.whydah.token.config.ApplicationModelHelper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +113,7 @@ public class AuthenticatedApplicationRepository {
 
 
     private static String updateExpires(String oldExpiry, String applicationID) {
-        String applicationMaxSessionTime = ApplicationModelHelper.getParameterForApplication(ApplicationModelUtil.maxSessionTimeoutSeconds, applicationID);
+        String applicationMaxSessionTime = ApplicationModelFacade.getParameterForApplication(ApplicationModelUtil.maxSessionTimeoutSeconds, applicationID);
         if (applicationMaxSessionTime != null && (applicationMaxSessionTime.length() > 0) && (Long.parseLong(applicationMaxSessionTime) > 0)) {
             log.info("maxSessionTimeoutSeconds found: {} for applicationID: {}", Long.parseLong(applicationMaxSessionTime), applicationID);
             // Set to application configured maxSessionTimeoutSeconds if found and shave off 10 seconds
@@ -184,18 +183,24 @@ public class AuthenticatedApplicationRepository {
 	
     
     public static boolean verifyUASAccess(String applicationtokenid) {
-    	ApplicationToken token = applicationTokenMap.get(applicationtokenid);
-    	if(token!=null){
-    		Application app = ApplicationModelHelper.getApplication(token.getApplicationID());
-    		if(app!=null && app.getSecurity()!=null){
-    			boolean hasUASAccess = app.getSecurity().isWhydahUASAccess();
-    			return hasUASAccess;
-    		} else {
-    			log.warn(ApplicationModelHelper.getApplicationList().size()>0? "App not found" : "Application list is empty");
-    		} 
+    	if(ApplicationAuthenticationUASClient.getSTSApplicationToken().getApplicationTokenId().equals(applicationtokenid)){
+    		//don't verify STS itself 
+    		return true;
     	} else {
-			log.warn("Application token id " + applicationtokenid + " can not be found in the map");
+    		ApplicationToken token = applicationTokenMap.get(applicationtokenid);
+    		if(token!=null){
+    			Application app = ApplicationModelFacade.getApplication(token.getApplicationID());
+    			if(app!=null && app.getSecurity()!=null){
+    				boolean hasUASAccess = app.getSecurity().isWhydahUASAccess();
+    				return hasUASAccess;
+    			} else {
+    				log.warn(ApplicationModelFacade.getApplicationList().size()>0? "App not found" : "Application list is empty");
+    			}
+    		} else {
+    			log.warn("Application token id " + applicationtokenid + " can not be found in the map");
+    		}
+    		return false;
     	}
-    	return false;
+    	
 	}
 }
