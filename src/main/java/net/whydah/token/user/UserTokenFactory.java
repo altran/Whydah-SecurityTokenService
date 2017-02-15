@@ -57,14 +57,12 @@ public class UserTokenFactory {
     	if(applicationID==null || applicationID.length()==0){
     		return false;
     	}
-    	//check from the property files first
-        String[] applicationIDs = AppConfig.getFullTokenApplications().split(",");
-        for (int i = 0; i < applicationIDs.length; i++){
-            if (applicationIDs[i].equalsIgnoreCase(applicationID)) {
-                log.info("shouldReturnFullUserToken from properties=true");
-                return true;
-            }
-        }
+        for(String app : AppConfig.getPredefinedFullTokenApplications()){
+        	 if (app.equalsIgnoreCase(applicationID)) {
+                 log.info("shouldReturnFullUserToken from properties=true");
+                 return true;
+             }
+		}
         //check if the application has been configured without filtering
         Application app = ApplicationModelFacade.getApplication(applicationID);
         if(app!=null){
