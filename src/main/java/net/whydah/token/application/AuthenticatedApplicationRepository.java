@@ -182,25 +182,25 @@ public class AuthenticatedApplicationRepository {
 
 	
     
-    public static boolean verifyUASAccess(String applicationtokenid) {
-    	if(ApplicationAuthenticationUASClient.getSTSApplicationToken().getApplicationTokenId().equals(applicationtokenid)){
-    		//don't verify STS itself 
-    		return true;
-    	} else {
-    		ApplicationToken token = applicationTokenMap.get(applicationtokenid);
-    		if(token!=null){
-    			Application app = ApplicationModelFacade.getApplication(token.getApplicationID());
-    			if(app!=null && app.getSecurity()!=null){
-    				boolean hasUASAccess = app.getSecurity().isWhydahUASAccess();
-    				return hasUASAccess;
-    			} else {
-    				log.warn(ApplicationModelFacade.getApplicationList().size()>0? "App not found" : "Application list is empty");
-    			}
-    		} else {
-    			log.warn("Application token id " + applicationtokenid + " can not be found in the map");
-    		}
-    		return false;
-    	}
-    	
-	}
+//    public static boolean verifyUASAccess(String applicationtokenid) {
+//    	if(ApplicationAuthenticationUASClient.getSTSApplicationToken().getApplicationTokenId().equals(applicationtokenid)){
+//    		//don't verify STS itself 
+//    		return true;
+//    	} else {
+//    		ApplicationToken token = applicationTokenMap.get(applicationtokenid);
+//    		if(token!=null){
+//    			Application app = ApplicationModelFacade.getApplication(token.getApplicationID());
+//    			if(app!=null && app.getSecurity()!=null){
+//    				boolean hasUASAccess = app.getSecurity().isWhydahUASAccess();
+//    				return hasUASAccess;
+//    			} else {
+//    				log.warn(ApplicationModelFacade.getApplicationList().size()>0? "App not found" : "Application list is empty");
+//    			}
+//    		} else {
+//    			log.warn("Application token id " + applicationtokenid + " can not be found in the map");
+//    		}
+//    		return false;
+//    	}
+//    	
+//	}
 }
