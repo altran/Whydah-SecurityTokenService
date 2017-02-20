@@ -50,7 +50,7 @@ public class ApplicationFullTokenTest {
 			String userTokenId = UserXpathHelper.getUserTokenId(userToken);
 			assertTrue(userTokenId != null && userTokenId.length() > 5);
 
-			boolean hasAccess = new CommandVerifyUASAccessByApplicationTokenId(config.tokenServiceUri.toString(), myApplicationTokenID).execute();
+			boolean hasAccess = new CommandVerifyUASAccessByApplicationTokenId(config.userAdminServiceUri.toString(), myApplicationTokenID).execute();
 			if(hasAccess){
 
 				//update full token application list, but we do need to set whydahUASAccess=true
