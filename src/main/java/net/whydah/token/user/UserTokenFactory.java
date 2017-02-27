@@ -3,7 +3,6 @@ package net.whydah.token.user;
 import com.google.inject.Singleton;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
-
 import net.minidev.json.JSONArray;
 import net.whydah.sso.application.types.Application;
 import net.whydah.sso.user.mappers.UserTokenMapper;
@@ -13,12 +12,10 @@ import net.whydah.sso.whydah.DEFCON;
 import net.whydah.token.application.ApplicationModelFacade;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.config.AppConfig;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import java.util.*;
 
 /**
@@ -126,16 +123,16 @@ public class UserTokenFactory {
     }
 
 
-
+    /**
+     * a) anynomous
+     * b) fulltoken
+     * c) filtered
+     */
 
     public static UserToken getFilteredUserToken(String applicationTokenID,UserToken userToken) {
 
         String myappid = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(applicationTokenID);
         log.info("getFilteredUserToken - found appid={}",myappid);
-        if (shouldReturnFullUserToken(myappid)){
-            log.info("getFilteredUserToken - no filtering");
-            return userToken;
-        }
         if (shouldReturnAnonymousUserToken(myappid, userToken)) {
             log.warn("shouldReturnAnonymousUserToken = TRUE");
             userToken.setUserName("");
@@ -145,6 +142,9 @@ public class UserTokenFactory {
             log.info("getFilteredUserToken - returning anonymous token");
             List<UserApplicationRoleEntry> roleList = new ArrayList<>();
             userToken.setRoleList(roleList);
+            return userToken;
+        } else if (shouldReturnFullUserToken(myappid)) {
+            log.info("getFilteredUserToken - no filtering");
             return userToken;
         } else {
             List<UserApplicationRoleEntry> origRoleList = userToken.getRoleList();
