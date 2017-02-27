@@ -132,24 +132,23 @@ public class UserTokenFactory {
     public static UserToken getFilteredUserToken(String applicationTokenID,UserToken userToken) {
 
         String myappid = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(applicationTokenID);
-        log.info("getFilteredUserToken - found appid={}",myappid);
+        log.debug("getFilteredUserToken - found appid={}", myappid);
         if (shouldReturnAnonymousUserToken(myappid, userToken)) {
-            log.warn("shouldReturnAnonymousUserToken = TRUE");
+            log.debug("a) shouldReturnAnonymousUserToken = TRUE");
             userToken.setUserName("");
             userToken.setEmail("");
             userToken.setFirstName("");
             userToken.setLastName("Demographics: Oslo");
-            log.info("getFilteredUserToken - returning anonymous token");
             List<UserApplicationRoleEntry> roleList = new ArrayList<>();
             userToken.setRoleList(roleList);
+            log.debug("getFilteredUserToken - returning anonymous token {}", userToken);
             return userToken;
         } else if (shouldReturnFullUserToken(myappid)) {
-            log.info("getFilteredUserToken - no filtering");
+            log.debug("b) shouldReturnFullUserToken({})=true - no filtering", myappid);
             return userToken;
         } else {
             List<UserApplicationRoleEntry> origRoleList = userToken.getRoleList();
             List<UserApplicationRoleEntry> roleList = new LinkedList<>();
-            log.info("getFilteredUserToken - filtering active");
 
             for (int i=0;i<origRoleList.size();i++){
                 UserApplicationRoleEntry are = origRoleList.get(i);
@@ -158,6 +157,7 @@ public class UserTokenFactory {
                 }
             }
             userToken.setRoleList(roleList);
+            log.debug("getFilteredUserToken - filtering active for appid:{}", myappid);
             return userToken;
         }
     }
