@@ -124,6 +124,7 @@ public class UserTokenFactory {
 
 
     /**
+     * 1. whydahadmin apps
      * a) anynomous
      * b) fulltoken
      * c) filtered
@@ -133,7 +134,10 @@ public class UserTokenFactory {
 
         String myappid = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(applicationTokenID);
         log.debug("getFilteredUserToken - found appid={}", myappid);
-        if (shouldReturnAnonymousUserToken(myappid, userToken)) {
+        Application app = ApplicationModelFacade.getApplication(myappid);
+        if(app.getSecurity().isWhydahAdmin()){
+        	return userToken;
+        } else if (shouldReturnAnonymousUserToken(myappid, userToken)) {
             log.debug("a) shouldReturnAnonymousUserToken = TRUE");
             userToken.setUserName("");
             userToken.setEmail("");
