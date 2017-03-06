@@ -94,9 +94,13 @@ public class ServiceStarter {
         servletRegistration.setInitParameter("com.sun.jersey.config.property.packages", "net.whydah");
         servletRegistration.setInitParameter("com.sun.jersey.api.json.POJOMappingFeature", "true");
         context.addFilter("guiceFilter", GuiceFilter.class);
-        
-      
-        webappPort = Integer.valueOf(appConfig.getProperty("service.port"));
+
+
+        try {
+            webappPort = Integer.valueOf(appConfig.getProperty("service.port"));
+        } catch (Exception e) {
+            webappPort = 9998;
+        }
         httpServer = new HttpServer();
         //ServerConfiguration serverconfig = httpServer.getServerConfiguration();
         //serverconfig.addHttpHandler(handler, "/");
