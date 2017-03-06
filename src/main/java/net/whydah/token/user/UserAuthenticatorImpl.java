@@ -52,15 +52,12 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 	}
 
 	@Override
-	public UserToken logonUser(String applicationTokenId, String authenticatedAppTokenXml, final String userCredentialXml) throws AuthenticationFailedException {
-		log.trace("logonUser - Calling UserAdminService at " + useradminservice + " appTokenXml:" + authenticatedAppTokenXml + " userCredentialXml:" + userCredentialXml);
-		ApplicationToken authenticatedAppToken = ApplicationTokenMapper.fromXml(authenticatedAppTokenXml);
-		String autheticatedAppTokenId = authenticatedAppToken.getApplicationTokenId();
-		
-		//WebResource webResource = uasResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH);
-		WebResource webResource = uasResource.path(autheticatedAppTokenId).path(USER_AUTHENTICATION_PATH);
+	public UserToken logonUser(String applicationTokenId, String appTokenXml, final String userCredentialXml) throws AuthenticationFailedException {
+		log.trace("logonUser - Calling UserAdminService at " + useradminservice + " appTokenXml:" + appTokenXml + " userCredentialXml:" + userCredentialXml);
+
+		WebResource webResource = uasResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH);
 		ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, userCredentialXml);
-		UserToken userToken = getUserToken(applicationTokenId, response);
+		UserToken userToken = getUserToken(applicationTokenId, appTokenXml, response);
 		//huy: remove, this code is none sense, it will try to update when this method ApplicationModelFacade.getApplicationList(); is called
 		//AppConfig.updateFullTokenApplicationList(useradminservice, applicationTokenId, userToken.getTokenid());
 		return userToken;
@@ -68,32 +65,23 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 	}
 
 	@Override
-	public UserToken createAndLogonUser(String applicationtokenid, String authenticatedAppTokenXml, String userCredentialXml, String fbUserXml) throws AuthenticationFailedException {
-		log.trace("createAndLogonUser - Calling UserAdminService at with appTokenXml:\n" + authenticatedAppTokenXml + "userCredentialXml:\n" + userCredentialXml + "fbUserXml:\n" + fbUserXml);
-		ApplicationToken authenticatedAppToken = ApplicationTokenMapper.fromXml(authenticatedAppTokenXml);
-		String autheticatedAppTokenId = authenticatedAppToken.getApplicationTokenId();
-		
-		//DO NOT USE THE APP TOKEN OF THE 3RD PARTY B/C WE NEED TO ACCESS UAS functionalities
-		//WebResource webResource = uasResource.path(applicationtokenid).path(USER_AUTHENTICATION_PATH).path(CREATE_AND_LOGON_OPERATION);
-		WebResource webResource = uasResource.path(autheticatedAppTokenId).path(USER_AUTHENTICATION_PATH).path(CREATE_AND_LOGON_OPERATION);
+	public UserToken createAndLogonUser(String applicationtokenid, String appTokenXml, String userCredentialXml, String fbUserXml) throws AuthenticationFailedException {
+		log.trace("createAndLogonUser - Calling UserAdminService at with appTokenXml:\n" + appTokenXml + "userCredentialXml:\n" + userCredentialXml + "fbUserXml:\n" + fbUserXml);
+		WebResource webResource = uasResource.path(applicationtokenid).path(USER_AUTHENTICATION_PATH).path(CREATE_AND_LOGON_OPERATION);
 		log.debug("createAndLogonUser - Calling createandlogon " + webResource.toString());
 		ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, fbUserXml);
 
-		UserToken token = getUserToken(applicationtokenid, response);
+		UserToken token = getUserToken(applicationtokenid, appTokenXml, response);
 		token.setSecurityLevel("0");  // 3rd party token as source = securitylevel=0
 		return token;
 	}
 
 
 	@Override
-	public UserToken createAndLogonPinUser(String applicationtokenid, String authenticatedAppTokenXml, String adminUserTokenId, String cellPhone, String pin, String userJson) {
+	public UserToken createAndLogonPinUser(String applicationtokenid, String appTokenXml, String adminUserTokenId, String cellPhone, String pin, String userJson) {
 		if (ActivePinRepository.usePin(cellPhone, pin)) {
 			try {
-				//HUY: use applicationtokenid of SSO not the one 3rd party provided b/c some 3rp party app do not have UASAccess, must do via SSO (with supported APIs)
-				ApplicationToken authenticatedAppToken = ApplicationTokenMapper.fromXml(authenticatedAppTokenXml);
-				String autheticatedAppTokenId = authenticatedAppToken.getApplicationTokenId();
-				//WebResource uasWR = uasResource.path(applicationtokenid).path(adminUserTokenId).path("user"); //DO NOT USE THE 3RD PARTY APPTOKENID
-				WebResource uasWR = uasResource.path(autheticatedAppTokenId).path(adminUserTokenId).path("user");
+				WebResource uasWR = uasResource.path(applicationtokenid).path(adminUserTokenId).path("user");
 				ClientResponse uasResponse = uasWR.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, userJson);
 				if (uasResponse.getStatus() != ClientResponse.Status.OK.getStatusCode()) {
 					String error = uasResponse.getEntity(String.class);
@@ -133,23 +121,19 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 	}
 
 	@Override
-	public UserToken logonPinUser(String applicationtokenid, String authenticatedAppTokenXml, String adminUserTokenId, String cellPhone, String pin) {
-		log.info("logonPinUser() called with " + "applicationtokenid = [" + applicationtokenid + "], appTokenXml = [" + authenticatedAppTokenXml + "], cellPhone = [" + cellPhone + "], pin = [" + pin + "]");
+	public UserToken logonPinUser(String applicationtokenid, String appTokenXml, String adminUserTokenId, String cellPhone, String pin) {
+		log.info("logonPinUser() called with " + "applicationtokenid = [" + applicationtokenid + "], appTokenXml = [" + appTokenXml + "], cellPhone = [" + cellPhone + "], pin = [" + pin + "]");
 		if (ActivePinRepository.usePin(cellPhone, pin)) {
 			String usersQuery = cellPhone;
-			//HUY: use applicationtokenid of SSO not the one 3rd party provided b/c some 3rp party app do not have UASAccess, must do via SSO (with supported APIs)
-			ApplicationToken authenticatedAppToken = ApplicationTokenMapper.fromXml(authenticatedAppTokenXml);
-			String autheticatedAppTokenId = authenticatedAppToken.getApplicationTokenId();
-			
 			// produserer userJson. denne kan inneholde fler users dette er json av
-			String usersJson = new CommandListUsers(useradminservice, autheticatedAppTokenId, adminUserTokenId, usersQuery).execute();
+			String usersJson = new CommandListUsers(useradminservice, applicationtokenid, adminUserTokenId, usersQuery).execute();
 			log.info("CommandListUsers for query {} found users {}", usersQuery, usersJson);
 			UserToken userTokenIdentity = getFirstMatch(usersJson, usersQuery);
 			if (userTokenIdentity != null) {
 				log.info("Found matching UserIdentity {}", userTokenIdentity);
 
-				//String userAggregateJson = new CommandGetUserAggregate(useradminservice, applicationtokenid, adminUserTokenId, userTokenIdentity.getUid()).execute();
-				String userAggregateJson = new CommandGetUserAggregate(useradminservice, autheticatedAppTokenId, adminUserTokenId, userTokenIdentity.getUid()).execute();
+				String userAggregateJson = new CommandGetUserAggregate(useradminservice, applicationtokenid, adminUserTokenId, userTokenIdentity.getUid()).execute();
+
 				UserToken userToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
 				userToken.setSecurityLevel("0");  // UserIdentity as source = securitylevel=0
 				userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
@@ -208,7 +192,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 	}
 
 
-	private UserToken getUserToken(String applicationtokenid, ClientResponse response) {
+	private UserToken getUserToken(String applicationtokenid, String appTokenXml, ClientResponse response) {
 		if (response.getStatus() == Response.Status.OK.getStatusCode() || response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
 			String userAggregateJson = response.getEntity(String.class);
 			log.debug("Response from UserAdminService: {}", userAggregateJson);
