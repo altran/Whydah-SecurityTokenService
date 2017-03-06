@@ -4,21 +4,16 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-
 import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
-import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
-import net.whydah.sso.commands.adminapi.application.CommandSearchForApplications;
 import net.whydah.token.config.AppConfig;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-
 import java.security.SecureRandom;
 
 
@@ -31,8 +26,6 @@ public class ApplicationAuthenticationUASClient {
     private static final String APPLICATION_AUTH_PATH = "application/auth";
     public static final String APP_CREDENTIAL_XML = "appCredentialXml";
     private static AppConfig appConfig = new AppConfig();
-    private static String stsApplicationTokenID = "";
-    private static ApplicationToken myToken;
     private static java.util.Random generator = new SecureRandom();
 
 
@@ -42,7 +35,7 @@ public class ApplicationAuthenticationUASClient {
         token.setExpires(String.valueOf((System.currentTimeMillis() + 100000 * generator.nextInt(500))));
 
         String useradminservice = appConfig.getProperty("useradminservice");
-        ApplicationToken stsToken = getSTSApplicationToken();
+        ApplicationToken stsToken = AuthenticatedApplicationRepository.getSTSApplicationToken();
         AuthenticatedApplicationRepository.addApplicationToken(stsToken);
 
         WebResource uasResource = ApacheHttpClient.create().resource(useradminservice);
@@ -67,20 +60,4 @@ public class ApplicationAuthenticationUASClient {
         return false;
     }
 
-    /**
-     * @return a singleton STSToken
-     */
-    public static ApplicationToken getSTSApplicationToken() {
-        String applicationName = appConfig.getProperty("applicationname");
-        String applicationId = appConfig.getProperty("applicationid");
-        String applicationsecret = appConfig.getProperty("applicationsecret");
-        // Do not create duplicate sts sessions
-        if (stsApplicationTokenID == "") {
-            ApplicationCredential ac = new ApplicationCredential(applicationId, applicationName, applicationsecret);
-            myToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(ac));
-            stsApplicationTokenID = myToken.getApplicationTokenId();
-        }
-        return myToken;
-
-    }
 }

@@ -4,13 +4,12 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-
-import net.whydah.sso.application.types.Application;
+import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
+import net.whydah.sso.application.mappers.ApplicationTokenMapper;
+import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
-import net.whydah.sso.commands.adminapi.application.CommandSearchForApplications;
 import net.whydah.sso.session.baseclasses.ApplicationModelUtil;
 import net.whydah.token.config.AppConfig;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -21,7 +20,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
-
 import java.io.FileNotFoundException;
 import java.io.StringReader;
 import java.util.HashMap;
@@ -33,6 +31,9 @@ public class AuthenticatedApplicationRepository {
     private final static Logger log = LoggerFactory.getLogger(AuthenticatedApplicationRepository.class);
 
     public static int DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = 2400;
+    private static AppConfig appConfig = new AppConfig();
+    private static String stsApplicationTokenID = "";
+    private static ApplicationToken myToken;
 
     private static final Map<String, ApplicationToken> applicationTokenMap;
 
@@ -180,8 +181,25 @@ public class AuthenticatedApplicationRepository {
         }
     }
 
-	
-    
+    /**
+     * @return a singleton STSApplicationToken
+     */
+    public static ApplicationToken getSTSApplicationToken() {
+        String applicationName = appConfig.getProperty("applicationname");
+        String applicationId = appConfig.getProperty("applicationid");
+        String applicationsecret = appConfig.getProperty("applicationsecret");
+        // Do not create duplicate sts sessions
+        if (stsApplicationTokenID == "") {
+            ApplicationCredential ac = new ApplicationCredential(applicationId, applicationName, applicationsecret);
+            myToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(ac));
+            stsApplicationTokenID = myToken.getApplicationTokenId();
+            addApplicationToken(myToken);
+        }
+        return myToken;
+
+    }
+
+
 //    public static boolean verifyUASAccess(String applicationtokenid) {
 //    	if(ApplicationAuthenticationUASClient.getSTSApplicationToken().getApplicationTokenId().equals(applicationtokenid)){
 //    		//don't verify STS itself 
