@@ -105,7 +105,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 	}
 
 	public UserToken getRefreshedUserToken(String usertokenid) {
-		ApplicationToken stsToken = ApplicationAuthenticationUASClient.getSTSApplicationToken();
+		ApplicationToken stsToken = AuthenticatedApplicationRepository.getSTSApplicationToken();
 		AuthenticatedApplicationRepository.addApplicationToken(stsToken);
 		String user = appConfig.getProperty("whydah.adminuser.username");
 		String password = appConfig.getProperty("whydah.adminuser.password");

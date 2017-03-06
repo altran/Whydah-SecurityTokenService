@@ -40,7 +40,7 @@ public class ApplicationModelFacade {
     	
     	if(ApplicationModelUtil.shouldUpdate() || ApplicationModelUtil.getApplicationList()==null || ApplicationModelUtil.getApplicationList().size()==0){
     		//get all applications from UAS
-    		ApplicationToken token = ApplicationAuthenticationUASClient.getSTSApplicationToken();
+    		ApplicationToken token = AuthenticatedApplicationRepository.getSTSApplicationToken();
     		ApplicationModelUtil.updateApplicationList(userAdminServiceUri, token.getApplicationTokenId());
     		
     		//update full token from applications
