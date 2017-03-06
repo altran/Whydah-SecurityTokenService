@@ -286,7 +286,13 @@ public class UserTokenTest {
 
     }
 
+    /**
+     * Need to rewrite this to test the complete flow
+     *
+     * @throws Exception
+     */
     @Test
+    @Ignore
     public void testUserTokenFullUserToken() throws Exception {
         assertTrue(UserTokenFactory.shouldReturnFullUserToken("2211"));
         assertFalse(UserTokenFactory.shouldReturnFullUserToken("22121"));
