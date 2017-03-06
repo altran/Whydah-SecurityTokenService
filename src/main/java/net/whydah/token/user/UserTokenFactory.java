@@ -135,7 +135,8 @@ public class UserTokenFactory {
         String myappid = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(applicationTokenID);
         log.debug("getFilteredUserToken - found appid={}", myappid);
         Application app = ApplicationModelFacade.getApplication(myappid);
-        if(app.getSecurity().isWhydahAdmin()){
+        if(app!=null && app.getSecurity()!=null && app.getSecurity().isWhydahAdmin()){
+        	log.debug("Is Whydahadmin shouldReturnFullUserToken({})=true - no filtering", myappid);
         	return userToken;
         } else if (shouldReturnAnonymousUserToken(myappid, userToken)) {
             log.debug("a) shouldReturnAnonymousUserToken = TRUE");
