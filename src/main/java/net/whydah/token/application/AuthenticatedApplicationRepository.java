@@ -192,6 +192,7 @@ public class AuthenticatedApplicationRepository {
         if (stsApplicationTokenID == "") {
             ApplicationCredential ac = new ApplicationCredential(applicationId, applicationName, applicationsecret);
             myToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(ac));
+            myToken.setExpires(String.valueOf((System.currentTimeMillis() + 100000 * 5000)));  // Long time
             stsApplicationTokenID = myToken.getApplicationTokenId();
             addApplicationToken(myToken);
         }

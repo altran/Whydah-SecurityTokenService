@@ -36,7 +36,6 @@ public class ApplicationAuthenticationUASClient {
 
         String useradminservice = appConfig.getProperty("useradminservice");
         ApplicationToken stsToken = AuthenticatedApplicationRepository.getSTSApplicationToken();
-        AuthenticatedApplicationRepository.addApplicationToken(stsToken);
 
         WebResource uasResource = ApacheHttpClient.create().resource(useradminservice);
         int uasResponseCode = 0;
