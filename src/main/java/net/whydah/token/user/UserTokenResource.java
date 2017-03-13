@@ -298,10 +298,14 @@ public class UserTokenResource {
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
         try {
-            UserToken userToken = userAuthenticator.logonUser(applicationtokenid, appTokenXml, userCredentialXml);
-
-            // Add the user to the ticket-map with the ticket given from the caller
-            userticketmap.put(userticket, userToken.getTokenid());
+        	UserToken userToken = null;
+        	if(!userticketmap.containsKey(userticket)){
+        		userToken = userAuthenticator.logonUser(applicationtokenid, appTokenXml, userCredentialXml);
+        		// Add the user to the ticket-map with the ticket given from the caller
+        		userticketmap.put(userticket, userToken.getTokenid());
+        	} else {
+        		userToken = ActiveUserTokenRepository.getUserToken(userticketmap.get(userticket).toString(), applicationtokenid);
+        	}
             return createUserTokenResponse(applicationtokenid, userToken);
         } catch (AuthenticationFailedException ae) {
             log.warn("getUserTokenAndStoreUserTicket - User authentication failed");
