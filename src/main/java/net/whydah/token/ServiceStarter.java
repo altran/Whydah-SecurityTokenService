@@ -58,15 +58,18 @@ public class ServiceStarter {
 
 
         //Start Valuereporter event distributer.
-        String reporterHost = appConfig.getProperty("valuereporter.host");
-        String reporterPort = appConfig.getProperty("valuereporter.port");
-        String prefix = appConfig.getProperty("applicationname");
-        int cacheSize = Integer.parseInt(appConfig.getProperty("valuereporter.activity.batchsize"));
-        int forwardInterval = Integer.parseInt(appConfig.getProperty("valuereporter.activity.postintervalms"));
-        new Thread(new ObservedActivityDistributer(reporterHost, reporterPort, prefix, cacheSize, forwardInterval)).start();
-        new Thread(new HttpObservationDistributer(reporterHost, reporterPort, prefix)).start();
+        try {
+            String reporterHost = appConfig.getProperty("valuereporter.host");
+            String reporterPort = appConfig.getProperty("valuereporter.port");
+            String prefix = appConfig.getProperty("applicationname");
+            int cacheSize = Integer.parseInt(appConfig.getProperty("valuereporter.activity.batchsize"));
+            int forwardInterval = Integer.parseInt(appConfig.getProperty("valuereporter.activity.postintervalms"));
+            new Thread(new ObservedActivityDistributer(reporterHost, reporterPort, prefix, cacheSize, forwardInterval)).start();
+            new Thread(new HttpObservationDistributer(reporterHost, reporterPort, prefix)).start();
 
-        
+        } catch (Exception e) {
+            log.warn("Error in valueReporter property configuration - unable to start observers");
+        }
         
      
       
@@ -94,9 +97,13 @@ public class ServiceStarter {
         servletRegistration.setInitParameter("com.sun.jersey.config.property.packages", "net.whydah");
         servletRegistration.setInitParameter("com.sun.jersey.api.json.POJOMappingFeature", "true");
         context.addFilter("guiceFilter", GuiceFilter.class);
-        
-      
-        webappPort = Integer.valueOf(appConfig.getProperty("service.port"));
+
+
+        try {
+            webappPort = Integer.valueOf(appConfig.getProperty("service.port"));
+        } catch (Exception e) {
+            webappPort = 9998;
+        }
         httpServer = new HttpServer();
         //ServerConfiguration serverconfig = httpServer.getServerConfiguration();
         //serverconfig.addHttpHandler(handler, "/");
