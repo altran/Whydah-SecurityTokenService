@@ -1,12 +1,5 @@
 package net.whydah.token.application;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import net.whydah.sso.application.helpers.ApplicationXpathHelper;
 import net.whydah.sso.application.mappers.ApplicationMapper;
 import net.whydah.sso.application.types.Application;
@@ -15,16 +8,18 @@ import net.whydah.sso.commands.appauth.CommandLogonApplication;
 import net.whydah.sso.commands.appauth.CommandVerifyUASAccessByApplicationTokenId;
 import net.whydah.sso.commands.systemtestbase.SystemTestBaseConfig;
 import net.whydah.sso.commands.userauth.CommandLogonUserByUserCredential;
-import net.whydah.sso.config.ApplicationMode;
-import net.whydah.sso.session.baseclasses.ApplicationModelUtil;
 import net.whydah.sso.user.helpers.UserXpathHelper;
-import net.whydah.token.config.AppConfig;
-import net.whydah.token.user.UserTokenFactory;
-
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class ApplicationFullTokenTest {
 
@@ -38,7 +33,8 @@ public class ApplicationFullTokenTest {
 	}
 
 	@Test
-	public void testValidFullTokenApplications() {
+    @Ignore
+    public void testValidFullTokenApplications() {
 		//config.setLocalTest();
 		if (config.isSystemTestEnabled()) {
 
