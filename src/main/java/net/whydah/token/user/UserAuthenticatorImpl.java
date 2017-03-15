@@ -5,30 +5,23 @@ import com.google.inject.name.Named;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
-
-import net.whydah.errorhandling.AppException;
-import net.whydah.errorhandling.AppExceptionCode;
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.commands.adminapi.user.CommandGetUserAggregate;
 import net.whydah.sso.commands.adminapi.user.CommandListUsers;
 import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserToken;
-import net.whydah.token.application.ApplicationAuthenticationUASClient;
-import net.whydah.token.application.ApplicationModelFacade;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.application.SessionHelper;
 import net.whydah.token.config.AppConfig;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.security.auth.login.FailedLoginException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 public class UserAuthenticatorImpl implements UserAuthenticator {
 	private static final Logger log = LoggerFactory.getLogger(UserAuthenticatorImpl.class);
@@ -202,7 +195,8 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
 			UserToken userToken = UserTokenMapper.fromUserAggregateXml(userAggregateJson);
 			userToken.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
-			userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
+            userToken.setTokenid(generateID());
+            userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
 			ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid, "usertokenid");
 			return userToken;
 
@@ -211,5 +205,10 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 			throw new AuthenticationFailedException("Authentication failed. Status code from UAS: " + response.getStatus());
 		}
 	}
+
+    private static String generateID() {
+        return UUID.randomUUID().toString();
+    }
+
 
 }
