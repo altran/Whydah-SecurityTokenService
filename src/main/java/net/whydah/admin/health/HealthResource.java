@@ -28,7 +28,6 @@ public class HealthResource {
     }
 
     @GET
-    @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     public Response isHealthy() throws Exception {
         
