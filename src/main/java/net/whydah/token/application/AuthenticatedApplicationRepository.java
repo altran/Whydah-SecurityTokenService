@@ -189,7 +189,7 @@ public class AuthenticatedApplicationRepository {
         String applicationId = appConfig.getProperty("applicationid");
         String applicationsecret = appConfig.getProperty("applicationsecret");
         // Do not create duplicate sts sessions
-        if (stsApplicationTokenID == "") {
+        if (stsApplicationTokenID.equals("")) {
             ApplicationCredential ac = new ApplicationCredential(applicationId, applicationName, applicationsecret);
             myToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(ac));
             myToken.setExpires(String.valueOf((System.currentTimeMillis() + 100000 * 5000)));  // Long time
