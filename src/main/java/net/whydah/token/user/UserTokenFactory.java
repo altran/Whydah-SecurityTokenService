@@ -143,6 +143,7 @@ public class UserTokenFactory {
             userToken.setUserName("");
             userToken.setEmail("");
             userToken.setFirstName("");
+            userToken.setCellPhone("");
             userToken.setLastName("Demographics: Oslo");
             List<UserApplicationRoleEntry> roleList = new ArrayList<>();
             userToken.setRoleList(roleList);
