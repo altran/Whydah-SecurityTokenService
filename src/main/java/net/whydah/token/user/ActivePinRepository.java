@@ -73,6 +73,7 @@ public class ActivePinRepository {
     }
 
     public static String paddPin(String pin) {
+
         if (pin.length() == 3) {
             pin = "0" + pin;
         } else if (pin.length() == 2) {
