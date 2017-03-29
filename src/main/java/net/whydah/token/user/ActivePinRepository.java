@@ -68,7 +68,7 @@ public class ActivePinRepository {
         if (storedPin != null && storedPin.equals(pin)) {
             return true;
         }
-        log.warn("Illegal pin logon attempted. PhoneNo: {} ibvalid pin: {}", phoneNr, pin);
+        log.warn("Illegal pin logon attempted. PhoneNo: {} invalid pin: {}", phoneNr, pin);
         return false;
     }
 
