@@ -38,8 +38,8 @@ public class UserTokenFactory {
     }
 
     public UserTokenFactory(String defcon) {
-        this.defcon = defcon;
-        lifespanMs = String.valueOf(14 * 24 * 60 * 60 * 1000); //14 days, reduce when refresh is implemented.
+        UserTokenFactory.defcon = defcon;
+        UserTokenFactory.lifespanMs = String.valueOf(14 * 24 * 60 * 60 * 1000); //14 days, reduce when refresh is implemented.
     }
 
     private static String generateID() {
