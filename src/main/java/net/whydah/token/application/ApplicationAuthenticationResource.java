@@ -2,7 +2,6 @@ package net.whydah.token.application;
 
 import com.google.inject.Inject;
 import com.sun.jersey.api.view.Viewable;
-
 import net.whydah.errorhandling.AppException;
 import net.whydah.errorhandling.AppExceptionCode;
 import net.whydah.sso.application.helpers.ApplicationCredentialHelper;
@@ -11,16 +10,14 @@ import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.config.ApplicationMode;
+import net.whydah.sso.user.types.UserCredential;
 import net.whydah.token.config.AppConfig;
-import net.whydah.token.user.UserCredential;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import java.util.HashMap;
 
 @Path("/")
