@@ -13,6 +13,7 @@ import net.whydah.sso.user.mappers.UserCredentialMapper;
 import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserCredential;
 import net.whydah.sso.user.types.UserToken;
+import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.application.SessionHelper;
 import net.whydah.token.config.AppConfig;
@@ -202,6 +203,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 			UserToken userToken = UserTokenMapper.fromUserAggregateXml(userAggregateJson);
 			userToken.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
             userToken.setTokenid(generateID());
+            userToken.setDefcon(ApplicationThreatResource.getDEFCON());
             userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
 			ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid, "usertokenid");
 			return userToken;
