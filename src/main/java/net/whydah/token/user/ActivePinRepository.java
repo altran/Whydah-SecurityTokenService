@@ -13,7 +13,7 @@ import java.io.FileNotFoundException;
 import java.util.Map;
 
 public class ActivePinRepository {
-    private final static Logger log = LoggerFactory.getLogger(ActiveUserTokenRepository.class);
+    private final static Logger log = LoggerFactory.getLogger(ActivePinRepository.class);
     private static Map<String, String> pinMap;
     //private static Map<String, String> pinMap = ExpiringMap.builder()
     //        .expiration(30, TimeUnit.SECONDS)
@@ -42,11 +42,13 @@ public class ActivePinRepository {
     }
 
     public static void setPin(String phoneNr, String pin) {
+        pin = paddPin(pin);
         log.debug("Adding pin: " + pin + " to phone: "+ phoneNr);
         pinMap.put(phoneNr, pin);
     }
 
     public static boolean usePin(String phoneNr, String pin) {
+        pin = paddPin(pin);
         log.debug("Used pin {} for phone {}: ", pin, phoneNr);
         if (isValidPin(phoneNr, pin)) {
             log.info("Used pin for phone: "+ phoneNr);
@@ -60,13 +62,26 @@ public class ActivePinRepository {
     }
 
     private static boolean isValidPin(String phoneNr, String pin) {
+        pin = paddPin(pin);
         String storedPin = pinMap.get(phoneNr);
         log.debug("isValidPin on pin: " + pin + " storedpin: " + storedPin + " phonenumber: " + phoneNr);
         if (storedPin != null && storedPin.equals(pin)) {
             return true;
         }
-        log.warn("Illegal pin logon attempted. PhoneNo: {} ibvalid pin: {}", phoneNr, pin);
+        log.warn("Illegal pin logon attempted. PhoneNo: {} invalid pin: {}", phoneNr, pin);
         return false;
+    }
+
+    public static String paddPin(String pin) {
+
+        if (pin.length() == 3) {
+            pin = "0" + pin;
+        } else if (pin.length() == 2) {
+            pin = "00" + pin;
+        } else if (pin.length() == 1) {
+            pin = "000" + pin;
+        }
+        return pin;
     }
 
 }

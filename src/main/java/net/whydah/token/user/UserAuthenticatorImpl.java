@@ -9,8 +9,11 @@ import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.commands.adminapi.user.CommandGetUserAggregate;
 import net.whydah.sso.commands.adminapi.user.CommandListUsers;
+import net.whydah.sso.user.mappers.UserCredentialMapper;
 import net.whydah.sso.user.mappers.UserTokenMapper;
+import net.whydah.sso.user.types.UserCredential;
 import net.whydah.sso.user.types.UserToken;
+import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
 import net.whydah.token.application.SessionHelper;
 import net.whydah.token.config.AppConfig;
@@ -46,13 +49,17 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
 	@Override
 	public UserToken logonUser(String applicationTokenId, String appTokenXml, final String userCredentialXml) throws AuthenticationFailedException {
-		log.trace("logonUser - Calling UserAdminService at " + useradminservice + " appTokenXml:" + appTokenXml + " userCredentialXml:" + userCredentialXml);
+        UserCredential userCredential = UserCredentialMapper.fromXml(userCredentialXml);
+        if (userCredential != null) {
+            log.trace("logonUser - Calling UserAdminService at " + useradminservice + " appTokenXml:" + appTokenXml + " userCredentialSafeXml:" + userCredential.toSafeXML());
+        } else {
+            log.trace("logonUser - Unable to map userCredentialXML - Calling UserAdminService at " + useradminservice + " appTokenXml:" + appTokenXml + " userCredentialXml:" + userCredentialXml);
+
+        }
 
 		WebResource webResource = uasResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH);
 		ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, userCredentialXml);
 		UserToken userToken = getUserToken(applicationTokenId, appTokenXml, response);
-		//huy: remove, this code is none sense, it will try to update when this method ApplicationModelFacade.getApplicationList(); is called
-		//AppConfig.updateFullTokenApplicationList(useradminservice, applicationTokenId, userToken.getTokenid());
 		return userToken;
 
 	}
@@ -103,12 +110,12 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 		String user = appConfig.getProperty("whydah.adminuser.username");
 		String password = appConfig.getProperty("whydah.adminuser.password");
 		UserCredential userCredential = new UserCredential(user, password);
-		UserToken whyDahUserAdminUserToken = logonUser(stsToken.getApplicationTokenId(), ApplicationTokenMapper.toXML(stsToken), userCredential.toXML());
+        UserToken whydahUserAdminUserToken = logonUser(stsToken.getApplicationTokenId(), ApplicationTokenMapper.toXML(stsToken), userCredential.toXML());
 
 		UserToken oldUserToken = ActiveUserTokenRepository.getUserToken(usertokenid, stsToken.getApplicationTokenId());
 
-		String userAggregateJson = new CommandGetUserAggregate(useradminservice, stsToken.getApplicationTokenId(), whyDahUserAdminUserToken.getTokenid(), oldUserToken.getUid()).execute();
-		UserToken refreshedUserToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
+        String userAggregateJson = new CommandGetUserAggregate(useradminservice, stsToken.getApplicationTokenId(), whydahUserAdminUserToken.getTokenid(), oldUserToken.getUid()).execute();
+        UserToken refreshedUserToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
 		return refreshedUserToken;
 
 	}
@@ -196,6 +203,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 			UserToken userToken = UserTokenMapper.fromUserAggregateXml(userAggregateJson);
 			userToken.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
             userToken.setTokenid(generateID());
+            userToken.setDefcon(ApplicationThreatResource.getDEFCON());
             userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
 			ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid, "usertokenid");
 			return userToken;

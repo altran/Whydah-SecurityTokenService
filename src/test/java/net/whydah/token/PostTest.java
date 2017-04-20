@@ -9,7 +9,7 @@ import net.whydah.sso.application.helpers.ApplicationTokenXpathHelper;
 import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.config.ApplicationMode;
-import net.whydah.token.user.UserCredential;
+import net.whydah.sso.user.types.UserCredential;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;

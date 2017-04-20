@@ -28,7 +28,6 @@ public class UserTokenFactory {
     private static final Logger log = LoggerFactory.getLogger(UserTokenFactory.class);
     private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     private static String defcon = DEFCON.DEFCON5.toString();
-    private static String lifespanMs;
 
     private static AppConfig appConfig = new AppConfig();
 
@@ -38,8 +37,7 @@ public class UserTokenFactory {
     }
 
     public UserTokenFactory(String defcon) {
-        this.defcon = defcon;
-        lifespanMs = String.valueOf(14 * 24 * 60 * 60 * 1000); //14 days, reduce when refresh is implemented.
+        UserTokenFactory.defcon = defcon;
     }
 
     private static String generateID() {
