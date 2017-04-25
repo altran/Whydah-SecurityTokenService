@@ -553,7 +553,7 @@ public class UserTokenResource {
         else {
             userticketmap.put(userticket, userToken.getTokenid());
             log.trace("createUserTicketByUserTokenId OK. Response={}", userToken.toString());
-            return createUserTokenResponse(applicationtokenid, userToken);
+            return Response.ok(userticket).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
      
     }
