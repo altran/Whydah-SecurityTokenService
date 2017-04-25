@@ -4,11 +4,13 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.SessionHelper;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.user.statistics.UserSessionObservedActivity;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.valuereporter.agent.MonitorReporter;
@@ -16,6 +18,7 @@ import org.valuereporter.agent.activity.ObservedActivity;
 
 import java.io.FileNotFoundException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -23,6 +26,7 @@ import java.util.UUID;
 public class ActiveUserTokenRepository {
     private final static Logger log = LoggerFactory.getLogger(ActiveUserTokenRepository.class);
     private static Map<String, UserToken> activeusertokensmap;
+    private static Map<String, String> active_username_usertokenids_map;
     private static Map<String, Date> lastSeenMap;
     private static int noOfClusterMembers = 0;
 
@@ -42,7 +46,11 @@ public class ActiveUserTokenRepository {
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         activeusertokensmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "activeusertokensmap");
+        active_username_usertokenids_map =  hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "active_username_usertokenids_map");
+        
         log.info("Connecting to map {} - size: {}", appConfig.getProperty("gridprefix") + "activeusertokensmap", getMapSize());
+        log.info("Connecting to map {} - size: {}", appConfig.getProperty("gridprefix") + "active_username_usertokenids_map", getMapSize());
+        
         lastSeenMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "lastSeenMap");
         log.info("Connecting to map {} - size: {}", appConfig.getProperty("gridprefix") + "lastSeenMap", getLastSeenMapSize());
         Set clusterMembers = hazelcastInstance.getCluster().getMembers();
@@ -103,6 +111,32 @@ public class ActiveUserTokenRepository {
         log.debug("No usertoken found for usertokenId=" + usertokenId);
         return null;
     }
+    
+    public static UserToken getUserTokenByUserName(String userName, String applicationTokenId) {
+        log.debug("getUserToken with userName=" + userName);
+        if (userName == null) {
+            return null;
+        }
+        if(active_username_usertokenids_map.containsKey(userName)){
+        	String usertokenid = active_username_usertokenids_map.get(userName);
+        	 UserToken resToken = activeusertokensmap.get(usertokenid);
+             if (resToken != null && verifyUserToken(resToken, applicationTokenId)) {
+                 resToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(resToken));
+                 lastSeenMap.put(resToken.getEmail(), new Date());
+                 log.info("Valid userToken found: " + resToken);
+                 log.debug("userToken=" + resToken);
+
+                 ObservedActivity observedActivity = new UserSessionObservedActivity(resToken.getUid(), "userSessionAccess", applicationTokenId);
+                 MonitorReporter.reportActivity(observedActivity);
+                 log.trace("Adding activity to statistics cache {}", observedActivity);
+
+                 return resToken;
+             }
+        }
+       
+        log.debug("No usertoken found for username=" + userName);
+        return null;
+    }
 
     /**
      * Check if token exists in UserTokenRepository, and is valid and not timed out.
@@ -128,6 +162,8 @@ public class ActiveUserTokenRepository {
         if (!resToken.isValid()) {
             log.debug("resToken is not valid");
             activeusertokensmap.remove(userToken.getTokenid());
+            active_username_usertokenids_map.remove(userToken.getUserName());
+            
             return false;
         }
         if (!userToken.toString().equals(resToken.toString())) {
@@ -142,6 +178,7 @@ public class ActiveUserTokenRepository {
 
     public static void renewUserToken(String usertokenid, String applicationTokenId) {
         UserToken utoken = activeusertokensmap.remove(usertokenid);
+        active_username_usertokenids_map.remove(utoken.getUserName());
         utoken.setDefcon(ApplicationThreatResource.getDEFCON());
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
 
@@ -185,6 +222,7 @@ public class ActiveUserTokenRepository {
         }
         UserToken copy = userToken.copy();
         activeusertokensmap.put(copy.getTokenid(), copy);
+        active_username_usertokenids_map.put(copy.getUserName(), copy.getTokenid());
         if ("renew".equalsIgnoreCase(authType)) {
             return;  // alreqdy reported
         }
@@ -201,6 +239,8 @@ public class ActiveUserTokenRepository {
 
     public static void removeUserToken(String userTokenId, String applicationTokenId) {
         UserToken removedToken = activeusertokensmap.remove(userTokenId);
+        active_username_usertokenids_map.remove(removedToken.getUserName());
+        
         ObservedActivity observedActivity = new UserSessionObservedActivity(removedToken.getUid(), "userSessionRemoved", applicationTokenId);
         MonitorReporter.reportActivity(observedActivity);
 
