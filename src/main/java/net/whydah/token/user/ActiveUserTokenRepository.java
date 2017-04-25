@@ -222,7 +222,9 @@ public class ActiveUserTokenRepository {
         }
         UserToken copy = userToken.copy();
         activeusertokensmap.put(copy.getTokenid(), copy);
-        active_username_usertokenids_map.put(copy.getUserName(), copy.getTokenid());
+        if(copy.getUserName()!=null){
+        	active_username_usertokenids_map.put(copy.getUserName(), copy.getTokenid());
+        }
         if ("renew".equalsIgnoreCase(authType)) {
             return;  // alreqdy reported
         }

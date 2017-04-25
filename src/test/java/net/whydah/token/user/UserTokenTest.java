@@ -67,6 +67,7 @@ public class UserTokenTest {
     @Test
     public void testActiveUserTokenRepository() {
         UserToken utoken = new UserToken();
+        utoken.setUserName(UUID.randomUUID().toString());
         utoken.setFirstName("Ola");
         utoken.setLastName("Nordmann");
         utoken.setEmail("test@whydah.net");
@@ -87,6 +88,7 @@ public class UserTokenTest {
     @Test
     public void testTimedOutActiveUserTokenRepository() {
         UserToken utoken = new UserToken();
+        utoken.setUserName(UUID.randomUUID().toString());
         utoken.setTokenid(UUID.randomUUID().toString());
         utoken.setFirstName("Ola");
         utoken.setLastName("Nordmann");
