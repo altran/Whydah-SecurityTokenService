@@ -36,6 +36,7 @@ import java.io.FileNotFoundException;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Path("/user")
 public class UserTokenResource {
@@ -507,6 +508,37 @@ public class UserTokenResource {
 
 
         if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
+            log.warn("createUserTicketByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+            //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.APP_ILLEGAL_7000; 
+        }
+        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
+        //final UserToken userToken = refreshAndGetThisUser(userTokenId, applicationtokenid);
+        if (userToken == null) {
+        	log.warn("createUserTicketByUserTokenId - attempt to access with non acceptable usertokenid {}", userTokenId);
+            //return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+            throw AppExceptionCode.USER_INVALID_USERTOKENID_6002.setDeveloperMessage("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid=" + userTokenId);
+        }
+        else {
+            userticketmap.put(userticket, userToken.getTokenid());
+            log.trace("createUserTicketByUserTokenId OK. Response={}", userToken.toString());
+            return createUserTokenResponse(applicationtokenid, userToken);
+        }
+     
+    }
+    
+    @Path("/{applicationtokenid}/get_userticket_by_usertokenid")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response getUserTicketByUserTokenId(@PathParam("applicationtokenid") String applicationtokenid,
+                                                  @FormParam("usertokenid") String userTokenId) throws AppException {
+    	
+    	String userticket = UUID.randomUUID().toString();
+    	
+        log.trace("createUserTicketByUserTokenId: applicationtokenid={}, userticket={}, usertokenid={}", applicationtokenid, userticket, userTokenId);
+
+
+        if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, "HIDDEN")) {
             log.warn("createUserTicketByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000; 
