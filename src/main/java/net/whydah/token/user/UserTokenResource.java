@@ -1147,9 +1147,8 @@ public class UserTokenResource {
         }
         UserToken usertoken = ActiveUserTokenRepository.getUserTokenByUserName(username, applicationtokenid);
         if (usertoken == null) {
-            log.warn("refresh_usertoken_by_username - attempt with no username found");
-            //return Response.status(Response.Status.BAD_REQUEST).entity("Missing usertokenid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
-            throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
+            log.warn("refresh_usertoken_by_username - attempt with no username found. No need to refresh");
+            return Response.ok("").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         
         try {
