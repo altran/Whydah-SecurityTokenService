@@ -12,13 +12,13 @@
     <cellphone>${it.cellPhone!?xml}</cellphone>
     <email>${it.email!?xml}</email>
     <personref>${it.personRef!?xml}</personref>
-    <#list it.roleList as app>
-    <application ID="${app.applicationId!?xml}">
-        <applicationName>${app.applicationName!?xml}</applicationName>
-        <organizationName>${app.orgName!?xml}</organizationName>
-        <role name="${app.roleName?xml}" value="${app.roleValue!?xml}"/>
+    <#list it.roleList as role>
+    <application ID="${role.applicationId!?xml}">
+        <applicationName>${role.applicationName!?xml}</applicationName>
+        <organizationName>${role.orgName!?xml}</organizationName>
+        <role name="${role.roleName!?xml}" value="${role.roleValue!?xml}"/>
     </application>
-</#list>
+    </#list>
 
     <ns2:link type="application/xml" href="${it.ns2link!}" rel="self"/>
     <hash type="MD5">${it.MD5}</hash>
