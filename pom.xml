@@ -83,7 +83,7 @@
         <dependency>
             <groupId>net.whydah.sso</groupId>
             <artifactId>Whydah-Java-SDK</artifactId>
-            <version>2.2.20</version>
+            <version>2.2.21</version>
         </dependency>
         <!-- Downgrade json-path to 2.0.0 to be compatible with asm 3.1 from jersey-server -->
         <dependency>
