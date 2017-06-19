@@ -191,7 +191,7 @@ public class ActiveUserTokenRepository {
 
     public static void refreshUserToken(String usertokenid, String applicationTokenId, UserToken refreshedUserToken) {
         UserToken oldusertoken = activeusertokensmap.remove(usertokenid);
-        refreshedUserToken.setTokenid(oldusertoken.getTokenid());
+        refreshedUserToken.setTokenid(usertokenid);
         addUserToken(refreshedUserToken, applicationTokenId, "refresh");
 
     }
@@ -220,10 +220,11 @@ public class ActiveUserTokenRepository {
             log.error("Error: trying to update an already existing UserToken in repo..");
             return;
         }
-        UserToken copy = userToken.copy();
-        activeusertokensmap.put(copy.getTokenid(), copy);
-        if(copy.getUserName()!=null){
-        	active_username_usertokenids_map.put(copy.getUserName(), copy.getTokenid());
+        //UserToken copy = userToken.copy();
+        activeusertokensmap.put(userToken.getTokenid(), userToken);
+        System.out.println("ADDEDDDDDDDDDDDDDDDDDDD " + userToken.getTokenid() + "/ content /"+ userToken.toString());
+        if(userToken.getUserName()!=null){
+        	active_username_usertokenids_map.put(userToken.getUserName(), userToken.getTokenid());
         }
         if ("renew".equalsIgnoreCase(authType)) {
             return;  // alreqdy reported
@@ -236,7 +237,7 @@ public class ActiveUserTokenRepository {
             observedActivity = new UserSessionObservedActivity(userToken.getUid(), "userSessionCreatedByPin", applicationTokenId);
         }
         MonitorReporter.reportActivity(observedActivity);
-        log.info("Added token with id {}", copy.getTokenid(), " content:" + copy);
+        log.info("Added token with id {}", userToken.getTokenid(), " content:" + userToken.toString());
     }
 
     public static void removeUserToken(String userTokenId, String applicationTokenId) {
