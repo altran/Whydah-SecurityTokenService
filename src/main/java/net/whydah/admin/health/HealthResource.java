@@ -1,8 +1,13 @@
 package net.whydah.admin.health;
 
+import com.hazelcast.config.Config;
+import com.hazelcast.config.XmlConfigBuilder;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
 import net.whydah.token.application.ApplicationModelFacade;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
+import net.whydah.token.config.AppConfig;
 import net.whydah.token.user.ActivePinRepository;
 import net.whydah.token.user.ActiveUserTokenRepository;
 import org.slf4j.Logger;
@@ -13,6 +18,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
@@ -27,6 +33,27 @@ public class HealthResource {
     private static final Logger log = LoggerFactory.getLogger(HealthResource.class);
 
     private static List<String> threatSignalList = new LinkedList<String>();
+
+    static {
+        AppConfig appConfig = new AppConfig();
+        String xmlFileName = System.getProperty("hazelcast.config");
+        log.info("Loading hazelcast configuration from :" + xmlFileName);
+        Config hazelcastConfig = new Config();
+        if (xmlFileName != null && xmlFileName.length() > 10) {
+            try {
+                hazelcastConfig = new XmlConfigBuilder(xmlFileName).build();
+                log.info("Loading hazelcast configuration from :" + xmlFileName);
+            } catch (FileNotFoundException notFound) {
+                log.error("Error - not able to load hazelcast.xml configuration.  Using embedded as fallback");
+            }
+        }
+        hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
+        HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
+        threatSignalList = hazelcastInstance.getList(appConfig.getProperty("gridprefix") + "threatSignalList");
+        log.info("Connecting to threatSignalList {}", appConfig.getProperty("gridprefix") + "threatSignalList");
+        log.info("Loaded threatSignalList size=" + threatSignalList.size());
+
+    }
 
     public HealthResource() {
     }
