@@ -1,17 +1,13 @@
 package net.whydah.token.application;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
+import net.whydah.admin.health.HealthResource;
 import net.whydah.sso.whydah.DEFCON;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path("/threat")
 public class ApplicationThreatResource {
@@ -25,6 +21,7 @@ public class ApplicationThreatResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response logSignal(@PathParam("applicationtokenid") String applicationtokenid, @FormParam("signal") String jsonSignal) {
         log.warn("logSignal with applicationtokenid: {} - signal={}", applicationtokenid, jsonSignal);
+        HealthResource.addThreatSignal(applicationtokenid + ":" + jsonSignal);
         return Response.ok().build();
     }
 

@@ -15,6 +15,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -23,6 +25,8 @@ import java.util.Properties;
 @Path("/health")
 public class HealthResource {
     private static final Logger log = LoggerFactory.getLogger(HealthResource.class);
+
+    private static List<String> threatSignalList = new LinkedList<String>();
 
     public HealthResource() {
     }
@@ -66,7 +70,8 @@ public class HealthResource {
                 "  \"PinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
                 "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationRepository.getMapSize() + ",\n" +
                 "  \"Active Applications\": \"" + AuthenticatedApplicationRepository.getActiveApplications() + "\"\n" +
-                "}\n";
+                "}\n\n\n" +
+                threatSignalList;
     }
 
     private static String getVersion() {
@@ -82,5 +87,9 @@ public class HealthResource {
             }
         }
         return "(DEV VERSION)";
+    }
+
+    public static void addThreatSignal(String signal) {
+        threatSignalList.add(signal);
     }
 }
