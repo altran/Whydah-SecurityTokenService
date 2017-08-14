@@ -1,5 +1,6 @@
 package net.whydah.admin.health;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
@@ -33,6 +34,7 @@ public class HealthResource {
     private static final Logger log = LoggerFactory.getLogger(HealthResource.class);
 
     private static List<String> threatSignalList = new LinkedList<String>();
+    private static ObjectMapper mapper = new ObjectMapper();
 
     static {
         AppConfig appConfig = new AppConfig();
@@ -80,9 +82,11 @@ public class HealthResource {
     }
 
     public static String getHealthTextJson() {
+        String threatSignalJson = "";
         int applicationMapSize = 0;
         try {
             applicationMapSize = ApplicationModelFacade.getApplicationList().size();
+            threatSignalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(threatSignalList);
         } catch (Exception e) {
 
         }
@@ -97,8 +101,9 @@ public class HealthResource {
                 "  \"PinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
                 "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationRepository.getMapSize() + ",\n" +
                 "  \"Active Applications\": \"" + AuthenticatedApplicationRepository.getActiveApplications() + "\"\n" +
-                "}\n\n\n" +
-                threatSignalList;
+                "  \n\n\n" +
+                "  \"Threat Signals\": " + threatSignalJson +
+                "}  \n\n\n";
     }
 
     private static String getVersion() {
