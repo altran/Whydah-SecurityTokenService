@@ -100,10 +100,10 @@ public class HealthResource {
                 "  \"LastSeenMapSize\": " + ActiveUserTokenRepository.getLastSeenMapSize() + ",\n" +
                 "  \"PinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
                 "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationRepository.getMapSize() + ",\n" +
-                "  \"Active Applications\": \"" + AuthenticatedApplicationRepository.getActiveApplications() + "\"\n" +
-                "  \n\n\n" +
-                "  \"Threat Signals\": " + threatSignalJson +
-                "}  \n\n\n";
+                "  \"Active Applications\": \"" + AuthenticatedApplicationRepository.getActiveApplications() + "\",\n" +
+                "  \n\n" +
+                "  \"Threat Signals\": " + threatSignalJson + "\n" +
+                "}\n\n";
     }
 
     private static String getVersion() {
