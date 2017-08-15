@@ -21,7 +21,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.URL;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -101,10 +104,18 @@ public class HealthResource {
                 "  \"PinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
                 "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationRepository.getMapSize() + ",\n" +
                 "  \"Active Applications\": \"" + AuthenticatedApplicationRepository.getActiveApplications() + "\",\n" +
+                "  \"now\": \"" + Instant.now() + "\",\n" +
+                "  \"running since\": \"" + getRunningSince() + "\"," +
                 "  \n\n" +
                 "  \"Threat Signals\": " + threatSignalJson + "\n" +
                 "}\n\n";
     }
+
+    private static String getRunningSince() {
+        long uptimeInMillis = ManagementFactory.getRuntimeMXBean().getUptime();
+        return Instant.now().minus(uptimeInMillis, ChronoUnit.MILLIS).toString();
+    }
+
 
     private static String getVersion() {
         Properties mavenProperties = new Properties();
