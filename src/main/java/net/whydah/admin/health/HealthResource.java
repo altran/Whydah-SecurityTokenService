@@ -5,6 +5,7 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import net.whydah.sso.util.WhydahUtil;
 import net.whydah.token.application.ApplicationModelFacade;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
@@ -21,10 +22,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -105,15 +104,10 @@ public class HealthResource {
                 "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationRepository.getMapSize() + ",\n" +
                 "  \"Active Applications\": \"" + AuthenticatedApplicationRepository.getActiveApplications() + "\",\n" +
                 "  \"now\": \"" + Instant.now() + "\",\n" +
-                "  \"running since\": \"" + getRunningSince() + "\"," +
+                "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\"," +
                 "  \n\n" +
                 "  \"Threat Signals\": " + threatSignalJson + "\n" +
                 "}\n\n";
-    }
-
-    private static String getRunningSince() {
-        long uptimeInMillis = ManagementFactory.getRuntimeMXBean().getUptime();
-        return Instant.now().minus(uptimeInMillis, ChronoUnit.MILLIS).toString();
     }
 
 
