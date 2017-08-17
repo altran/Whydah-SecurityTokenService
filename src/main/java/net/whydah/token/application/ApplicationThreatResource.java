@@ -16,7 +16,7 @@ public class ApplicationThreatResource {
     private static String defconvalue= DEFCON.DEFCON5.toString();
 
     //  WebTarget userTokenResource = tokenServiceClient.target(tokenServiceUri).path("threat").path(myAppTokenId).path("signal");
-    @Path("/{applicationtokenid}/signal")
+    @Path("{applicationtokenid}/signal")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response logSignal(@PathParam("applicationtokenid") String applicationtokenid, @FormParam("signal") String jsonSignal) {
