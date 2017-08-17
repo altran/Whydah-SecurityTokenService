@@ -88,7 +88,7 @@ public class HealthResource {
         int applicationMapSize = 0;
         try {
             applicationMapSize = ApplicationModelFacade.getApplicationList().size();
-            threatSignalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(threatSignalList);
+            threatSignalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(threatSignalList).replaceAll(",", ",\n");
         } catch (Exception e) {
 
         }
