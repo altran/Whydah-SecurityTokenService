@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.time.Instant;
 
 @Path("/threat")
 public class ApplicationThreatResource {
@@ -15,13 +16,16 @@ public class ApplicationThreatResource {
 
     private static String defconvalue= DEFCON.DEFCON5.toString();
 
-    //  WebTarget userTokenResource = tokenServiceClient.target(tokenServiceUri).path("threat").path(myAppTokenId).path("signal");
-    @Path("{applicationtokenid}/signal")
+
+    @Path("/{applicationtokenid}/signal")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response logSignal(@PathParam("applicationtokenid") String applicationtokenid, @FormParam("signal") String jsonSignal) {
+    public Response logSignal(@PathParam("applicationtokenid") String applicationtokenid,
+                              @FormParam("signal") String jsonSignal) {
         log.warn("logSignal with applicationtokenid: {} - signal={}", applicationtokenid, jsonSignal);
-        HealthResource.addThreatSignal(applicationtokenid + ":" + jsonSignal);
+        String applicationID = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(applicationtokenid);
+        String applicationName = AuthenticatedApplicationRepository.getApplicationNameFromApplicationTokenID(applicationtokenid);
+        HealthResource.addThreatSignal(applicationtokenid + " (" + applicationID + "[" + applicationName + "]):" + jsonSignal + " - " + Instant.now());
         return Response.ok().build();
     }
 

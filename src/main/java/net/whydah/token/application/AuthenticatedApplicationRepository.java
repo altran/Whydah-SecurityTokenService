@@ -101,6 +101,15 @@ public class AuthenticatedApplicationRepository {
         return "";
     }
 
+    public static String getApplicationNameFromApplicationTokenID(String applicationtokenid) {
+        ApplicationToken at = applicationTokenMap.get(applicationtokenid);
+        if (at != null) {
+            return at.getApplicationName();
+        }
+        log.error("getApplicationNameFromApplicationTokenID - Unable to find applicationName for applicationtokenId=" + applicationtokenid);
+        return "";
+    }
+
     public static String getApplocationTokenIdFromApplicationTokenXML(String applicationTokenXML) {
         String applicationTokenId = "";
         if (applicationTokenXML == null) {
