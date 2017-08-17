@@ -25,9 +25,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 
 /**
  * Endpoint for health check
@@ -36,7 +36,7 @@ import java.util.Properties;
 public class HealthResource {
     private static final Logger log = LoggerFactory.getLogger(HealthResource.class);
 
-    private static Map<Long, ThreatSignal> threatSignalMap = new LinkedHashMap<>();
+    private static Map<Long, ThreatSignal> threatSignalMap = new TreeMap<>();
     private static ObjectMapper mapper = new ObjectMapper();
 
     static {
