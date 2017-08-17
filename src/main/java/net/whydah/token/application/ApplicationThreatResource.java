@@ -47,6 +47,7 @@ public class ApplicationThreatResource {
             }
         }
 
+        receivedSignal.setSignalEmitter(applicationtokenid + " - " + receivedSignal.getSignalEmitter());
         HealthResource.addThreatSignal(receivedSignal);
         return Response.ok().build();
     }
