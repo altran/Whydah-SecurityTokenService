@@ -107,7 +107,7 @@ public class HealthResource {
                 "  \"now\": \"" + Instant.now() + "\",\n" +
                 "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\"," +
                 "  \n\n" +
-                "  \"Threat Signals\": " + threatSignalJson + "\n" +
+                "  \"Threat Signals\": \n\n" + threatSignalJson + "\n" +
                 "}\n\n";
     }
 
