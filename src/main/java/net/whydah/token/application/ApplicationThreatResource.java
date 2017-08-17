@@ -23,9 +23,13 @@ public class ApplicationThreatResource {
     public Response logSignal(@PathParam("applicationtokenid") String applicationtokenid,
                               @FormParam("signal") String jsonSignal) {
         log.warn("logSignal with applicationtokenid: {} - signal={}", applicationtokenid, jsonSignal);
-        String applicationID = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(applicationtokenid);
-        String applicationName = AuthenticatedApplicationRepository.getApplicationNameFromApplicationTokenID(applicationtokenid);
-        HealthResource.addThreatSignal(applicationtokenid + " (" + applicationID + "[" + applicationName + "]):" + jsonSignal + " - " + Instant.now());
+        if (applicationtokenid != null && applicationtokenid.length() > 6) {
+            String applicationID = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(applicationtokenid);
+            String applicationName = AuthenticatedApplicationRepository.getApplicationNameFromApplicationTokenID(applicationtokenid);
+            HealthResource.addThreatSignal(applicationtokenid + " (" + applicationID + "[" + applicationName + "]):" + jsonSignal + " - " + Instant.now());
+        } else {  // Allow and handle threat signals from non-whydah components
+            HealthResource.addThreatSignal(applicationtokenid + " ([]):" + jsonSignal + " - " + Instant.now());
+        }
         return Response.ok().build();
     }
 
