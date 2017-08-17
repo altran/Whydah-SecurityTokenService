@@ -36,7 +36,7 @@ import java.util.TreeMap;
 public class HealthResource {
     private static final Logger log = LoggerFactory.getLogger(HealthResource.class);
 
-    private static Map<Long, ThreatSignal> threatSignalMap = new TreeMap<>();
+    private static Map<String, ThreatSignal> threatSignalMap = new TreeMap<>();
     private static ObjectMapper mapper = new ObjectMapper();
 
     static {
@@ -128,6 +128,6 @@ public class HealthResource {
     }
 
     public static void addThreatSignal(ThreatSignal signal) {
-        threatSignalMap.put((Long) Instant.now().getEpochSecond(), signal);
+        threatSignalMap.put(Instant.now().toString(), signal);
     }
 }
