@@ -6,6 +6,7 @@ import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import net.whydah.sso.util.WhydahUtil;
+import net.whydah.sso.whydah.ThreatSignal;
 import net.whydah.token.application.ApplicationModelFacade;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationRepository;
@@ -35,7 +36,7 @@ import java.util.Properties;
 public class HealthResource {
     private static final Logger log = LoggerFactory.getLogger(HealthResource.class);
 
-    private static List<String> threatSignalList = new LinkedList<String>();
+    private static List<ThreatSignal> threatSignalList = new LinkedList<ThreatSignal>();
     private static ObjectMapper mapper = new ObjectMapper();
 
     static {
@@ -88,7 +89,7 @@ public class HealthResource {
         int applicationMapSize = 0;
         try {
             applicationMapSize = ApplicationModelFacade.getApplicationList().size();
-            threatSignalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(threatSignalList).replaceAll(",", ",\n");
+            threatSignalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(threatSignalList);
         } catch (Exception e) {
 
         }
@@ -126,7 +127,7 @@ public class HealthResource {
         return "(DEV VERSION)";
     }
 
-    public static void addThreatSignal(String signal) {
+    public static void addThreatSignal(ThreatSignal signal) {
         threatSignalList.add(signal);
     }
 }

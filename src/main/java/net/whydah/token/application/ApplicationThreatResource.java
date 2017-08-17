@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.time.Instant;
 
 @Path("/threat")
 public class ApplicationThreatResource {
@@ -52,7 +51,7 @@ public class ApplicationThreatResource {
         } catch (Exception e) {
             formattedSignal = jsonSignal;
         }
-        HealthResource.addThreatSignal(applicationtokenid + " (" + formattedSignal + ") - Received: " + Instant.now());
+        HealthResource.addThreatSignal(receivedSignal);
         return Response.ok().build();
     }
 
