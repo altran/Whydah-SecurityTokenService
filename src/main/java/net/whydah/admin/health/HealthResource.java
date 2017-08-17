@@ -25,8 +25,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -36,7 +36,7 @@ import java.util.Properties;
 public class HealthResource {
     private static final Logger log = LoggerFactory.getLogger(HealthResource.class);
 
-    private static List<ThreatSignal> threatSignalList = new LinkedList<ThreatSignal>();
+    private static Map<Long, ThreatSignal> threatSignalMap = new LinkedHashMap<>();
     private static ObjectMapper mapper = new ObjectMapper();
 
     static {
@@ -54,9 +54,9 @@ public class HealthResource {
         }
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
-        threatSignalList = hazelcastInstance.getList(appConfig.getProperty("gridprefix") + "threatSignalList");
-        log.info("Connecting to threatSignalList {}", appConfig.getProperty("gridprefix") + "threatSignalList");
-        log.info("Loaded threatSignalList size=" + threatSignalList.size());
+        threatSignalMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "threatSignalMap");
+        log.info("Connecting to threatSignalMap {}", appConfig.getProperty("gridprefix") + "threatSignalMap");
+        log.info("Loaded threatSignalMap size=" + threatSignalMap.size());
 
     }
 
@@ -89,7 +89,7 @@ public class HealthResource {
         int applicationMapSize = 0;
         try {
             applicationMapSize = ApplicationModelFacade.getApplicationList().size();
-            threatSignalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(threatSignalList);
+            threatSignalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(threatSignalMap);
         } catch (Exception e) {
 
         }
@@ -128,6 +128,6 @@ public class HealthResource {
     }
 
     public static void addThreatSignal(ThreatSignal signal) {
-        threatSignalList.add(signal);
+        threatSignalMap.put((Long) Instant.now().getEpochSecond(), signal);
     }
 }
