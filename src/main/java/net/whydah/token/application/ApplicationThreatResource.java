@@ -26,9 +26,9 @@ public class ApplicationThreatResource {
         if (applicationtokenid != null && applicationtokenid.length() > 6) {
             String applicationID = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(applicationtokenid);
             String applicationName = AuthenticatedApplicationRepository.getApplicationNameFromApplicationTokenID(applicationtokenid);
-            HealthResource.addThreatSignal(applicationtokenid + " (" + applicationID + "[" + applicationName + "]):" + jsonSignal + " - " + Instant.now());
+            HealthResource.addThreatSignal(applicationtokenid + " (" + applicationID + "[" + applicationName + "]):" + jsonSignal + " - Received: " + Instant.now());
         } else {  // Allow and handle threat signals from non-whydah components
-            HealthResource.addThreatSignal(applicationtokenid + " ([]):" + jsonSignal + " - " + Instant.now());
+            HealthResource.addThreatSignal(applicationtokenid + " ([]):" + jsonSignal + " - Received: " + Instant.now());
         }
         return Response.ok().build();
     }
