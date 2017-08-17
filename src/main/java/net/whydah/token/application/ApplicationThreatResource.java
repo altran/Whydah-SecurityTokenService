@@ -46,11 +46,7 @@ public class ApplicationThreatResource {
                 receivedSignal.setSignalEmitter(applicationID + ":" + applicationName);
             }
         }
-        try {
-            formattedSignal = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(receivedSignal);
-        } catch (Exception e) {
-            formattedSignal = jsonSignal;
-        }
+
         HealthResource.addThreatSignal(receivedSignal);
         return Response.ok().build();
     }
