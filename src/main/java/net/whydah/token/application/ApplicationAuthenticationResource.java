@@ -257,13 +257,14 @@ public class ApplicationAuthenticationResource {
     @GET
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response getApplicationIdFromApplicationTokenId(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
-        log.debug("verify apptokenid {}", applicationtokenid);
+        log.debug("verify applicationtokenid {}", applicationtokenid);
         ApplicationToken myApp = AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid);
+        log.debug("Found applicationtoken:" + myApp);
         if (myApp != null || myApp.toString().length() > 10) {
-            log.debug("Apptokenid valid");
+            log.debug("Applicationtokenid valid");
             return Response.ok(myApp.getApplicationID()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
-            log.debug("Apptokenid not valid");
+            log.debug("Applicationtokenid not valid");
             //return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
