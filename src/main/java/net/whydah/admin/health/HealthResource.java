@@ -90,25 +90,30 @@ public class HealthResource {
         try {
             applicationMapSize = ApplicationModelFacade.getApplicationList().size();
             threatSignalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(threatSignalMap);
+            return "{\n" +
+                    "  \"Status\": \"OK\",\n" +
+                    "  \"Version\": \"" + getVersion() + "\",\n" +
+                    "  \"DEFCON\": \"" + ApplicationThreatResource.getDEFCON() + "\",\n" +
+                    "  \"ClusterSize\": " + ActiveUserTokenRepository.getNoOfClusterMembers() + ",\n" +
+                    "  \"ApplicationMapSize\": " + applicationMapSize + ",\n" +
+                    "  \"ActiveUserTokenMapSize\": " + ActiveUserTokenRepository.getMapSize() + ",\n" +
+                    "  \"LastSeenMapSize\": " + ActiveUserTokenRepository.getLastSeenMapSize() + ",\n" +
+                    "  \"PinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
+                    "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationRepository.getMapSize() + ",\n" +
+                    "  \"Active Applications\": \"" + AuthenticatedApplicationRepository.getActiveApplications() + "\",\n" +
+                    "  \"now\": \"" + Instant.now() + "\",\n" +
+                    "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\"," +
+                    "  \n\n" +
+                    "  \"Threat Signals\": \n\n" + threatSignalJson + "\n" +
+                    "}\n\n";
         } catch (Exception e) {
+            return "{\n" +
+                    "  \"Status\": \"UNCONNECTED\",\n" +
+                    "  \"Version\": \"" + getVersion() + "\",\n" +
+                    "  \"DEFCON\": \"" + ApplicationThreatResource.getDEFCON() + "\",\n" +
+                    "}\n\n";
 
         }
-        return "{\n" +
-                "  \"Status\": \"OK\",\n" +
-                "  \"Version\": \"" + getVersion() + "\",\n" +
-                "  \"DEFCON\": \"" + ApplicationThreatResource.getDEFCON() + "\",\n" +
-                "  \"ClusterSize\": " + ActiveUserTokenRepository.getNoOfClusterMembers() + ",\n" +
-                "  \"ApplicationMapSize\": " + applicationMapSize + ",\n" +
-                "  \"ActiveUserTokenMapSize\": " + ActiveUserTokenRepository.getMapSize() + ",\n" +
-                "  \"LastSeenMapSize\": " + ActiveUserTokenRepository.getLastSeenMapSize() + ",\n" +
-                "  \"PinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
-                "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationRepository.getMapSize() + ",\n" +
-                "  \"Active Applications\": \"" + AuthenticatedApplicationRepository.getActiveApplications() + "\",\n" +
-                "  \"now\": \"" + Instant.now() + "\",\n" +
-                "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\"," +
-                "  \n\n" +
-                "  \"Threat Signals\": \n\n" + threatSignalJson + "\n" +
-                "}\n\n";
     }
 
 
