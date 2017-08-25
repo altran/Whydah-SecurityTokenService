@@ -59,6 +59,8 @@ public class UserTokenResource {
     private static final String SMS_GW_QUERY_PARAM;
 
     public static final String GRIDPREFIX = "gridprefix";
+    
+    
 
     static {
 
@@ -1339,7 +1341,7 @@ public class UserTokenResource {
         log.trace("CommandSendSMSToUser - ({}, {}, {}, {}, {}, {}, {})", SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin);
         String response = new CommandSendSMSToUser(SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin).execute();
         log.debug("Answer from smsgw: " + response);
-        ActivePinRepository.setPin(phoneNo, smsPin);
+        ActivePinRepository.setPin(phoneNo, smsPin, response);
         return Response.ok("{\"result\": \"true\"}").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
 
     }
@@ -1396,7 +1398,7 @@ public class UserTokenResource {
         log.trace("CommandSendSMSToUser - ({}, {}, {}, {}, {}, {}, {})", SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin);
         String response = new CommandSendSMSToUser(SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin).execute();
         log.trace("Answer from smsgw: " + response);
-        ActivePinRepository.setPin(phoneNo, smsPin);
+        ActivePinRepository.setPin(phoneNo, smsPin, response);
         return Response.ok("{\"result\": \"true\"}").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
 
     }
@@ -1834,4 +1836,136 @@ public class UserTokenResource {
 
     }
 
+    @Path("/{applicationtokenid}/isUserNameFoundInPinMap")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_XML)
+    public Response isUserNameFoundInPinMap(@PathParam("applicationtokenid") String applicationtokenid, @FormParam("adminUserTokenId") String adminUserTokenId,
+                                     @FormParam("phoneno") String phoneno) throws AppException {
+
+        log.trace("isUserNameFoundInPinMap() called with " + "applicationtokenid = [" + applicationtokenid + "], phoneno = [" + phoneno + "]");
+
+        if (isEmpty(phoneno)) {
+        	throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
+        }
+
+        log.trace("verifyPhoneByPin: applicationtokenid={}, phone={}", applicationtokenid, phoneno);
+
+        if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
+            return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
+        }
+
+        // Verify calling application
+        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
+            log.warn("verifyPhoneByPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+            //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
+        }
+        
+        UserToken admin = ActiveUserTokenRepository.getUserToken(adminUserTokenId, applicationtokenid);
+        if(admin!=null && admin.getUserName().equals(appConfig.getProperty("whydah.adminuser.username"))){
+        	  if (ActivePinRepository.getPinMap().containsKey(phoneno)) {
+                  return Response.ok("{\"result\": \"true\"}").build();
+              } else {
+              	 return Response.ok("{\"result\": \"false\"}").build();
+              }
+        } else {
+        	throw AppExceptionCode.USER_AUTHENTICATION_FAILED_6000;
+        }
+
+      
+    }
+    
+    @Path("/{applicationtokenid}/getSMSLog")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response getSMSLog(@PathParam("applicationtokenid") String applicationtokenid,
+    								@FormParam("adminUserTokenId") String adminUserTokenId,
+                                     @FormParam("phoneno") String phoneno) throws AppException {
+
+        log.trace("getSMSLog() called with " + "applicationtokenid = [" + applicationtokenid + "], phoneno = [" + phoneno + "]");
+
+        if (isEmpty(phoneno)) {
+        	throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
+        }
+
+        log.trace("verifyPhoneByPin: applicationtokenid={}, phone={}", applicationtokenid, phoneno);
+
+        if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
+            return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
+        }
+
+        // Verify calling application
+        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
+            log.warn("verifyPhoneByPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+            //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
+        }
+
+        UserToken admin = ActiveUserTokenRepository.getUserToken(adminUserTokenId, applicationtokenid);
+        if(admin!=null && admin.getUserName().equals(appConfig.getProperty("whydah.adminuser.username"))){
+        	if (ActivePinRepository.getSMSResponseLogMap().containsKey(phoneno)) {
+        		return Response.ok(ActivePinRepository.getSMSResponseLogMap().get(phoneno)).build();
+        	} else {
+        		return Response.ok("").build();
+        	}
+        } else {
+        	throw AppExceptionCode.USER_AUTHENTICATION_FAILED_6000;
+        }
+       
+    }
+
+    @Path("/{applicationtokenid}/getPin")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_XML)
+    public Response getPin(@PathParam("applicationtokenid") String applicationtokenid,
+                                                  @FormParam("adminUserTokenId") String adminUserTokenId,
+                                                  @FormParam("phoneno") String phoneno) throws AppException {
+
+        log.trace("getPin() called with " + "applicationtokenid = [" + applicationtokenid + "], phoneno = [" + phoneno + "], adminUserTokenId = [" + adminUserTokenId + "]");
+
+        if (isEmpty(phoneno)) {
+            //return Response.status(Response.Status.BAD_REQUEST).entity("Missing required parameters").build();
+        	throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
+        }
+
+        
+
+        if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
+            return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
+        }
+
+        // Verify calling application
+        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
+            log.warn("getUserTokenByUserTicket - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+            //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
+        }
+        
+        try {
+        	
+        	UserToken admin = ActiveUserTokenRepository.getUserToken(adminUserTokenId, applicationtokenid);
+        	if(admin!=null && admin.getUserName().equals(appConfig.getProperty("whydah.adminuser.username"))){
+        		String pin = ActivePinRepository.getPinMap().get(phoneno);
+        		if(pin==null){
+        			pin="";
+        		}
+        		return Response.ok(pin).build(); 
+        		
+        	} else {
+        		throw AppExceptionCode.USER_AUTHENTICATION_FAILED_6000;
+        	}
+        	
+
+        } catch (AuthenticationFailedException ae) {
+            log.warn("getUserToken - User authentication failed");
+            //return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.USER_LOGIN_PIN_FAILED_6004.setDeveloperMessage(ae.getMessage());
+        }
+        
+        
+
+    }
 }

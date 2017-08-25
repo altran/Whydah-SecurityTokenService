@@ -15,6 +15,7 @@ import java.util.Map;
 public class ActivePinRepository {
     private final static Logger log = LoggerFactory.getLogger(ActivePinRepository.class);
     private static Map<String, String> pinMap;
+    private static Map<String, String> smsResponseLogMap;
     //private static Map<String, String> pinMap = ExpiringMap.builder()
     //        .expiration(30, TimeUnit.SECONDS)
     //        .build();
@@ -36,15 +37,18 @@ public class ActivePinRepository {
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         pinMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"pinMap");
+        smsResponseLogMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"smsResponseLogMap");
         log.info("Connecting to map {}",appConfig.getProperty("gridprefix")+"pinMap");
         log.info("Loaded pin-Map size=" + pinMap.size());
 
     }
 
-    public static void setPin(String phoneNr, String pin) {
+    public static void setPin(String phoneNr, String pin, String smsResponse) {
         pin = paddPin(pin);
         log.debug("Adding pin: " + pin + " to phone: "+ phoneNr);
+        log.debug("SMS log for " + phoneNr + ": "+ smsResponse);
         pinMap.put(phoneNr, pin);
+        smsResponseLogMap.put(phoneNr, smsResponse);
     }
 
     public static boolean usePin(String phoneNr, String pin) {
@@ -53,12 +57,17 @@ public class ActivePinRepository {
         if (isValidPin(phoneNr, pin)) {
             log.info("Used pin for phone: "+ phoneNr);
             pinMap.remove(phoneNr);
+            smsResponseLogMap.remove(phoneNr);
             return true;
         }
         return false;
     }
     public static Map<String, String> getPinMap(){
         return  pinMap;
+    }
+    
+    public static Map<String, String> getSMSResponseLogMap(){
+        return smsResponseLogMap;
     }
 
     private static boolean isValidPin(String phoneNr, String pin) {

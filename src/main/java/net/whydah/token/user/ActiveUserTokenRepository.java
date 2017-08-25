@@ -222,7 +222,7 @@ public class ActiveUserTokenRepository {
         }
         //UserToken copy = userToken.copy();
         activeusertokensmap.put(userToken.getTokenid(), userToken);
-        System.out.println("ADDEDDDDDDDDDDDDDDDDDDD " + userToken.getTokenid() + "/ content /"+ userToken.toString());
+      
         if(userToken.getUserName()!=null){
         	active_username_usertokenids_map.put(userToken.getUserName(), userToken.getTokenid());
         }
