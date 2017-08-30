@@ -66,30 +66,27 @@ public class HealthResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response isHealthy() throws Exception {
-        
+
         log.trace("isHealthy={}", getHealthText());
         return Response.ok(getHealthTextJson()).build();
-        
+
     }
 
-    public static String  getHealthText(){
-        return "Status: OK"+
+    public static String getHealthText() {
+        return "Status: OK" +
                 "\nVersion:" + getVersion() +
-                "\nDEFCON: "+ ApplicationThreatResource.getDEFCON()+
+                "\nDEFCON: " + ApplicationThreatResource.getDEFCON() +
                 "\nClusterSize: " + ActiveUserTokenRepository.getNoOfClusterMembers() +
                 "\nActiveUserTokenMapSize: " + ActiveUserTokenRepository.getMapSize() +
                 "\nLastSeenMapSize: " + ActiveUserTokenRepository.getLastSeenMapSize() +
                 "\nPinMapSize: " + ActivePinRepository.getPinMap().size() +
-                "\nAuthenticatedApplicationRepositoryMapSize: " + AuthenticatedApplicationRepository.getMapSize() +
-                "\nActive Applications: " + AuthenticatedApplicationRepository.getActiveApplications();
+                "\nAuthenticatedApplicationRepositoryMapSize: " + AuthenticatedApplicationRepository.getMapSize();
     }
 
     public static String getHealthTextJson() {
-        String threatSignalJson = "";
         int applicationMapSize = 0;
         try {
             applicationMapSize = ApplicationModelFacade.getApplicationList().size();
-            threatSignalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(threatSignalMap);
             return "{\n" +
                     "  \"Status\": \"OK\",\n" +
                     "  \"Version\": \"" + getVersion() + "\",\n" +
@@ -99,12 +96,13 @@ public class HealthResource {
                     "  \"ActiveUserTokenMapSize\": " + ActiveUserTokenRepository.getMapSize() + ",\n" +
                     "  \"LastSeenMapSize\": " + ActiveUserTokenRepository.getLastSeenMapSize() + ",\n" +
                     "  \"PinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
+                    "  \"ThreatSignalMapSize\": " + threatSignalMap.size() + ",\n" +
                     "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationRepository.getMapSize() + ",\n" +
                     "  \"Active Applications\": \"" + AuthenticatedApplicationRepository.getActiveApplications() + "\",\n" +
                     "  \"now\": \"" + Instant.now() + "\",\n" +
                     "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\"," +
                     "  \n\n" +
-                    "  \"Threat Signals\": \n\n" + threatSignalJson + "\n" +
+                    getThreatMapDetails() +
                     "}\n\n";
         } catch (Exception e) {
             return "{\n" +
@@ -116,6 +114,19 @@ public class HealthResource {
         }
     }
 
+
+    private static String getThreatMapDetails() {
+        String threatSignalJson = "";
+//        if (valid user with right role)  // todo:  Implement this limitation
+        try {
+            threatSignalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(threatSignalMap);
+            return "  \"Threat Signals\": \n\n" + threatSignalJson + "\n";
+        } catch (Exception e) {
+            return "";
+        }
+
+
+    }
 
     private static String getVersion() {
         Properties mavenProperties = new Properties();
