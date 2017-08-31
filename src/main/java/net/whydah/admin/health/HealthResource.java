@@ -119,7 +119,7 @@ public class HealthResource {
         String threatSignalJson = "";
 //        if (valid user with right role)  // todo:  Implement this limitation
         try {
-            threatSignalJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(threatSignalMap).replace("\n", "\n  ");
+            threatSignalJson = "  " + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(threatSignalMap).replace("\n", "\n  ");
             return "  \"Threat Signals\": \n\n" + threatSignalJson + "\n";
         } catch (Exception e) {
             return "";
