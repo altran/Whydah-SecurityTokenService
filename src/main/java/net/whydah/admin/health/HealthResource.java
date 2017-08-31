@@ -119,8 +119,9 @@ public class HealthResource {
         String threatSignalJson = "";
 //        if (valid user with right role)  // todo:  Implement this limitation
         try {
+            // add minor json prettifying intendation
             threatSignalJson = "  " + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(threatSignalMap).replace("\n", "\n  ");
-            return "  \"Threat Signals\": \n\n" + threatSignalJson + "\n";
+            return "  \"Threat Signals\": \n" + threatSignalJson + "\n";
         } catch (Exception e) {
             return "";
         }
