@@ -116,7 +116,7 @@ public class HealthResource {
 
 
     private static String getThreatMapDetails() {
-        String threatSignalJson = "";
+        String threatSignalJson = " ";
 //        if (valid user with right role)  // todo:  Implement this limitation
         try {
             // add minor json prettifying intendation
