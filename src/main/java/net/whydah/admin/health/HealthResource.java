@@ -98,7 +98,7 @@ public class HealthResource {
                     "  \"PinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
                     "  \"ThreatSignalMapSize\": " + threatSignalMap.size() + ",\n" +
                     "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationRepository.getMapSize() + ",\n" +
-                    "  \"Active Applications\": \"" + AuthenticatedApplicationRepository.getActiveApplications() + "\",\n" +
+                    "  \"Active Applications\": \"" + AuthenticatedApplicationRepository.getActiveApplications().replace(",", ",\n                     n") + "\",\n" +
                     "  \"now\": \"" + Instant.now() + "\",\n" +
                     "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\"," +
                     "  \n\n" +
