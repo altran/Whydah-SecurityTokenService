@@ -34,7 +34,7 @@ public class FreemarkerProcessor {
             StringWriter writer = new StringWriter();
             template.process(model, writer);
             String replacement = "<DEFCON>" + userToken.getDefcon() + "</DEFCON>";
-            return writer.toString().replace("<DEFCON></DEFCON>", replacement);
+            return writer.toString().replace("<DEFCON></DEFCON>", replacement).replace("<DEFCON>${it.defcon!?xml}</DEFCON>", replacement);
         } catch (Exception e) {
             log.error("toXml failed for userToken=" + userToken.toString(), e);
             return "XML conversion failed for userToken with id " + userToken.getTokenid();
