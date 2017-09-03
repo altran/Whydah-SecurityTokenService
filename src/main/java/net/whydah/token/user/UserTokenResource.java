@@ -1815,7 +1815,10 @@ public class UserTokenResource {
         userToken.setDefcon(ApplicationThreatResource.getDEFCON());
         UserToken filteredUserToken = UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken);
         ActiveUserTokenRepository.setLastSeen(filteredUserToken);
-        return Response.ok(new Viewable("/usertoken.ftl", filteredUserToken)).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+        Map<String, Object> model = new HashMap();
+        model.put("it", filteredUserToken);
+        model.put("DEFCON", filteredUserToken.getDefcon());
+        return Response.ok(new Viewable("/usertoken.ftl", model)).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
     }
 
     boolean isEmpty(String userticket) {

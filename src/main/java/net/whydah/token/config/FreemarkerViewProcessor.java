@@ -127,4 +127,33 @@ public class FreemarkerViewProcessor implements ViewProcessor<Template> {
             onProcessException(e, template, out);
         }
     }
+
+    @SuppressWarnings("unchecked")
+    public void writeTo(Template template, Viewable viewable, Map m, OutputStream out) throws IOException {
+        out.flush(); // send status + headers
+
+        Object model = viewable.getModel();
+        final Map<String, Object> vars = new HashMap<>();
+        if (model instanceof Map<?, ?>) {
+            vars.putAll((Map<String, Object>) model);
+        } else {
+            vars.put("it", model);
+        }
+        if (m != null) {
+            vars.putAll((Map<String, Object>) m);
+
+        }
+
+        //  Add the static members to the statics field
+        BeansWrapper w = new BeansWrapper();
+        TemplateModel statics = w.getStaticModels();
+        vars.put("statics", statics); // map is java.util.Map
+
+        final OutputStreamWriter writer = new OutputStreamWriter(out, "UTF-8");
+        try {
+            template.process(vars, writer);
+        } catch (Exception e) {
+            onProcessException(e, template, out);
+        }
+    }
 }

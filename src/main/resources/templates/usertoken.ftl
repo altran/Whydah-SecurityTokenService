@@ -6,7 +6,8 @@
     <issuer>${it.issuer!?xml}</issuer>
     <securitylevel>${it.securityLevel!}</securitylevel>
     <DEFCON>${it.defcon!?xml}</DEFCON>
-    <DEFCON2>{statics["net.whydah.sso.user.types.UserToken"].defcon!?xml}</DEFCON2>
+    <DEFCON2>${statics["net.whydah.sso.user.types.UserToken"].defcon!?xml}</DEFCON2>
+    <DEFCON3>${DEFCON!?xml}</DEFCON3>
     <username>${it.userName!?xml}</username>
     <firstname>${it.firstName!?xml}</firstname>
     <lastname>${it.lastName!?xml}</lastname>
