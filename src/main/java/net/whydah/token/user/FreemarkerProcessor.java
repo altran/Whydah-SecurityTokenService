@@ -27,11 +27,14 @@ public class FreemarkerProcessor {
     public String toXml(UserToken userToken) {
         HashMap<String, UserToken> model = new HashMap<>(1);
         model.put("it", userToken);
+
+
         try {
             Template template = freemarkerConfig.getTemplate("usertoken.ftl");
             StringWriter writer = new StringWriter();
             template.process(model, writer);
-            return writer.toString();
+            String replacement = "<DEFCON>" + userToken.getDefcon() + "</DEFCON>";
+            return writer.toString().replace("<DEFCON></DEFCON>", replacement);
         } catch (Exception e) {
             log.error("toXml failed for userToken=" + userToken.toString(), e);
             return "XML conversion failed for userToken with id " + userToken.getTokenid();
