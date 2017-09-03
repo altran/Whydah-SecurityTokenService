@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 
-public class AuthenticatedApplicationRepository {
-    private final static Logger log = LoggerFactory.getLogger(AuthenticatedApplicationRepository.class);
+public class AuthenticatedApplicationTokenRepository {
+    private final static Logger log = LoggerFactory.getLogger(AuthenticatedApplicationTokenRepository.class);
 
     public static int DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = 2400;
     private static AppConfig appConfig = new AppConfig();
@@ -210,25 +210,4 @@ public class AuthenticatedApplicationRepository {
     }
 
 
-//    public static boolean verifyUASAccess(String applicationtokenid) {
-//    	if(ApplicationAuthenticationUASClient.getSTSApplicationToken().getApplicationTokenId().equals(applicationtokenid)){
-//    		//don't verify STS itself 
-//    		return true;
-//    	} else {
-//    		ApplicationToken token = applicationTokenMap.get(applicationtokenid);
-//    		if(token!=null){
-//    			Application app = ApplicationModelFacade.getApplication(token.getApplicationID());
-//    			if(app!=null && app.getSecurity()!=null){
-//    				boolean hasUASAccess = app.getSecurity().isWhydahUASAccess();
-//    				return hasUASAccess;
-//    			} else {
-//    				log.warn(ApplicationModelFacade.getApplicationList().size()>0? "App not found" : "Application list is empty");
-//    			}
-//    		} else {
-//    			log.warn("Application token id " + applicationtokenid + " can not be found in the map");
-//    		}
-//    		return false;
-//    	}
-//    	
-//	}
 }

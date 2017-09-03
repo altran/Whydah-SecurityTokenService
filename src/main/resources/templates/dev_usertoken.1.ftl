@@ -11,12 +11,12 @@
     <email></email>
     <personref></personref>
     <application ID="2349785543">
-        <applicationName>Whydah.net</applicationName>
+        <applicationName>Whydah.no</applicationName>
         <organizationName>Customer 3</organizationName>
         <role name="CEO" value=""/>
     </application>
     <application ID="appa">
-        <applicationName>whydag.org</applicationName>
+        <applicationName>getwhydah.org</applicationName>
         <organizationName>Customer 1</organizationName>
         <role name="COO" value="Valla"/>
     </application>

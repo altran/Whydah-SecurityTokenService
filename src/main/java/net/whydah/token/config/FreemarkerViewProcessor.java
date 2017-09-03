@@ -3,8 +3,10 @@ package net.whydah.token.config;
 import com.sun.jersey.api.view.Viewable;
 import com.sun.jersey.spi.template.ViewProcessor;
 import freemarker.cache.ClassTemplateLoader;
+import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import freemarker.template.TemplateModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,6 +114,11 @@ public class FreemarkerViewProcessor implements ViewProcessor<Template> {
         } else {
             vars.put("it", model);
         }
+
+        //  Add the static members to the statics field
+        BeansWrapper w = new BeansWrapper();
+        TemplateModel statics = w.getStaticModels();
+        vars.put("statics", statics); // map is java.util.Map
 
         final OutputStreamWriter writer = new OutputStreamWriter(out, "UTF-8");
         try {

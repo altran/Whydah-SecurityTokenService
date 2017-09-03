@@ -10,7 +10,7 @@ import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.sso.whydah.DEFCON;
 import net.whydah.token.application.ApplicationModelFacade;
-import net.whydah.token.application.AuthenticatedApplicationRepository;
+import net.whydah.token.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.token.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,7 +130,7 @@ public class UserTokenFactory {
 
     public static UserToken getFilteredUserToken(String applicationTokenID,UserToken userToken) {
 
-        String myappid = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(applicationTokenID);
+        String myappid = AuthenticatedApplicationTokenRepository.getApplicationIdFromApplicationTokenID(applicationTokenID);
         log.debug("getFilteredUserToken - found appid={}", myappid);
         Application app = ApplicationModelFacade.getApplication(myappid);
         if(app!=null && app.getSecurity()!=null && app.getSecurity().isWhydahAdmin()){
@@ -170,7 +170,7 @@ public class UserTokenFactory {
         // TODO - possibly implement check if apptokenXml is identical from source to repo
         boolean validAppToken = false;
         if (applicationtokenid != null) {
-            return AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid);
+            return AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid);
         } else {
             log.warn("verifyApplicationToken - not expecting null values applicationtokenid {}, applicationtokenXml {}", applicationtokenid, applicationtokenXml);
             return validAppToken;

@@ -9,7 +9,7 @@ import net.whydah.sso.util.WhydahUtil;
 import net.whydah.sso.whydah.ThreatSignal;
 import net.whydah.token.application.ApplicationModelFacade;
 import net.whydah.token.application.ApplicationThreatResource;
-import net.whydah.token.application.AuthenticatedApplicationRepository;
+import net.whydah.token.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.user.ActivePinRepository;
 import net.whydah.token.user.ActiveUserTokenRepository;
@@ -80,7 +80,7 @@ public class HealthResource {
                 "\nActiveUserTokenMapSize: " + ActiveUserTokenRepository.getMapSize() +
                 "\nLastSeenMapSize: " + ActiveUserTokenRepository.getLastSeenMapSize() +
                 "\nPinMapSize: " + ActivePinRepository.getPinMap().size() +
-                "\nAuthenticatedApplicationRepositoryMapSize: " + AuthenticatedApplicationRepository.getMapSize();
+                "\nAuthenticatedApplicationRepositoryMapSize: " + AuthenticatedApplicationTokenRepository.getMapSize();
     }
 
     public static String getHealthTextJson() {
@@ -97,8 +97,8 @@ public class HealthResource {
                     "  \"LastSeenMapSize\": " + ActiveUserTokenRepository.getLastSeenMapSize() + ",\n" +
                     "  \"PinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
                     "  \"ThreatSignalMapSize\": " + threatSignalMap.size() + ",\n" +
-                    "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationRepository.getMapSize() + ",\n" +
-                    "  \"Active Applications\": \"" + AuthenticatedApplicationRepository.getActiveApplications().replace(",", ",\n                          ") + "\",\n" +
+                    "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationTokenRepository.getMapSize() + ",\n" +
+                    "  \"Active Applications\": \"" + AuthenticatedApplicationTokenRepository.getActiveApplications().replace(",", ",\n                          ") + "\",\n" +
                     "  \"now\": \"" + Instant.now() + "\",\n" +
                     "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\"," +
                     "  \n\n" +

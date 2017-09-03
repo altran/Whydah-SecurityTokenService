@@ -32,8 +32,8 @@ public class ApplicationThreatResource {
             receivedSignal = mapper.readValue(jsonSignal, ThreatSignal.class);
             if (receivedSignal.getSignalEmitter() != null || receivedSignal.getSignalEmitter().length() < 5) {
                 if (applicationtokenid != null && applicationtokenid.length() > 6) {
-                    String applicationID = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(applicationtokenid);
-                    String applicationName = AuthenticatedApplicationRepository.getApplicationNameFromApplicationTokenID(applicationtokenid);
+                    String applicationID = AuthenticatedApplicationTokenRepository.getApplicationIdFromApplicationTokenID(applicationtokenid);
+                    String applicationName = AuthenticatedApplicationTokenRepository.getApplicationNameFromApplicationTokenID(applicationtokenid);
                     receivedSignal.setSignalEmitter(applicationID + ":" + applicationName);
                 }
             }
@@ -41,8 +41,8 @@ public class ApplicationThreatResource {
             receivedSignal = new ThreatSignal();
             receivedSignal.setText(jsonSignal);
             if (applicationtokenid != null && applicationtokenid.length() > 6) {
-                String applicationID = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(applicationtokenid);
-                String applicationName = AuthenticatedApplicationRepository.getApplicationNameFromApplicationTokenID(applicationtokenid);
+                String applicationID = AuthenticatedApplicationTokenRepository.getApplicationIdFromApplicationTokenID(applicationtokenid);
+                String applicationName = AuthenticatedApplicationTokenRepository.getApplicationNameFromApplicationTokenID(applicationtokenid);
                 receivedSignal.setSignalEmitter(applicationID + ":" + applicationName);
             }
         }

@@ -35,7 +35,7 @@ public class ApplicationAuthenticationUASClient {
         token.setExpires(String.valueOf((System.currentTimeMillis() + 100000 * generator.nextInt(500))));
 
         String useradminservice = appConfig.getProperty("useradminservice");
-        ApplicationToken stsToken = AuthenticatedApplicationRepository.getSTSApplicationToken();
+        ApplicationToken stsToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
 
         WebResource uasResource = ApacheHttpClient.create().resource(useradminservice);
         int uasResponseCode = 0;
