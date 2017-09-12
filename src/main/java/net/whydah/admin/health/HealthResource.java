@@ -145,6 +145,15 @@ public class HealthResource {
     }
 
     public static void addThreatSignal(ThreatSignal signal) {
+        if (threatSignalMap.size() > 5000) {
+            try {
+                log.warn("ThreatsignalMap overrun, dumping and clearing");
+                log.warn(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(threatSignalMap));
+            } catch (Exception e) {
+                // Do nothing
+            }
+            threatSignalMap.clear();
+        }
         threatSignalMap.put(Instant.now().toString(), signal);
     }
 }
