@@ -48,7 +48,9 @@ public class ActivePinRepository {
         log.debug("Adding pin: " + pin + " to phone: "+ phoneNr);
         log.debug("SMS log for " + phoneNr + ": "+ smsResponse);
         pinMap.put(phoneNr, pin);
-        smsResponseLogMap.put(phoneNr, smsResponse);
+        if(smsResponse!=null){
+        	smsResponseLogMap.put(phoneNr, smsResponse);
+        }
     }
 
     public static boolean usePin(String phoneNr, String pin) {
