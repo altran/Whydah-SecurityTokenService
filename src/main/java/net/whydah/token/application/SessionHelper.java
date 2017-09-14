@@ -3,7 +3,6 @@ package net.whydah.token.application;
 import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.user.types.UserToken;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,9 +15,9 @@ public class SessionHelper {
     // String.valueOf(14 * 24 * 60 * 60 * 1000);
     public static long getApplicationLifeSpan(String applicationtokenid){
 
-		ApplicationToken appToken = AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid);
-		
-		if(appToken!=null){
+        ApplicationToken appToken = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
+
+        if(appToken!=null){
 			Application app = ApplicationModelFacade.getApplication(appToken.getApplicationID());
 
 			//set the correct timeout depends on the application's security

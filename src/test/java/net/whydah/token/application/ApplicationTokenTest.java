@@ -40,9 +40,9 @@ public class ApplicationTokenTest {
     public void testCreateApplicationToken() {
         ApplicationCredential cred = new ApplicationCredential("1212","testapp","dummy");
         ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
-        AuthenticatedApplicationRepository.addApplicationToken(imp);
+        AuthenticatedApplicationTokenRepository.addApplicationToken(imp);
 
-        ApplicationToken imp2 = AuthenticatedApplicationRepository.getApplicationToken(imp.getApplicationTokenId());
+        ApplicationToken imp2 = AuthenticatedApplicationTokenRepository.getApplicationToken(imp.getApplicationTokenId());
         //System.out.println(imp.toXML());
         assertEquals("The generated application token is wrong.", cred.getApplicationID(), imp2.getApplicationID());
         assertTrue(imp2.getApplicationTokenId().length() > 12);

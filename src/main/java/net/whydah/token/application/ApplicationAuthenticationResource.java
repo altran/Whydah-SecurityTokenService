@@ -130,8 +130,8 @@ public class ApplicationAuthenticationResource {
             log.warn("Old Whydah ApplicationCredential received, please inform application owner to update the ApplicationCredential. ApplicationCredential:" + appCredentialXml);
         }
         token.setBaseuri(appConfig.getProperty("myuri"));
-        token.setExpires(String.valueOf((System.currentTimeMillis() + AuthenticatedApplicationRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000)));
-        AuthenticatedApplicationRepository.addApplicationToken(token);
+        token.setExpires(String.valueOf((System.currentTimeMillis() + AuthenticatedApplicationTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000)));
+        AuthenticatedApplicationTokenRepository.addApplicationToken(token);
         String applicationTokenXml = ApplicationTokenMapper.toXML(token);
         log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
         return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
@@ -169,8 +169,8 @@ public class ApplicationAuthenticationResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response validateApplicationTokenId(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
         log.trace("validateApplicationTokenId - validate applicationtokenid:{}", applicationtokenid);
-        if (AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.debug("validateApplicationTokenId - applicationtokenid:{} for applicationname:{} is valid", applicationtokenid, AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid).getApplicationName());
+        if (AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+            log.debug("validateApplicationTokenId - applicationtokenid:{} for applicationname:{} is valid", applicationtokenid, AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid).getApplicationName());
             return Response.ok("{\"result\": \"true\"}").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
             log.warn("validateApplicationTokenId - applicationtokenid:{}  is not valid", applicationtokenid);
@@ -216,8 +216,8 @@ public class ApplicationAuthenticationResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response extendApplicationSession(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
         log.debug("renew session for applicationtokenid: {}", applicationtokenid);
-        if (AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            ApplicationToken token = AuthenticatedApplicationRepository.renewApplicationTokenId(applicationtokenid);
+        if (AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+            ApplicationToken token = AuthenticatedApplicationTokenRepository.renewApplicationTokenId(applicationtokenid);
             log.info("ApplicationToken for {} extended, expires: {}", token.getApplicationName(), token.getExpiresFormatted());
             String applicationTokenXml = ApplicationTokenMapper.toXML(token);
             log.trace("extendApplicationSession returns applicationTokenXml={}", applicationTokenXml);
@@ -258,7 +258,7 @@ public class ApplicationAuthenticationResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response getApplicationIdFromApplicationTokenId(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
         log.debug("verify applicationtokenid {}", applicationtokenid);
-        ApplicationToken myApp = AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid);
+        ApplicationToken myApp = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
         log.debug("Found applicationtoken:" + myApp);
         if (myApp != null || myApp.toString().length() > 10) {
             log.debug("Applicationtokenid valid");
@@ -299,7 +299,7 @@ public class ApplicationAuthenticationResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response getApplicationNameFromApplicationTokenId(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
         log.debug("verify apptokenid {}", applicationtokenid);
-        ApplicationToken myApp = AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid);
+        ApplicationToken myApp = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
         if (myApp != null || myApp.toString().length() > 10) {
             log.debug("Apptokenid valid");
             return Response.ok(myApp.getApplicationName()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
@@ -392,8 +392,8 @@ public class ApplicationAuthenticationResource {
 //    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 //    public Response hasUASAccess(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
 //        log.trace("validateApplicationTokenId - validate applicationtokenid:{}", applicationtokenid);
-//        if (AuthenticatedApplicationRepository.verifyUASAccess(applicationtokenid)) {
-//            log.debug("validateApplicationTokenId - applicationtokenid:{} for applicationname:{} is valid", applicationtokenid, AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid).getApplicationName());
+//        if (AuthenticatedApplicationTokenRepository.verifyUASAccess(applicationtokenid)) {
+//            log.debug("validateApplicationTokenId - applicationtokenid:{} for applicationname:{} is valid", applicationtokenid, AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid).getApplicationName());
 //            return Response.ok("{\"result\": \"true\"}").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
 //        } else {
 //            log.warn("validateApplicationTokenId - applicationtokenid:{}  does not have UAS access", applicationtokenid);

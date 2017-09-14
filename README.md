@@ -1,7 +1,10 @@
 SecurityTokenService
 ====================
 
-![Build Status](http://jenkins.capraconsulting.no/buildStatus/icon?job=Whydah-SecurityTokenService)
+![Build Status](https://jenkins.capraconsulting.no/buildStatus/icon?job=Whydah-SecurityTokenService) - [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)  
+
+[![Known Vulnerabilities](https://snyk.io/test/github/Cantara/Whydah-SecurityTokenService/badge.svg)](https://snyk.io/test/github/Cantara/Whydah-SecurityTokenService)
+
 
 
 The UserToken and ApplicationToken generator and security session manager for the Whydah system

@@ -9,7 +9,7 @@ import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.token.application.ApplicationThreatResource;
-import net.whydah.token.application.AuthenticatedApplicationRepository;
+import net.whydah.token.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.token.config.AppConfig;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -363,12 +363,12 @@ public class UserTokenTest {
 
         ApplicationCredential cred = new ApplicationCredential("19", "myapp", "dummy");
         ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
-        AuthenticatedApplicationRepository.addApplicationToken(imp);
+        AuthenticatedApplicationTokenRepository.addApplicationToken(imp);
 
 
         List<UserApplicationRoleEntry> origRoleList = userToken.getRoleList();
         List<UserApplicationRoleEntry> roleList = new LinkedList<>();
-        String myappid = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(imp.getApplicationTokenId());
+        String myappid = AuthenticatedApplicationTokenRepository.getApplicationIdFromApplicationTokenID(imp.getApplicationTokenId());
         for (int i = 0; i < origRoleList.size(); i++) {
             UserApplicationRoleEntry are = origRoleList.get(i);
             if (are.getApplicationId().equalsIgnoreCase(myappid)) {

@@ -5,27 +5,23 @@ import com.google.inject.name.Named;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
-
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.commands.adminapi.user.CommandGetUserAggregate;
 import net.whydah.sso.commands.adminapi.user.CommandListUsers;
-import net.whydah.sso.commands.baseclasses.BaseHttpGetHystrixCommand;
 import net.whydah.sso.user.mappers.UserCredentialMapper;
 import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserCredential;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.token.application.ApplicationThreatResource;
-import net.whydah.token.application.AuthenticatedApplicationRepository;
+import net.whydah.token.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.token.application.SessionHelper;
 import net.whydah.token.config.AppConfig;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
@@ -109,8 +105,8 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 	}
 
 	public UserToken getRefreshedUserToken(String usertokenid) {
-		ApplicationToken stsToken = AuthenticatedApplicationRepository.getSTSApplicationToken();
-		AuthenticatedApplicationRepository.addApplicationToken(stsToken);
+		ApplicationToken stsToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
+		AuthenticatedApplicationTokenRepository.addApplicationToken(stsToken);
 		String user = appConfig.getProperty("whydah.adminuser.username");
 		String password = appConfig.getProperty("whydah.adminuser.password");
 		UserCredential userCredential = new UserCredential(user, password);

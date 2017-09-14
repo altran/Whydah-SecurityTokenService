@@ -37,9 +37,9 @@
     <logger name="net.whydah.token.application.ApplicationToken" level="DEBUG"/>
     <logger name="org.valuereporter.agent.activity" level="WARN"/>
 
-    <logger name="net.whydah" level="TRACE"/>
+    <logger name="net.whydah" level="DEBUG"/>
 
-    <root level="TRACE">
+    <root level="DEBUG">
         <!-- <appender-ref ref="STDOUT" />  -->
         <appender-ref ref="FILE"/>
     </root>

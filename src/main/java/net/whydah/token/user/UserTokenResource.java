@@ -6,7 +6,6 @@ import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.sun.jersey.api.view.Viewable;
-
 import net.whydah.errorhandling.AppException;
 import net.whydah.errorhandling.AppExceptionCode;
 import net.whydah.sso.commands.adminapi.user.CommandSendSMSToUser;
@@ -16,11 +15,10 @@ import net.whydah.sso.user.types.UserToken;
 import net.whydah.sso.util.DelayedSendSMSTask;
 import net.whydah.token.application.ApplicationModelFacade;
 import net.whydah.token.application.ApplicationThreatResource;
-import net.whydah.token.application.AuthenticatedApplicationRepository;
+import net.whydah.token.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.SSLTool;
 import net.whydah.token.user.statistics.UserSessionObservedActivity;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.valuereporter.agent.MonitorReporter;
@@ -31,7 +29,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-
 import java.io.FileNotFoundException;
 import java.security.SecureRandom;
 import java.util.HashMap;
@@ -376,8 +373,8 @@ public class UserTokenResource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response validateUserTokenXML(@PathParam("applicationtokenid") String applicationtokenid, @FormParam("usertoken") String userTokenXml) throws AppException {
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("validateUserTokenXML - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("validateUserTokenXML - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
@@ -423,8 +420,8 @@ public class UserTokenResource {
     @Path("/{applicationtokenid}/validate_usertokenid/{usertokenid}")
     @GET
     public Response validateUserTokenID(@PathParam("applicationtokenid") String applicationtokenid, @PathParam("usertokenid") String usertokenid) throws AppException {
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("validateUserTokenXML - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("validateUserTokenXML - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
@@ -988,8 +985,8 @@ public class UserTokenResource {
     public Response releaseUserToken(@PathParam("applicationtokenid") String applicationtokenid,
                                      @FormParam("usertokenid") String usertokenid) throws AppException {
         log.trace("releaseUserToken - entry.  usertokenid={}", usertokenid);
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("releaseUserToken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("releaseUserToken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
@@ -1039,8 +1036,8 @@ public class UserTokenResource {
     public Response renewUserToken(@PathParam("applicationtokenid") String applicationtokenid,
                                    @FormParam("usertokenid") String usertokenid) throws AppException {
         log.trace("renewUserToken - entry.  usertokenid={}", usertokenid);
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("renewUserToken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("renewUserToken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
@@ -1112,8 +1109,8 @@ public class UserTokenResource {
     public Response refreshUserToken(@PathParam("applicationtokenid") String applicationtokenid,
                                      @FormParam("usertokenid") String usertokenid) throws AppException {
         log.debug("refresh_usertoken - entry.  usertokenid={}", usertokenid);
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("refresh_usertoken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("refresh_usertoken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
@@ -1142,8 +1139,8 @@ public class UserTokenResource {
     public Response refreshUserTokenByUsername(@PathParam("applicationtokenid") String applicationtokenid,
                                      @FormParam("username") String username) throws AppException {
         log.debug("refresh_usertoken_by_username - entry.  username={}", username);
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("refresh_usertoken_by_username - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("refresh_usertoken_by_username - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
@@ -1332,8 +1329,8 @@ public class UserTokenResource {
             throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
         }
 
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
@@ -1390,8 +1387,8 @@ public class UserTokenResource {
             throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
         }
 
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;     }
 
@@ -1523,8 +1520,8 @@ public class UserTokenResource {
                                    @FormParam("smsMessage") String smsMessage) throws AppException {
         log.info("Response sendSMSMessage: phoneNo:{}, smsMessage:{}", phoneNo, smsMessage);
 
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("sendSMSMessage - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("sendSMSMessage - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
@@ -1576,8 +1573,8 @@ public class UserTokenResource {
                                             @FormParam("smsMessage") String smsMessage) {
         log.info("Response sendScheduledSMSMessage: timestamp:{}, phoneNo:{}, smsMessage:{}", timestamp, phoneNo, smsMessage);
 
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("sendScheduledSMSMessage - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("sendScheduledSMSMessage - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         String cellNo = phoneNo;
@@ -1818,7 +1815,10 @@ public class UserTokenResource {
         userToken.setDefcon(ApplicationThreatResource.getDEFCON());
         UserToken filteredUserToken = UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken);
         ActiveUserTokenRepository.setLastSeen(filteredUserToken);
-        return Response.ok(new Viewable("/usertoken.ftl", filteredUserToken)).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+        Map<String, Object> model = new HashMap();
+        model.put("it", filteredUserToken);
+        model.put("DEFCON", filteredUserToken.getDefcon());
+        return Response.ok(new Viewable("/usertoken.ftl", model)).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
     }
 
     boolean isEmpty(String userticket) {
@@ -1856,8 +1856,8 @@ public class UserTokenResource {
         }
 
         // Verify calling application
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("verifyPhoneByPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("verifyPhoneByPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
@@ -1897,8 +1897,8 @@ public class UserTokenResource {
         }
 
         // Verify calling application
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("verifyPhoneByPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("verifyPhoneByPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
@@ -1938,8 +1938,8 @@ public class UserTokenResource {
         }
 
         // Verify calling application
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("getUserTokenByUserTicket - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("getUserTokenByUserTicket - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
