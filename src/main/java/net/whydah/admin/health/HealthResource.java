@@ -121,7 +121,7 @@ public class HealthResource {
         try {
             // add minor json prettifying intendation
             threatSignalJson = "  " + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(threatSignalMap).replace("\n", "\n  ");
-            return "  \"Threat Signals\": \n" + threatSignalJson + "\n";
+            return "  \"Threat Signals\": \n" + threatSignalJson.replace("a", "*").replace("b", "*").replace("c", "*").replace("d", "*").replace("e", "*") + "\n";
         } catch (Exception e) {
             return "";
         }
