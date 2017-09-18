@@ -4,10 +4,13 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+import net.whydah.admin.health.HealthResource;
 import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
+import net.whydah.sso.util.WhydahUtil;
+import net.whydah.sso.whydah.ThreatSignal;
 import net.whydah.token.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.security.SecureRandom;
-
+import java.time.Instant;
 
 
 public class ApplicationAuthenticationUASClient {
@@ -55,8 +58,16 @@ public class ApplicationAuthenticationUASClient {
             throw e;
         }
         log.warn("Illegal application tried to access whydah. ApplicationID: {}, Response from UAS: {}", applicationCredential.getApplicationID(), uasResponseCode);
+        HealthResource.addThreatSignal(createThreat("Illegal application tried to access whydah. ApplicationID: " + applicationCredential.getApplicationID() + ", Response from UAS: " + uasResponseCode));
         log.warn("checkAppsecretFromUAS: Response from UAS:" + uasResponseCode);
         return false;
     }
 
+    public static ThreatSignal createThreat(String text) {
+        ThreatSignal threatSignal = new ThreatSignal();
+        threatSignal.setAdditionalProperty("EMITTER IP", WhydahUtil.getMyIPAddresssesString());
+        threatSignal.setInstant(Instant.now().toString());
+        threatSignal.setText(text);
+        return threatSignal;
+    }
 }
