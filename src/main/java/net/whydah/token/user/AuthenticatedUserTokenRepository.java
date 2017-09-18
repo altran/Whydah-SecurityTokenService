@@ -26,6 +26,8 @@ public class AuthenticatedUserTokenRepository {
     private static Map<String, String> active_username_usertokenids_map;
     private static Map<String, Date> lastSeenMap;
     private static int noOfClusterMembers = 0;
+    public static int DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = 14 * 24 * 60 * 60;  // 14 days
+
 
     static {
         AppConfig appConfig = new AppConfig();
@@ -52,6 +54,11 @@ public class AuthenticatedUserTokenRepository {
         log.info("Connecting to map {} - size: {}", appConfig.getProperty("gridprefix") + "lastSeenMap", getLastSeenMapSize());
         Set clusterMembers = hazelcastInstance.getCluster().getMembers();
         noOfClusterMembers = clusterMembers.size();
+        String applicationDefaultTimeout = System.getProperty("user.session.timeout");
+        if (applicationDefaultTimeout != null && (Integer.parseInt(applicationDefaultTimeout) > 0)) {
+            DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(applicationDefaultTimeout);
+        }
+
     }
 
     public static void setLastSeen(UserToken userToken) {

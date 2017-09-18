@@ -33,9 +33,9 @@ public class ApplicationAuthenticationUASClient {
 
 
     public static boolean checkAppsecretFromUAS(ApplicationCredential applicationCredential) {
-        ApplicationToken token = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(applicationCredential));
-        token.setBaseuri(appConfig.getProperty("myuri"));
-        token.setExpires(String.valueOf((System.currentTimeMillis() + 100000 * generator.nextInt(500))));
+        ApplicationToken applicationToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(applicationCredential));
+        applicationToken.setBaseuri(appConfig.getProperty("myuri"));
+        applicationToken.setExpires(String.valueOf((System.currentTimeMillis() + 100000 * generator.nextInt(500))));
 
         String useradminservice = appConfig.getProperty("useradminservice");
         ApplicationToken stsToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
