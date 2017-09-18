@@ -2,14 +2,13 @@ package net.whydah.token.application;
 
 import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationToken;
-import net.whydah.sso.user.types.UserToken;
 import net.whydah.token.user.AuthenticatedUserTokenRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SessionHelper {
 
-    private static final Logger log = LoggerFactory.getLogger(UserToken.class);
+    private static final Logger log = LoggerFactory.getLogger(SessionHelper.class);
     public static long defaultlifespan = AuthenticatedUserTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000;
 
     public static long getApplicationLifeSpan(String applicationtokenid){
@@ -30,7 +29,7 @@ public class SessionHelper {
         if (app.getSecurity() != null) {
             long maxUserSessionFromApplication = Long.valueOf(app.getSecurity().getMaxSessionTimeoutSeconds());
             if (maxUserSessionFromApplication > 10) {  // Avoid setting timeout to 0 is missing getMaxSessionTimeoutSeconds.
-                if (maxUserSessionFromApplication < AuthenticatedUserTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000) {
+                if (maxUserSessionFromApplication < AuthenticatedUserTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS) {
                     log.debug("Returning ApplicationToken MaxSessionTimeoutSeconds:{} for Application:{}", maxUserSessionFromApplication, app.getName());
                     return maxUserSessionFromApplication;
                 }
