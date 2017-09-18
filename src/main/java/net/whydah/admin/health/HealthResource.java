@@ -118,10 +118,19 @@ public class HealthResource {
     private static String getThreatMapDetails() {
         String threatSignalJson = " ";
 //        if (valid user with right role)  // todo:  Implement this limitation
+
+
+        // OK... let us obfucscate/filter sessionsid's in signalEmitter field
+        for (Map.Entry<String, ThreatSignal> entry : threatSignalMap.entrySet()) {
+            System.out.println(entry.getKey() + "/" + entry.getValue());
+            ThreatSignal threatSignal = entry.getValue();
+            threatSignal.setSignalEmitter(threatSignal.getSignalEmitter().replace("a", "*").replace("b", "*").replace("c", "*").replace("d", "*").replace("e", "*"));
+            threatSignalMap.put(entry.getKey(), threatSignal);
+        }
         try {
             // add minor json prettifying intendation
             threatSignalJson = "  " + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(threatSignalMap).replace("\n", "\n  ");
-            return "  \"Threat Signals\": \n" + threatSignalJson.replace("a", "*").replace("b", "*").replace("c", "*").replace("d", "*").replace("e", "*") + "\n";
+            return "  \"Threat Signals\": \n" + threatSignalJson + "\n";
         } catch (Exception e) {
             return "";
         }
