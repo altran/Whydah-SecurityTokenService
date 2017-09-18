@@ -62,12 +62,31 @@ public class AuthenticatedApplicationTokenRepository {
     }
 
     public static ApplicationToken getApplicationToken(String applicationtokenid) {
+        ApplicationToken applicationToken = applicationTokenMap.get(applicationtokenid);
+        if (applicationToken == null) {
+            return null;
+        }
+        if (isApplicationTokenExpired(applicationToken.getApplicationTokenId())) {
+            applicationTokenMap.remove(applicationToken.getApplicationTokenId());
+            return null;
+        }
         return applicationTokenMap.get(applicationtokenid);
     }
 
 
     public static boolean verifyApplicationToken(ApplicationToken token) {
-        return token.equals(applicationTokenMap.get(token.getApplicationTokenId()));
+        if (token == null) {
+            return false;
+        }
+        ApplicationToken applicationToken = applicationTokenMap.get(token.getApplicationTokenId());
+        if (applicationToken == null) {
+            return false;
+        }
+        if (isApplicationTokenExpired(applicationToken.getApplicationTokenId())) {
+            applicationTokenMap.remove(applicationToken.getApplicationTokenId());
+            return false;
+        }
+        return true;
     }
 
     public static boolean verifyApplicationTokenId(String applicationtokenid) {
@@ -76,17 +95,22 @@ public class AuthenticatedApplicationTokenRepository {
 
     public static ApplicationToken renewApplicationTokenId(String applicationtokenid) {
         ApplicationToken temp = applicationTokenMap.remove(applicationtokenid);
-        String oldExpires = temp.getExpiresFormatted();
-        temp.setExpires(updateExpires(temp.getExpires(), temp.getApplicationID()));
-        log.info("Updated expiry for applicationID:{}  oldExpiry:{}, newExpiry: {}", applicationtokenid, oldExpires, temp.getExpiresFormatted());
-        applicationTokenMap.put(temp.getApplicationTokenId(), temp);
-        return temp;
+        if (verifyApplicationToken(temp)) {
+
+            String oldExpires = temp.getExpiresFormatted();
+            temp.setExpires(updateExpires(temp.getExpires(), temp.getApplicationID()));
+            log.info("Updated expiry for applicationID:{}  oldExpiry:{}, newExpiry: {}", applicationtokenid, oldExpires, temp.getExpiresFormatted());
+            applicationTokenMap.put(temp.getApplicationTokenId(), temp);
+            return temp;
+        }
+        return null;
     }
 
     public static boolean verifyApplicationTokenXml(String applicationtokenXml) {
         try {
             String applicationID = getApplocationTokenIdFromApplicationTokenXML(applicationtokenXml);
-            return applicationTokenMap.get(applicationID) != null;
+            ApplicationToken applicationToken = applicationTokenMap.get(applicationID);
+            return verifyApplicationToken(applicationToken);
         } catch (StringIndexOutOfBoundsException e) {
             return false;
         }
@@ -121,6 +145,17 @@ public class AuthenticatedApplicationTokenRepository {
         return applicationTokenId;
     }
 
+
+    public static boolean isApplicationTokenExpired(String applicationtokenid) {
+        ApplicationToken temp = applicationTokenMap.get(applicationtokenid);
+
+        Long expires = Long.parseLong(temp.getExpires());
+        Long now = System.currentTimeMillis();
+        if (expires > now) {
+            return false;
+        }
+        return true;
+    }
 
     private static String updateExpires(String oldExpiry, String applicationID) {
         String applicationMaxSessionTime = ApplicationModelFacade.getParameterForApplication(ApplicationModelUtil.maxSessionTimeoutSeconds, applicationID);
