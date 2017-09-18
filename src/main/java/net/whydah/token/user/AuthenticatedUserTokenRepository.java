@@ -185,8 +185,7 @@ public class AuthenticatedUserTokenRepository {
         UserToken utoken = activeusertokensmap.remove(usertokenid);
         active_username_usertokenids_map.remove(utoken.getUserName());
         utoken.setDefcon(ApplicationThreatResource.getDEFCON());
-        utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
-
+        utoken.setTimestamp(String.valueOf(System.currentTimeMillis()));
         utoken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationTokenId)));
         addUserToken(utoken, applicationTokenId, "renew");
         ObservedActivity observedActivity = new UserSessionObservedActivity(utoken.getUid(), "userSessionRenewal", applicationTokenId);
@@ -214,6 +213,8 @@ public class AuthenticatedUserTokenRepository {
         if (userToken.getLifespan() == null) {
             log.debug("addUserToken: UserToken has no lifespan");
             userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationTokenId)));
+            userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+
         }
 
         if (userToken.getEmail() != null) {

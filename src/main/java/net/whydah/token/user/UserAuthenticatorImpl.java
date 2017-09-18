@@ -91,6 +91,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 					UserToken userToken = UserTokenFactory.fromUserIdentityJson(userIdentityJson);
 					userToken.setSecurityLevel("0");  // 3rd party token as source = securitylevel=0
 					userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
+                    userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
 					AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
 					return userToken;
@@ -140,6 +141,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 				UserToken userToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
 				userToken.setSecurityLevel("0");  // UserIdentity as source = securitylevel=0
 				userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
+                userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
 				AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
 				return userToken;
@@ -208,6 +210,8 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
             userToken.setTokenid(generateID());
             userToken.setDefcon(ApplicationThreatResource.getDEFCON());
             userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
+            userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+
 			AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "usertokenid");
 			return userToken;
 
