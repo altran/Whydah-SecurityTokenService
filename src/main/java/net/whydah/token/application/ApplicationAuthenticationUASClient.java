@@ -6,7 +6,6 @@ import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import net.whydah.admin.health.HealthResource;
 import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
-import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.util.WhydahUtil;
@@ -18,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.lang.management.ManagementFactory;
-import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
@@ -31,13 +29,13 @@ public class ApplicationAuthenticationUASClient {
     private static final String APPLICATION_AUTH_PATH = "application/auth";
     public static final String APP_CREDENTIAL_XML = "appCredentialXml";
     private static AppConfig appConfig = new AppConfig();
-    private static java.util.Random generator = new SecureRandom();
+//    private static java.util.Random generator = new SecureRandom();
 
 
     public static boolean checkAppsecretFromUAS(ApplicationCredential applicationCredential) {
-        ApplicationToken applicationToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(applicationCredential));
-        applicationToken.setBaseuri(appConfig.getProperty("myuri"));
-        applicationToken.setExpires(String.valueOf((System.currentTimeMillis() + 100000 * generator.nextInt(500))));
+//        ApplicationToken applicationToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(applicationCredential));
+//        applicationToken.setBaseuri(appConfig.getProperty("myuri"));
+//        applicationToken.setExpires(String.valueOf((System.currentTimeMillis() + 100000 * generator.nextInt(500))));
 
         String useradminservice = appConfig.getProperty("useradminservice");
         ApplicationToken stsToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
