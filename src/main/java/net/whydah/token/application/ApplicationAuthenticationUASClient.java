@@ -65,6 +65,7 @@ public class ApplicationAuthenticationUASClient {
 
     public static ThreatSignal createThreat(String text) {
         ThreatSignal threatSignal = new ThreatSignal();
+        threatSignal.setSignalEmitter("SecurityTokenService");
         threatSignal.setAdditionalProperty("EMITTER IP", WhydahUtil.getMyIPAddresssesString());
         threatSignal.setInstant(Instant.now().toString());
         threatSignal.setText(text);
