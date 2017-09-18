@@ -77,9 +77,9 @@ public class HealthResource {
                 "\nVersion:" + getVersion() +
                 "\nDEFCON: " + ApplicationThreatResource.getDEFCON() +
                 "\nClusterSize: " + AuthenticatedUserTokenRepository.getNoOfClusterMembers() +
-                "\nActiveUserTokenMapSize: " + AuthenticatedUserTokenRepository.getMapSize() +
-                "\nLastSeenMapSize: " + AuthenticatedUserTokenRepository.getLastSeenMapSize() +
-                "\nPinMapSize: " + ActivePinRepository.getPinMap().size() +
+                "\nUserLastSeenMapSize: " + AuthenticatedUserTokenRepository.getLastSeenMapSize() +
+                "\nUserPinMapSize: " + ActivePinRepository.getPinMap().size() +
+                "\nAuthenticatedTokenMapSize: " + AuthenticatedUserTokenRepository.getMapSize() +
                 "\nAuthenticatedApplicationRepositoryMapSize: " + AuthenticatedApplicationTokenRepository.getMapSize();
     }
 
@@ -92,13 +92,13 @@ public class HealthResource {
                     "  \"Version\": \"" + getVersion() + "\",\n" +
                     "  \"DEFCON\": \"" + ApplicationThreatResource.getDEFCON() + "\",\n" +
                     "  \"ClusterSize\": " + AuthenticatedUserTokenRepository.getNoOfClusterMembers() + ",\n" +
-                    "  \"ApplicationMapSize\": " + applicationMapSize + ",\n" +
-                    "  \"ActiveUserTokenMapSize\": " + AuthenticatedUserTokenRepository.getMapSize() + ",\n" +
-                    "  \"LastSeenMapSize\": " + AuthenticatedUserTokenRepository.getLastSeenMapSize() + ",\n" +
-                    "  \"PinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
-                    "  \"ThreatSignalMapSize\": " + threatSignalMap.size() + ",\n" +
+                    "  \"UserLastSeenMapSize\": " + AuthenticatedUserTokenRepository.getLastSeenMapSize() + ",\n" +
+                    "  \"UserPinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
+                    "  \"AuthenticatedUserTokenMapSize\": " + AuthenticatedUserTokenRepository.getMapSize() + ",\n" +
                     "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationTokenRepository.getMapSize() + ",\n" +
-                    "  \"Active Applications\": \"" + AuthenticatedApplicationTokenRepository.getActiveApplications().replace(",", ",\n                          ") + "\",\n" +
+                    "  \"ActiveApplicationMapSize\": " + applicationMapSize + ",\n" +
+                    "  \"ActiveApplications\": \"" + AuthenticatedApplicationTokenRepository.getActiveApplications().replace(",", ",\n                          ") + "\",\n" +
+                    "  \"ThreatSignalMapSize\": " + threatSignalMap.size() + ",\n" +
                     "  \"now\": \"" + Instant.now() + "\",\n" +
                     "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\"," +
                     "  \n\n" +
@@ -160,7 +160,7 @@ public class HealthResource {
     public static void addThreatSignal(ThreatSignal signal) {
         if (threatSignalMap.size() > 5000) {
             try {
-                log.warn("ThreatsignalMap overrun, dumping and clearing");
+                log.warn("ThreatSignalMap overrun, dumping and clearing");
                 log.warn(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(threatSignalMap));
             } catch (Exception e) {
                 // Do nothing
