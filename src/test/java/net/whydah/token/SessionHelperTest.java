@@ -26,7 +26,7 @@ public class SessionHelperTest {
 	public void testApplicationLiefSpan(){
 		//TODO: test should be updated when implementing the SessionHelper
 		List<Application> applications = ApplicationMapper.fromJsonList(ApplicationHelper.getDummyAppllicationListJson());
-        Assert.assertTrue(SessionHelper.getApplicationLifeSpan(applications.get(0)) == 86400);
+        Assert.assertTrue(1000 * SessionHelper.getApplicationLifeSpanSeconds(applications.get(0)) == 86400);
 
 		
 	}

@@ -90,7 +90,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 					String userIdentityJson = uasResponse.getEntity(String.class);
 					UserToken userToken = UserTokenFactory.fromUserIdentityJson(userIdentityJson);
 					userToken.setSecurityLevel("0");  // 3rd party token as source = securitylevel=0
-					userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
+                    userToken.setLifespan(String.valueOf(1000 * SessionHelper.getApplicationLifeSpanSeconds(applicationtokenid)));
                     userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
 					AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
@@ -140,7 +140,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
 				UserToken userToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
 				userToken.setSecurityLevel("0");  // UserIdentity as source = securitylevel=0
-				userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
+                userToken.setLifespan(String.valueOf(1000 * SessionHelper.getApplicationLifeSpanSeconds(applicationtokenid)));
                 userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
 				AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
@@ -209,7 +209,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 			userToken.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
             userToken.setTokenid(generateID());
             userToken.setDefcon(ApplicationThreatResource.getDEFCON());
-            userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
+            userToken.setLifespan(String.valueOf(1000 * SessionHelper.getApplicationLifeSpanSeconds(applicationtokenid)));
             userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
 			AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "usertokenid");
