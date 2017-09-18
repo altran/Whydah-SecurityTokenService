@@ -58,7 +58,12 @@ public class ApplicationAuthenticationUASClient {
             throw e;
         }
         log.warn("Illegal application tried to access whydah. ApplicationID: {}, Response from UAS: {}", applicationCredential.getApplicationID(), uasResponseCode);
-        HealthResource.addThreatSignal(createThreat("Illegal application tried to access whydah. ApplicationID: " + applicationCredential.getApplicationID() + ", Response from UAS: " + uasResponseCode));
+
+        // Avoid bootstrap signalling the first 5 seconds
+        if (Long.parseLong(Instant.now().toString()) - Long.parseLong(WhydahUtil.getRunningSince()) > 5000) {
+            HealthResource.addThreatSignal(createThreat("Illegal application tried to access whydah. ApplicationID: " + applicationCredential.getApplicationID() + ", Response from UAS: " + uasResponseCode));
+
+        }
         log.warn("checkAppsecretFromUAS: Response from UAS:" + uasResponseCode);
         return false;
     }
