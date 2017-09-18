@@ -120,9 +120,12 @@ public class HealthResource {
 //        if (valid user with right role)  // todo:  Implement this limitation
 
 
+        // Lets trigger map-cleanup first
+        AuthenticatedApplicationTokenRepository.cleanApplicationTokenMap();
+
+
         // OK... let us obfucscate/filter sessionsid's in signalEmitter field
         for (Map.Entry<String, ThreatSignal> entry : threatSignalMap.entrySet()) {
-            System.out.println(entry.getKey() + "/" + entry.getValue());
             ThreatSignal threatSignal = entry.getValue();
             threatSignal.setSignalEmitter(threatSignal.getSignalEmitter().replace("a", "*").replace("b", "*").replace("c", "*").replace("d", "*").replace("e", "*"));
             threatSignalMap.put(entry.getKey(), threatSignal);

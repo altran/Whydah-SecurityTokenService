@@ -244,5 +244,14 @@ public class AuthenticatedApplicationTokenRepository {
 
     }
 
+    public static void cleanApplicationTokenMap() {
+        // OK... let us obfucscate/filter sessionsid's in signalEmitter field
+        for (Map.Entry<String, ApplicationToken> entry : applicationTokenMap.entrySet()) {
+            ApplicationToken applicationToken = entry.getValue();
+            if (isApplicationTokenExpired(applicationToken.getApplicationTokenId())) {
+                applicationTokenMap.remove(applicationToken);
+            }
+        }
+    }
 
 }
