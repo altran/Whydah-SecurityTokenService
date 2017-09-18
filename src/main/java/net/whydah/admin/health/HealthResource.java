@@ -12,7 +12,7 @@ import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.user.ActivePinRepository;
-import net.whydah.token.user.ActiveUserTokenRepository;
+import net.whydah.token.user.AuthenticatedUserTokenRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,9 +76,9 @@ public class HealthResource {
         return "Status: OK" +
                 "\nVersion:" + getVersion() +
                 "\nDEFCON: " + ApplicationThreatResource.getDEFCON() +
-                "\nClusterSize: " + ActiveUserTokenRepository.getNoOfClusterMembers() +
-                "\nActiveUserTokenMapSize: " + ActiveUserTokenRepository.getMapSize() +
-                "\nLastSeenMapSize: " + ActiveUserTokenRepository.getLastSeenMapSize() +
+                "\nClusterSize: " + AuthenticatedUserTokenRepository.getNoOfClusterMembers() +
+                "\nActiveUserTokenMapSize: " + AuthenticatedUserTokenRepository.getMapSize() +
+                "\nLastSeenMapSize: " + AuthenticatedUserTokenRepository.getLastSeenMapSize() +
                 "\nPinMapSize: " + ActivePinRepository.getPinMap().size() +
                 "\nAuthenticatedApplicationRepositoryMapSize: " + AuthenticatedApplicationTokenRepository.getMapSize();
     }
@@ -91,10 +91,10 @@ public class HealthResource {
                     "  \"Status\": \"OK\",\n" +
                     "  \"Version\": \"" + getVersion() + "\",\n" +
                     "  \"DEFCON\": \"" + ApplicationThreatResource.getDEFCON() + "\",\n" +
-                    "  \"ClusterSize\": " + ActiveUserTokenRepository.getNoOfClusterMembers() + ",\n" +
+                    "  \"ClusterSize\": " + AuthenticatedUserTokenRepository.getNoOfClusterMembers() + ",\n" +
                     "  \"ApplicationMapSize\": " + applicationMapSize + ",\n" +
-                    "  \"ActiveUserTokenMapSize\": " + ActiveUserTokenRepository.getMapSize() + ",\n" +
-                    "  \"LastSeenMapSize\": " + ActiveUserTokenRepository.getLastSeenMapSize() + ",\n" +
+                    "  \"ActiveUserTokenMapSize\": " + AuthenticatedUserTokenRepository.getMapSize() + ",\n" +
+                    "  \"LastSeenMapSize\": " + AuthenticatedUserTokenRepository.getLastSeenMapSize() + ",\n" +
                     "  \"PinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
                     "  \"ThreatSignalMapSize\": " + threatSignalMap.size() + ",\n" +
                     "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationTokenRepository.getMapSize() + ",\n" +
@@ -122,6 +122,7 @@ public class HealthResource {
 
         // Lets trigger map-cleanup first
         AuthenticatedApplicationTokenRepository.cleanApplicationTokenMap();
+        AuthenticatedUserTokenRepository.cleanUserTokenMap();
 
 
         // OK... let us obfucscate/filter sessionsid's in signalEmitter field

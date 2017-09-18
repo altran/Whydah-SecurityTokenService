@@ -4,13 +4,11 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.SessionHelper;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.user.statistics.UserSessionObservedActivity;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.valuereporter.agent.MonitorReporter;
@@ -18,13 +16,12 @@ import org.valuereporter.agent.activity.ObservedActivity;
 
 import java.io.FileNotFoundException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public class ActiveUserTokenRepository {
-    private final static Logger log = LoggerFactory.getLogger(ActiveUserTokenRepository.class);
+public class AuthenticatedUserTokenRepository {
+    private final static Logger log = LoggerFactory.getLogger(AuthenticatedUserTokenRepository.class);
     private static Map<String, UserToken> activeusertokensmap;
     private static Map<String, String> active_username_usertokenids_map;
     private static Map<String, Date> lastSeenMap;
@@ -97,7 +94,7 @@ public class ActiveUserTokenRepository {
         }
         UserToken resToken = activeusertokensmap.get(usertokenId);
         if (resToken != null && verifyUserToken(resToken, applicationTokenId)) {
-            resToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(resToken));
+            resToken.setLastSeen(AuthenticatedUserTokenRepository.getLastSeen(resToken));
             lastSeenMap.put(resToken.getEmail(), new Date());
             log.info("Valid userToken found: " + resToken);
             log.debug("userToken=" + resToken);
@@ -121,7 +118,7 @@ public class ActiveUserTokenRepository {
         	String usertokenid = active_username_usertokenids_map.get(userName);
         	 UserToken resToken = activeusertokensmap.get(usertokenid);
              if (resToken != null && verifyUserToken(resToken, applicationTokenId)) {
-                 resToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(resToken));
+                 resToken.setLastSeen(AuthenticatedUserTokenRepository.getLastSeen(resToken));
                  lastSeenMap.put(resToken.getEmail(), new Date());
                  log.info("Valid userToken found: " + resToken);
                  log.debug("userToken=" + resToken);
@@ -146,7 +143,7 @@ public class ActiveUserTokenRepository {
      */
     public static boolean verifyUserToken(UserToken userToken, String applicationTokenId) {
         if (userToken.getTokenid() == null) {
-            log.info("UserToken not valid, missing tokenId");
+            log.info("UserToken not valid, missing UserTokenId");
             return false;
         }
         if (userToken.getEmail() != null) {
@@ -212,7 +209,7 @@ public class ActiveUserTokenRepository {
         }
 
         if (userToken.getEmail() != null) {
-            userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
+            userToken.setLastSeen(AuthenticatedUserTokenRepository.getLastSeen(userToken));
             lastSeenMap.put(userToken.getEmail(), new Date());
 
         }
@@ -272,4 +269,16 @@ public class ActiveUserTokenRepository {
     public static int getNoOfClusterMembers() {
         return noOfClusterMembers;
     }
+
+
+    public static void cleanUserTokenMap() {
+        // OK... let us obfucscate/filter sessionsid's in signalEmitter field
+        for (Map.Entry<String, UserToken> entry : activeusertokensmap.entrySet()) {
+            UserToken userToken = entry.getValue();
+            if (!userToken.isValid()) {
+                activeusertokensmap.remove(userToken);
+            }
+        }
+    }
+
 }

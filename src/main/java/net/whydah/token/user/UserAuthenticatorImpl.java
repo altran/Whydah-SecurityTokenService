@@ -92,7 +92,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 					userToken.setSecurityLevel("0");  // 3rd party token as source = securitylevel=0
 					userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
 
-					ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
+					AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
 					return userToken;
 					// return Response.ok(new Viewable("/usertoken.ftl", myToken)).build();
 				}
@@ -112,7 +112,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 		UserCredential userCredential = new UserCredential(user, password);
         UserToken whydahUserAdminUserToken = logonUser(stsToken.getApplicationTokenId(), ApplicationTokenMapper.toXML(stsToken), userCredential.toXML());
 
-		UserToken oldUserToken = ActiveUserTokenRepository.getUserToken(usertokenid, stsToken.getApplicationTokenId());
+		UserToken oldUserToken = AuthenticatedUserTokenRepository.getUserToken(usertokenid, stsToken.getApplicationTokenId());
 
         String userAggregateJson = new CommandGetUserAggregate(useradminservice, stsToken.getApplicationTokenId(), whydahUserAdminUserToken.getTokenid(), oldUserToken.getUid()).execute();
 		
@@ -141,7 +141,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 				userToken.setSecurityLevel("0");  // UserIdentity as source = securitylevel=0
 				userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
 
-				ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
+				AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
 				return userToken;
 
 			} else {
@@ -208,7 +208,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
             userToken.setTokenid(generateID());
             userToken.setDefcon(ApplicationThreatResource.getDEFCON());
             userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationtokenid)));
-			ActiveUserTokenRepository.addUserToken(userToken, applicationtokenid, "usertokenid");
+			AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "usertokenid");
 			return userToken;
 
 		} else {
