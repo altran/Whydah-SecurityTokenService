@@ -96,7 +96,7 @@ public class HealthResource {
                     "  \"UserPinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
                     "  \"AuthenticatedUserTokenMapSize\": " + AuthenticatedUserTokenRepository.getMapSize() + ",\n" +
                     "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationTokenRepository.getMapSize() + ",\n" +
-                    "  \"ActiveApplicationMapSize\": " + applicationMapSize + ",\n" +
+                    "  \"ConfiguredApplications\": " + applicationMapSize + ",\n" +
                     "  \"ActiveApplications\": \"" + AuthenticatedApplicationTokenRepository.getActiveApplications().replace(",", ",\n                          ") + "\",\n" +
                     "  \"ThreatSignalMapSize\": " + threatSignalMap.size() + ",\n" +
                     "  \"now\": \"" + Instant.now() + "\",\n" +
