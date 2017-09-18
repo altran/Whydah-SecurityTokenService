@@ -17,8 +17,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import java.lang.management.ManagementFactory;
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 
 public class ApplicationAuthenticationUASClient {
@@ -60,12 +62,16 @@ public class ApplicationAuthenticationUASClient {
         log.warn("Illegal application tried to access whydah. ApplicationID: {}, Response from UAS: {}", applicationCredential.getApplicationID(), uasResponseCode);
 
         // Avoid bootstrap signalling the first 5 seconds
-        if (Long.parseLong(Instant.now().toString()) - Long.parseLong(WhydahUtil.getRunningSince()) > 5000) {
+        if (Instant.now().getEpochSecond() - getRunningSince().getEpochSecond() > 5000) {
             HealthResource.addThreatSignal(createThreat("Illegal application tried to access whydah. ApplicationID: " + applicationCredential.getApplicationID() + ", Response from UAS: " + uasResponseCode));
-
         }
         log.warn("checkAppsecretFromUAS: Response from UAS:" + uasResponseCode);
         return false;
+    }
+
+    public static Instant getRunningSince() {
+        long uptimeInMillis = ManagementFactory.getRuntimeMXBean().getUptime();
+        return Instant.now().minus(uptimeInMillis, ChronoUnit.MILLIS);
     }
 
     public static ThreatSignal createThreat(String text) {

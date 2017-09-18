@@ -8,6 +8,8 @@ import net.whydah.sso.config.ApplicationMode;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.time.Instant;
+
 import static net.whydah.token.application.AuthenticatedApplicationTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS;
 import static org.junit.Assert.*;
 
@@ -74,4 +76,14 @@ public class ApplicationTokenTest {
         assertTrue(imp3 == null);
 
     }
+
+    @Test
+    public void testSomeTimecalculations() throws Exception {
+        long l1 = Instant.now().getEpochSecond();
+        long l2 = ApplicationAuthenticationUASClient.getRunningSince().getEpochSecond();
+        if (l1 - l2 < 0) {
+            fail();
+        }
+    }
+
 }
