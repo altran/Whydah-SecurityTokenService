@@ -130,7 +130,7 @@ public class ApplicationAuthenticationResource {
             log.warn("Old Whydah ApplicationCredential received, please inform application owner to update the ApplicationCredential. ApplicationCredential:" + appCredentialXml);
         }
         applicationToken.setBaseuri(appConfig.getProperty("myuri"));
-        applicationToken.setExpires(String.valueOf((System.currentTimeMillis() + AuthenticatedApplicationTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000)));
+        applicationToken.setExpires(String.valueOf((System.currentTimeMillis()) + AuthenticatedApplicationTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000));
         AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken);
         String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
         log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);

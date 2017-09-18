@@ -62,6 +62,8 @@ public class AuthenticatedApplicationTokenRepository {
 
 
     public static void addApplicationToken(ApplicationToken token) {
+        long remainingSecs = (Long.parseLong(token.getExpires()) - System.currentTimeMillis()) / 1000;
+        log.debug("Added {} expires in {} seconds", token.getApplicationName(), remainingSecs);
         applicationTokenMap.put(token.getApplicationTokenId(), token);
     }
 
