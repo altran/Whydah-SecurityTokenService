@@ -285,7 +285,7 @@ public class AuthenticatedUserTokenRepository {
         for (Map.Entry<String, UserToken> entry : activeusertokensmap.entrySet()) {
             UserToken userToken = entry.getValue();
             if (!userToken.isValid()) {
-                activeusertokensmap.remove(userToken);
+                activeusertokensmap.remove(userToken.getTokenid());
             }
         }
     }
