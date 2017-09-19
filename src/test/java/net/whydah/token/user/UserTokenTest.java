@@ -14,6 +14,8 @@ import net.whydah.token.config.AppConfig;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -34,12 +36,13 @@ import static org.junit.Assert.*;
 
 public class UserTokenTest {
     private FreemarkerProcessor freemarkerProcessor = new FreemarkerProcessor();
+    private final static Logger log = LoggerFactory.getLogger(UserTokenTest.class);
     private final static DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
 
     @BeforeClass
     public static void init() {
-        System.setProperty(ApplicationMode.IAM_MODE_KEY, ApplicationMode.TEST);
+        System.setProperty(ApplicationMode.IAM_MODE_KEY, ApplicationMode.DEV);
         System.setProperty(AppConfig.IAM_CONFIG_KEY, "src/test/testconfig.properties");
     }
 
@@ -71,10 +74,11 @@ public class UserTokenTest {
         utoken.setFirstName("Ola");
         utoken.setLastName("Nordmann");
         utoken.setEmail("test@whydah.net");
-        utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
+        utoken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+        utoken.setLifespan(String.valueOf(2 * 60 * 60 * new Random().nextInt(100)));
+
         utoken.setTokenid(UUID.randomUUID().toString());
         utoken.setPersonRef("78125637812638");
-        utoken.setLifespan(String.valueOf(2 * 60 * 60 * new Random().nextInt(100)));
 
         AuthenticatedUserTokenRepository.addUserToken(utoken, "", "");
         assertTrue("Verification of valid token failed", AuthenticatedUserTokenRepository.verifyUserToken(utoken, ""));
@@ -386,10 +390,10 @@ public class UserTokenTest {
         utoken.setFirstName("Ola");
         utoken.setLastName("Nordmann");
         utoken.setEmail("test@whydah.net");
-        utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
+        utoken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+        utoken.setLifespan(String.valueOf(2 * 60 * 60 * new Random().nextInt(100)));
         utoken.setTokenid(UUID.randomUUID().toString());
         utoken.setPersonRef("78125637812638");
-        utoken.setLifespan(String.valueOf(2 * 60 * 60 * new Random().nextInt(100)));
 
         AuthenticatedUserTokenRepository.addUserToken(utoken, "", "");
         assertTrue("Verification of valid token failed", AuthenticatedUserTokenRepository.verifyUserToken(utoken, ""));
@@ -400,4 +404,31 @@ public class UserTokenTest {
         assertFalse("Verification of in-valid token successful", AuthenticatedUserTokenRepository.verifyUserToken(utoken, ""));
     }
 
+    @Test
+    public void testAuthenticatedUserTokenRepositoryCleanup() throws Exception {
+        UserToken utoken = new UserToken();
+        utoken.setUserName(UUID.randomUUID().toString());
+        utoken.setFirstName("Ola");
+        utoken.setLastName("Nordmann");
+        utoken.setEmail("test@whydah.net");
+        utoken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+        utoken.setTokenid(UUID.randomUUID().toString());
+        utoken.setPersonRef("78125637812638");
+        utoken.setLifespan(String.valueOf(1 * 1000));
+
+        int noOfUsers = AuthenticatedUserTokenRepository.getMapSize();
+        log.debug("Users:" + noOfUsers);
+
+        AuthenticatedUserTokenRepository.addUserToken(utoken, "", "");
+        int noOfUsersAfter = AuthenticatedUserTokenRepository.getMapSize();
+        log.debug("Users (after):" + noOfUsersAfter);
+        assertTrue(noOfUsers < noOfUsersAfter);
+
+        Thread.sleep(2000);
+        AuthenticatedUserTokenRepository.cleanUserTokenMap();
+        int noOfUsersAfter2 = AuthenticatedUserTokenRepository.getMapSize();
+        log.debug("Users (after2):" + noOfUsersAfter2);
+        assertTrue(noOfUsersAfter2 < noOfUsersAfter);
+
+    }
 }
