@@ -7,6 +7,8 @@ import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.config.ApplicationMode;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 
@@ -14,6 +16,7 @@ import static net.whydah.token.application.AuthenticatedApplicationTokenReposito
 import static org.junit.Assert.*;
 
 public class ApplicationTokenTest {
+    private final static Logger log = LoggerFactory.getLogger(ApplicationTokenTest.class);
 
     @BeforeClass
     public static void init() throws Exception {
@@ -89,6 +92,7 @@ public class ApplicationTokenTest {
     @Test
     public void testAuthenticatedApplicationTokenRepositoryCleanup() throws Exception {
         int applications = AuthenticatedApplicationTokenRepository.getMapSize();
+        log.debug("Applications:" + applications);
         ApplicationCredential cred = new ApplicationCredential("1212", "testapp", "dummy");
         ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
         imp.setExpires(String.valueOf(System.currentTimeMillis() + DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000));
@@ -98,10 +102,13 @@ public class ApplicationTokenTest {
         imp2.setExpires(String.valueOf(System.currentTimeMillis() + 1 * 300));  // Only one second here
         AuthenticatedApplicationTokenRepository.addApplicationToken(imp2);
         int applicationsNow = AuthenticatedApplicationTokenRepository.getMapSize();
+        log.debug("ApplicationsNow:" + applicationsNow);
         assertTrue(applications == applicationsNow - 2);
         Thread.sleep(1500);
         AuthenticatedApplicationTokenRepository.cleanApplicationTokenMap();
         int applicationsNow2 = AuthenticatedApplicationTokenRepository.getMapSize();
+        log.debug("Applications:" + applications);
+        log.debug("ApplicationsNow2:" + applicationsNow2);
         assertTrue(applications == applicationsNow2 - 1);
 
     }
