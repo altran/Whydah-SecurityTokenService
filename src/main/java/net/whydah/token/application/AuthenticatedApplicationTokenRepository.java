@@ -256,7 +256,7 @@ public class AuthenticatedApplicationTokenRepository {
         for (Map.Entry<String, ApplicationToken> entry : applicationTokenMap.entrySet()) {
             ApplicationToken applicationToken = entry.getValue();
             if (isApplicationTokenExpired(applicationToken.getApplicationTokenId())) {
-                applicationTokenMap.remove(applicationToken);
+                applicationTokenMap.remove(applicationToken.getApplicationTokenId());
             }
         }
     }
