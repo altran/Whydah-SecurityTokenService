@@ -95,7 +95,7 @@ public class ApplicationTokenTest {
         AuthenticatedApplicationTokenRepository.addApplicationToken(imp);
 
         ApplicationToken imp2 = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
-        imp2.setExpires(String.valueOf(System.currentTimeMillis() + 1 * 1000));
+        imp2.setExpires(String.valueOf(System.currentTimeMillis() + 1 * 300));  // Only one second here
         AuthenticatedApplicationTokenRepository.addApplicationToken(imp2);
         int applicationsNow = AuthenticatedApplicationTokenRepository.getMapSize();
         assertTrue(applications == applicationsNow - 2);
