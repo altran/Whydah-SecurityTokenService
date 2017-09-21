@@ -9,11 +9,13 @@ import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.token.application.ApplicationThreatResource;
-import net.whydah.token.application.AuthenticatedApplicationRepository;
+import net.whydah.token.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.token.config.AppConfig;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -34,12 +36,13 @@ import static org.junit.Assert.*;
 
 public class UserTokenTest {
     private FreemarkerProcessor freemarkerProcessor = new FreemarkerProcessor();
+    private final static Logger log = LoggerFactory.getLogger(UserTokenTest.class);
     private final static DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
 
     @BeforeClass
     public static void init() {
-        System.setProperty(ApplicationMode.IAM_MODE_KEY, ApplicationMode.TEST);
+        System.setProperty(ApplicationMode.IAM_MODE_KEY, ApplicationMode.DEV);
         System.setProperty(AppConfig.IAM_CONFIG_KEY, "src/test/testconfig.properties");
     }
 
@@ -71,18 +74,19 @@ public class UserTokenTest {
         utoken.setFirstName("Ola");
         utoken.setLastName("Nordmann");
         utoken.setEmail("test@whydah.net");
-        utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
-        utoken.setTokenid(UUID.randomUUID().toString());
-        utoken.setPersonRef("78125637812638");
+        utoken.setTimestamp(String.valueOf(System.currentTimeMillis()));
         utoken.setLifespan(String.valueOf(2 * 60 * 60 * new Random().nextInt(100)));
 
-        ActiveUserTokenRepository.addUserToken(utoken, "", "");
-        assertTrue("Verification of valid token failed", ActiveUserTokenRepository.verifyUserToken(utoken, ""));
+        utoken.setTokenid(UUID.randomUUID().toString());
+        utoken.setPersonRef("78125637812638");
+
+        AuthenticatedUserTokenRepository.addUserToken(utoken, "2012", "");
+        assertTrue("Verification of valid token failed", AuthenticatedUserTokenRepository.verifyUserToken(utoken, "2012"));
 
         utoken.setFirstName("Pelle");
         String token = freemarkerProcessor.toXml(utoken);
         assertTrue("Token not updated", token.indexOf("Pelle") > 0);
-        assertFalse("Verification of in-valid token successful", ActiveUserTokenRepository.verifyUserToken(utoken, ""));
+        assertFalse("Verification of in-valid token successful", AuthenticatedUserTokenRepository.verifyUserToken(utoken, ""));
     }
 
     @Test
@@ -96,8 +100,8 @@ public class UserTokenTest {
         utoken.setPersonRef("78125637812638");
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis() - 1000));
         utoken.setLifespan("0");
-        ActiveUserTokenRepository.addUserToken(utoken, "", "");
-        assertFalse("Verification of timed-out token successful", ActiveUserTokenRepository.verifyUserToken(utoken, ""));
+        AuthenticatedUserTokenRepository.addUserToken(utoken, "", "");
+        assertFalse("Verification of timed-out token successful", AuthenticatedUserTokenRepository.verifyUserToken(utoken, ""));
     }
 
     @Test
@@ -363,12 +367,12 @@ public class UserTokenTest {
 
         ApplicationCredential cred = new ApplicationCredential("19", "myapp", "dummy");
         ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
-        AuthenticatedApplicationRepository.addApplicationToken(imp);
+        AuthenticatedApplicationTokenRepository.addApplicationToken(imp);
 
 
         List<UserApplicationRoleEntry> origRoleList = userToken.getRoleList();
         List<UserApplicationRoleEntry> roleList = new LinkedList<>();
-        String myappid = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(imp.getApplicationTokenId());
+        String myappid = AuthenticatedApplicationTokenRepository.getApplicationIdFromApplicationTokenID(imp.getApplicationTokenId());
         for (int i = 0; i < origRoleList.size(); i++) {
             UserApplicationRoleEntry are = origRoleList.get(i);
             if (are.getApplicationId().equalsIgnoreCase(myappid)) {
@@ -379,4 +383,52 @@ public class UserTokenTest {
 
     }
 
+    @Test
+    public void testActiveUserTokenExpiresRepository() {
+        UserToken utoken = new UserToken();
+        utoken.setUserName(UUID.randomUUID().toString());
+        utoken.setFirstName("Ola");
+        utoken.setLastName("Nordmann");
+        utoken.setEmail("test@whydah.net");
+        utoken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+        utoken.setLifespan(String.valueOf(2 * 60 * 60 * new Random().nextInt(100)));
+        utoken.setTokenid(UUID.randomUUID().toString());
+        utoken.setPersonRef("78125637812638");
+
+        AuthenticatedUserTokenRepository.addUserToken(utoken, "", "");
+        assertTrue("Verification of valid token failed", AuthenticatedUserTokenRepository.verifyUserToken(utoken, ""));
+
+        utoken.setFirstName("Pelle");
+        String token = freemarkerProcessor.toXml(utoken);
+        assertTrue("Token not updated", token.indexOf("Pelle") > 0);
+        assertFalse("Verification of in-valid token successful", AuthenticatedUserTokenRepository.verifyUserToken(utoken, ""));
+    }
+
+    @Test
+    public void testAuthenticatedUserTokenRepositoryCleanup() throws Exception {
+        UserToken utoken = new UserToken();
+        utoken.setUserName(UUID.randomUUID().toString());
+        utoken.setFirstName("Ola");
+        utoken.setLastName("Nordmann");
+        utoken.setEmail("test@whydah.net");
+        utoken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+        utoken.setTokenid(UUID.randomUUID().toString());
+        utoken.setPersonRef("78125637812638");
+        utoken.setLifespan(String.valueOf(1 * 1000));
+
+        int noOfUsers = AuthenticatedUserTokenRepository.getMapSize();
+        log.debug("Users:" + noOfUsers);
+
+        AuthenticatedUserTokenRepository.addUserToken(utoken, "", "");
+        int noOfUsersAfter = AuthenticatedUserTokenRepository.getMapSize();
+        log.debug("Users (after):" + noOfUsersAfter);
+        assertTrue(noOfUsers < noOfUsersAfter);
+
+        Thread.sleep(2000);
+        AuthenticatedUserTokenRepository.cleanUserTokenMap();
+        int noOfUsersAfter2 = AuthenticatedUserTokenRepository.getMapSize();
+        log.debug("Users (after2):" + noOfUsersAfter2);
+        assertTrue(noOfUsersAfter2 < noOfUsersAfter);
+
+    }
 }

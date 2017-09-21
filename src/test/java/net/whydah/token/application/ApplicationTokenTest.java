@@ -7,11 +7,16 @@ import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.config.ApplicationMode;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import java.time.Instant;
+
+import static net.whydah.token.application.AuthenticatedApplicationTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS;
+import static org.junit.Assert.*;
 
 public class ApplicationTokenTest {
+    private final static Logger log = LoggerFactory.getLogger(ApplicationTokenTest.class);
 
     @BeforeClass
     public static void init() throws Exception {
@@ -37,14 +42,74 @@ public class ApplicationTokenTest {
     }
 
     @Test
-    public void testCreateApplicationToken() {
+    public void testCreateApplicationToken() throws Exception {
         ApplicationCredential cred = new ApplicationCredential("1212","testapp","dummy");
         ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
-        AuthenticatedApplicationRepository.addApplicationToken(imp);
+        imp.setExpires(String.valueOf(System.currentTimeMillis()));
+        AuthenticatedApplicationTokenRepository.addApplicationToken(imp);
+        Thread.sleep(200);
 
-        ApplicationToken imp2 = AuthenticatedApplicationRepository.getApplicationToken(imp.getApplicationTokenId());
+        // First attempt - with expires = now...
+        ApplicationToken imp3 = AuthenticatedApplicationTokenRepository.getApplicationToken(imp.getApplicationTokenId());
+        assertTrue(imp3 == null);
+
+        imp.setExpires(String.valueOf(System.currentTimeMillis() + DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000));
+        AuthenticatedApplicationTokenRepository.addApplicationToken(imp);
+        // Second attempt - with sensible expires
+        ApplicationToken imp2 = AuthenticatedApplicationTokenRepository.getApplicationToken(imp.getApplicationTokenId());
         //System.out.println(imp.toXML());
         assertEquals("The generated application token is wrong.", cred.getApplicationID(), imp2.getApplicationID());
         assertTrue(imp2.getApplicationTokenId().length() > 12);
+    }
+
+    @Test
+    public void testIsApplicationTokenExpired() throws Exception {
+        ApplicationCredential cred = new ApplicationCredential("1212", "testapp", "dummy");
+        ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
+        imp.setExpires(String.valueOf(System.currentTimeMillis() + DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000));
+        AuthenticatedApplicationTokenRepository.addApplicationToken(imp);
+
+        ApplicationToken imp2 = AuthenticatedApplicationTokenRepository.getApplicationToken(imp.getApplicationTokenId());
+
+        assertFalse(AuthenticatedApplicationTokenRepository.isApplicationTokenExpired(imp2.getApplicationTokenId()));
+        imp2.setExpires(String.valueOf(System.currentTimeMillis()));
+        AuthenticatedApplicationTokenRepository.addApplicationToken(imp2);
+        ApplicationToken imp3 = AuthenticatedApplicationTokenRepository.getApplicationToken(imp.getApplicationTokenId());
+
+        assertTrue(imp3 == null);
+
+    }
+
+    @Test
+    public void testSomeTimecalculations() throws Exception {
+        long l1 = Instant.now().getEpochSecond();
+        long l2 = ApplicationAuthenticationUASClient.getRunningSince().getEpochSecond();
+        if (l1 - l2 < 0) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testAuthenticatedApplicationTokenRepositoryCleanup() throws Exception {
+        int applications = AuthenticatedApplicationTokenRepository.getMapSize();
+        log.debug("Applications:" + applications);
+        ApplicationCredential cred = new ApplicationCredential("1212", "testapp", "dummy");
+        ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
+        imp.setExpires(String.valueOf(System.currentTimeMillis() + DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000));
+        AuthenticatedApplicationTokenRepository.addApplicationToken(imp);
+
+        ApplicationToken imp2 = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
+        imp2.setExpires(String.valueOf(System.currentTimeMillis() + 1 * 300));  // Only one second here
+        AuthenticatedApplicationTokenRepository.addApplicationToken(imp2);
+        int applicationsNow = AuthenticatedApplicationTokenRepository.getMapSize();
+        log.debug("ApplicationsNow:" + applicationsNow);
+        assertTrue(applications <= applicationsNow - 2);  // Need to handle tests in parallell
+        Thread.sleep(1500);
+        AuthenticatedApplicationTokenRepository.cleanApplicationTokenMap();
+        int applicationsNow2 = AuthenticatedApplicationTokenRepository.getMapSize();
+        log.debug("Applications:" + applications);
+        log.debug("ApplicationsNow2:" + applicationsNow2);
+        assertTrue(applicationsNow2 < applicationsNow);  // Need to handle tests in parallell
+
     }
 }

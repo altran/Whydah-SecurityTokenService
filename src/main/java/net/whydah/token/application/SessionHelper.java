@@ -2,45 +2,42 @@ package net.whydah.token.application;
 
 import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationToken;
-import net.whydah.sso.user.types.UserToken;
-
+import net.whydah.token.user.AuthenticatedUserTokenRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SessionHelper {
 
-    private static final Logger log = LoggerFactory.getLogger(UserToken.class);
+    private static final Logger log = LoggerFactory.getLogger(SessionHelper.class);
+    public static long defaultlifespan = AuthenticatedUserTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000;
 
-    public static int defaultlifespan = 14 * 24 * 60 * 60 * 1000;  // 14 days  245000 = 4 seconds;
-
-    // String.valueOf(14 * 24 * 60 * 60 * 1000);
-    public static long getApplicationLifeSpan(String applicationtokenid){
-
-		ApplicationToken appToken = AuthenticatedApplicationRepository.getApplicationToken(applicationtokenid);
-		
-		if(appToken!=null){
+    public static long getApplicationLifeSpanSeconds(String applicationtokenid) {
+        ApplicationToken appToken = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
+        if(appToken!=null){
 			Application app = ApplicationModelFacade.getApplication(appToken.getApplicationID());
-
 			//set the correct timeout depends on the application's security
 			if(app!=null){
-			
-				return getApplicationLifeSpan(app);
-			}
+                return getApplicationLifeSpanSeconds(app);
+            }
 		}
-		
-		return defaultlifespan;
+        log.debug("Returning ApplicationToken defaultlifespanseconds:{} for applicationtokenid:{}", defaultlifespan / 1000, applicationtokenid);
+        return defaultlifespan;
 	}
-	
-	public static long getApplicationLifeSpan(Application app) {
-		//TODO: a correlation between securityLevel and lifespan?
+
+    public static long getApplicationLifeSpanSeconds(Application app) {
+        //TODO: a correlation between securityLevel and lifespan?
         if (app.getSecurity() != null) {
             long maxUserSessionFromApplication = Long.valueOf(app.getSecurity().getMaxSessionTimeoutSeconds());
-            if (maxUserSessionFromApplication > 22450000) {
-                log.debug("Returning MaxSessionTimeoutSeconds:{} for Application:{}", maxUserSessionFromApplication, app.getName());
-                return maxUserSessionFromApplication;
+            if (maxUserSessionFromApplication / 1000 > 10) {  // Avoid setting timeout to 0 is missing getMaxSessionTimeoutSeconds.
+                if (maxUserSessionFromApplication / 1000 < AuthenticatedUserTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS) {
+                    log.debug("Returning ApplicationToken MaxSessionTimeoutSeconds:{} for Application:{}", maxUserSessionFromApplication / 1000, app.getName());
+                    return maxUserSessionFromApplication;
+                }
+
             }
         }
         //return
+        log.debug("Returning ApplicationToken defaultlifespanseconds:{} for Application:{}", defaultlifespan / 1000, app.getName());
 
         return defaultlifespan;
 	}

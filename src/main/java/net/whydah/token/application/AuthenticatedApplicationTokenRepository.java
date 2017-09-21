@@ -27,10 +27,10 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 
-public class AuthenticatedApplicationRepository {
-    private final static Logger log = LoggerFactory.getLogger(AuthenticatedApplicationRepository.class);
+public class AuthenticatedApplicationTokenRepository {
+    private final static Logger log = LoggerFactory.getLogger(AuthenticatedApplicationTokenRepository.class);
 
-    public static int DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = 2400;
+    public static long DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = 120; //One minute = 60 seconds //2400;
     private static AppConfig appConfig = new AppConfig();
     private static String stsApplicationTokenID = "";
     private static ApplicationToken myToken;
@@ -53,21 +53,47 @@ public class AuthenticatedApplicationRepository {
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         applicationTokenMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "authenticated_applicationtokens");
+        String applicationDefaultTimeout = System.getProperty("application.session.timeout");
+        if (applicationDefaultTimeout != null && (Integer.parseInt(applicationDefaultTimeout) > 0)) {
+            log.info("Updated DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS to " + applicationDefaultTimeout);
+            DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(applicationDefaultTimeout);
+        }
         log.info("Connecting to map {} - map size: {}", appConfig.getProperty("gridprefix") + "authenticated_applicationtokens", getMapSize());
     }
 
 
     public static void addApplicationToken(ApplicationToken token) {
+        long remainingSecs = (Long.parseLong(token.getExpires()) - System.currentTimeMillis()) / 1000;
+        log.debug("Added {} expires in {} seconds", token.getApplicationName(), remainingSecs);
         applicationTokenMap.put(token.getApplicationTokenId(), token);
     }
 
     public static ApplicationToken getApplicationToken(String applicationtokenid) {
+        ApplicationToken applicationToken = applicationTokenMap.get(applicationtokenid);
+        if (applicationToken == null) {
+            return null;
+        }
+        if (isApplicationTokenExpired(applicationToken.getApplicationTokenId())) {
+            applicationTokenMap.remove(applicationToken.getApplicationTokenId());
+            return null;
+        }
         return applicationTokenMap.get(applicationtokenid);
     }
 
 
     public static boolean verifyApplicationToken(ApplicationToken token) {
-        return token.equals(applicationTokenMap.get(token.getApplicationTokenId()));
+        if (token == null) {
+            return false;
+        }
+        ApplicationToken applicationToken = applicationTokenMap.get(token.getApplicationTokenId());
+        if (applicationToken == null) {
+            return false;
+        }
+        if (isApplicationTokenExpired(applicationToken.getApplicationTokenId())) {
+            applicationTokenMap.remove(applicationToken.getApplicationTokenId());
+            return false;
+        }
+        return true;
     }
 
     public static boolean verifyApplicationTokenId(String applicationtokenid) {
@@ -75,18 +101,23 @@ public class AuthenticatedApplicationRepository {
     }
 
     public static ApplicationToken renewApplicationTokenId(String applicationtokenid) {
-        ApplicationToken temp = applicationTokenMap.remove(applicationtokenid);
-        String oldExpires = temp.getExpiresFormatted();
-        temp.setExpires(updateExpires(temp.getExpires(), temp.getApplicationID()));
-        log.info("Updated expiry for applicationID:{}  oldExpiry:{}, newExpiry: {}", applicationtokenid, oldExpires, temp.getExpiresFormatted());
-        applicationTokenMap.put(temp.getApplicationTokenId(), temp);
-        return temp;
+        ApplicationToken temp = applicationTokenMap.get(applicationtokenid);  // Can't remove as verify check in map
+        if (verifyApplicationToken(temp)) {
+            applicationTokenMap.remove(applicationtokenid);
+            String oldExpires = temp.getExpiresFormatted();
+            temp.setExpires(updateExpires(temp.getExpires(), temp.getApplicationID()));
+            log.info("Updated expiry for applicationID:{}  oldExpiry:{}, newExpiry: {}", applicationtokenid, oldExpires, temp.getExpiresFormatted());
+            applicationTokenMap.put(temp.getApplicationTokenId(), temp);
+            return temp;
+        }
+        return null;
     }
 
     public static boolean verifyApplicationTokenXml(String applicationtokenXml) {
         try {
             String applicationID = getApplocationTokenIdFromApplicationTokenXML(applicationtokenXml);
-            return applicationTokenMap.get(applicationID) != null;
+            ApplicationToken applicationToken = applicationTokenMap.get(applicationID);
+            return verifyApplicationToken(applicationToken);
         } catch (StringIndexOutOfBoundsException e) {
             return false;
         }
@@ -101,6 +132,15 @@ public class AuthenticatedApplicationRepository {
         return "";
     }
 
+    public static String getApplicationNameFromApplicationTokenID(String applicationtokenid) {
+        ApplicationToken at = applicationTokenMap.get(applicationtokenid);
+        if (at != null) {
+            return at.getApplicationName();
+        }
+        log.error("getApplicationNameFromApplicationTokenID - Unable to find applicationName for applicationtokenId=" + applicationtokenid);
+        return "";
+    }
+
     public static String getApplocationTokenIdFromApplicationTokenXML(String applicationTokenXML) {
         String applicationTokenId = "";
         if (applicationTokenXML == null) {
@@ -112,6 +152,17 @@ public class AuthenticatedApplicationRepository {
         return applicationTokenId;
     }
 
+
+    public static boolean isApplicationTokenExpired(String applicationtokenid) {
+        ApplicationToken temp = applicationTokenMap.get(applicationtokenid);
+
+        Long expires = Long.parseLong(temp.getExpires());
+        Long now = System.currentTimeMillis();
+        if (expires > now) {
+            return false;
+        }
+        return true;
+    }
 
     private static String updateExpires(String oldExpiry, String applicationID) {
         String applicationMaxSessionTime = ApplicationModelFacade.getParameterForApplication(ApplicationModelUtil.maxSessionTimeoutSeconds, applicationID);
@@ -155,7 +206,7 @@ public class AuthenticatedApplicationRepository {
             if (entry.getValue().getApplicationName() == null || entry.getValue().getApplicationName().length() < 2) {
                 applicationIdentifier = entry.getValue().getApplicationID();
             } else {
-                applicationIdentifier = entry.getValue().getApplicationName();
+                applicationIdentifier = entry.getValue().getApplicationName() + "[" + entry.getValue().getApplicationID() + "]";
             }
             if (applicationMap.get(applicationIdentifier) != null) {
                 applicationMap.put(applicationIdentifier, 1 + applicationMap.get(applicationIdentifier));
@@ -200,26 +251,14 @@ public class AuthenticatedApplicationRepository {
 
     }
 
+    public static void cleanApplicationTokenMap() {
+        // OK... let us obfucscate/filter sessionsid's in signalEmitter field
+        for (Map.Entry<String, ApplicationToken> entry : applicationTokenMap.entrySet()) {
+            ApplicationToken applicationToken = entry.getValue();
+            if (isApplicationTokenExpired(applicationToken.getApplicationTokenId())) {
+                applicationTokenMap.remove(applicationToken.getApplicationTokenId());
+            }
+        }
+    }
 
-//    public static boolean verifyUASAccess(String applicationtokenid) {
-//    	if(ApplicationAuthenticationUASClient.getSTSApplicationToken().getApplicationTokenId().equals(applicationtokenid)){
-//    		//don't verify STS itself 
-//    		return true;
-//    	} else {
-//    		ApplicationToken token = applicationTokenMap.get(applicationtokenid);
-//    		if(token!=null){
-//    			Application app = ApplicationModelFacade.getApplication(token.getApplicationID());
-//    			if(app!=null && app.getSecurity()!=null){
-//    				boolean hasUASAccess = app.getSecurity().isWhydahUASAccess();
-//    				return hasUASAccess;
-//    			} else {
-//    				log.warn(ApplicationModelFacade.getApplicationList().size()>0? "App not found" : "Application list is empty");
-//    			}
-//    		} else {
-//    			log.warn("Application token id " + applicationtokenid + " can not be found in the map");
-//    		}
-//    		return false;
-//    	}
-//    	
-//	}
 }

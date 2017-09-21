@@ -6,7 +6,6 @@ import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.sun.jersey.api.view.Viewable;
-
 import net.whydah.errorhandling.AppException;
 import net.whydah.errorhandling.AppExceptionCode;
 import net.whydah.sso.commands.adminapi.user.CommandSendSMSToUser;
@@ -16,11 +15,10 @@ import net.whydah.sso.user.types.UserToken;
 import net.whydah.sso.util.DelayedSendSMSTask;
 import net.whydah.token.application.ApplicationModelFacade;
 import net.whydah.token.application.ApplicationThreatResource;
-import net.whydah.token.application.AuthenticatedApplicationRepository;
+import net.whydah.token.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.config.SSLTool;
 import net.whydah.token.user.statistics.UserSessionObservedActivity;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.valuereporter.agent.MonitorReporter;
@@ -31,7 +29,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-
 import java.io.FileNotFoundException;
 import java.security.SecureRandom;
 import java.util.HashMap;
@@ -59,6 +56,8 @@ public class UserTokenResource {
     private static final String SMS_GW_QUERY_PARAM;
 
     public static final String GRIDPREFIX = "gridprefix";
+    
+    
 
     static {
 
@@ -305,8 +304,8 @@ public class UserTokenResource {
         		// Add the user to the ticket-map with the ticket given from the caller
         		userticketmap.put(userticket, userToken.getTokenid());
         	} else {
-        		userToken = ActiveUserTokenRepository.getUserToken(userticketmap.get(userticket).toString(), applicationtokenid);
-        		//userToken = refreshAndGetThisUser(userticketmap.get(userticket).toString(), applicationtokenid);
+				userToken = AuthenticatedUserTokenRepository.getUserToken(userticketmap.get(userticket).toString(), applicationtokenid);
+				//userToken = refreshAndGetThisUser(userticketmap.get(userticket).toString(), applicationtokenid);
         	}
             return createUserTokenResponse(applicationtokenid, userToken);
         } catch (AuthenticationFailedException ae) {
@@ -374,14 +373,14 @@ public class UserTokenResource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response validateUserTokenXML(@PathParam("applicationtokenid") String applicationtokenid, @FormParam("usertoken") String userTokenXml) throws AppException {
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("validateUserTokenXML - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("validateUserTokenXML - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
         UserToken userToken = UserTokenMapper.fromUserTokenXml(userTokenXml);
-        if (ActiveUserTokenRepository.verifyUserToken(userToken, applicationtokenid)) {
-            return Response.ok("{\"result\": \"true\"}").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+		if (AuthenticatedUserTokenRepository.verifyUserToken(userToken, applicationtokenid)) {
+			return Response.ok("{\"result\": \"true\"}").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         log.warn("validateUserTokenXML failed for usertoken {}", userTokenXml);
         //return Response.status(Response.Status.UNAUTHORIZED).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
@@ -421,13 +420,13 @@ public class UserTokenResource {
     @Path("/{applicationtokenid}/validate_usertokenid/{usertokenid}")
     @GET
     public Response validateUserTokenID(@PathParam("applicationtokenid") String applicationtokenid, @PathParam("usertokenid") String usertokenid) throws AppException {
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("validateUserTokenXML - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("validateUserTokenXML - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
-        if (ActiveUserTokenRepository.getUserToken(usertokenid, applicationtokenid) != null) {
-            log.trace("Verified {}", usertokenid);
+		if (AuthenticatedUserTokenRepository.getUserToken(usertokenid, applicationtokenid) != null) {
+			log.trace("Verified {}", usertokenid);
             return Response.ok("{\"result\": \"true\"}").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         log.warn("Usertoken not ok: {}", usertokenid);
@@ -512,8 +511,8 @@ public class UserTokenResource {
             //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000; 
         }
-        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
-        //final UserToken userToken = refreshAndGetThisUser(userTokenId, applicationtokenid);
+		final UserToken userToken = AuthenticatedUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
+		//final UserToken userToken = refreshAndGetThisUser(userTokenId, applicationtokenid);
         if (userToken == null) {
         	log.warn("createUserTicketByUserTokenId - attempt to access with non acceptable usertokenid {}", userTokenId);
             //return Response.status(Response.Status.NOT_ACCEPTABLE).build();
@@ -543,8 +542,8 @@ public class UserTokenResource {
             //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000; 
         }
-        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
-        //final UserToken userToken = refreshAndGetThisUser(userTokenId, applicationtokenid);
+		final UserToken userToken = AuthenticatedUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
+		//final UserToken userToken = refreshAndGetThisUser(userTokenId, applicationtokenid);
         if (userToken == null) {
         	log.warn("createUserTicketByUserTokenId - attempt to access with non acceptable usertokenid {}", userTokenId);
             //return Response.status(Response.Status.NOT_ACCEPTABLE).build();
@@ -637,8 +636,8 @@ public class UserTokenResource {
             //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
-        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
-        //final UserToken userToken = refreshAndGetThisUser(userTokenId, applicationtokenid);
+		final UserToken userToken = AuthenticatedUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
+		//final UserToken userToken = refreshAndGetThisUser(userTokenId, applicationtokenid);
         if (userToken == null) {
             log.warn("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid={}", userTokenId);
             //return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
@@ -653,8 +652,8 @@ public class UserTokenResource {
 //    public UserToken refreshAndGetThisUser(String userTokenId, String applicationtokenid){
 //    	//shoudl refresh frist
 //        UserToken refreshedUserToken = userAuthenticator.getRefreshedUserToken(userTokenId);
-//        ActiveUserTokenRepository.refreshUserToken(userTokenId, applicationtokenid, refreshedUserToken);
-//        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
+//        AuthenticatedUserTokenRepository.refreshUserToken(userTokenId, applicationtokenid, refreshedUserToken);
+//        final UserToken userToken = AuthenticatedUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
 //        return userToken;
 //    }
     
@@ -725,8 +724,8 @@ public class UserTokenResource {
             //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
-        String lastSeen = ActiveUserTokenRepository.getLastSeenByEmail(userEmail);
-        if (lastSeen == null) {
+		String lastSeen = AuthenticatedUserTokenRepository.getLastSeenByEmail(userEmail);
+		if (lastSeen == null) {
             log.warn("getLastSeenByUserTokenId - attempt to access with non acceptable userEmail={}", userEmail);
             //return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.USER_USER_EMAIL_NOTFOUND_6005;
@@ -829,8 +828,8 @@ public class UserTokenResource {
         }
         log.trace("getUserTokenByUserTicket - Found usertokenid: " + userTokenId);
         userticketmap.remove(userticket);
-        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
-        //final UserToken userToken = refreshAndGetThisUser(userTokenId, applicationtokenid);
+		final UserToken userToken = AuthenticatedUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
+		//final UserToken userToken = refreshAndGetThisUser(userTokenId, applicationtokenid);
         
         if (userToken == null) {
             log.warn("getUserTokenByUserTicket - illegal/Null userticket received ");
@@ -986,8 +985,8 @@ public class UserTokenResource {
     public Response releaseUserToken(@PathParam("applicationtokenid") String applicationtokenid,
                                      @FormParam("usertokenid") String usertokenid) throws AppException {
         log.trace("releaseUserToken - entry.  usertokenid={}", usertokenid);
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("releaseUserToken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("releaseUserToken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
@@ -997,8 +996,8 @@ public class UserTokenResource {
             throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
         }
         log.trace("releaseUserToken - removed session, usertokenid={}", usertokenid);
-        ActiveUserTokenRepository.removeUserToken(usertokenid, applicationtokenid);
-        return Response.ok("{\"result\": \"true\"}").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+		AuthenticatedUserTokenRepository.removeUserToken(usertokenid, applicationtokenid);
+		return Response.ok("{\"result\": \"true\"}").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
     }
 
     /**
@@ -1037,8 +1036,8 @@ public class UserTokenResource {
     public Response renewUserToken(@PathParam("applicationtokenid") String applicationtokenid,
                                    @FormParam("usertokenid") String usertokenid) throws AppException {
         log.trace("renewUserToken - entry.  usertokenid={}", usertokenid);
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("renewUserToken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("renewUserToken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
@@ -1048,7 +1047,7 @@ public class UserTokenResource {
             throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
         }
 
-        ActiveUserTokenRepository.renewUserToken(usertokenid, applicationtokenid);
+		AuthenticatedUserTokenRepository.renewUserToken(usertokenid, applicationtokenid);
 
         log.trace("renewUserToken - session renewed, usertokenid={}", usertokenid);
         return Response.ok("{\"result\": \"true\"}").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
@@ -1110,8 +1109,8 @@ public class UserTokenResource {
     public Response refreshUserToken(@PathParam("applicationtokenid") String applicationtokenid,
                                      @FormParam("usertokenid") String usertokenid) throws AppException {
         log.debug("refresh_usertoken - entry.  usertokenid={}", usertokenid);
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("refresh_usertoken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("refresh_usertoken - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
@@ -1123,9 +1122,9 @@ public class UserTokenResource {
         
         try {
         	 UserToken refreshedUserToken = userAuthenticator.getRefreshedUserToken(usertokenid);
-             ActiveUserTokenRepository.refreshUserToken(usertokenid, applicationtokenid, refreshedUserToken);
-             final UserToken userToken = ActiveUserTokenRepository.getUserToken(usertokenid, applicationtokenid);
-             log.debug("refresh_usertoken - usertoken refreshed, usertokenid={}", usertokenid);
+			AuthenticatedUserTokenRepository.refreshUserToken(usertokenid, applicationtokenid, refreshedUserToken);
+			final UserToken userToken = AuthenticatedUserTokenRepository.getUserToken(usertokenid, applicationtokenid);
+			log.debug("refresh_usertoken - usertoken refreshed, usertokenid={}", usertokenid);
              return createUserTokenResponse(applicationtokenid, userToken);
         } catch (AuthenticationFailedException ae) {
             throw AppExceptionCode.USER_AUTHENTICATION_FAILED_6000.setDeveloperMessage(ae.getMessage());
@@ -1140,22 +1139,22 @@ public class UserTokenResource {
     public Response refreshUserTokenByUsername(@PathParam("applicationtokenid") String applicationtokenid,
                                      @FormParam("username") String username) throws AppException {
         log.debug("refresh_usertoken_by_username - entry.  username={}", username);
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("refresh_usertoken_by_username - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("refresh_usertoken_by_username - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity("Application authentication not valid.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
-        UserToken usertoken = ActiveUserTokenRepository.getUserTokenByUserName(username, applicationtokenid);
-        if (usertoken == null) {
+		UserToken usertoken = AuthenticatedUserTokenRepository.getUserTokenByUserName(username, applicationtokenid);
+		if (usertoken == null) {
             log.warn("refresh_usertoken_by_username - attempt with no username found. No need to refresh");
             return Response.ok("").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         
         try {
         	 UserToken refreshedUserToken = userAuthenticator.getRefreshedUserToken(usertoken.getTokenid());
-             ActiveUserTokenRepository.refreshUserToken(usertoken.getTokenid(), applicationtokenid, refreshedUserToken);
-             final UserToken ut = ActiveUserTokenRepository.getUserToken(usertoken.getTokenid(), applicationtokenid);
-             log.debug("refresh_usertoken_by_username - usertoken refreshed, usertokenid={}", ut.getTokenid());
+			AuthenticatedUserTokenRepository.refreshUserToken(usertoken.getTokenid(), applicationtokenid, refreshedUserToken);
+			final UserToken ut = AuthenticatedUserTokenRepository.getUserToken(usertoken.getTokenid(), applicationtokenid);
+			log.debug("refresh_usertoken_by_username - usertoken refreshed, usertokenid={}", ut.getTokenid());
              return createUserTokenResponse(applicationtokenid, ut);
         } catch (AuthenticationFailedException ae) {
             throw AppExceptionCode.USER_AUTHENTICATION_FAILED_6000.setDeveloperMessage(ae.getMessage());
@@ -1272,8 +1271,8 @@ public class UserTokenResource {
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
         String userTokenId = UserTokenMapper.fromUserTokenXml(userTokenXml).getTokenid();
-        final UserToken userToken = ActiveUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
-        //final UserToken userToken = refreshAndGetThisUser(userTokenId, applicationtokenid);
+		final UserToken userToken = AuthenticatedUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
+		//final UserToken userToken = refreshAndGetThisUser(userTokenId, applicationtokenid);
        
         if (userToken == null) {
             log.warn("getUserTokenByUserTokenId - attempt to access with non acceptable userTokenId={}", userTokenId);
@@ -1330,8 +1329,8 @@ public class UserTokenResource {
             throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
         }
 
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
@@ -1339,7 +1338,7 @@ public class UserTokenResource {
         log.trace("CommandSendSMSToUser - ({}, {}, {}, {}, {}, {}, {})", SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin);
         String response = new CommandSendSMSToUser(SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin).execute();
         log.debug("Answer from smsgw: " + response);
-        ActivePinRepository.setPin(phoneNo, smsPin);
+        ActivePinRepository.setPin(phoneNo, smsPin, response);
         return Response.ok("{\"result\": \"true\"}").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
 
     }
@@ -1388,15 +1387,15 @@ public class UserTokenResource {
             throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
         }
 
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("sendSMSPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;     }
 
         log.trace("CommandSendSMSToUser - ({}, {}, {}, {}, {}, {}, {})", SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin);
         String response = new CommandSendSMSToUser(SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin).execute();
         log.trace("Answer from smsgw: " + response);
-        ActivePinRepository.setPin(phoneNo, smsPin);
+        ActivePinRepository.setPin(phoneNo, smsPin, response);
         return Response.ok("{\"result\": \"true\"}").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
 
     }
@@ -1521,8 +1520,8 @@ public class UserTokenResource {
                                    @FormParam("smsMessage") String smsMessage) throws AppException {
         log.info("Response sendSMSMessage: phoneNo:{}, smsMessage:{}", phoneNo, smsMessage);
 
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("sendSMSMessage - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("sendSMSMessage - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
@@ -1574,8 +1573,8 @@ public class UserTokenResource {
                                             @FormParam("smsMessage") String smsMessage) {
         log.info("Response sendScheduledSMSMessage: timestamp:{}, phoneNo:{}, smsMessage:{}", timestamp, phoneNo, smsMessage);
 
-        if (!AuthenticatedApplicationRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.warn("sendScheduledSMSMessage - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("sendScheduledSMSMessage - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
             return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
         String cellNo = phoneNo;
@@ -1812,11 +1811,14 @@ public class UserTokenResource {
     private Response createUserTokenResponse(@PathParam("applicationtokenid") String applicationtokenid, UserToken userToken) {
         log.trace("getUserTokenByUserTokenId OK. Response={}", userToken.toString());
         userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
-        userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
-        userToken.setDefcon(ApplicationThreatResource.getDEFCON());
+		userToken.setLastSeen(AuthenticatedUserTokenRepository.getLastSeen(userToken));
+		userToken.setDefcon(ApplicationThreatResource.getDEFCON());
         UserToken filteredUserToken = UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken);
-        ActiveUserTokenRepository.setLastSeen(filteredUserToken);
-        return Response.ok(new Viewable("/usertoken.ftl", filteredUserToken)).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+		AuthenticatedUserTokenRepository.setLastSeen(filteredUserToken);
+		Map<String, Object> model = new HashMap();
+        model.put("it", filteredUserToken);
+        model.put("DEFCON", filteredUserToken.getDefcon());
+        return Response.ok(new Viewable("/usertoken.ftl", model)).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
     }
 
     boolean isEmpty(String userticket) {
@@ -1834,4 +1836,136 @@ public class UserTokenResource {
 
     }
 
+    @Path("/{applicationtokenid}/isUserNameFoundInPinMap")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_XML)
+    public Response isUserNameFoundInPinMap(@PathParam("applicationtokenid") String applicationtokenid, @FormParam("adminUserTokenId") String adminUserTokenId,
+                                     @FormParam("phoneno") String phoneno) throws AppException {
+
+        log.trace("isUserNameFoundInPinMap() called with " + "applicationtokenid = [" + applicationtokenid + "], phoneno = [" + phoneno + "]");
+
+        if (isEmpty(phoneno)) {
+        	throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
+        }
+
+        log.trace("verifyPhoneByPin: applicationtokenid={}, phone={}", applicationtokenid, phoneno);
+
+        if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
+            return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
+        }
+
+        // Verify calling application
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("verifyPhoneByPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+            //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
+        }
+
+		UserToken admin = AuthenticatedUserTokenRepository.getUserToken(adminUserTokenId, applicationtokenid);
+		if(admin!=null && admin.getUserName().equals(appConfig.getProperty("whydah.adminuser.username"))){
+        	  if (ActivePinRepository.getPinMap().containsKey(phoneno)) {
+                  return Response.ok("{\"result\": \"true\"}").build();
+              } else {
+              	 return Response.ok("{\"result\": \"false\"}").build();
+              }
+        } else {
+        	throw AppExceptionCode.USER_AUTHENTICATION_FAILED_6000;
+        }
+
+      
+    }
+    
+    @Path("/{applicationtokenid}/getSMSLog")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response getSMSLog(@PathParam("applicationtokenid") String applicationtokenid,
+    								@FormParam("adminUserTokenId") String adminUserTokenId,
+                                     @FormParam("phoneno") String phoneno) throws AppException {
+
+        log.trace("getSMSLog() called with " + "applicationtokenid = [" + applicationtokenid + "], phoneno = [" + phoneno + "]");
+
+        if (isEmpty(phoneno)) {
+        	throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
+        }
+
+        log.trace("verifyPhoneByPin: applicationtokenid={}, phone={}", applicationtokenid, phoneno);
+
+        if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
+            return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
+        }
+
+        // Verify calling application
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("verifyPhoneByPin - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+            //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
+        }
+
+		UserToken admin = AuthenticatedUserTokenRepository.getUserToken(adminUserTokenId, applicationtokenid);
+		if(admin!=null && admin.getUserName().equals(appConfig.getProperty("whydah.adminuser.username"))){
+        	if (ActivePinRepository.getSMSResponseLogMap().containsKey(phoneno)) {
+        		return Response.ok(ActivePinRepository.getSMSResponseLogMap().get(phoneno)).build();
+        	} else {
+        		return Response.ok("").build();
+        	}
+        } else {
+        	throw AppExceptionCode.USER_AUTHENTICATION_FAILED_6000;
+        }
+       
+    }
+
+    @Path("/{applicationtokenid}/getPin")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_XML)
+    public Response getPin(@PathParam("applicationtokenid") String applicationtokenid,
+                                                  @FormParam("adminUserTokenId") String adminUserTokenId,
+                                                  @FormParam("phoneno") String phoneno) throws AppException {
+
+        log.trace("getPin() called with " + "applicationtokenid = [" + applicationtokenid + "], phoneno = [" + phoneno + "], adminUserTokenId = [" + adminUserTokenId + "]");
+
+        if (isEmpty(phoneno)) {
+            //return Response.status(Response.Status.BAD_REQUEST).entity("Missing required parameters").build();
+        	throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
+        }
+
+        
+
+        if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
+            return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
+        }
+
+        // Verify calling application
+		if (!AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+			log.warn("getUserTokenByUserTicket - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
+            //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.APP_ILLEGAL_7000;
+        }
+        
+        try {
+
+			UserToken admin = AuthenticatedUserTokenRepository.getUserToken(adminUserTokenId, applicationtokenid);
+			if(admin!=null && admin.getUserName().equals(appConfig.getProperty("whydah.adminuser.username"))){
+        		String pin = ActivePinRepository.getPinMap().get(phoneno);
+        		if(pin==null){
+        			pin="";
+        		}
+        		return Response.ok(pin).build(); 
+        		
+        	} else {
+        		throw AppExceptionCode.USER_AUTHENTICATION_FAILED_6000;
+        	}
+        	
+
+        } catch (AuthenticationFailedException ae) {
+            log.warn("getUserToken - User authentication failed");
+            //return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+            throw AppExceptionCode.USER_LOGIN_PIN_FAILED_6004.setDeveloperMessage(ae.getMessage());
+        }
+        
+        
+
+    }
 }

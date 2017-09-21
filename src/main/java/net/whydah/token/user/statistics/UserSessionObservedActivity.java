@@ -1,6 +1,6 @@
 package net.whydah.token.user.statistics;
 
-import net.whydah.token.application.AuthenticatedApplicationRepository;
+import net.whydah.token.application.AuthenticatedApplicationTokenRepository;
 import org.valuereporter.agent.activity.ObservedActivity;
 
 public class UserSessionObservedActivity extends ObservedActivity {
@@ -9,7 +9,7 @@ public class UserSessionObservedActivity extends ObservedActivity {
 
     public UserSessionObservedActivity(String userid,String usersessionfunction,String applicationtokenid) {
         super(USER_SESSION_ACTIVITY, System.currentTimeMillis());
-        String applicationid = AuthenticatedApplicationRepository.getApplicationIdFromApplicationTokenID(applicationtokenid);
+        String applicationid = AuthenticatedApplicationTokenRepository.getApplicationIdFromApplicationTokenID(applicationtokenid);
         put("userid", userid);
         put("usersessionfunction", usersessionfunction);
         put("applicationtokenid", applicationtokenid);

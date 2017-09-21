@@ -4,13 +4,11 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.token.application.ApplicationThreatResource;
 import net.whydah.token.application.SessionHelper;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.user.statistics.UserSessionObservedActivity;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.valuereporter.agent.MonitorReporter;
@@ -18,17 +16,18 @@ import org.valuereporter.agent.activity.ObservedActivity;
 
 import java.io.FileNotFoundException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public class ActiveUserTokenRepository {
-    private final static Logger log = LoggerFactory.getLogger(ActiveUserTokenRepository.class);
+public class AuthenticatedUserTokenRepository {
+    private final static Logger log = LoggerFactory.getLogger(AuthenticatedUserTokenRepository.class);
     private static Map<String, UserToken> activeusertokensmap;
     private static Map<String, String> active_username_usertokenids_map;
     private static Map<String, Date> lastSeenMap;
     private static int noOfClusterMembers = 0;
+    public static long DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = 14 * 24 * 60 * 60;  // 14 days
+
 
     static {
         AppConfig appConfig = new AppConfig();
@@ -55,6 +54,12 @@ public class ActiveUserTokenRepository {
         log.info("Connecting to map {} - size: {}", appConfig.getProperty("gridprefix") + "lastSeenMap", getLastSeenMapSize());
         Set clusterMembers = hazelcastInstance.getCluster().getMembers();
         noOfClusterMembers = clusterMembers.size();
+        String applicationDefaultTimeout = System.getProperty("user.session.timeout");
+        if (applicationDefaultTimeout != null && (Integer.parseInt(applicationDefaultTimeout) > 0)) {
+            log.info("Updated DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS to " + applicationDefaultTimeout);
+            DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(applicationDefaultTimeout);
+        }
+
     }
 
     public static void setLastSeen(UserToken userToken) {
@@ -97,7 +102,7 @@ public class ActiveUserTokenRepository {
         }
         UserToken resToken = activeusertokensmap.get(usertokenId);
         if (resToken != null && verifyUserToken(resToken, applicationTokenId)) {
-            resToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(resToken));
+            resToken.setLastSeen(AuthenticatedUserTokenRepository.getLastSeen(resToken));
             lastSeenMap.put(resToken.getEmail(), new Date());
             log.info("Valid userToken found: " + resToken);
             log.debug("userToken=" + resToken);
@@ -121,7 +126,7 @@ public class ActiveUserTokenRepository {
         	String usertokenid = active_username_usertokenids_map.get(userName);
         	 UserToken resToken = activeusertokensmap.get(usertokenid);
              if (resToken != null && verifyUserToken(resToken, applicationTokenId)) {
-                 resToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(resToken));
+                 resToken.setLastSeen(AuthenticatedUserTokenRepository.getLastSeen(resToken));
                  lastSeenMap.put(resToken.getEmail(), new Date());
                  log.info("Valid userToken found: " + resToken);
                  log.debug("userToken=" + resToken);
@@ -146,7 +151,7 @@ public class ActiveUserTokenRepository {
      */
     public static boolean verifyUserToken(UserToken userToken, String applicationTokenId) {
         if (userToken.getTokenid() == null) {
-            log.info("UserToken not valid, missing tokenId");
+            log.info("UserToken not valid, missing UserTokenId");
             return false;
         }
         if (userToken.getEmail() != null) {
@@ -180,9 +185,8 @@ public class ActiveUserTokenRepository {
         UserToken utoken = activeusertokensmap.remove(usertokenid);
         active_username_usertokenids_map.remove(utoken.getUserName());
         utoken.setDefcon(ApplicationThreatResource.getDEFCON());
-        utoken.setTimestamp(String.valueOf(System.currentTimeMillis() + 1000));
-
-        utoken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationTokenId)));
+        utoken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+        utoken.setLifespan(String.valueOf(1000 * SessionHelper.getApplicationLifeSpanSeconds(applicationTokenId)));
         addUserToken(utoken, applicationTokenId, "renew");
         ObservedActivity observedActivity = new UserSessionObservedActivity(utoken.getUid(), "userSessionRenewal", applicationTokenId);
         MonitorReporter.reportActivity(observedActivity);
@@ -208,11 +212,13 @@ public class ActiveUserTokenRepository {
 
         if (userToken.getLifespan() == null) {
             log.debug("addUserToken: UserToken has no lifespan");
-            userToken.setLifespan(String.valueOf(SessionHelper.getApplicationLifeSpan(applicationTokenId)));
+            userToken.setLifespan(String.valueOf(1000 * SessionHelper.getApplicationLifeSpanSeconds(applicationTokenId)));
+            userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+
         }
 
         if (userToken.getEmail() != null) {
-            userToken.setLastSeen(ActiveUserTokenRepository.getLastSeen(userToken));
+            userToken.setLastSeen(AuthenticatedUserTokenRepository.getLastSeen(userToken));
             lastSeenMap.put(userToken.getEmail(), new Date());
 
         }
@@ -222,7 +228,7 @@ public class ActiveUserTokenRepository {
         }
         //UserToken copy = userToken.copy();
         activeusertokensmap.put(userToken.getTokenid(), userToken);
-        System.out.println("ADDEDDDDDDDDDDDDDDDDDDD " + userToken.getTokenid() + "/ content /"+ userToken.toString());
+      
         if(userToken.getUserName()!=null){
         	active_username_usertokenids_map.put(userToken.getUserName(), userToken.getTokenid());
         }
@@ -272,4 +278,16 @@ public class ActiveUserTokenRepository {
     public static int getNoOfClusterMembers() {
         return noOfClusterMembers;
     }
+
+
+    public static void cleanUserTokenMap() {
+        // OK... let us obfucscate/filter sessionsid's in signalEmitter field
+        for (Map.Entry<String, UserToken> entry : activeusertokensmap.entrySet()) {
+            UserToken userToken = entry.getValue();
+            if (!userToken.isValid()) {
+                activeusertokensmap.remove(userToken.getTokenid());
+            }
+        }
+    }
+
 }
