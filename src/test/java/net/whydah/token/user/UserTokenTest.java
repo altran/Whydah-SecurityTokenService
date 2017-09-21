@@ -80,8 +80,8 @@ public class UserTokenTest {
         utoken.setTokenid(UUID.randomUUID().toString());
         utoken.setPersonRef("78125637812638");
 
-        AuthenticatedUserTokenRepository.addUserToken(utoken, "", "");
-        assertTrue("Verification of valid token failed", AuthenticatedUserTokenRepository.verifyUserToken(utoken, ""));
+        AuthenticatedUserTokenRepository.addUserToken(utoken, "2012", "");
+        assertTrue("Verification of valid token failed", AuthenticatedUserTokenRepository.verifyUserToken(utoken, "2012"));
 
         utoken.setFirstName("Pelle");
         String token = freemarkerProcessor.toXml(utoken);
