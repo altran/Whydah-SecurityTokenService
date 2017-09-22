@@ -225,7 +225,7 @@ public class ApplicationAuthenticationResource {
             if (applicationToken.getApplicationID().equalsIgnoreCase("9999")) {
                 try {
                     CryptoUtil.setExchangeableKey(AuthenticatedApplicationTokenRepository.getExchangeableKeyForApplicationToken(applicationToken));
-                    log.debug("Using key:{} for application: [} with applicationTokenId:{}", CryptoUtil.getActiveKey(), applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
+                    log.debug("Using key:{} for application: {} with applicationTokenId:{}", CryptoUtil.getActiveKey(), applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
                     return Response.ok().entity(CryptoUtil.encrypt(applicationTokenXml)).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
                 } catch (Exception e) {
                     log.warn("Unable to use encryption", e);

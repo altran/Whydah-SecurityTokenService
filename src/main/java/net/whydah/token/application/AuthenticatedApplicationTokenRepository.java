@@ -75,7 +75,7 @@ public class AuthenticatedApplicationTokenRepository {
                 // Maybe update key here...
             } else {
                 // Bootstrap key initialization
-                log.debug("Added new key for application: [} with applicationTokenId:{}", applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
+                log.debug("Added new key for application: {} with applicationTokenId:{}", applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
                 ExchangeableKey applicationKey = new ExchangeableKey(applicationToken.getApplicationTokenId().getBytes(), new IvParameterSpec("01234567890ABCDE".getBytes()));
                 applicationKeyMap.put(applicationToken.getApplicationTokenId(), applicationKey.toJsonEncoded());
             }
