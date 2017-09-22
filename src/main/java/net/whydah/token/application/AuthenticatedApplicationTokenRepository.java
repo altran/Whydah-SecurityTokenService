@@ -9,12 +9,14 @@ import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.session.baseclasses.ApplicationModelUtil;
+import net.whydah.sso.session.baseclasses.ExchangeableKey;
 import net.whydah.token.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
+import javax.crypto.spec.IvParameterSpec;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -36,6 +38,7 @@ public class AuthenticatedApplicationTokenRepository {
     private static ApplicationToken myToken;
 
     private static final Map<String, ApplicationToken> applicationTokenMap;
+    private static final Map<String, ExchangeableKey> applicationKeyMap;
 
     static {
         AppConfig appConfig = new AppConfig();
@@ -53,6 +56,7 @@ public class AuthenticatedApplicationTokenRepository {
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         applicationTokenMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "authenticated_applicationtokens");
+        applicationKeyMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "_applicationkeys");
         String applicationDefaultTimeout = System.getProperty("application.session.timeout");
         if (applicationDefaultTimeout != null && (Integer.parseInt(applicationDefaultTimeout) > 0)) {
             log.info("Updated DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS to " + applicationDefaultTimeout);
@@ -62,10 +66,19 @@ public class AuthenticatedApplicationTokenRepository {
     }
 
 
-    public static void addApplicationToken(ApplicationToken token) {
-        long remainingSecs = (Long.parseLong(token.getExpires()) - System.currentTimeMillis()) / 1000;
-        log.debug("Added {} expires in {} seconds", token.getApplicationName(), remainingSecs);
-        applicationTokenMap.put(token.getApplicationTokenId(), token);
+    public static void addApplicationToken(ApplicationToken applicationToken) {
+        long remainingSecs = (Long.parseLong(applicationToken.getExpires()) - System.currentTimeMillis()) / 1000;
+        log.debug("Added {} expires in {} seconds", applicationToken.getApplicationName(), remainingSecs);
+        applicationTokenMap.put(applicationToken.getApplicationTokenId(), applicationToken);
+        if (applicationToken.getApplicationID().equalsIgnoreCase("9999")) {
+            if (applicationKeyMap.containsKey(applicationToken.getApplicationTokenId())) {
+                // Maybe update key here...
+            } else {
+                // Bootstrap key initialization
+                ExchangeableKey applicationKey = new ExchangeableKey(applicationToken.getApplicationTokenId().getBytes(), new IvParameterSpec("01234567890ABCDEF".getBytes()));
+                applicationKeyMap.put(applicationToken.getApplicationTokenId(), applicationKey);
+            }
+        }
     }
 
     public static ApplicationToken getApplicationToken(String applicationtokenid) {
@@ -80,17 +93,20 @@ public class AuthenticatedApplicationTokenRepository {
         return applicationTokenMap.get(applicationtokenid);
     }
 
+    public static ExchangeableKey getExchangeableKeyForApplicationToken(ApplicationToken applicationToken) {
+        return applicationKeyMap.get(applicationToken.getApplicationTokenId());
+    }
 
-    public static boolean verifyApplicationToken(ApplicationToken token) {
-        if (token == null) {
-            return false;
-        }
-        ApplicationToken applicationToken = applicationTokenMap.get(token.getApplicationTokenId());
+    public static boolean verifyApplicationToken(ApplicationToken applicationToken) {
         if (applicationToken == null) {
             return false;
         }
-        if (isApplicationTokenExpired(applicationToken.getApplicationTokenId())) {
-            applicationTokenMap.remove(applicationToken.getApplicationTokenId());
+        ApplicationToken applicationTokenFromMap = applicationTokenMap.get(applicationToken.getApplicationTokenId());
+        if (applicationTokenFromMap == null) {
+            return false;
+        }
+        if (isApplicationTokenExpired(applicationTokenFromMap.getApplicationTokenId())) {
+            applicationTokenMap.remove(applicationTokenFromMap.getApplicationTokenId());
             return false;
         }
         return true;

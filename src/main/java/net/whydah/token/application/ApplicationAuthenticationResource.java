@@ -10,6 +10,7 @@ import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.config.ApplicationMode;
+import net.whydah.sso.session.baseclasses.CryptoUtil;
 import net.whydah.sso.user.types.UserCredential;
 import net.whydah.token.config.AppConfig;
 import org.slf4j.Logger;
@@ -221,6 +222,15 @@ public class ApplicationAuthenticationResource {
             log.info("ApplicationToken for {} extended, expires: {}", token.getApplicationName(), token.getExpiresFormatted());
             String applicationTokenXml = ApplicationTokenMapper.toXML(token);
             log.trace("extendApplicationSession returns applicationTokenXml={}", applicationTokenXml);
+            if (token.getApplicationID().equalsIgnoreCase("9999")) {
+                try {
+                    CryptoUtil.setExchangeableKey(AuthenticatedApplicationTokenRepository.getExchangeableKeyForApplicationToken(token));
+                    return Response.ok().entity(CryptoUtil.encrypt(applicationTokenXml)).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+                } catch (Exception e) {
+                    log.warn("Unable to use encryption", e);
+                }
+
+            }
             return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
             log.warn("applicationtokenid={} not valid", applicationtokenid);
@@ -360,46 +370,6 @@ public class ApplicationAuthenticationResource {
         return true;
     }
 
-//    /**
-//   	 * @throws AppException 
-//   	 * @api {get} :applicationtokenid/hasUASAccess hasUASAccess
-//   	 * @apiName hasUASAccess
-//   	 * @apiGroup Security Token Service (STS)
-//   	 * @apiDescription Check if an application has UAS access 
-//   	 * 
-//   	 * @apiSuccessExample Success-Response:
-//   	 *	HTTP/1.1 200 OK
-//	 *	{
-//	 *  	"result": "true"
-//	 *	}
-//   	 *
-//   	 *
-//   	 * @apiError 403/7000 Application is invalid.
-//   	 * @apiError 500/9999 A generic exception or an unexpected error 
-//   	 *
-//   	 * @apiErrorExample Error-Response:
-//   	 *     HTTP/1.1 403 Forbidden
-//   	 *     {
-//   	 *  		"status": 403,
-//   	 *  		"code": 7000,
-//   	 *  		"message": "Illegal Application.",
-//   	 *  		"link": "",
-//   	 *  		"developerMessage": "Application is invalid."
-//   	 *		}
-//   	 */
-//    @Path("{applicationtokenid}/hasUASAccess")
-//    @GET
-//    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-//    public Response hasUASAccess(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
-//        log.trace("validateApplicationTokenId - validate applicationtokenid:{}", applicationtokenid);
-//        if (AuthenticatedApplicationTokenRepository.verifyUASAccess(applicationtokenid)) {
-//            log.debug("validateApplicationTokenId - applicationtokenid:{} for applicationname:{} is valid", applicationtokenid, AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid).getApplicationName());
-//            return Response.ok("{\"result\": \"true\"}").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
-//        } else {
-//            log.warn("validateApplicationTokenId - applicationtokenid:{}  does not have UAS access", applicationtokenid);
-//            throw AppExceptionCode.APP_ILLEGAL_7000;
-//        }
-//    }
 
 
 }
