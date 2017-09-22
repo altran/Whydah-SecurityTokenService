@@ -38,7 +38,7 @@ public class AuthenticatedApplicationTokenRepository {
     private static ApplicationToken myToken;
 
     private static final Map<String, ApplicationToken> applicationTokenMap;
-    private static final Map<String, ExchangeableKey> applicationKeyMap;
+    private static final Map<String, String> applicationKeyMap;
 
     static {
         AppConfig appConfig = new AppConfig();
@@ -76,7 +76,7 @@ public class AuthenticatedApplicationTokenRepository {
             } else {
                 // Bootstrap key initialization
                 ExchangeableKey applicationKey = new ExchangeableKey(applicationToken.getApplicationTokenId().getBytes(), new IvParameterSpec("01234567890ABCDEF".getBytes()));
-                applicationKeyMap.put(applicationToken.getApplicationTokenId(), applicationKey);
+                applicationKeyMap.put(applicationToken.getApplicationTokenId(), applicationKey.toJsonEncoded());
             }
         }
     }
@@ -94,7 +94,7 @@ public class AuthenticatedApplicationTokenRepository {
     }
 
     public static ExchangeableKey getExchangeableKeyForApplicationToken(ApplicationToken applicationToken) {
-        return applicationKeyMap.get(applicationToken.getApplicationTokenId());
+        return new ExchangeableKey(applicationKeyMap.get(applicationToken.getApplicationTokenId()));
     }
 
     public static boolean verifyApplicationToken(ApplicationToken applicationToken) {
