@@ -95,7 +95,9 @@ public class AuthenticatedApplicationTokenRepository {
     }
 
     public static ExchangeableKey getExchangeableKeyForApplicationToken(ApplicationToken applicationToken) {
-        ExchangeableKey exchangeableKey = new ExchangeableKey(applicationKeyMap.get(applicationToken.getApplicationTokenId()));
+        ExchangeableKey exchangeableKey = new ExchangeableKey("{\"encryptionKey\":\"ZmVlNTZiYjU4MWMzOTc3YzM0YWMzNTZiOWJlYjhhY2I=\",\n" +
+                "\"iv\":\"MDEyMzQ1Njc4OTBBQkNERQ==\"}");
+        //new ExchangeableKey(applicationKeyMap.get(applicationToken.getApplicationTokenId()));
         if (exchangeableKey.getIv() == null) {
             log.warn("Attempt fo find key for applicationID:{} with applicationTokenId:[} failed", applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
         }
