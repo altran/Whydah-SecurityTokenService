@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import javax.crypto.spec.IvParameterSpec;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -76,7 +75,9 @@ public class AuthenticatedApplicationTokenRepository {
             } else {
                 // Bootstrap key initialization
                 log.debug("Added new key for application: {} with applicationTokenId:{}", applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
-                ExchangeableKey applicationKey = new ExchangeableKey(applicationToken.getApplicationTokenId().getBytes(), new IvParameterSpec("01234567890ABCDE".getBytes()));
+//                ExchangeableKey applicationKey = new ExchangeableKey(applicationToken.getApplicationTokenId().getBytes(), new IvParameterSpec("01234567890ABCDE".getBytes()));
+                ExchangeableKey applicationKey = new ExchangeableKey("{\"encryptionKey\":\"ZmVlNTZiYjU4MWMzOTc3YzM0YWMzNTZiOWJlYjhhY2I=\",\n" +
+                        "\"iv\":\"MDEyMzQ1Njc4OTBBQkNERQ==\"}");
                 applicationKeyMap.put(applicationToken.getApplicationTokenId(), applicationKey.toJsonEncoded());
             }
         }
