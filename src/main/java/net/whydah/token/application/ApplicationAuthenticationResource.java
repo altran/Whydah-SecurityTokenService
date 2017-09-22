@@ -218,13 +218,14 @@ public class ApplicationAuthenticationResource {
     public Response extendApplicationSession(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
         log.debug("renew session for applicationtokenid: {}", applicationtokenid);
         if (AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
-            ApplicationToken token = AuthenticatedApplicationTokenRepository.renewApplicationTokenId(applicationtokenid);
-            log.info("ApplicationToken for {} extended, expires: {}", token.getApplicationName(), token.getExpiresFormatted());
-            String applicationTokenXml = ApplicationTokenMapper.toXML(token);
+            ApplicationToken applicationToken = AuthenticatedApplicationTokenRepository.renewApplicationTokenId(applicationtokenid);
+            log.info("ApplicationToken for {} extended, expires: {}", applicationToken.getApplicationName(), applicationToken.getExpiresFormatted());
+            String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
             log.trace("extendApplicationSession returns applicationTokenXml={}", applicationTokenXml);
-            if (token.getApplicationID().equalsIgnoreCase("9999")) {
+            if (applicationToken.getApplicationID().equalsIgnoreCase("9999")) {
                 try {
-                    CryptoUtil.setExchangeableKey(AuthenticatedApplicationTokenRepository.getExchangeableKeyForApplicationToken(token));
+                    CryptoUtil.setExchangeableKey(AuthenticatedApplicationTokenRepository.getExchangeableKeyForApplicationToken(applicationToken));
+                    log.debug("Using key:{} for application: [} with applicationTokenId:{}", CryptoUtil.getActiveKey(), applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
                     return Response.ok().entity(CryptoUtil.encrypt(applicationTokenXml)).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
                 } catch (Exception e) {
                     log.warn("Unable to use encryption", e);
