@@ -75,7 +75,6 @@ public class AuthenticatedApplicationTokenRepository {
             } else {
                 // Bootstrap key initialization
                 log.debug("Added new key for application: {} with applicationTokenId:{}", applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
-//                ExchangeableKey applicationKey = new ExchangeableKey(applicationToken.getApplicationTokenId().getBytes(), new IvParameterSpec("01234567890ABCDE".getBytes()));
                 ExchangeableKey applicationKey = new ExchangeableKey("{\"encryptionKey\":\"ZmVlNTZiYjU4MWMzOTc3YzM0YWMzNTZiOWJlYjhhY2I=\",\n" +
                         "\"iv\":\"MDEyMzQ1Njc4OTBBQkNERQ==\"}");
                 applicationKeyMap.put(applicationToken.getApplicationTokenId(), applicationKey.toJsonEncoded());
@@ -96,9 +95,7 @@ public class AuthenticatedApplicationTokenRepository {
     }
 
     public static ExchangeableKey getExchangeableKeyForApplicationToken(ApplicationToken applicationToken) {
-        ExchangeableKey exchangeableKey = new ExchangeableKey("{\"encryptionKey\":\"ZmVlNTZiYjU4MWMzOTc3YzM0YWMzNTZiOWJlYjhhY2I=\",\n" +
-                "\"iv\":\"MDEyMzQ1Njc4OTBBQkNERQ==\"}");
-        //new ExchangeableKey(applicationKeyMap.get(applicationToken.getApplicationTokenId()));
+        ExchangeableKey exchangeableKey = new ExchangeableKey(applicationKeyMap.get(applicationToken.getApplicationTokenId()));
         if (exchangeableKey.getIv() == null) {
             log.warn("Attempt fo find key for applicationID:{} with applicationTokenId:[} failed", applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
         }
