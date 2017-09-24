@@ -69,7 +69,6 @@ public class AuthenticatedApplicationTokenRepository {
         long remainingSecs = (Long.parseLong(applicationToken.getExpires()) - System.currentTimeMillis()) / 1000;
         log.debug("Added {} expires in {} seconds", applicationToken.getApplicationName(), remainingSecs);
         applicationTokenMap.put(applicationToken.getApplicationTokenId(), applicationToken);
-        if (applicationToken.getApplicationID().equalsIgnoreCase("9999")) {
             if (applicationKeyMap.containsKey(applicationToken.getApplicationTokenId())) {
                 // Maybe update key here...
             } else {
@@ -79,7 +78,6 @@ public class AuthenticatedApplicationTokenRepository {
                         "\"iv\":\"MDEyMzQ1Njc4OTBBQkNERQ==\"}");
                 applicationKeyMap.put(applicationToken.getApplicationTokenId(), applicationKey.toJsonEncoded());
             }
-        }
     }
 
     public static ApplicationToken getApplicationToken(String applicationtokenid) {

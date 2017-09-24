@@ -222,7 +222,7 @@ public class ApplicationAuthenticationResource {
             log.info("ApplicationToken for {} extended, expires: {}", applicationToken.getApplicationName(), applicationToken.getExpiresFormatted());
             String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
             log.trace("extendApplicationSession returns applicationTokenXml={}", applicationTokenXml);
-            if (applicationToken.getApplicationID().equalsIgnoreCase("9999")) {
+            if (applicationToken.getApplicationID().equalsIgnoreCase("99999")) {  // Disable this for normal appicationIDs until this is working as it should
                 try {
                     CryptoUtil.setExchangeableKey(AuthenticatedApplicationTokenRepository.getExchangeableKeyForApplicationToken(applicationToken));
                     log.debug("Using key:{} for application: {} with applicationTokenId:{}", CryptoUtil.getActiveKey(), applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
