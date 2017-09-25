@@ -22,6 +22,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.HashMap;
 
+import static net.whydah.sso.util.LoggerUtil.first50;
+
 @Path("/")
 public class ApplicationAuthenticationResource {
     private final static Logger log = LoggerFactory.getLogger(ApplicationAuthenticationResource.class);
@@ -262,14 +264,14 @@ public class ApplicationAuthenticationResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response getApplicationIdFromApplicationTokenId(@PathParam("applicationtokenid") String
                                                                    applicationtokenid) throws AppException {
-        log.debug("verify applicationtokenid {}", applicationtokenid);
+        log.trace("verify applicationtokenid {}", applicationtokenid);
         ApplicationToken applicationToken = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
-        log.debug("Found applicationtoken:" + applicationToken);
+        log.trace("Found applicationtoken:{}", first50(applicationToken));
         if (applicationToken != null || applicationToken.toString().length() > 10) {
-            log.debug("Applicationtokenid valid");
+            log.debug("Applicationtokenid for {} is valid", applicationToken.getApplicationID());
             return Response.ok(applicationToken.getApplicationID()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
-            log.debug("Applicationtokenid not valid");
+            log.debug("Applicationtokenid {} is not valid", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }

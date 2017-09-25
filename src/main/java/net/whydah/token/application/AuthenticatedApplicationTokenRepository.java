@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
+import javax.crypto.spec.IvParameterSpec;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -23,6 +24,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import java.io.FileNotFoundException;
 import java.io.StringReader;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -38,6 +40,8 @@ public class AuthenticatedApplicationTokenRepository {
 
     private static final Map<String, ApplicationToken> applicationTokenMap;
     private static final Map<String, String> applicationKeyMap;
+    private static Base64.Decoder decoder = Base64.getDecoder();
+
 
     static {
         AppConfig appConfig = new AppConfig();
@@ -49,19 +53,19 @@ public class AuthenticatedApplicationTokenRepository {
                 hazelcastConfig = new XmlConfigBuilder(xmlFileName).build();
                 log.info("Loading hazelcast configuration from :" + xmlFileName);
             } catch (FileNotFoundException notFound) {
-                log.error("Error - not able to load hazelcast.xml configuration.  Using embedded as fallback");
+                log.error("Error - not able to load hazelcast.xml configuration.  Using embedded configuration as fallback");
             }
         }
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
-        applicationTokenMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "authenticated_applicationtokens");
+        applicationTokenMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "_authenticated_applicationtokens");
         applicationKeyMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "_applicationkeys");
         String applicationDefaultTimeout = System.getProperty("application.session.timeout");
         if (applicationDefaultTimeout != null && (Integer.parseInt(applicationDefaultTimeout) > 0)) {
             log.info("Updated DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS to " + applicationDefaultTimeout);
             DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(applicationDefaultTimeout);
         }
-        log.info("Connecting to map {} - map size: {}", appConfig.getProperty("gridprefix") + "authenticated_applicationtokens", getMapSize());
+        log.info("Connecting to map {} - map size: {}", appConfig.getProperty("gridprefix") + "_authenticated_applicationtokens", getMapSize());
     }
 
 
@@ -71,12 +75,28 @@ public class AuthenticatedApplicationTokenRepository {
         applicationTokenMap.put(applicationToken.getApplicationTokenId(), applicationToken);
             if (applicationKeyMap.containsKey(applicationToken.getApplicationTokenId())) {
                 // Maybe update key here...
+                log.debug("updating cryptokey for applicationId: {} with applicationTokenId:{}", applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
+                try {
+                    String iv = "MDEyMzQ1Njc4OTBBQkNERQ==";
+                    ExchangeableKey applicationKey = new ExchangeableKey();
+                    applicationKey.setEncryptionSecret(System.currentTimeMillis() + applicationToken.getApplicationTokenId());
+                    applicationKey.setIv(new IvParameterSpec(decoder.decode(iv)));
+                    applicationKeyMap.put(applicationToken.getApplicationTokenId(), applicationKey.toJsonEncoded());
+                } catch (Exception e) {
+                    log.warn("Unable to create cryotokey for applicationIs: {}", applicationToken.getApplicationID());
+                }
             } else {
                 // Bootstrap key initialization
-                log.debug("Added new cryptokey for applicationId: {} with applicationTokenId:{}", applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
-                ExchangeableKey applicationKey = new ExchangeableKey("{\"encryptionKey\":\"ZmVlNTZiYjU4MWMzOTc3YzM0YWMzNTZiOWJlYjhhY2I=\",\n" +
-                        "\"iv\":\"MDEyMzQ1Njc4OTBBQkNERQ==\"}");
-                applicationKeyMap.put(applicationToken.getApplicationTokenId(), applicationKey.toJsonEncoded());
+                log.debug("adding new cryptokey for applicationId: {} with applicationTokenId:{}", applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
+                try {
+                    String iv = "MDEyMzQ1Njc4OTBBQkNERQ==";
+                    ExchangeableKey applicationKey = new ExchangeableKey();
+                    applicationKey.setEncryptionSecret(applicationToken.getApplicationTokenId());
+                    applicationKey.setIv(new IvParameterSpec(decoder.decode(iv)));
+                    applicationKeyMap.put(applicationToken.getApplicationTokenId(), applicationKey.toJsonEncoded());
+                } catch (Exception e) {
+                    log.warn("Unable to create cryotokey for applicationIs: {}", applicationToken.getApplicationID());
+                }
             }
     }
 
@@ -87,6 +107,7 @@ public class AuthenticatedApplicationTokenRepository {
         }
         if (isApplicationTokenExpired(applicationToken.getApplicationTokenId())) {
             applicationTokenMap.remove(applicationToken.getApplicationTokenId());
+            applicationKeyMap.remove(applicationToken.getApplicationTokenId());
             return null;
         }
         return applicationTokenMap.get(applicationtokenid);
@@ -110,6 +131,8 @@ public class AuthenticatedApplicationTokenRepository {
         }
         if (isApplicationTokenExpired(applicationTokenFromMap.getApplicationTokenId())) {
             applicationTokenMap.remove(applicationTokenFromMap.getApplicationTokenId());
+            applicationKeyMap.remove(applicationTokenFromMap.getApplicationTokenId());
+
             return false;
         }
         return true;
@@ -121,12 +144,15 @@ public class AuthenticatedApplicationTokenRepository {
 
     public static ApplicationToken renewApplicationTokenId(String applicationtokenid) {
         ApplicationToken temp = applicationTokenMap.get(applicationtokenid);  // Can't remove as verify check in map
+        String exchangeableKey = applicationKeyMap.get(applicationtokenid);  // Can't remove as verify check in map
         if (verifyApplicationToken(temp)) {
             applicationTokenMap.remove(applicationtokenid);
+            applicationKeyMap.remove(applicationtokenid);
             String oldExpires = temp.getExpiresFormatted();
             temp.setExpires(updateExpires(temp.getExpires(), temp.getApplicationID()));
-            log.info("Updated expiry for applicationID:{}  oldExpiry:{}, newExpiry: {}", applicationtokenid, oldExpires, temp.getExpiresFormatted());
+            log.info("Updated expiry for applicationId:{}  oldExpiry:{}, newExpiry: {}", applicationtokenid, oldExpires, temp.getExpiresFormatted());
             applicationTokenMap.put(temp.getApplicationTokenId(), temp);
+            applicationKeyMap.put(temp.getApplicationTokenId(), exchangeableKey);
             return temp;
         }
         return null;
@@ -147,7 +173,7 @@ public class AuthenticatedApplicationTokenRepository {
         if (at != null) {
             return at.getApplicationID();
         }
-        log.error("getApplicationIdFromApplicationTokenID - Unable to find applicationID for applicationtokenId=" + applicationtokenid);
+        log.error("getApplicationIdFromApplicationTokenId - Unable to find applicationId for applicationTokenId=" + applicationtokenid);
         return "";
     }
 
@@ -156,7 +182,7 @@ public class AuthenticatedApplicationTokenRepository {
         if (at != null) {
             return at.getApplicationName();
         }
-        log.error("getApplicationNameFromApplicationTokenID - Unable to find applicationName for applicationtokenId=" + applicationtokenid);
+        log.error("getApplicationNameFromApplicationTokenId - Unable to find applicationName for applicationTokenId=" + applicationtokenid);
         return "";
     }
 
@@ -186,12 +212,12 @@ public class AuthenticatedApplicationTokenRepository {
     private static String updateExpires(String oldExpiry, String applicationID) {
         String applicationMaxSessionTime = ApplicationModelFacade.getParameterForApplication(ApplicationModelUtil.maxSessionTimeoutSeconds, applicationID);
         if (applicationMaxSessionTime != null && (applicationMaxSessionTime.length() > 0) && (Long.parseLong(applicationMaxSessionTime) > 0)) {
-            log.info("maxSessionTimeoutSeconds found: {} for applicationID: {}", Long.parseLong(applicationMaxSessionTime), applicationID);
+            log.info("maxSessionTimeoutSeconds found: {} for applicationId: {}", Long.parseLong(applicationMaxSessionTime), applicationID);
             // Set to application configured maxSessionTimeoutSeconds if found and shave off 10 seconds
             if (Long.parseLong(applicationMaxSessionTime) < DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS) {
                 return String.valueOf(System.currentTimeMillis() + Long.parseLong(applicationMaxSessionTime) * 1000 - 10 * 1000);
             }
-            log.info("maxSessionTimeoutSeconds: {} hogher than default, using default: {} for applicationID: {}", applicationMaxSessionTime, DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS, applicationID);
+            log.info("maxSessionTimeoutSeconds: {} higher than the default, using default: {} for applicationID: {}", applicationMaxSessionTime, DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS, applicationID);
 
 
         }
@@ -250,7 +276,7 @@ public class AuthenticatedApplicationTokenRepository {
             for (Map.Entry<String, ApplicationToken> entry : applicationTokenMap.entrySet()) {
                 lognString = lognString + entry.getValue().getApplicationTokenId() + "(" + entry.getValue().getApplicationName() + "), ";
             }
-            log.trace("Active applicationTokenIDs: " + lognString);
+            log.trace("Active applicationTokenIds: " + lognString);
 
         }
     }
@@ -266,7 +292,7 @@ public class AuthenticatedApplicationTokenRepository {
         if (stsApplicationTokenID.equals("")) {
             ApplicationCredential ac = new ApplicationCredential(applicationId, applicationName, applicationsecret);
             myToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(ac));
-            myToken.setExpires(String.valueOf((System.currentTimeMillis() + 100000 * 5000)));  // Long time
+            myToken.setExpires(String.valueOf((System.currentTimeMillis() + 100000 * 5000)));  // A very long time
             stsApplicationTokenID = myToken.getApplicationTokenId();
             addApplicationToken(myToken);
         }
