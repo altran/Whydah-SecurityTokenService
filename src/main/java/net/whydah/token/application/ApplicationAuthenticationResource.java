@@ -170,7 +170,7 @@ public class ApplicationAuthenticationResource {
     public Response validateApplicationTokenId(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
         log.trace("validateApplicationTokenId - validate applicationtokenid:{}", applicationtokenid);
         if (AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.debug("validateApplicationTokenId - applicationtokenid:{} for applicationname:{} is valid timeout in:{} seconds", applicationtokenid, AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid).getApplicationName(), Long.parseLong(AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid).getExpires()) - System.currentTimeMillis());
+            log.trace("validateApplicationTokenId - applicationtokenid:{} for applicationname:{} is valid timeout in:{} seconds", applicationtokenid, AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid).getApplicationName(), Long.parseLong(AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid).getExpires()) - System.currentTimeMillis());
             return Response.ok("{\"result\": \"true\"}").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
             log.warn("validateApplicationTokenId - applicationtokenid:{}  is not valid", applicationtokenid);
