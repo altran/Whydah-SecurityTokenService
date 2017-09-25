@@ -214,14 +214,16 @@ public class ApplicationAuthenticationResource {
     public Response extendApplicationSession(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
         log.debug("renew session for applicationtokenid: {}", applicationtokenid);
         if (AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
+            ExchangeableKey exchangeableKey = new ExchangeableKey(AuthenticatedApplicationTokenRepository.getApplicationKeyFromApplicationTokenID(applicationtokenid));
             ApplicationToken applicationToken = AuthenticatedApplicationTokenRepository.renewApplicationTokenId(applicationtokenid);
             log.info("ApplicationToken for {} extended, expires: {}", applicationToken.getApplicationName(), applicationToken.getExpiresFormatted());
             String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
             log.trace("extendApplicationSession returns applicationTokenXml={}", applicationTokenXml);
 
             if (handleCryptoKey(applicationToken)) {  // Disable this for normal appicationIDs until this is working as it should
-                log.debug("Using cryptokey:{} for application: {} with applicationTokenId:{}", CryptoUtil.getActiveKey(), applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
+                log.debug("Using cryptokey:{} for application: {} with applicationTokenId:{}", exchangeableKey, applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
                 try {
+                    CryptoUtil.setExchangeableKey(exchangeableKey);
                     String crtytoblock = CryptoUtil.encrypt(applicationTokenXml);
                     log.debug("Returning cryptoblock:{}", crtytoblock);
                     return Response.ok().entity(crtytoblock).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
