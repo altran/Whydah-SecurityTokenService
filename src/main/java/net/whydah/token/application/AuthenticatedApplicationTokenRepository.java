@@ -152,7 +152,17 @@ public class AuthenticatedApplicationTokenRepository {
             temp.setExpires(updateExpires(temp.getExpires(), temp.getApplicationID()));
             log.info("Updated expiry for applicationId:{}  oldExpiry:{}, newExpiry: {}", applicationtokenid, oldExpires, temp.getExpiresFormatted());
             applicationTokenMap.put(temp.getApplicationTokenId(), temp);
-            applicationKeyMap.put(temp.getApplicationTokenId(), exchangeableKey);
+            log.debug("updating cryptokey for applicationId: {} with applicationTokenId:{}", temp.getApplicationID(), temp.getApplicationTokenId());
+            try {
+                String iv = "MDEyMzQ1Njc4OTBBQkNERQ==";
+                ExchangeableKey applicationKey = new ExchangeableKey();
+                applicationKey.setEncryptionSecret(System.currentTimeMillis() + temp.getApplicationTokenId());
+                applicationKey.setIv(new IvParameterSpec(decoder.decode(iv)));
+                applicationKeyMap.put(temp.getApplicationTokenId(), applicationKey.toJsonEncoded());
+            } catch (Exception e) {
+                log.warn("Unable to create cryotokey for applicationId: {}, re-using old", temp.getApplicationID());
+                applicationKeyMap.put(temp.getApplicationTokenId(), exchangeableKey);
+            }
             return temp;
         }
         return null;
