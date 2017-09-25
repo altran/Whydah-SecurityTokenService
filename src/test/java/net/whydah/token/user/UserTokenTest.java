@@ -80,13 +80,13 @@ public class UserTokenTest {
         utoken.setTokenid(UUID.randomUUID().toString());
         utoken.setPersonRef("78125637812638");
 
-        AuthenticatedUserTokenRepository.addUserToken(utoken, "2012", "");
+        AuthenticatedUserTokenRepository.addUserToken(utoken, "2012xxxx", "");
         assertTrue("Verification of valid token failed", AuthenticatedUserTokenRepository.verifyUserToken(utoken, "2012"));
 
         utoken.setFirstName("Pelle");
         String token = freemarkerProcessor.toXml(utoken);
-        assertTrue("Token not updated", token.indexOf("Pelle") > 0);
-        assertFalse("Verification of in-valid token successful", AuthenticatedUserTokenRepository.verifyUserToken(utoken, ""));
+        assertTrue("UserToken not updated", token.indexOf("Pelle") > 0);
+        assertFalse("Verification of in-valid usertoken successful", AuthenticatedUserTokenRepository.verifyUserToken(utoken, "2012xxxx"));
     }
 
     @Test
