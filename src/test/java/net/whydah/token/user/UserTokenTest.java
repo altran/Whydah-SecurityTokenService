@@ -50,15 +50,15 @@ public class UserTokenTest {
     @Test
     @Ignore
     public void testCreateUserToken() throws Exception {
-        UserToken utoken = new UserToken();
-        utoken.setFirstName("Ola");
-        utoken.setEmail("test@whydah.net");
-        utoken.setLastName("Nordmann");
-        utoken.setTimestamp("123123123");
-        utoken.setPersonRef("73637276722376");
-        utoken.setDefcon(ApplicationThreatResource.getDEFCON());
-        utoken.setTokenid(UUID.randomUUID().toString());
-        String xml = freemarkerProcessor.toXml(utoken);
+        UserToken userToken = new UserToken();
+        userToken.setFirstName("Ola");
+        userToken.setEmail("test@whydah.net");
+        userToken.setLastName("Nordmann");
+        userToken.setTimestamp("123123123");
+        userToken.setPersonRef("73637276722376");
+        userToken.setDefcon(ApplicationThreatResource.getDEFCON());
+        userToken.setTokenid(UUID.randomUUID().toString());
+        String xml = freemarkerProcessor.toXml(userToken);
 
         UserToken copyToken = UserTokenMapper.fromUserTokenXml(xml);
         String copyxml = freemarkerProcessor.toXml(copyToken);
@@ -69,54 +69,54 @@ public class UserTokenTest {
 
     @Test
     public void testActiveUserTokenRepository() {
-        UserToken utoken = new UserToken();
-        utoken.setUserName(UUID.randomUUID().toString());
-        utoken.setFirstName("Ola");
-        utoken.setLastName("Nordmann");
-        utoken.setEmail("test@whydah.net");
-        utoken.setTimestamp(String.valueOf(System.currentTimeMillis()));
-        utoken.setLifespan(String.valueOf(2 * 60 * 60 * new Random().nextInt(100)));
+        UserToken userToken = new UserToken();
+        userToken.setUserName(UUID.randomUUID().toString());
+        userToken.setFirstName("Ola");
+        userToken.setLastName("Nordmann");
+        userToken.setEmail("test@whydah.net");
+        userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+        userToken.setLifespan(String.valueOf(2 * 60 * 60 * new Random().nextInt(100)));
 
-        utoken.setTokenid(UUID.randomUUID().toString());
-        utoken.setPersonRef("78125637812638");
+        userToken.setTokenid(UUID.randomUUID().toString());
+        userToken.setPersonRef("78125637812638");
 
-        AuthenticatedUserTokenRepository.addUserToken(utoken, "2012xxxx", "");
-        assertTrue("Verification of valid token failed", AuthenticatedUserTokenRepository.verifyUserToken(utoken, "2012"));
+        AuthenticatedUserTokenRepository.addUserToken(userToken, "2012xxxx", "");
+        assertTrue("Verification of valid token failed", AuthenticatedUserTokenRepository.verifyUserToken(userToken, "2012"));
 
-        utoken.setFirstName("Pelle");
-        String token = freemarkerProcessor.toXml(utoken);
-        assertTrue("UserToken not updated", token.indexOf("Pelle") > 0);
-        assertFalse("Verification of in-valid usertoken successful", AuthenticatedUserTokenRepository.verifyUserToken(utoken, "2012xxxx"));
+        userToken.setFirstName("Pelle");
+        String usertokenfromfreemarkertransformation = freemarkerProcessor.toXml(userToken);
+        assertTrue("UserToken not updated", usertokenfromfreemarkertransformation.indexOf("Pelle") > 0);
+        assertFalse("Verification of changed usertoken fail as it should", AuthenticatedUserTokenRepository.verifyUserToken(userToken, "2012xxxx"));
     }
 
     @Test
     public void testTimedOutActiveUserTokenRepository() {
-        UserToken utoken = new UserToken();
-        utoken.setUserName(UUID.randomUUID().toString());
-        utoken.setTokenid(UUID.randomUUID().toString());
-        utoken.setFirstName("Ola");
-        utoken.setLastName("Nordmann");
-        utoken.setEmail("test@whydah.net");
-        utoken.setPersonRef("78125637812638");
-        utoken.setTimestamp(String.valueOf(System.currentTimeMillis() - 1000));
-        utoken.setLifespan("0");
-        AuthenticatedUserTokenRepository.addUserToken(utoken, "", "");
-        assertFalse("Verification of timed-out token successful", AuthenticatedUserTokenRepository.verifyUserToken(utoken, ""));
+        UserToken userToken = new UserToken();
+        userToken.setUserName(UUID.randomUUID().toString());
+        userToken.setTokenid(UUID.randomUUID().toString());
+        userToken.setFirstName("Ola");
+        userToken.setLastName("Nordmann");
+        userToken.setEmail("test@whydah.net");
+        userToken.setPersonRef("78125637812638");
+        userToken.setTimestamp(String.valueOf(System.currentTimeMillis() - 1000));
+        userToken.setLifespan("0");
+        AuthenticatedUserTokenRepository.addUserToken(userToken, "", "");
+        assertFalse("Verification of timed-out token successful", AuthenticatedUserTokenRepository.verifyUserToken(userToken, ""));
     }
 
     @Test
     @Ignore
     public void testCreateUserTokenWithRolesFreemarkerCopy() {
-        UserToken utoken = new UserToken();
-        utoken.setFirstName("Olav");
-        utoken.setLastName("Nordmann");
-        utoken.setEmail("test2@whydah.net");
-        utoken.setTokenid(UUID.randomUUID().toString());
-        utoken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 1", "Boardmember", "Diktator"));
-        utoken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 2", "tester", "ansatt"));
-        utoken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 3", "Boardmember", ""));
-        utoken.addApplicationRoleEntry(new UserApplicationRoleEntry("appa", "whydag.org", "Kunde 1", "President", "Valla"));
-        String tokenxml = freemarkerProcessor.toXml(utoken);
+        UserToken userToken = new UserToken();
+        userToken.setFirstName("Olav");
+        userToken.setLastName("Nordmann");
+        userToken.setEmail("test2@whydah.net");
+        userToken.setTokenid(UUID.randomUUID().toString());
+        userToken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 1", "Boardmember", "Diktator"));
+        userToken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 2", "tester", "ansatt"));
+        userToken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 3", "Boardmember", ""));
+        userToken.addApplicationRoleEntry(new UserApplicationRoleEntry("appa", "whydag.org", "Kunde 1", "President", "Valla"));
+        String tokenxml = freemarkerProcessor.toXml(userToken);
 
         UserToken copyToken = UserTokenMapper.fromUserTokenXml(tokenxml);
         String copyxml = freemarkerProcessor.toXml(copyToken);
@@ -133,16 +133,16 @@ public class UserTokenTest {
     @Test
     @Ignore
     public void testCreateUserTokenWithRolesUserTokenCopy() {
-        UserToken utoken = new UserToken();
-        utoken.setFirstName("Olav");
-        utoken.setLastName("Nordmann");
-        utoken.setEmail("test2@whydah.net");
-        utoken.setTokenid(UUID.randomUUID().toString());
-        utoken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 1", "Boardmember", "Diktator"));
-        utoken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 2", "tester", "ansatt"));
-        utoken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 3", "Boardmember", ""));
-        utoken.addApplicationRoleEntry(new UserApplicationRoleEntry("appa", "whydag.org", "Kunde 1", "President", "Valla"));
-        String tokenxml = freemarkerProcessor.toXml(utoken);
+        UserToken userToken = new UserToken();
+        userToken.setFirstName("Olav");
+        userToken.setLastName("Nordmann");
+        userToken.setEmail("test2@whydah.net");
+        userToken.setTokenid(UUID.randomUUID().toString());
+        userToken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 1", "Boardmember", "Diktator"));
+        userToken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 2", "tester", "ansatt"));
+        userToken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 3", "Boardmember", ""));
+        userToken.addApplicationRoleEntry(new UserApplicationRoleEntry("appa", "whydag.org", "Kunde 1", "President", "Valla"));
+        String tokenxml = freemarkerProcessor.toXml(userToken);
 
         UserToken copyToken = UserTokenMapper.fromUserTokenXml(tokenxml);
         UserToken copy2Token = copyToken.copy();
