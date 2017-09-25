@@ -163,7 +163,7 @@ public class ApplicationAuthenticationResource {
     public Response validateApplicationTokenId(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
         log.trace("validateApplicationTokenId - validate applicationtokenid:{}", applicationtokenid);
         if (AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.debug("validateApplicationTokenId - applicationtokenid:{} for applicationname:{} is valid", applicationtokenid, AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid).getApplicationName());
+            log.debug("validateApplicationTokenId - applicationtokenid:{} for applicationname:{} is valid timeout in:{} seconds", applicationtokenid, AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid).getApplicationName(), Long.parseLong(AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid).getExpires()) - System.currentTimeMillis());
             return Response.ok("{\"result\": \"true\"}").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
             log.warn("validateApplicationTokenId - applicationtokenid:{}  is not valid", applicationtokenid);
@@ -263,11 +263,11 @@ public class ApplicationAuthenticationResource {
     public Response getApplicationIdFromApplicationTokenId(@PathParam("applicationtokenid") String
                                                                    applicationtokenid) throws AppException {
         log.debug("verify applicationtokenid {}", applicationtokenid);
-        ApplicationToken myApp = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
-        log.debug("Found applicationtoken:" + myApp);
-        if (myApp != null || myApp.toString().length() > 10) {
+        ApplicationToken applicationToken = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
+        log.debug("Found applicationtoken:" + applicationToken);
+        if (applicationToken != null || applicationToken.toString().length() > 10) {
             log.debug("Applicationtokenid valid");
-            return Response.ok(myApp.getApplicationID()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.ok(applicationToken.getApplicationID()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
             log.debug("Applicationtokenid not valid");
             //return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
@@ -301,14 +301,13 @@ public class ApplicationAuthenticationResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response getApplicationNameFromApplicationTokenId(@PathParam("applicationtokenid") String
                                                                      applicationtokenid) throws AppException {
-        log.debug("verify apptokenid {}", applicationtokenid);
-        ApplicationToken myApp = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
-        if (myApp != null || myApp.toString().length() > 10) {
+        log.debug("verify applicationtokenid {}", applicationtokenid);
+        ApplicationToken applicationToken = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
+        if (applicationToken != null || applicationToken.toString().length() > 10) {
             log.debug("Apptokenid valid");
-            return Response.ok(myApp.getApplicationName()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            return Response.ok(applicationToken.getApplicationName()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
             log.debug("Apptokenid not valid");
-            //return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
     }
