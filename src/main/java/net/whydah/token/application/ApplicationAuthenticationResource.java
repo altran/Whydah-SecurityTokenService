@@ -11,6 +11,7 @@ import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.config.ApplicationMode;
 import net.whydah.sso.session.baseclasses.CryptoUtil;
+import net.whydah.sso.session.baseclasses.ExchangeableKey;
 import net.whydah.sso.user.types.UserCredential;
 import net.whydah.token.config.AppConfig;
 import org.slf4j.Logger;
@@ -72,49 +73,44 @@ public class ApplicationAuthenticationResource {
     }
 
     /**
-	 * @throws AppException 
-	 * @api {post} logon logonApplication
-	 * @apiName logon
-	 * @apiGroup Security Token Service (STS)
-	 * @apiDescription Log on my application and get the application specification 
-	 * 
-	 * @apiParam {String} applicationcredential A label for this address.
-	 * @apiParamExample {xml} Request-Example:
-	 * &lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt; 
- 	 * &lt;applicationcredential&gt;
+     * @throws AppException
+     * @api {post} logon logonApplication
+     * @apiName logon
+     * @apiGroup Security Token Service (STS)
+     * @apiDescription Log on my application and get the application specification
+     * @apiParam {String} applicationcredential A label for this address.
+     * @apiParamExample {xml} Request-Example:
+     * &lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+     * &lt;applicationcredential&gt;
      * &lt;params&gt;
      * &lt;applicationID&gt;101&lt;/applicationID&gt;
-     *  &lt;applicationName&gt;Whydah-SystemTests&lt;/applicationName&gt;
-     *   &lt;applicationSecret&gt;55fhRM6nbKZ2wfC6RMmMuzXpk&lt;/applicationSecret&gt;
+     * &lt;applicationName&gt;Whydah-SystemTests&lt;/applicationName&gt;
+     * &lt;applicationSecret&gt;55fhRM6nbKZ2wfC6RMmMuzXpk&lt;/applicationSecret&gt;
      * &lt;/params&gt;
-	 * &lt;/applicationcredential&gt;
-	 *
-	 * @apiSuccessExample Success-Response:
-	 *	HTTP/1.1 200 OK
-	 *	&lt;applicationtoken&gt;
-     * 		&lt;params&gt;
-     *		    &lt;applicationtokenID&gt;1d58b70dc0fdc98b5cdce4745fb086c4&lt;/applicationtokenID&gt;
-     *		    &lt;applicationid&gt;101&lt;/applicationid&gt;
-     *			&lt;applicationname&gt;Whydah-SystemTests&lt;/applicationname&gt;
-     *			&lt;expires&gt;1480931112185&lt;/expires&gt;
-     *		&lt;/params&gt; 
-     * 		&lt;Url type="application/xml" method="POST" template="https://whydahdev.cantara.no/tokenservice/user/1d58b70dc0fdc98b5cdce4745fb086c4/get_usertoken_by_usertokenid"/&gt; 
- 	 *	&lt;/applicationtoken&gt;
-	 *
-	 *
-	 * @apiError 403/7000 Application is invalid.
-	 * @apiError 500/9999 A generic exception or an unexpected error 
-	 *
-	 * @apiErrorExample Error-Response:
-	 *     HTTP/1.1 403 Forbidden
-	 *     {
-	 *  		"status": 403,
-	 *  		"code": 7000,
-	 *  		"message": "Illegal Application.",
-	 *  		"link": "",
-	 *  		"developerMessage": "Application is invalid."
-	 *		}
-	 */
+     * &lt;/applicationcredential&gt;
+     * @apiSuccessExample Success-Response:
+     * HTTP/1.1 200 OK
+     * &lt;applicationtoken&gt;
+     * &lt;params&gt;
+     * &lt;applicationtokenID&gt;1d58b70dc0fdc98b5cdce4745fb086c4&lt;/applicationtokenID&gt;
+     * &lt;applicationid&gt;101&lt;/applicationid&gt;
+     * &lt;applicationname&gt;Whydah-SystemTests&lt;/applicationname&gt;
+     * &lt;expires&gt;1480931112185&lt;/expires&gt;
+     * &lt;/params&gt;
+     * &lt;Url type="application/xml" method="POST" template="https://whydahdev.cantara.no/tokenservice/user/1d58b70dc0fdc98b5cdce4745fb086c4/get_usertoken_by_usertokenid"/&gt;
+     * &lt;/applicationtoken&gt;
+     * @apiError 403/7000 Application is invalid.
+     * @apiError 500/9999 A generic exception or an unexpected error
+     * @apiErrorExample Error-Response:
+     * HTTP/1.1 403 Forbidden
+     * {
+     * "status": 403,
+     * "code": 7000,
+     * "message": "Illegal Application.",
+     * "link": "",
+     * "developerMessage": "Application is invalid."
+     * }
+     */
     @Path("/logon")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -139,32 +135,28 @@ public class ApplicationAuthenticationResource {
     }
 
     /**
-   	 * @throws AppException 
-   	 * @api {get} :applicationtokenid/validate validateApplicationTokenId
-   	 * @apiName validateApplicationTokenId
-   	 * @apiGroup Security Token Service (STS)
-   	 * @apiDescription Validate application by an application token id 
-   	 * 
-   	 * @apiSuccessExample Success-Response:
-   	 *	HTTP/1.1 200 OK
-	 *	{
-	 *  	"result": "true"
-	 *	}
-   	 *
-   	 *
-   	 * @apiError 403/7000 Application is invalid.
-   	 * @apiError 500/9999 A generic exception or an unexpected error 
-   	 *
-   	 * @apiErrorExample Error-Response:
-   	 *     HTTP/1.1 403 Forbidden
-   	 *     {
-   	 *  		"status": 403,
-   	 *  		"code": 7000,
-   	 *  		"message": "Illegal Application.",
-   	 *  		"link": "",
-   	 *  		"developerMessage": "Application is invalid."
-   	 *		}
-   	 */
+     * @throws AppException
+     * @api {get} :applicationtokenid/validate validateApplicationTokenId
+     * @apiName validateApplicationTokenId
+     * @apiGroup Security Token Service (STS)
+     * @apiDescription Validate application by an application token id
+     * @apiSuccessExample Success-Response:
+     * HTTP/1.1 200 OK
+     * {
+     * "result": "true"
+     * }
+     * @apiError 403/7000 Application is invalid.
+     * @apiError 500/9999 A generic exception or an unexpected error
+     * @apiErrorExample Error-Response:
+     * HTTP/1.1 403 Forbidden
+     * {
+     * "status": 403,
+     * "code": 7000,
+     * "message": "Illegal Application.",
+     * "link": "",
+     * "developerMessage": "Application is invalid."
+     * }
+     */
     @Path("{applicationtokenid}/validate")
     @GET
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -181,37 +173,34 @@ public class ApplicationAuthenticationResource {
     }
 
     /**
-   	 * @throws AppException 
-   	 * @api {post} :applicationtokenid/renew_applicationtoken extendApplicationSession
-   	 * @apiName extendApplicationSession
-   	 * @apiGroup Security Token Service (STS)
-   	 * @apiDescription Extend my application session
-   	 * 
-   	 * @apiSuccessExample Success-Response:
-	 *	HTTP/1.1 200 OK
-	 *	&lt;applicationtoken&gt;
-     * 		&lt;params&gt;
-     *		    &lt;applicationtokenID&gt;1d58b70dc0fdc98b5cdce4745fb086c4&lt;/applicationtokenID&gt;
-     *		    &lt;applicationid&gt;101&lt;/applicationid&gt;
-     *			&lt;applicationname&gt;Whydah-SystemTests&lt;/applicationname&gt;
-     *			&lt;expires&gt;1480931112185&lt;/expires&gt;
-     *		&lt;/params&gt; 
-     * 		&lt;Url type="application/xml" method="POST" template="https://whydahdev.cantara.no/tokenservice/user/1d58b70dc0fdc98b5cdce4745fb086c4/get_usertoken_by_usertokenid"/&gt; 
- 	 *	&lt;/applicationtoken&gt;
-   	 *
-   	 * @apiError 403/7000 Application is invalid.
-   	 * @apiError 500/9999 A generic exception or an unexpected error 
-   	 *
-   	 * @apiErrorExample Error-Response:
-   	 *     HTTP/1.1 403 Forbidden
-   	 *     {
-   	 *  		"status": 403,
-   	 *  		"code": 7000,
-   	 *  		"message": "Illegal Application.",
-   	 *  		"link": "",
-   	 *  		"developerMessage": "Application is invalid."
-   	 *		}
-   	 */
+     * @throws AppException
+     * @api {post} :applicationtokenid/renew_applicationtoken extendApplicationSession
+     * @apiName extendApplicationSession
+     * @apiGroup Security Token Service (STS)
+     * @apiDescription Extend my application session
+     * @apiSuccessExample Success-Response:
+     * HTTP/1.1 200 OK
+     * &lt;applicationtoken&gt;
+     * &lt;params&gt;
+     * &lt;applicationtokenID&gt;1d58b70dc0fdc98b5cdce4745fb086c4&lt;/applicationtokenID&gt;
+     * &lt;applicationid&gt;101&lt;/applicationid&gt;
+     * &lt;applicationname&gt;Whydah-SystemTests&lt;/applicationname&gt;
+     * &lt;expires&gt;1480931112185&lt;/expires&gt;
+     * &lt;/params&gt;
+     * &lt;Url type="application/xml" method="POST" template="https://whydahdev.cantara.no/tokenservice/user/1d58b70dc0fdc98b5cdce4745fb086c4/get_usertoken_by_usertokenid"/&gt;
+     * &lt;/applicationtoken&gt;
+     * @apiError 403/7000 Application is invalid.
+     * @apiError 500/9999 A generic exception or an unexpected error
+     * @apiErrorExample Error-Response:
+     * HTTP/1.1 403 Forbidden
+     * {
+     * "status": 403,
+     * "code": 7000,
+     * "message": "Illegal Application.",
+     * "link": "",
+     * "developerMessage": "Application is invalid."
+     * }
+     */
     @Path("{applicationtokenid}/renew_applicationtoken")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -222,18 +211,23 @@ public class ApplicationAuthenticationResource {
             log.info("ApplicationToken for {} extended, expires: {}", applicationToken.getApplicationName(), applicationToken.getExpiresFormatted());
             String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
             log.trace("extendApplicationSession returns applicationTokenXml={}", applicationTokenXml);
+            handleCryptoKey(applicationToken);
+            // This test should be smarter and look at the application datastructure later
+            //
+            // ie if (ApplicationModelFacade.getApplication(applicationToken.getApplicationID()).getSecurity().isWhydahAdmin() ||
+            //        ApplicationModelFacade.getApplication(applicationToken.getApplicationID()).getSecurity().isWhydahUASAccess())
+            //
             if (applicationToken.getApplicationID().equalsIgnoreCase("99999")) {  // Disable this for normal appicationIDs until this is working as it should
+                log.debug("Using cryptokey:{} for application: {} with applicationTokenId:{}", CryptoUtil.getActiveKey(), applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
                 try {
-                    CryptoUtil.setExchangeableKey(AuthenticatedApplicationTokenRepository.getExchangeableKeyForApplicationToken(applicationToken));
-                    log.debug("Using key:{} for application: {} with applicationTokenId:{}", CryptoUtil.getActiveKey(), applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
                     String crtytoblock = CryptoUtil.encrypt(applicationTokenXml);
-                    log.info("Returning cryptoblock:{}", crtytoblock);
+                    log.debug("Returning cryptoblock:{}", crtytoblock);
                     return Response.ok().entity(crtytoblock).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
                 } catch (Exception e) {
-                    log.warn("Unable to use encryption", e);
+                    log.warn("Unable to encrypt massage, fallback to nonencrypted (for now)", e);
                 }
-
             }
+            // Fallback, return non-encrypted response
             return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
             log.warn("applicationtokenid={} not valid", applicationtokenid);
@@ -243,33 +237,31 @@ public class ApplicationAuthenticationResource {
     }
 
     /**
-   	 * @throws AppException 
-   	 * @api {get} :applicationtokenid/get_application_id getApplicationId
-   	 * @apiName getApplicationIdFromApplicationTokenId
-   	 * @apiGroup Security Token Service (STS)
-   	 * @apiDescription Get my application id from an application token id
-   	 * 
-   	 * @apiSuccessExample Success-Response:
-	 *	HTTP/1.1 200 OK plain/text
-	 *	101
-   	 *
-   	 * @apiError 403/7000 Application is invalid.
-   	 * @apiError 500/9999 A generic exception or an unexpected error 
-   	 *
-   	 * @apiErrorExample Error-Response:
-   	 *     HTTP/1.1 403 Forbidden
-   	 *     {
-   	 *  		"status": 403,
-   	 *  		"code": 7000,
-   	 *  		"message": "Illegal Application.",
-   	 *  		"link": "",
-   	 *  		"developerMessage": "Application is invalid."
-   	 *		}
-   	 */
+     * @throws AppException
+     * @api {get} :applicationtokenid/get_application_id getApplicationId
+     * @apiName getApplicationIdFromApplicationTokenId
+     * @apiGroup Security Token Service (STS)
+     * @apiDescription Get my application id from an application token id
+     * @apiSuccessExample Success-Response:
+     * HTTP/1.1 200 OK plain/text
+     * 101
+     * @apiError 403/7000 Application is invalid.
+     * @apiError 500/9999 A generic exception or an unexpected error
+     * @apiErrorExample Error-Response:
+     * HTTP/1.1 403 Forbidden
+     * {
+     * "status": 403,
+     * "code": 7000,
+     * "message": "Illegal Application.",
+     * "link": "",
+     * "developerMessage": "Application is invalid."
+     * }
+     */
     @Path("{applicationtokenid}/get_application_id")
     @GET
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response getApplicationIdFromApplicationTokenId(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
+    public Response getApplicationIdFromApplicationTokenId(@PathParam("applicationtokenid") String
+                                                                   applicationtokenid) throws AppException {
         log.debug("verify applicationtokenid {}", applicationtokenid);
         ApplicationToken myApp = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
         log.debug("Found applicationtoken:" + myApp);
@@ -284,33 +276,31 @@ public class ApplicationAuthenticationResource {
     }
 
     /**
-   	 * @throws AppException 
-   	 * @api {get} :applicationtokenid/get_application_name getApplicationName
-   	 * @apiName getApplicationNameFromApplicationTokenId
-   	 * @apiGroup Security Token Service (STS)
-   	 * @apiDescription Get my application name from an application token id
-   	 * 
-   	 * @apiSuccessExample Success-Response:
-	 *	HTTP/1.1 200 OK plain/text
-	 *	Whydah-SystemTests
-   	 *
-   	 * @apiError 403/7000 Application is invalid.
-   	 * @apiError 500/9999 A generic exception or an unexpected error 
-   	 *
-   	 * @apiErrorExample Error-Response:
-   	 *     HTTP/1.1 403 Forbidden
-   	 *     {
-   	 *  		"status": 403,
-   	 *  		"code": 7000,
-   	 *  		"message": "Illegal Application.",
-   	 *  		"link": "",
-   	 *  		"developerMessage": "Application is invalid."
-   	 *		}
-   	 */
+     * @throws AppException
+     * @api {get} :applicationtokenid/get_application_name getApplicationName
+     * @apiName getApplicationNameFromApplicationTokenId
+     * @apiGroup Security Token Service (STS)
+     * @apiDescription Get my application name from an application token id
+     * @apiSuccessExample Success-Response:
+     * HTTP/1.1 200 OK plain/text
+     * Whydah-SystemTests
+     * @apiError 403/7000 Application is invalid.
+     * @apiError 500/9999 A generic exception or an unexpected error
+     * @apiErrorExample Error-Response:
+     * HTTP/1.1 403 Forbidden
+     * {
+     * "status": 403,
+     * "code": 7000,
+     * "message": "Illegal Application.",
+     * "link": "",
+     * "developerMessage": "Application is invalid."
+     * }
+     */
     @Path("{applicationtokenid}/get_application_name")
     @GET
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response getApplicationNameFromApplicationTokenId(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
+    public Response getApplicationNameFromApplicationTokenId(@PathParam("applicationtokenid") String
+                                                                     applicationtokenid) throws AppException {
         log.debug("verify apptokenid {}", applicationtokenid);
         ApplicationToken myApp = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
         if (myApp != null || myApp.toString().length() > 10) {
@@ -374,5 +364,21 @@ public class ApplicationAuthenticationResource {
     }
 
 
-
+    private static boolean handleCryptoKey(ApplicationToken applicationToken) {
+        ExchangeableKey lookupKey = AuthenticatedApplicationTokenRepository.getExchangeableKeyForApplicationToken(applicationToken);
+        log.debug("Lookup cryptokey for Applicationid:{} for ApplicationTokenId:{} resulted in ExchangeableKey:{}", applicationToken.getApplicationID(), applicationToken.getApplicationTokenId(), lookupKey);
+        if (lookupKey == null) {
+            return false;
+        }
+        try {
+            CryptoUtil.setExchangeableKey(lookupKey);
+            if (applicationToken.getApplicationID().equalsIgnoreCase("99999")) {  // Disable this for normal appicationIDs until this is working as it should
+                log.debug("Using cryptokey:{} for application: {} with applicationTokenId:{}", CryptoUtil.getActiveKey(), applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
+                return true;
+            }
+        } catch (Exception e) {
+            log.warn("Unable to use encryption", e);
+        }
+        return false;
+    }
 }
