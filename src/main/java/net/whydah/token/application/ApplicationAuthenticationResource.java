@@ -218,13 +218,8 @@ public class ApplicationAuthenticationResource {
             log.info("ApplicationToken for {} extended, expires: {}", applicationToken.getApplicationName(), applicationToken.getExpiresFormatted());
             String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
             log.trace("extendApplicationSession returns applicationTokenXml={}", applicationTokenXml);
-            handleCryptoKey(applicationToken);
-            // This test should be smarter and look at the application datastructure later
-            //
-            // ie if (ApplicationModelFacade.getApplication(applicationToken.getApplicationID()).getSecurity().isWhydahAdmin() ||
-            //        ApplicationModelFacade.getApplication(applicationToken.getApplicationID()).getSecurity().isWhydahUASAccess())
-            //
-            if (encryptionEnabledApplicationIDs.contains(applicationToken.getApplicationID())) {  // Disable this for normal appicationIDs until this is working as it should
+
+            if (handleCryptoKey(applicationToken)) {  // Disable this for normal appicationIDs until this is working as it should
                 log.debug("Using cryptokey:{} for application: {} with applicationTokenId:{}", CryptoUtil.getActiveKey(), applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
                 try {
                     String crtytoblock = CryptoUtil.encrypt(applicationTokenXml);
