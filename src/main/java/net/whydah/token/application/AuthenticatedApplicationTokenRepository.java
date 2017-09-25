@@ -188,7 +188,11 @@ public class AuthenticatedApplicationTokenRepository {
         if (applicationMaxSessionTime != null && (applicationMaxSessionTime.length() > 0) && (Long.parseLong(applicationMaxSessionTime) > 0)) {
             log.info("maxSessionTimeoutSeconds found: {} for applicationID: {}", Long.parseLong(applicationMaxSessionTime), applicationID);
             // Set to application configured maxSessionTimeoutSeconds if found and shave off 10 seconds
-            return String.valueOf(System.currentTimeMillis() + Long.parseLong(applicationMaxSessionTime) * 1000 - 10 * 1000);
+            if (Long.parseLong(applicationMaxSessionTime) < DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS) {
+                return String.valueOf(System.currentTimeMillis() + Long.parseLong(applicationMaxSessionTime) * 1000 - 10 * 1000);
+            }
+            log.info("maxSessionTimeoutSeconds: {} hogher than default, using default: {} for applicationID: {}", applicationMaxSessionTime, DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS, applicationID);
+
 
         }
         log.info("maxSessionTimeoutSeconds not found, using default: {} for applicationID: {}", DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS, applicationID);
