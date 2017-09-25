@@ -20,13 +20,18 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import static net.whydah.sso.util.LoggerUtil.first50;
 
 @Path("/")
 public class ApplicationAuthenticationResource {
     private final static Logger log = LoggerFactory.getLogger(ApplicationAuthenticationResource.class);
+
+    private final static Set<String> encryptionEnabledApplicationIDs = new HashSet<>(Arrays.asList("9999", "99999"));
 
     @Inject
     private AppConfig appConfig;
@@ -219,7 +224,7 @@ public class ApplicationAuthenticationResource {
             // ie if (ApplicationModelFacade.getApplication(applicationToken.getApplicationID()).getSecurity().isWhydahAdmin() ||
             //        ApplicationModelFacade.getApplication(applicationToken.getApplicationID()).getSecurity().isWhydahUASAccess())
             //
-            if (applicationToken.getApplicationID().equalsIgnoreCase("99999")) {  // Disable this for normal appicationIDs until this is working as it should
+            if (encryptionEnabledApplicationIDs.contains(applicationToken.getApplicationID())) {  // Disable this for normal appicationIDs until this is working as it should
                 log.debug("Using cryptokey:{} for application: {} with applicationTokenId:{}", CryptoUtil.getActiveKey(), applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
                 try {
                     String crtytoblock = CryptoUtil.encrypt(applicationTokenXml);
@@ -419,7 +424,7 @@ public class ApplicationAuthenticationResource {
             // ie if (ApplicationModelFacade.getApplication(applicationToken.getApplicationID()).getSecurity().isWhydahAdmin() ||
             //        ApplicationModelFacade.getApplication(applicationToken.getApplicationID()).getSecurity().isWhydahUASAccess())
             //
-            if (applicationToken.getApplicationID().equalsIgnoreCase("99999")) {  // Disable this for normal appicationIDs until this is working as it should
+            if (encryptionEnabledApplicationIDs.contains(applicationToken.getApplicationID())) {  // Disable this for normal appicationIDs until this is working as it should
                 log.debug("Using cryptokey:{} for application: {} with applicationTokenId:{}", CryptoUtil.getActiveKey(), applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
                 return true;
             }
