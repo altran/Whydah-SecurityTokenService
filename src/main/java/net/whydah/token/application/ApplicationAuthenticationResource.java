@@ -372,6 +372,11 @@ public class ApplicationAuthenticationResource {
         }
         try {
             CryptoUtil.setExchangeableKey(lookupKey);
+            // This test should be smarter and look at the application datastructure later
+            //
+            // ie if (ApplicationModelFacade.getApplication(applicationToken.getApplicationID()).getSecurity().isWhydahAdmin() ||
+            //        ApplicationModelFacade.getApplication(applicationToken.getApplicationID()).getSecurity().isWhydahUASAccess())
+            //
             if (applicationToken.getApplicationID().equalsIgnoreCase("99999")) {  // Disable this for normal appicationIDs until this is working as it should
                 log.debug("Using cryptokey:{} for application: {} with applicationTokenId:{}", CryptoUtil.getActiveKey(), applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
                 return true;
