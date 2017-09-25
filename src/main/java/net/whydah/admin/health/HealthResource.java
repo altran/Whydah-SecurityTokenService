@@ -38,9 +38,11 @@ public class HealthResource {
 
     private static Map<String, ThreatSignal> threatSignalMap = new TreeMap<>();
     private static ObjectMapper mapper = new ObjectMapper();
+    private static final boolean isExtendedInfoEnabled;
 
     static {
         AppConfig appConfig = new AppConfig();
+        isExtendedInfoEnabled = (appConfig.getProperty("testpage").equalsIgnoreCase("enabled"));
         String xmlFileName = System.getProperty("hazelcast.config");
         log.info("Loading hazelcast configuration from :" + xmlFileName);
         Config hazelcastConfig = new Config();
@@ -87,6 +89,26 @@ public class HealthResource {
         int applicationMapSize = 0;
         try {
             applicationMapSize = ApplicationModelFacade.getApplicationList().size();
+            if (isExtendedInfoEnabled) {
+                return "{\n" +
+                        "  \"Status\": \"OK\",\n" +
+                        "  \"Version\": \"" + getVersion() + "\",\n" +
+                        "  \"DEFCON\": \"" + ApplicationThreatResource.getDEFCON() + "\",\n" +
+                        "  \"ClusterSize\": " + AuthenticatedUserTokenRepository.getNoOfClusterMembers() + ",\n" +
+                        "  \"UserLastSeenMapSize\": " + AuthenticatedUserTokenRepository.getLastSeenMapSize() + ",\n" +
+                        "  \"UserPinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
+                        "  \"AuthenticatedUserTokenMapSize\": " + AuthenticatedUserTokenRepository.getMapSize() + ",\n" +
+                        "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationTokenRepository.getMapSize() + ",\n" +
+                        "  \"ConfiguredApplications\": " + applicationMapSize + ",\n" +
+                        "  \"ActiveApplications\": \"" + AuthenticatedApplicationTokenRepository.getActiveApplications().replace(",", ",\n                          ") + "\",\n" +
+                        "  \"ThreatSignalMapSize\": " + threatSignalMap.size() + ",\n" +
+                        "  \"now\": \"" + Instant.now() + "\",\n" +
+                        "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\"," +
+                        "  \n\n" +
+                        getThreatMapDetails() +
+                        "}\n\n";
+
+            }
             return "{\n" +
                     "  \"Status\": \"OK\",\n" +
                     "  \"Version\": \"" + getVersion() + "\",\n" +
@@ -97,18 +119,18 @@ public class HealthResource {
                     "  \"AuthenticatedUserTokenMapSize\": " + AuthenticatedUserTokenRepository.getMapSize() + ",\n" +
                     "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationTokenRepository.getMapSize() + ",\n" +
                     "  \"ConfiguredApplications\": " + applicationMapSize + ",\n" +
-                    "  \"ActiveApplications\": \"" + AuthenticatedApplicationTokenRepository.getActiveApplications().replace(",", ",\n                          ") + "\",\n" +
                     "  \"ThreatSignalMapSize\": " + threatSignalMap.size() + ",\n" +
                     "  \"now\": \"" + Instant.now() + "\",\n" +
-                    "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\"," +
-                    "  \n\n" +
-                    getThreatMapDetails() +
+                    "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\"" +
                     "}\n\n";
+
         } catch (Exception e) {
             return "{\n" +
                     "  \"Status\": \"UNCONNECTED\",\n" +
                     "  \"Version\": \"" + getVersion() + "\",\n" +
                     "  \"DEFCON\": \"" + ApplicationThreatResource.getDEFCON() + "\",\n" +
+                    "  \"now\": \"" + Instant.now() + "\",\n" +
+                    "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\"" +
                     "}\n\n";
 
         }
