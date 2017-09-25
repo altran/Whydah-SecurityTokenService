@@ -169,21 +169,26 @@ public class AuthenticatedApplicationTokenRepository {
     }
 
     public static String getApplicationIdFromApplicationTokenID(String applicationtokenid) {
-        ApplicationToken at = applicationTokenMap.get(applicationtokenid);
-        if (at != null) {
-            return at.getApplicationID();
+        ApplicationToken applicationToken = applicationTokenMap.get(applicationtokenid);
+        if (applicationToken != null) {
+            return applicationToken.getApplicationID();
         }
         log.error("getApplicationIdFromApplicationTokenId - Unable to find applicationId for applicationTokenId=" + applicationtokenid);
         return "";
     }
 
     public static String getApplicationNameFromApplicationTokenID(String applicationtokenid) {
-        ApplicationToken at = applicationTokenMap.get(applicationtokenid);
-        if (at != null) {
-            return at.getApplicationName();
+        ApplicationToken applicationToken = applicationTokenMap.get(applicationtokenid);
+        if (applicationToken != null) {
+            return applicationToken.getApplicationName();
         }
         log.error("getApplicationNameFromApplicationTokenId - Unable to find applicationName for applicationTokenId=" + applicationtokenid);
         return "";
+    }
+
+    public static String getApplicationKeyFromApplicationTokenID(String applicationtokenid) {
+        String applicationKey = applicationKeyMap.get(applicationtokenid);
+        return applicationKey;
     }
 
     public static String getApplocationTokenIdFromApplicationTokenXML(String applicationTokenXML) {

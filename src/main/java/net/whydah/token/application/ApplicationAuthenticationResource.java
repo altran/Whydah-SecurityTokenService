@@ -314,6 +314,47 @@ public class ApplicationAuthenticationResource {
         }
     }
 
+    /**
+     * @throws AppException
+     * @api {get} :applicationtokenid/get_application_name getApplicationName
+     * @apiName getApplicationNameFromApplicationTokenId
+     * @apiGroup Security Token Service (STS)
+     * @apiDescription Get my application name from an application token id
+     * @apiSuccessExample Success-Response:
+     * HTTP/1.1 200 OK plain/text
+     * Whydah-SystemTests
+     * @apiError 403/7000 Application is invalid.
+     * @apiError 500/9999 A generic exception or an unexpected error
+     * @apiErrorExample Error-Response:
+     * HTTP/1.1 403 Forbidden
+     * {
+     * "status": 403,
+     * "code": 7000,
+     * "message": "Illegal Application.",
+     * "link": "",
+     * "developerMessage": "Application is invalid."
+     * }
+     */
+    @Path("{applicationtokenid}/get_application_key")
+    @GET
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response getApplicationKeyFromApplicationTokenId(@PathParam("applicationtokenid") String
+                                                                    applicationtokenid) throws AppException {
+        log.debug("verify applicationtokenid {}", applicationtokenid);
+        ApplicationToken applicationToken = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
+        if (applicationToken != null || applicationToken.toString().length() > 10) {
+            log.trace("Apptokenid valid");
+            String key = AuthenticatedApplicationTokenRepository.getApplicationKeyFromApplicationTokenID(applicationtokenid);
+            if (key != null || key.length() > 10) {
+                return Response.ok(key).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            }
+            throw AppExceptionCode.APP_ILLEGAL_7000;  // No key for application
+        } else {
+            log.trace("Apptokenid not valid");
+            throw AppExceptionCode.APP_ILLEGAL_7000;
+        }
+    }
+
     private boolean verifyApplicationCredentials(String appCredentials) {
         if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
             log.trace("verifyApplicationCredentials - running in DEV mode, auto accepted.");
