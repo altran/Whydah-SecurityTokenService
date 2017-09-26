@@ -8,6 +8,7 @@ import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
+import net.whydah.sso.session.WhydahApplicationSession;
 import net.whydah.sso.session.baseclasses.ApplicationModelUtil;
 import net.whydah.sso.session.baseclasses.ExchangeableKey;
 import net.whydah.token.config.AppConfig;
@@ -33,7 +34,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class AuthenticatedApplicationTokenRepository {
     private final static Logger log = LoggerFactory.getLogger(AuthenticatedApplicationTokenRepository.class);
 
-    public static long DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = 120; //One minute = 60 seconds //2400;
+    public static long DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = WhydahApplicationSession.SESSION_CHECK_INTERVAL*4; //One minute = 60 seconds //2400;
     private static AppConfig appConfig = new AppConfig();
     private static String stsApplicationTokenID = "";
     private static ApplicationToken myToken;
@@ -64,6 +65,9 @@ public class AuthenticatedApplicationTokenRepository {
         if (applicationDefaultTimeout != null && (Integer.parseInt(applicationDefaultTimeout) > 0)) {
             log.info("Updated DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS to " + applicationDefaultTimeout);
             DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(applicationDefaultTimeout);
+            if (DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS<WhydahApplicationSession.SESSION_CHECK_INTERVAL*4){
+                log.warn("Attempt to set application.session.timeout to low, overriding with WhydahApplicationSession.SESSION_CHECK_INTERVAL*4: {} ",WhydahApplicationSession.SESSION_CHECK_INTERVAL*4);
+            }
         }
         log.info("Connecting to map {} - map size: {}", appConfig.getProperty("gridprefix") + "_authenticated_applicationtokens", getMapSize());
     }
