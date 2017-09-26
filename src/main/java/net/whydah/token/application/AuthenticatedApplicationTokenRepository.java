@@ -266,6 +266,10 @@ public class AuthenticatedApplicationTokenRepository {
         return applicationTokenMap.size();
     }
 
+    public static int getKeyMapSize() {
+        return applicationKeyMap.size();
+    }
+
     public static String getActiveApplications() {
         Map<String, Integer> applicationMap = new HashMap<>();
         for (Map.Entry<String, ApplicationToken> entry : applicationTokenMap.entrySet()) {

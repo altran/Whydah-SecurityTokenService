@@ -78,10 +78,12 @@ public class HealthResource {
         return "Status: OK" +
                 "\nVersion:" + getVersion() +
                 "\nDEFCON: " + ApplicationThreatResource.getDEFCON() +
+                "\nmax application session time: " + AuthenticatedApplicationTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS +
                 "\nClusterSize: " + AuthenticatedUserTokenRepository.getNoOfClusterMembers() +
                 "\nUserLastSeenMapSize: " + AuthenticatedUserTokenRepository.getLastSeenMapSize() +
                 "\nUserPinMapSize: " + ActivePinRepository.getPinMap().size() +
                 "\nAuthenticatedTokenMapSize: " + AuthenticatedUserTokenRepository.getMapSize() +
+                "\nAuthenticatedApplicationKeyMapSize: " + AuthenticatedApplicationTokenRepository.getKeyMapSize() +
                 "\nAuthenticatedApplicationRepositoryMapSize: " + AuthenticatedApplicationTokenRepository.getMapSize();
     }
 
@@ -94,11 +96,13 @@ public class HealthResource {
                         "  \"Status\": \"OK\",\n" +
                         "  \"Version\": \"" + getVersion() + "\",\n" +
                         "  \"DEFCON\": \"" + ApplicationThreatResource.getDEFCON() + "\",\n" +
+                        "  \"max application session time (s)\": \"" + AuthenticatedApplicationTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS + "\",\n" +
                         "  \"ClusterSize\": " + AuthenticatedUserTokenRepository.getNoOfClusterMembers() + ",\n" +
                         "  \"UserLastSeenMapSize\": " + AuthenticatedUserTokenRepository.getLastSeenMapSize() + ",\n" +
                         "  \"UserPinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
                         "  \"AuthenticatedUserTokenMapSize\": " + AuthenticatedUserTokenRepository.getMapSize() + ",\n" +
                         "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationTokenRepository.getMapSize() + ",\n" +
+                        "  \"AuthenticatedApplicationKeyyMapSize\": " + AuthenticatedApplicationTokenRepository.getKeyMapSize() + ",\n" +
                         "  \"ConfiguredApplications\": " + applicationMapSize + ",\n" +
                         "  \"ActiveApplications\": \"" + AuthenticatedApplicationTokenRepository.getActiveApplications().replace(",", ",\n                          ") + "\",\n" +
                         "  \"ThreatSignalMapSize\": " + threatSignalMap.size() + ",\n" +
@@ -113,6 +117,7 @@ public class HealthResource {
                     "  \"Status\": \"OK\",\n" +
                     "  \"Version\": \"" + getVersion() + "\",\n" +
                     "  \"DEFCON\": \"" + ApplicationThreatResource.getDEFCON() + "\",\n" +
+                    "  \"max application session time (s)\": \"" + AuthenticatedApplicationTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS + "\",\n" +
                     "  \"ClusterSize\": " + AuthenticatedUserTokenRepository.getNoOfClusterMembers() + ",\n" +
                     "  \"UserLastSeenMapSize\": " + AuthenticatedUserTokenRepository.getLastSeenMapSize() + ",\n" +
                     "  \"UserPinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
