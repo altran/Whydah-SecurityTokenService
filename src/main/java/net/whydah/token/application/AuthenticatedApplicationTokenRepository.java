@@ -34,7 +34,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class AuthenticatedApplicationTokenRepository {
     private final static Logger log = LoggerFactory.getLogger(AuthenticatedApplicationTokenRepository.class);
 
-    public static long DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = WhydahApplicationSession.SESSION_CHECK_INTERVAL*4; //One minute = 60 seconds //2400;
+    public static long DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10; //One minute = 60 seconds //2400;
     private static AppConfig appConfig = new AppConfig();
     private static String stsApplicationTokenID = "";
     private static ApplicationToken myToken;
@@ -65,7 +65,7 @@ public class AuthenticatedApplicationTokenRepository {
         if (applicationDefaultTimeout != null && (Integer.parseInt(applicationDefaultTimeout) > 0)) {
             log.info("Updated DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS to " + applicationDefaultTimeout);
             DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(applicationDefaultTimeout);
-            if (DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS<WhydahApplicationSession.SESSION_CHECK_INTERVAL*4){
+            if (DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS < WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10) {
                 log.warn("Attempt to set application.session.timeout to low, overriding with WhydahApplicationSession.SESSION_CHECK_INTERVAL*4: {} ",WhydahApplicationSession.SESSION_CHECK_INTERVAL*4);
             }
         }

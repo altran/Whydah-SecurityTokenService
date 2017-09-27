@@ -12,7 +12,11 @@ import net.whydah.sso.user.types.UserCredential;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.sso.util.SSLTool;
 
+import java.lang.reflect.Field;
 import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static junit.framework.TestCase.assertNotNull;
@@ -31,16 +35,14 @@ public class SystemTestBaseConfig {
     public int TIME_WAIT_BETWEEN_SYSTEMTEST = 15;  // 15 ms
     //
     public static String SYSTEMTEST_USER_CELLPHONE = "59441023";
-    ;
     public static String SYSTEMTEST_USER_EMAIL = "totto@totto.org";
 
-    //
-    //
-    public String TEMPORARY_APPLICATION_ID = "101";//"11";
-    public String TEMPORARY_APPLICATION_NAME = "Whydah-SystemTests";//"Funny APp";//"11";
-    public String TEMPORARY_APPLICATION_SECRET = "55fhRM6nbKZ2wfC6RMmMuzXpk";//"LLNmHsQDCerVWx5d6aCjug9fyPE";
+    public static String TEMPORARY_APPLICATION_ID = "9999";//"11";
+    public static String TEMPORARY_APPLICATION_NAME = "Whydah-Jenkins";//"Funny APp";//"11";
+    private String TEMPORARY_APPLICATION_SECRET = "9ju592A4t8dzz8mz788QQJ7Px";//"LLNmHsQDCerVWx5d6aCjug9fyPE";
     public String userName = "systest";
     public String password = "systest42";
+    public String userEmail = "whydahadmin@getwhydah.com";
     public URI tokenServiceUri;
     public URI userAdminServiceUri;
     public ApplicationCredential appCredential;
@@ -54,6 +56,10 @@ public class SystemTestBaseConfig {
     public SystemTestBaseConfig() {
         appCredential = new ApplicationCredential(TEMPORARY_APPLICATION_ID, TEMPORARY_APPLICATION_NAME, TEMPORARY_APPLICATION_SECRET);
         userCredential = new UserCredential(userName, password);
+        Map<String, String> addToEnv = new HashMap<>();
+        addToEnv.put("IAM_MODE", "TEST");
+        setEnv(addToEnv);
+
         SSLTool.disableCertificateValidation();
         setRemoteTest();
         
@@ -174,6 +180,39 @@ public class SystemTestBaseConfig {
         java.text.DecimalFormat f = new java.text.DecimalFormat("0000");
         return f.format(i);
 
+    }
+
+    protected static void setEnv(Map<String, String> newenv) {
+        try {
+            Class<?> processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
+            Field theEnvironmentField = processEnvironmentClass.getDeclaredField("theEnvironment");
+            theEnvironmentField.setAccessible(true);
+            Map<String, String> env = (Map<String, String>) theEnvironmentField.get(null);
+            env.putAll(newenv);
+            Field theCaseInsensitiveEnvironmentField = processEnvironmentClass.getDeclaredField("theCaseInsensitiveEnvironment");
+            theCaseInsensitiveEnvironmentField.setAccessible(true);
+            Map<String, String> cienv = (Map<String, String>) theCaseInsensitiveEnvironmentField.get(null);
+            cienv.putAll(newenv);
+        } catch (NoSuchFieldException e) {
+            try {
+                Class[] classes = Collections.class.getDeclaredClasses();
+                Map<String, String> env = System.getenv();
+                for (Class cl : classes) {
+                    if ("java.util.Collections$UnmodifiableMap".equals(cl.getName())) {
+                        Field field = cl.getDeclaredField("m");
+                        field.setAccessible(true);
+                        Object obj = field.get(env);
+                        Map<String, String> map = (Map<String, String>) obj;
+                        map.clear();
+                        map.putAll(newenv);
+                    }
+                }
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
     }
 
 }

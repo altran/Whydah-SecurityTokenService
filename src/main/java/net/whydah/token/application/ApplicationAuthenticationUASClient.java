@@ -6,7 +6,6 @@ import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import net.whydah.admin.health.HealthResource;
 import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
-import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.util.WhydahUtil;
@@ -18,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.lang.management.ManagementFactory;
+import java.net.URI;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -35,13 +35,26 @@ public class ApplicationAuthenticationUASClient {
 
 
     public static boolean checkAppsecretFromUAS(ApplicationCredential applicationCredential) {
-        ApplicationToken applicationToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(applicationCredential));
-        applicationToken.setBaseuri(appConfig.getProperty("myuri"));
-        applicationToken.setExpires(String.valueOf((System.currentTimeMillis() + 100000 * generator.nextInt(500))));
 
         String useradminservice = appConfig.getProperty("useradminservice");
         ApplicationToken stsToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
 
+        /**
+         * Command version of UAS auth call
+         */
+        try {
+            boolean isOKinUAS = new CommandCheckApplicationCredentialInUAS(URI.create(useradminservice), stsToken, applicationCredential).execute();
+            if (isOKinUAS) {
+                return true;
+            }
+        } catch (Exception e) {
+            log.info("Unable to access UAS by Command", e);
+        }
+
+
+        /**
+         * Legacy version of UAS auth call
+         */
         WebResource uasResource = ApacheHttpClient.create().resource(useradminservice);
         int uasResponseCode = 0;
         WebResource webResource = uasResource.path(stsToken.getApplicationTokenId()).path(APPLICATION_AUTH_PATH);
