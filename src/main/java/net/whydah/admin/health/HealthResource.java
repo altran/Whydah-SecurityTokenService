@@ -102,7 +102,7 @@ public class HealthResource {
                         "  \"UserPinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
                         "  \"AuthenticatedUserTokenMapSize\": " + AuthenticatedUserTokenRepository.getMapSize() + ",\n" +
                         "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationTokenRepository.getMapSize() + ",\n" +
-                        "  \"AuthenticatedApplicationKeyyMapSize\": " + AuthenticatedApplicationTokenRepository.getKeyMapSize() + ",\n" +
+                        "  \"AuthenticatedApplicationKeyMapSize\": " + AuthenticatedApplicationTokenRepository.getKeyMapSize() + ",\n" +
                         "  \"ConfiguredApplications\": " + applicationMapSize + ",\n" +
                         "  \"ActiveApplications\": \"" + AuthenticatedApplicationTokenRepository.getActiveApplications().replace(",", ",\n                          ") + "\",\n" +
                         "  \"ThreatSignalMapSize\": " + threatSignalMap.size() + ",\n" +

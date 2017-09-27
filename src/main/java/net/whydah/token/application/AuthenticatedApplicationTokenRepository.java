@@ -329,6 +329,7 @@ public class AuthenticatedApplicationTokenRepository {
             ApplicationToken applicationToken = entry.getValue();
             if (isApplicationTokenExpired(applicationToken.getApplicationTokenId())) {
                 applicationTokenMap.remove(applicationToken.getApplicationTokenId());
+                applicationKeyMap.remove(applicationToken.getApplicationTokenId());
             }
         }
     }
