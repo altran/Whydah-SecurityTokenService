@@ -150,7 +150,7 @@ public class AuthenticatedUserTokenRepository {
      * @return true if token is valid.
      */
     public static boolean verifyUserToken(UserToken userToken, String applicationTokenId) {
-        if (userToken.getTokenid() == null) {
+        if (userToken.getUserTokenId() == null) {
             log.info("UserToken not valid, missing UserTokenId");
             return false;
         }
@@ -158,7 +158,7 @@ public class AuthenticatedUserTokenRepository {
             lastSeenMap.put(userToken.getEmail(), new Date());
 
         }
-        UserToken resToken = activeusertokensmap.get(userToken.getTokenid());
+        UserToken resToken = activeusertokensmap.get(userToken.getUserTokenId());
         if (resToken == null) {
             log.info("UserToken not found in repo.");
             return false;
@@ -166,7 +166,7 @@ public class AuthenticatedUserTokenRepository {
         log.debug("UserToken from repo: {}", resToken);
         if (!resToken.isValid()) {
             log.debug("resToken is not valid");
-            activeusertokensmap.remove(userToken.getTokenid());
+            activeusertokensmap.remove(userToken.getUserTokenId());
             active_username_usertokenids_map.remove(userToken.getUserName());
             
             return false;
@@ -195,7 +195,7 @@ public class AuthenticatedUserTokenRepository {
 
     public static void refreshUserToken(String usertokenid, String applicationTokenId, UserToken refreshedUserToken) {
         UserToken oldusertoken = activeusertokensmap.remove(usertokenid);
-        refreshedUserToken.setTokenid(usertokenid);
+        refreshedUserToken.setUserTokenId(usertokenid);
         addUserToken(refreshedUserToken, applicationTokenId, "refresh");
 
     }
@@ -205,7 +205,7 @@ public class AuthenticatedUserTokenRepository {
     }
 
     public static void addUserToken(UserToken userToken, String applicationTokenId, String authType) {
-        if (userToken.getTokenid() == null) {
+        if (userToken.getUserTokenId() == null) {
             log.error("Error: UserToken has no usertokenid");
             userToken.setTokenid(generateID());
         }
@@ -222,15 +222,15 @@ public class AuthenticatedUserTokenRepository {
             lastSeenMap.put(userToken.getEmail(), new Date());
 
         }
-        if (activeusertokensmap.containsKey(userToken.getTokenid())) {
+        if (activeusertokensmap.containsKey(userToken.getUserTokenId())) {
             log.error("Error: trying to update an already existing UserToken in repo..");
             return;
         }
         //UserToken copy = userToken.copy();
-        activeusertokensmap.put(userToken.getTokenid(), userToken);
+        activeusertokensmap.put(userToken.getUserTokenId(), userToken);
       
         if(userToken.getUserName()!=null){
-        	active_username_usertokenids_map.put(userToken.getUserName(), userToken.getTokenid());
+            active_username_usertokenids_map.put(userToken.getUserName(), userToken.getUserTokenId());
         }
         if ("renew".equalsIgnoreCase(authType)) {
             return;  // alreqdy reported
@@ -243,7 +243,7 @@ public class AuthenticatedUserTokenRepository {
             observedActivity = new UserSessionObservedActivity(userToken.getUid(), "userSessionCreatedByPin", applicationTokenId);
         }
         MonitorReporter.reportActivity(observedActivity);
-        log.info("Added token with id {}", userToken.getTokenid(), " content:" + userToken.toString());
+        log.info("Added token with id {}", userToken.getUserTokenId(), " content:" + userToken.toString());
     }
 
     public static void removeUserToken(String userTokenId, String applicationTokenId) {
@@ -266,7 +266,7 @@ public class AuthenticatedUserTokenRepository {
     public static void logUserTokenMap() {
         String logString = "";
         for (Map.Entry<String, UserToken> entry : activeusertokensmap.entrySet()) {
-            logString = logString + entry.getValue().getTokenid() + "(" + entry.getValue().getUserName() + "), ";
+            logString = logString + entry.getValue().getUserTokenId() + "(" + entry.getValue().getUserName() + "), ";
         }
         log.debug("UserToken map:{}", logString);
     }
@@ -285,7 +285,7 @@ public class AuthenticatedUserTokenRepository {
         for (Map.Entry<String, UserToken> entry : activeusertokensmap.entrySet()) {
             UserToken userToken = entry.getValue();
             if (!userToken.isValid()) {
-                activeusertokensmap.remove(userToken.getTokenid());
+                activeusertokensmap.remove(userToken.getUserTokenId());
             }
         }
     }

@@ -302,8 +302,8 @@ public class UserTokenResource {
         	if(!userticketmap.containsKey(userticket)){
         		userToken = userAuthenticator.logonUser(applicationtokenid, appTokenXml, userCredentialXml);
         		// Add the user to the ticket-map with the ticket given from the caller
-        		userticketmap.put(userticket, userToken.getTokenid());
-        	} else {
+				userticketmap.put(userticket, userToken.getUserTokenId());
+			} else {
 				userToken = AuthenticatedUserTokenRepository.getUserToken(userticketmap.get(userticket).toString(), applicationtokenid);
 				//userToken = refreshAndGetThisUser(userticketmap.get(userticket).toString(), applicationtokenid);
         	}
@@ -519,8 +519,8 @@ public class UserTokenResource {
             throw AppExceptionCode.USER_INVALID_USERTOKENID_6002.setDeveloperMessage("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid=" + userTokenId);
         }
         else {
-            userticketmap.put(userticket, userToken.getTokenid());
-            log.trace("createUserTicketByUserTokenId OK. Response={}", userToken.toString());
+			userticketmap.put(userticket, userToken.getUserTokenId());
+			log.trace("createUserTicketByUserTokenId OK. Response={}", userToken.toString());
             return createUserTokenResponse(applicationtokenid, userToken);
         }
      
@@ -550,8 +550,8 @@ public class UserTokenResource {
             throw AppExceptionCode.USER_INVALID_USERTOKENID_6002.setDeveloperMessage("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid=" + userTokenId);
         }
         else {
-            userticketmap.put(userticket, userToken.getTokenid());
-            log.trace("createUserTicketByUserTokenId OK. Response={}", userToken.toString());
+			userticketmap.put(userticket, userToken.getUserTokenId());
+			log.trace("createUserTicketByUserTokenId OK. Response={}", userToken.toString());
             return Response.ok(userticket).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
         }
      
@@ -1151,11 +1151,11 @@ public class UserTokenResource {
         }
         
         try {
-        	 UserToken refreshedUserToken = userAuthenticator.getRefreshedUserToken(usertoken.getTokenid());
-			AuthenticatedUserTokenRepository.refreshUserToken(usertoken.getTokenid(), applicationtokenid, refreshedUserToken);
-			final UserToken ut = AuthenticatedUserTokenRepository.getUserToken(usertoken.getTokenid(), applicationtokenid);
-			log.debug("refresh_usertoken_by_username - usertoken refreshed, usertokenid={}", ut.getTokenid());
-             return createUserTokenResponse(applicationtokenid, ut);
+			UserToken refreshedUserToken = userAuthenticator.getRefreshedUserToken(usertoken.getUserTokenId());
+			AuthenticatedUserTokenRepository.refreshUserToken(usertoken.getUserTokenId(), applicationtokenid, refreshedUserToken);
+			final UserToken ut = AuthenticatedUserTokenRepository.getUserToken(usertoken.getUserTokenId(), applicationtokenid);
+			log.debug("refresh_usertoken_by_username - usertoken refreshed, usertokenid={}", ut.getUserTokenId());
+			return createUserTokenResponse(applicationtokenid, ut);
         } catch (AuthenticationFailedException ae) {
             throw AppExceptionCode.USER_AUTHENTICATION_FAILED_6000.setDeveloperMessage(ae.getMessage());
         }
@@ -1270,7 +1270,7 @@ public class UserTokenResource {
             //return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
-        String userTokenId = UserTokenMapper.fromUserTokenXml(userTokenXml).getTokenid();
+		String userTokenId = UserTokenMapper.fromUserTokenXml(userTokenXml).getUserTokenId();
 		final UserToken userToken = AuthenticatedUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
 		//final UserToken userToken = refreshAndGetThisUser(userTokenId, applicationtokenid);
        
@@ -1680,10 +1680,10 @@ public class UserTokenResource {
         try {
             applicationtokenidmap.put(applicationtokenid, applicationtokenid);
             UserToken userToken = userAuthenticator.createAndLogonUser(applicationtokenid, appTokenXml, userCredentialXml, thirdPartyUserTokenXml);
-            userticketmap.put(userticket, userToken.getTokenid());
-            userToken.setDefcon(ApplicationThreatResource.getDEFCON());
-            userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
-            // Report to statistics
+			userticketmap.put(userticket, userToken.getUserTokenId());
+			userToken.setDefcon(ApplicationThreatResource.getDEFCON());
+			userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getUserTokenId());
+			// Report to statistics
             ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUserName(), "userCreated", applicationtokenid);
             MonitorReporter.reportActivity(observedActivity);
             return createUserTokenResponse(applicationtokenid, userToken);
@@ -1793,11 +1793,11 @@ public class UserTokenResource {
         }
         try {
             UserToken userToken = userAuthenticator.createAndLogonPinUser(applicationtokenid, appTokenXml, adminUserTokenId, cellPhone, pin, newUserjson);
-            userticketmap.put(userticket, userToken.getTokenid());
-            log.debug("createAndLogOnPinUser Added ticket:{} for usertoken:{} username: {}", userticket, userToken.getTokenid(), userToken.getUserName());
-            userToken.setDefcon(ApplicationThreatResource.getDEFCON());
-            userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
-            // Report to statistics
+			userticketmap.put(userticket, userToken.getUserTokenId());
+			log.debug("createAndLogOnPinUser Added ticket:{} for usertoken:{} username: {}", userticket, userToken.getUserTokenId(), userToken.getUserName());
+			userToken.setDefcon(ApplicationThreatResource.getDEFCON());
+			userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getUserTokenId());
+			// Report to statistics
             ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUserName(), "userCreated", applicationtokenid);
             MonitorReporter.reportActivity(observedActivity);
             return createUserTokenResponse(applicationtokenid, userToken);
@@ -1810,7 +1810,7 @@ public class UserTokenResource {
 
     private Response createUserTokenResponse(@PathParam("applicationtokenid") String applicationtokenid, UserToken userToken) {
         log.trace("getUserTokenByUserTokenId OK. Response={}", userToken.toString());
-        userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getTokenid());
+		userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getUserTokenId());
 		userToken.setLastSeen(AuthenticatedUserTokenRepository.getLastSeen(userToken));
 		userToken.setDefcon(ApplicationThreatResource.getDEFCON());
         UserToken filteredUserToken = UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken);

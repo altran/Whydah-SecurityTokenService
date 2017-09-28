@@ -115,8 +115,8 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
 		UserToken oldUserToken = AuthenticatedUserTokenRepository.getUserToken(usertokenid, stsToken.getApplicationTokenId());
 
-        String userAggregateJson = new CommandGetUserAggregate(useradminservice, stsToken.getApplicationTokenId(), whydahUserAdminUserToken.getTokenid(), oldUserToken.getUid()).execute();
-		
+        String userAggregateJson = new CommandGetUserAggregate(useradminservice, stsToken.getApplicationTokenId(), whydahUserAdminUserToken.getUserTokenId(), oldUserToken.getUid()).execute();
+
         UserToken refreshedUserToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
         
         
