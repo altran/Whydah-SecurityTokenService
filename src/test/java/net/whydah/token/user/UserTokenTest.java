@@ -124,7 +124,6 @@ public class UserTokenTest {
         //System.out.println("TO: " + copyxml);
         assertEquals(tokenxml, copyxml);
         UserToken copyToken2 = UserTokenMapper.fromUserTokenXml(tokenxml);
-        copyToken2.setApplicationID("2349785543");
         String copyxml2 = freemarkerProcessor.toXml(copyToken2);
         //System.out.println("FILTERED: " + copyxml2);
         // assertFalse("Should not be equal as result is applicationfiltered ", tokenxml.equals(copyxml2));
