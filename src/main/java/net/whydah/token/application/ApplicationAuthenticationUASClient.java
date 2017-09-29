@@ -18,7 +18,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.lang.management.ManagementFactory;
 import java.net.URI;
-import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
@@ -31,7 +30,6 @@ public class ApplicationAuthenticationUASClient {
     private static final String APPLICATION_AUTH_PATH = "application/auth";
     public static final String APP_CREDENTIAL_XML = "appCredentialXml";
     private static AppConfig appConfig = new AppConfig();
-    private static java.util.Random generator = new SecureRandom();
 
 
     public static boolean checkAppsecretFromUAS(ApplicationCredential applicationCredential) {
@@ -44,6 +42,7 @@ public class ApplicationAuthenticationUASClient {
          */
         try {
             boolean isOKinUAS = new CommandCheckApplicationCredentialInUAS(URI.create(useradminservice), stsToken, applicationCredential).execute();
+            log.debug("CommandCheckApplicationCredentialInUAS returned: {}", isOKinUAS);
             if (isOKinUAS) {
                 return true;
             }
