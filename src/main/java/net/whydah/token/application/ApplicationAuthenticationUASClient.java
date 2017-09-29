@@ -43,7 +43,7 @@ public class ApplicationAuthenticationUASClient {
          * Command version of UAS auth call
          */
         try {
-            boolean isOKinUAS = new CommandCheckApplicationCredentialInUAS(URI.create(useradminservice), stsToken, applicationCredential).execute();
+            boolean isOKinUAS = new CommandCheckApplicationCredentialInUAS(URI.create(useradminservice), stsToken.getApplicationTokenId(), applicationCredential).execute();
             log.debug("CommandCheckApplicationCredentialInUAS returned: {}", isOKinUAS);
             if (isOKinUAS) {
                 return true;

@@ -1,8 +1,8 @@
 package net.whydah.sso.commands;
 
-import net.whydah.sso.application.types.ApplicationCredential;
+import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.commands.systemtestbase.SystemTestBaseConfig;
-import net.whydah.sso.session.WhydahApplicationSession;
+import net.whydah.token.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.token.application.CommandCheckApplicationCredentialInUAS;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -28,10 +28,12 @@ public class CommandCheckApplicationCredentialInUASTest {
     @Ignore
     public void testCommandCheckApplicationCredentialInUAS() throws Exception {
         if (config.isSystemTestEnabled()) {
-            WhydahApplicationSession applicationSession = WhydahApplicationSession.getInstance(config.tokenServiceUri.toString(), config.appCredential);
+            //     WhydahApplicationSession applicationSession = WhydahApplicationSession.getInstance(config.tokenServiceUri.toString(), config.appCredential);
 
-            boolean isOk = new CommandCheckApplicationCredentialInUAS(config.userAdminServiceUri, applicationSession.getActiveApplicationToken(), new ApplicationCredential("4545", "2323", "3453")).execute();
-            assertTrue(!isOk);
+            ApplicationToken stsToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
+
+            boolean isOk = new CommandCheckApplicationCredentialInUAS(config.userAdminServiceUri, "1bedfc858da713936ebd925e7cf4f776", config.appCredential).execute();
+            assertTrue(isOk);
         }
 
     }
