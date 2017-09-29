@@ -207,8 +207,8 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
 			UserToken userToken = UserTokenMapper.fromUserAggregateXml(userAggregateJson);
 			userToken.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
-            userToken.setTokenid(generateID());
-            userToken.setDefcon(ApplicationThreatResource.getDEFCON());
+			userToken.setUserTokenId(generateID());
+			userToken.setDefcon(ApplicationThreatResource.getDEFCON());
             userToken.setLifespan(String.valueOf(1000 * SessionHelper.getApplicationLifeSpanSeconds(applicationtokenid)));
             userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 

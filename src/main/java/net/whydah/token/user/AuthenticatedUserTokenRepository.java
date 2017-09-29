@@ -207,7 +207,7 @@ public class AuthenticatedUserTokenRepository {
     public static void addUserToken(UserToken userToken, String applicationTokenId, String authType) {
         if (userToken.getUserTokenId() == null) {
             log.error("Error: UserToken has no usertokenid");
-            userToken.setTokenid(generateID());
+            userToken.setUserTokenId(generateID());
         }
 
         if (userToken.getLifespan() == null) {

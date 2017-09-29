@@ -57,7 +57,7 @@ public class UserTokenTest {
         userToken.setTimestamp("123123123");
         userToken.setPersonRef("73637276722376");
         userToken.setDefcon(ApplicationThreatResource.getDEFCON());
-        userToken.setTokenid(UUID.randomUUID().toString());
+        userToken.setUserTokenId(UUID.randomUUID().toString());
         String xml = freemarkerProcessor.toXml(userToken);
 
         UserToken copyToken = UserTokenMapper.fromUserTokenXml(xml);
@@ -77,7 +77,7 @@ public class UserTokenTest {
         userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
         userToken.setLifespan(String.valueOf(2 * 60 * 60 * new Random().nextInt(100)));
 
-        userToken.setTokenid(UUID.randomUUID().toString());
+        userToken.setUserTokenId(UUID.randomUUID().toString());
         userToken.setPersonRef("78125637812638");
 
         AuthenticatedUserTokenRepository.addUserToken(userToken, "2012xxxx", "");
@@ -93,7 +93,7 @@ public class UserTokenTest {
     public void testTimedOutActiveUserTokenRepository() {
         UserToken userToken = new UserToken();
         userToken.setUserName(UUID.randomUUID().toString());
-        userToken.setTokenid(UUID.randomUUID().toString());
+        userToken.setUserTokenId(UUID.randomUUID().toString());
         userToken.setFirstName("Ola");
         userToken.setLastName("Nordmann");
         userToken.setEmail("test@whydah.net");
@@ -111,7 +111,7 @@ public class UserTokenTest {
         userToken.setFirstName("Olav");
         userToken.setLastName("Nordmann");
         userToken.setEmail("test2@whydah.net");
-        userToken.setTokenid(UUID.randomUUID().toString());
+        userToken.setUserTokenId(UUID.randomUUID().toString());
         userToken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 1", "Boardmember", "Diktator"));
         userToken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 2", "tester", "ansatt"));
         userToken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 3", "Boardmember", ""));
@@ -136,7 +136,7 @@ public class UserTokenTest {
         userToken.setFirstName("Olav");
         userToken.setLastName("Nordmann");
         userToken.setEmail("test2@whydah.net");
-        userToken.setTokenid(UUID.randomUUID().toString());
+        userToken.setUserTokenId(UUID.randomUUID().toString());
         userToken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 1", "Boardmember", "Diktator"));
         userToken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 2", "tester", "ansatt"));
         userToken.addApplicationRoleEntry(new UserApplicationRoleEntry("2349785543", "Whydah.net", "Kunde 3", "Boardmember", ""));
@@ -391,7 +391,7 @@ public class UserTokenTest {
         utoken.setEmail("test@whydah.net");
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis()));
         utoken.setLifespan(String.valueOf(2 * 60 * 60 * new Random().nextInt(100)));
-        utoken.setTokenid(UUID.randomUUID().toString());
+        utoken.setUserTokenId(UUID.randomUUID().toString());
         utoken.setPersonRef("78125637812638");
 
         AuthenticatedUserTokenRepository.addUserToken(utoken, "", "");
@@ -411,7 +411,7 @@ public class UserTokenTest {
         utoken.setLastName("Nordmann");
         utoken.setEmail("test@whydah.net");
         utoken.setTimestamp(String.valueOf(System.currentTimeMillis()));
-        utoken.setTokenid(UUID.randomUUID().toString());
+        utoken.setUserTokenId(UUID.randomUUID().toString());
         utoken.setPersonRef("78125637812638");
         utoken.setLifespan(String.valueOf(1 * 1000));
 

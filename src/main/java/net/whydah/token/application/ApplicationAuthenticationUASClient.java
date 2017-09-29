@@ -19,9 +19,6 @@ public class ApplicationAuthenticationUASClient {
 
     private final static Logger log = LoggerFactory.getLogger(ApplicationAuthenticationUASClient.class);
 
-
-    private static final String APPLICATION_AUTH_PATH = "application/auth";
-    public static final String APP_CREDENTIAL_XML = "appCredentialXml";
     private static AppConfig appConfig = new AppConfig();
 
 
