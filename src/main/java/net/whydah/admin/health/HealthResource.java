@@ -97,15 +97,15 @@ public class HealthResource {
                         "  \"Version\": \"" + getVersion() + "\",\n" +
                         "  \"DEFCON\": \"" + ApplicationThreatResource.getDEFCON() + "\",\n" +
                         "  \"max application session time (s)\": \"" + AuthenticatedApplicationTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS + "\",\n" +
-                        "  \"ClusterSize\": " + AuthenticatedUserTokenRepository.getNoOfClusterMembers() + ",\n" +
-                        "  \"UserLastSeenMapSize\": " + AuthenticatedUserTokenRepository.getLastSeenMapSize() + ",\n" +
-                        "  \"UserPinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
-                        "  \"AuthenticatedUserTokenMapSize\": " + AuthenticatedUserTokenRepository.getMapSize() + ",\n" +
-                        "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationTokenRepository.getMapSize() + ",\n" +
-                        "  \"AuthenticatedApplicationKeyMapSize\": " + AuthenticatedApplicationTokenRepository.getKeyMapSize() + ",\n" +
-                        "  \"ConfiguredApplications\": " + applicationMapSize + ",\n" +
+                        "  \"ClusterSize\": \"" + AuthenticatedUserTokenRepository.getNoOfClusterMembers() + "\",\n" +
+                        "  \"UserLastSeenMapSize\": \"" + AuthenticatedUserTokenRepository.getLastSeenMapSize() + "\",\n" +
+                        "  \"UserPinMapSize\": \"" + ActivePinRepository.getPinMap().size() + "\",\n" +
+                        "  \"AuthenticatedUserTokenMapSize\": \"" + AuthenticatedUserTokenRepository.getMapSize() + "\",\n" +
+                        "  \"AuthenticatedApplicationRepositoryMapSize\": \"" + AuthenticatedApplicationTokenRepository.getMapSize() + "\",\n" +
+                        "  \"AuthenticatedApplicationKeyMapSize\": \"" + AuthenticatedApplicationTokenRepository.getKeyMapSize() + "\",\n" +
+                        "  \"ConfiguredApplications\": \"" + applicationMapSize + "\",\n" +
                         "  \"ActiveApplications\": \"" + AuthenticatedApplicationTokenRepository.getActiveApplications().replace(",", ",\n                          ") + "\",\n" +
-                        "  \"ThreatSignalMapSize\": " + threatSignalMap.size() + ",\n" +
+                        "  \"ThreatSignalMapSize\": \"" + threatSignalMap.size() + "\",\n" +
                         "  \"now\": \"" + Instant.now() + "\",\n" +
                         "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\"," +
                         "  \n\n" +
@@ -118,13 +118,13 @@ public class HealthResource {
                     "  \"Version\": \"" + getVersion() + "\",\n" +
                     "  \"DEFCON\": \"" + ApplicationThreatResource.getDEFCON() + "\",\n" +
                     "  \"max application session time (s)\": \"" + AuthenticatedApplicationTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS + "\",\n" +
-                    "  \"ClusterSize\": " + AuthenticatedUserTokenRepository.getNoOfClusterMembers() + ",\n" +
-                    "  \"UserLastSeenMapSize\": " + AuthenticatedUserTokenRepository.getLastSeenMapSize() + ",\n" +
-                    "  \"UserPinMapSize\": " + ActivePinRepository.getPinMap().size() + ",\n" +
-                    "  \"AuthenticatedUserTokenMapSize\": " + AuthenticatedUserTokenRepository.getMapSize() + ",\n" +
-                    "  \"AuthenticatedApplicationRepositoryMapSize\": " + AuthenticatedApplicationTokenRepository.getMapSize() + ",\n" +
-                    "  \"ConfiguredApplications\": " + applicationMapSize + ",\n" +
-                    "  \"ThreatSignalMapSize\": " + threatSignalMap.size() + ",\n" +
+                    "  \"ClusterSize\": \"" + AuthenticatedUserTokenRepository.getNoOfClusterMembers() + "\",\n" +
+                    "  \"UserLastSeenMapSize\": \"" + AuthenticatedUserTokenRepository.getLastSeenMapSize() + "\",\n" +
+                    "  \"UserPinMapSize\": \"" + ActivePinRepository.getPinMap().size() + "\",\n" +
+                    "  \"AuthenticatedUserTokenMapSize\": \"" + AuthenticatedUserTokenRepository.getMapSize() + "\",\n" +
+                    "  \"AuthenticatedApplicationRepositoryMapSize\": \"" + AuthenticatedApplicationTokenRepository.getMapSize() + "\",\n" +
+                    "  \"ConfiguredApplications\": \"" + applicationMapSize + "\",\n" +
+                    "  \"ThreatSignalMapSize\": \"" + threatSignalMap.size() + "\",\n" +
                     "  \"now\": \"" + Instant.now() + "\",\n" +
                     "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\"" +
                     "}\n\n";
@@ -140,7 +140,7 @@ public class HealthResource {
 
         }
     }
-
+"
 
     private static String getThreatMapDetails() {
         String threatSignalJson = " ";
