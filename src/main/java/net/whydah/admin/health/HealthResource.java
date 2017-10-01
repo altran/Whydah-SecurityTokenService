@@ -140,7 +140,6 @@ public class HealthResource {
 
         }
     }
-"
 
     private static String getThreatMapDetails() {
         String threatSignalJson = " ";
