@@ -5,6 +5,7 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+
 import net.whydah.sso.util.WhydahUtil;
 import net.whydah.sso.whydah.ThreatSignal;
 import net.whydah.token.application.ApplicationModelFacade;
@@ -13,6 +14,8 @@ import net.whydah.token.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.token.config.AppConfig;
 import net.whydah.token.user.ActivePinRepository;
 import net.whydah.token.user.AuthenticatedUserTokenRepository;
+
+import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,10 +24,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -156,6 +163,15 @@ public class HealthResource {
         for (Map.Entry<String, ThreatSignal> entry : threatSignalMap.entrySet()) {
             ThreatSignal threatSignal = entry.getValue();
             threatSignal.setSignalEmitter(threatSignal.getSignalEmitter().replace("a", "*").replace("b", "*").replace("c", "*").replace("d", "*").replace("e", "*"));
+            Map<String, Object> additionalProperties = threatSignal.getAdditionalProperties();
+        	
+            List<String> obfuscateList = Arrays.asList("usertokenid", "apptokenid","appName");
+            for(String pro : additionalProperties.keySet()){
+            	if(obfuscateList.contains(pro)){
+            		threatSignal.getAdditionalProperties().put(pro, threatSignal.getAdditionalProperties().get(pro).toString().replace("a", "*").replace("b", "*").replace("c", "*").replace("d", "*").replace("e", "*"));
+            	}
+            }
+            
             threatSignalMap.put(entry.getKey(), threatSignal);
         }
         try {

@@ -318,10 +318,10 @@ public class ApplicationAuthenticationResource {
 
     /**
      * @throws AppException
-     * @api {get} :applicationtokenid/get_application_name getApplicationName
-     * @apiName getApplicationNameFromApplicationTokenId
+     * @api {get} :applicationtokenid/get_application_key getApplicationKey
+     * @apiName getApplicationKeyFromApplicationTokenId
      * @apiGroup Security Token Service (STS)
-     * @apiDescription Get my application name from an application token id
+     * @apiDescription Get my application key from an application token id
      * @apiSuccessExample Success-Response:
      * HTTP/1.1 200 OK plain/text
      * Whydah-SystemTests
@@ -344,10 +344,10 @@ public class ApplicationAuthenticationResource {
                                                                     applicationtokenid) throws AppException {
         log.debug("verify applicationtokenid {}", applicationtokenid);
         ApplicationToken applicationToken = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
-        if (applicationToken != null || applicationToken.toString().length() > 10) {
+        if (applicationToken != null && applicationToken.toString().length() > 10) {
             log.trace("Apptokenid valid");
             String key = AuthenticatedApplicationTokenRepository.getApplicationKeyFromApplicationTokenID(applicationtokenid);
-            if (key != null || key.length() > 10) {
+            if (key != null && key.length() > 10) {
                 return Response.ok(key).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
             }
             throw AppExceptionCode.APP_ILLEGAL_7000;  // No key for application
