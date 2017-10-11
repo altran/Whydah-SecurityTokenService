@@ -1,9 +1,7 @@
 package net.whydah.token.application;
 
 import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
-import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
-import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.commands.baseclasses.BaseHttpPostHystrixCommandForBooleanType;
 
 import java.net.URI;
@@ -14,10 +12,12 @@ public class CommandCheckApplicationCredentialInUAS extends BaseHttpPostHystrixC
 
 
     private ApplicationCredential appCredential;
+    private String stsApplicationTokenId;
 
-    public CommandCheckApplicationCredentialInUAS(URI uasServiceUri, ApplicationToken stsApplicationToken, ApplicationCredential appCredential) {
-        super(uasServiceUri, ApplicationTokenMapper.toXML(stsApplicationToken), stsApplicationToken.getApplicationTokenId(), "UASApplicationAuthGroup", 3000);
+    public CommandCheckApplicationCredentialInUAS(URI uasServiceUri, String stsApplicationTokenId, ApplicationCredential appCredential) {
+        super(uasServiceUri, null, stsApplicationTokenId, "UASApplicationAuthGroup", 3000);
         this.appCredential = appCredential;
+        this.stsApplicationTokenId = stsApplicationTokenId;
         if (uasServiceUri == null || appCredential == null) {
             log.error(TAG + " initialized with null-values - will fail. tokenServiceUri:{}, appCredential:{} ", uasServiceUri, appCredential);
         }
@@ -27,7 +27,15 @@ public class CommandCheckApplicationCredentialInUAS extends BaseHttpPostHystrixC
 
     @Override
     protected String getTargetPath() {
-        return "application/auth";
+        return stsApplicationTokenId + "/application/auth";
+    }
+
+    @Override
+    protected Boolean dealWithFailedResponse(String responseBody, int statusCode) {
+        if (statusCode == 204) {
+            return true;
+        }
+        return false;
     }
 
     @Override

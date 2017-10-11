@@ -91,7 +91,7 @@ public class UserTokenFactory {
 
     public static UserToken fromUserIdentityJson(String userIdentityJSON) {
         UserToken userToken = UserTokenMapper.fromUserIdentityJson(userIdentityJSON);
-        userToken.setTokenid(generateID());
+        userToken.setUserTokenId(generateID());
         userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
         String securityLevel = "1";
         userToken.setSecurityLevel(securityLevel);
@@ -107,7 +107,7 @@ public class UserTokenFactory {
             LinkedHashMap user = (LinkedHashMap) users.get(i);
             UserToken userToken = new UserToken();
             userToken.setUid((String) user.get("uid"));
-            userToken.setTokenid(generateID());
+            userToken.setUserTokenId(generateID());
             userToken.setUserName((String) user.get("username"));
             userToken.setFirstName((String) user.get("firstName"));
             userToken.setLastName((String) user.get("lastName"));

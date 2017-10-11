@@ -35,9 +35,10 @@ public class AuthenticatedApplicationTokenRepository {
     private final static Logger log = LoggerFactory.getLogger(AuthenticatedApplicationTokenRepository.class);
 
     public static long DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10; //One minute = 60 seconds //2400;
+    private static int numberOfApplicationSessionTimeSTSTokenExpands = 100;
     private static AppConfig appConfig = new AppConfig();
-    private static String stsApplicationTokenID = "";
-    private static ApplicationToken myToken;
+    private static String mySTSApplicationTokenId = "";
+    private static ApplicationToken mySTSApplicationToken;
 
     private static final Map<String, ApplicationToken> applicationTokenMap;
     private static final Map<String, String> applicationKeyMap;
@@ -312,14 +313,18 @@ public class AuthenticatedApplicationTokenRepository {
         String applicationId = appConfig.getProperty("applicationid");
         String applicationsecret = appConfig.getProperty("applicationsecret");
         // Do not create duplicate sts sessions
-        if (stsApplicationTokenID.equals("")) {
+        if (mySTSApplicationTokenId.equals("")) {  // First time
             ApplicationCredential ac = new ApplicationCredential(applicationId, applicationName, applicationsecret);
-            myToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(ac));
-            myToken.setExpires(String.valueOf((System.currentTimeMillis() + 100000 * 5000)));  // A very long time
-            stsApplicationTokenID = myToken.getApplicationTokenId();
-            addApplicationToken(myToken);
+            mySTSApplicationToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(ac));
+            mySTSApplicationToken.setExpires(String.valueOf((System.currentTimeMillis() + DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * numberOfApplicationSessionTimeSTSTokenExpands)));  // 100 times the default
+            mySTSApplicationTokenId = mySTSApplicationToken.getApplicationTokenId();
+            addApplicationToken(mySTSApplicationToken);
+        } else {  // update expires
+            mySTSApplicationToken = applicationTokenMap.get(mySTSApplicationTokenId);
+            mySTSApplicationToken.setExpires(String.valueOf((System.currentTimeMillis() + DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * numberOfApplicationSessionTimeSTSTokenExpands)));  // 100 times the default
+            addApplicationToken(mySTSApplicationToken);
         }
-        return myToken;
+        return mySTSApplicationToken;
 
     }
 
