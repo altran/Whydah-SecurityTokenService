@@ -313,7 +313,7 @@ public class AuthenticatedApplicationTokenRepository {
         String applicationId = appConfig.getProperty("applicationid");
         String applicationsecret = appConfig.getProperty("applicationsecret");
         // Do not create duplicate sts sessions
-        if (mySTSApplicationTokenId.equals("")) {  // First time
+        if (mySTSApplicationTokenId.equals("") || !applicationTokenMap.containsKey(mySTSApplicationTokenId)) {  // First time
             ApplicationCredential ac = new ApplicationCredential(applicationId, applicationName, applicationsecret);
             mySTSApplicationToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(ac));
             mySTSApplicationToken.setExpires(String.valueOf((System.currentTimeMillis() + DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * numberOfApplicationSessionTimeSTSTokenExpands)));  // 100 times the default
