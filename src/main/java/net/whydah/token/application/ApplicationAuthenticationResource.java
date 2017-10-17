@@ -214,7 +214,7 @@ public class ApplicationAuthenticationResource {
     public Response extendApplicationSession(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
         log.debug("renew session for applicationtokenid: {}", applicationtokenid);
         if (AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
-            ExchangeableKey exchangeableKey = new ExchangeableKey(AuthenticatedApplicationTokenRepository.getApplicationKeyFromApplicationTokenID(applicationtokenid));
+            ExchangeableKey exchangeableKey = new ExchangeableKey(AuthenticatedApplicationTokenRepository.getApplicationCryptoKeyFromApplicationTokenID(applicationtokenid));
             ApplicationToken applicationToken = AuthenticatedApplicationTokenRepository.renewApplicationTokenId(applicationtokenid);
             log.info("ApplicationToken for {} extended, expires: {}", applicationToken.getApplicationName(), applicationToken.getExpiresFormatted());
             String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
@@ -319,7 +319,7 @@ public class ApplicationAuthenticationResource {
     /**
      * @throws AppException
      * @api {get} :applicationtokenid/get_application_key getApplicationKey
-     * @apiName getApplicationKeyFromApplicationTokenId
+     * @apiName getApplicationCryptoKeyFromApplicationTokenId
      * @apiGroup Security Token Service (STS)
      * @apiDescription Get my application key from an application token id
      * @apiSuccessExample Success-Response:
@@ -340,19 +340,19 @@ public class ApplicationAuthenticationResource {
     @Path("{applicationtokenid}/get_application_key")
     @GET
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response getApplicationKeyFromApplicationTokenId(@PathParam("applicationtokenid") String
+    public Response getApplicationCryptoKeyFromApplicationTokenId(@PathParam("applicationtokenid") String
                                                                     applicationtokenid) throws AppException {
         log.debug("verify applicationtokenid {}", applicationtokenid);
         ApplicationToken applicationToken = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
         if (applicationToken != null && applicationToken.toString().length() > 10) {
-            log.trace("Apptokenid valid");
-            String key = AuthenticatedApplicationTokenRepository.getApplicationKeyFromApplicationTokenID(applicationtokenid);
+            log.trace("ApplicationTokenId valid");
+            String key = AuthenticatedApplicationTokenRepository.getApplicationCryptoKeyFromApplicationTokenID(applicationtokenid);
             if (key != null && key.length() > 10) {
-                return Response.ok(key).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+                return Response.ok(key).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET").build();
             }
             throw AppExceptionCode.APP_ILLEGAL_7000;  // No key for application
         } else {
-            log.trace("Apptokenid not valid");
+            log.trace("ApplicationTokenId not valid");
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
     }
@@ -422,7 +422,7 @@ public class ApplicationAuthenticationResource {
             //        ApplicationModelFacade.getApplication(applicationToken.getApplicationID()).getSecurity().isWhydahUASAccess())
             //
             if (encryptionEnabledApplicationIDs.contains(applicationToken.getApplicationID())) {  // Disable this for normal appicationIDs until this is working as it should
-                log.debug("Using cryptokey:{} for application: {} with applicationTokenId:{}", CryptoUtil.getActiveKey(), applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
+                log.debug("Using cryptokey:{} for ApplicationID: {} with applicationTokenId:{}", CryptoUtil.getActiveKey(), applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
                 return true;
             }
         } catch (Exception e) {

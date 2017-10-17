@@ -41,7 +41,7 @@ public class AuthenticatedApplicationTokenRepository {
     private static ApplicationToken mySTSApplicationToken;
 
     private static final Map<String, ApplicationToken> applicationTokenMap;
-    private static final Map<String, String> applicationKeyMap;
+    private static final Map<String, String> applicationCryptoKeyMap;
     private static Base64.Decoder decoder = Base64.getDecoder();
 
 
@@ -61,7 +61,7 @@ public class AuthenticatedApplicationTokenRepository {
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         applicationTokenMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "_authenticated_applicationtokens");
-        applicationKeyMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "_applicationkeys");
+        applicationCryptoKeyMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "_applicationkeys");
         String applicationDefaultTimeout = System.getProperty("application.session.timeout");
         if (applicationDefaultTimeout != null && (Integer.parseInt(applicationDefaultTimeout) > 0)) {
             log.info("Updated DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS to " + applicationDefaultTimeout);
@@ -78,7 +78,7 @@ public class AuthenticatedApplicationTokenRepository {
         long remainingSecs = (Long.parseLong(applicationToken.getExpires()) - System.currentTimeMillis()) / 1000;
         log.debug("Added {} expires in {} seconds", applicationToken.getApplicationName(), remainingSecs);
         applicationTokenMap.put(applicationToken.getApplicationTokenId(), applicationToken);
-            if (applicationKeyMap.containsKey(applicationToken.getApplicationTokenId())) {
+        if (applicationCryptoKeyMap.containsKey(applicationToken.getApplicationTokenId())) {
                 // Maybe update key here...
                 log.debug("updating cryptokey for applicationId: {} with applicationTokenId:{}", applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
                 try {
@@ -86,7 +86,7 @@ public class AuthenticatedApplicationTokenRepository {
                     ExchangeableKey applicationKey = new ExchangeableKey();
                     applicationKey.setEncryptionSecret(System.currentTimeMillis() + applicationToken.getApplicationTokenId());
                     applicationKey.setIv(new IvParameterSpec(decoder.decode(iv)));
-                    applicationKeyMap.put(applicationToken.getApplicationTokenId(), applicationKey.toJsonEncoded());
+                    applicationCryptoKeyMap.put(applicationToken.getApplicationTokenId(), applicationKey.toJsonEncoded());
                 } catch (Exception e) {
                     log.warn("Unable to create cryotokey for applicationIs: {}", applicationToken.getApplicationID());
                 }
@@ -98,7 +98,7 @@ public class AuthenticatedApplicationTokenRepository {
                     ExchangeableKey applicationKey = new ExchangeableKey();
                     applicationKey.setEncryptionSecret(applicationToken.getApplicationTokenId());
                     applicationKey.setIv(new IvParameterSpec(decoder.decode(iv)));
-                    applicationKeyMap.put(applicationToken.getApplicationTokenId(), applicationKey.toJsonEncoded());
+                    applicationCryptoKeyMap.put(applicationToken.getApplicationTokenId(), applicationKey.toJsonEncoded());
                 } catch (Exception e) {
                     log.warn("Unable to create cryotokey for applicationIs: {}", applicationToken.getApplicationID());
                 }
@@ -112,14 +112,14 @@ public class AuthenticatedApplicationTokenRepository {
         }
         if (isApplicationTokenExpired(applicationToken.getApplicationTokenId())) {
             applicationTokenMap.remove(applicationToken.getApplicationTokenId());
-            applicationKeyMap.remove(applicationToken.getApplicationTokenId());
+            applicationCryptoKeyMap.remove(applicationToken.getApplicationTokenId());
             return null;
         }
         return applicationTokenMap.get(applicationtokenid);
     }
 
     public static ExchangeableKey getExchangeableKeyForApplicationToken(ApplicationToken applicationToken) {
-        ExchangeableKey exchangeableKey = new ExchangeableKey(applicationKeyMap.get(applicationToken.getApplicationTokenId()));
+        ExchangeableKey exchangeableKey = new ExchangeableKey(applicationCryptoKeyMap.get(applicationToken.getApplicationTokenId()));
         if (exchangeableKey.getIv() == null) {
             log.warn("Attempt fo find key for applicationID:{} with applicationTokenId:[} failed", applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
         }
@@ -136,7 +136,7 @@ public class AuthenticatedApplicationTokenRepository {
         }
         if (isApplicationTokenExpired(applicationTokenFromMap.getApplicationTokenId())) {
             applicationTokenMap.remove(applicationTokenFromMap.getApplicationTokenId());
-            applicationKeyMap.remove(applicationTokenFromMap.getApplicationTokenId());
+            applicationCryptoKeyMap.remove(applicationTokenFromMap.getApplicationTokenId());
 
             return false;
         }
@@ -149,10 +149,10 @@ public class AuthenticatedApplicationTokenRepository {
 
     public static ApplicationToken renewApplicationTokenId(String applicationtokenid) {
         ApplicationToken temp = applicationTokenMap.get(applicationtokenid);  // Can't remove as verify check in map
-        String exchangeableKey = applicationKeyMap.get(applicationtokenid);  // Can't remove as verify check in map
+        String exchangeableKey = applicationCryptoKeyMap.get(applicationtokenid);  // Can't remove as verify check in map
         if (verifyApplicationToken(temp)) {
             applicationTokenMap.remove(applicationtokenid);
-            applicationKeyMap.remove(applicationtokenid);
+            applicationCryptoKeyMap.remove(applicationtokenid);
             String oldExpires = temp.getExpiresFormatted();
             temp.setExpires(updateExpires(temp.getExpires(), temp.getApplicationID()));
             log.info("Updated expiry for applicationId:{}  oldExpiry:{}, newExpiry: {}", applicationtokenid, oldExpires, temp.getExpiresFormatted());
@@ -163,10 +163,10 @@ public class AuthenticatedApplicationTokenRepository {
                 ExchangeableKey applicationKey = new ExchangeableKey();
                 applicationKey.setEncryptionSecret(System.currentTimeMillis() + temp.getApplicationTokenId());
                 applicationKey.setIv(new IvParameterSpec(decoder.decode(iv)));
-                applicationKeyMap.put(temp.getApplicationTokenId(), applicationKey.toJsonEncoded());
+                applicationCryptoKeyMap.put(temp.getApplicationTokenId(), applicationKey.toJsonEncoded());
             } catch (Exception e) {
                 log.warn("Unable to create cryotokey for applicationId: {}, re-using old", temp.getApplicationID());
-                applicationKeyMap.put(temp.getApplicationTokenId(), exchangeableKey);
+                applicationCryptoKeyMap.put(temp.getApplicationTokenId(), exchangeableKey);
             }
             return temp;
         }
@@ -201,8 +201,8 @@ public class AuthenticatedApplicationTokenRepository {
         return "";
     }
 
-    public static String getApplicationKeyFromApplicationTokenID(String applicationtokenid) {
-        String applicationKey = applicationKeyMap.get(applicationtokenid);
+    public static String getApplicationCryptoKeyFromApplicationTokenID(String applicationtokenid) {
+        String applicationKey = applicationCryptoKeyMap.get(applicationtokenid);
         return applicationKey;
     }
 
@@ -268,7 +268,7 @@ public class AuthenticatedApplicationTokenRepository {
     }
 
     public static int getKeyMapSize() {
-        return applicationKeyMap.size();
+        return applicationCryptoKeyMap.size();
     }
 
     public static String getActiveApplications() {
@@ -334,7 +334,7 @@ public class AuthenticatedApplicationTokenRepository {
             ApplicationToken applicationToken = entry.getValue();
             if (isApplicationTokenExpired(applicationToken.getApplicationTokenId())) {
                 applicationTokenMap.remove(applicationToken.getApplicationTokenId());
-                applicationKeyMap.remove(applicationToken.getApplicationTokenId());
+                applicationCryptoKeyMap.remove(applicationToken.getApplicationTokenId());
             }
         }
     }
