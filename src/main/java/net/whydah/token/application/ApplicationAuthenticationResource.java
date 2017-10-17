@@ -168,12 +168,12 @@ public class ApplicationAuthenticationResource {
     @GET
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response validateApplicationTokenId(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
-        log.trace("validateApplicationTokenId - validate applicationtokenid:{}", applicationtokenid);
+        log.trace("validateApplicationTokenId - validate ApplicationTokenId:{}", applicationtokenid);
         if (AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
-            log.trace("validateApplicationTokenId - applicationtokenid:{} for applicationname:{} is valid timeout in:{} seconds", applicationtokenid, AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid).getApplicationName(), Long.parseLong(AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid).getExpires()) - System.currentTimeMillis());
+            log.trace("validateApplicationTokenId - ApplicationTokenId:{} for applicationname:{} is valid timeout in:{} seconds", applicationtokenid, AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid).getApplicationName(), Long.parseLong(AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid).getExpires()) - System.currentTimeMillis());
             return Response.ok("{\"result\": \"true\"}").header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
-            log.warn("validateApplicationTokenId - applicationtokenid:{}  is not valid", applicationtokenid);
+            log.warn("validateApplicationTokenId - ApplicationTokenId:{}  is not valid", applicationtokenid);
             throw AppExceptionCode.APP_ILLEGAL_7000;
             //return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
@@ -212,7 +212,7 @@ public class ApplicationAuthenticationResource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response extendApplicationSession(@PathParam("applicationtokenid") String applicationtokenid) throws AppException {
-        log.debug("renew session for applicationtokenid: {}", applicationtokenid);
+        log.debug("renew session for ApplicationTokenId: {}", applicationtokenid);
         if (AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid)) {
             ExchangeableKey exchangeableKey = new ExchangeableKey(AuthenticatedApplicationTokenRepository.getApplicationCryptoKeyFromApplicationTokenID(applicationtokenid));
             ApplicationToken applicationToken = AuthenticatedApplicationTokenRepository.renewApplicationTokenId(applicationtokenid);
@@ -234,7 +234,7 @@ public class ApplicationAuthenticationResource {
             // Fallback, return non-encrypted response
             return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
-            log.warn("applicationtokenid={} not valid", applicationtokenid);
+            log.warn("ApplicationTokenId={} not valid", applicationtokenid);
             throw AppExceptionCode.APP_ILLEGAL_7000;
             //return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
@@ -266,14 +266,14 @@ public class ApplicationAuthenticationResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response getApplicationIdFromApplicationTokenId(@PathParam("applicationtokenid") String
                                                                    applicationtokenid) throws AppException {
-        log.trace("verify applicationtokenid {}", applicationtokenid);
+        log.trace("verify ApplicationTokenId {}", applicationtokenid);
         ApplicationToken applicationToken = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
         log.trace("Found applicationtoken:{}", first50(applicationToken));
         if (applicationToken != null || applicationToken.toString().length() > 10) {
-            log.debug("Applicationtokenid for {} is valid", applicationToken.getApplicationID());
+            log.debug("ApplicationTokenId for {} is valid", applicationToken.getApplicationID());
             return Response.ok(applicationToken.getApplicationID()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
-            log.debug("Applicationtokenid {} is not valid", applicationtokenid);
+            log.debug("ApplicationTokenId {} is not valid", applicationtokenid);
             //return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
@@ -305,13 +305,13 @@ public class ApplicationAuthenticationResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response getApplicationNameFromApplicationTokenId(@PathParam("applicationtokenid") String
                                                                      applicationtokenid) throws AppException {
-        log.debug("verify applicationtokenid {}", applicationtokenid);
+        log.debug("verify ApplicationTokenId {}", applicationtokenid);
         ApplicationToken applicationToken = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
         if (applicationToken != null || applicationToken.toString().length() > 10) {
-            log.debug("Apptokenid valid");
+            log.debug("ApplicationTokenId valid");
             return Response.ok(applicationToken.getApplicationName()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         } else {
-            log.debug("Apptokenid not valid");
+            log.debug("ApplicationTokenId not valid");
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
     }
@@ -342,7 +342,7 @@ public class ApplicationAuthenticationResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response getApplicationCryptoKeyFromApplicationTokenId(@PathParam("applicationtokenid") String
                                                                     applicationtokenid) throws AppException {
-        log.debug("verify applicationtokenid {}", applicationtokenid);
+        log.debug("verify ApplicationTokenId {}", applicationtokenid);
         ApplicationToken applicationToken = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
         if (applicationToken != null && applicationToken.toString().length() > 10) {
             log.trace("ApplicationTokenId valid");
