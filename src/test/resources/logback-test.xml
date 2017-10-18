@@ -25,7 +25,7 @@
         </encoder>
     </appender>
 
-    <logger name="net.whydah.token" level="TRACE" />
+    <logger name="net.whydah.sts" level="TRACE"/>
     <logger name="com.hazelcast" level="WARN" />
 
 

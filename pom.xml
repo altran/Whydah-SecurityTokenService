@@ -244,7 +244,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Main-Class>net.whydah.token.ServiceStarter</Main-Class>
+                            <Main-Class>net.whydah.sts.ServiceStarter</Main-Class>
                         </manifestEntries>
                         <manifest>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
@@ -294,7 +294,7 @@
                     <daemons>
                         <daemon>
                             <id>${project.name}</id>
-                            <mainClass>net.whydah.token.ServiceStarter</mainClass>
+                            <mainClass>net.whydah.sts.ServiceStarter</mainClass>
                             <platforms>
                                 <platform>jsw</platform>
                             </platforms>
