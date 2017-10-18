@@ -57,7 +57,7 @@ public class ApplicationModelFacade {
                     return "";
                 }
 
-            }, 5, TimeUnit.SECONDS);
+            }, 10, TimeUnit.SECONDS);
         } catch (Exception e) {
             log(startTime, "was interrupted!");
         }
@@ -77,29 +77,30 @@ public class ApplicationModelFacade {
 
         if (ApplicationModelUtil.shouldUpdate(percentage) || fTokenList == null || fTokenList.length() < 2) {
             //get all applications from UAS
-            ApplicationToken token = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
-            ApplicationModelUtil.updateApplicationList(userAdminServiceUri, token.getApplicationTokenId());
-
-            //update full sts from applications
-            fTokenList = "";
-            for (Application application : ApplicationModelUtil.getApplicationList()) {
-                if (application.isFullTokenApplication()) {
-                    fTokenList = fTokenList + application.getId() + ",";
-                }
-            }
-
-            //add predefined list
-            for (String app : AppConfig.getPredefinedFullTokenApplications()) {
-                if (!fTokenList.contains(app)) {
-                    fTokenList = fTokenList + app + ",";
-                }
-            }
-
-            //assign to the final list
-            fTokenList = fTokenList.endsWith(",") ? fTokenList.substring(0, fTokenList.length() - 1) : fTokenList;
-            AppConfig.setFullTokenApplications(fTokenList);
-
+            ApplicationToken stsApplicationToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
+            ApplicationModelUtil.updateApplicationList(userAdminServiceUri, stsApplicationToken.getApplicationTokenId());
         }
+
+        //update full sts from applications
+        fTokenList = "";
+        for (Application application : ApplicationModelUtil.getApplicationList()) {
+            if (application.isFullTokenApplication()) {
+                fTokenList = fTokenList + application.getId() + ",";
+            }
+        }
+
+        //add predefined list
+        for (String app : AppConfig.getPredefinedFullTokenApplications()) {
+            if (!fTokenList.contains(app)) {
+                fTokenList = fTokenList + app + ",";
+            }
+        }
+
+        //assign to the final list
+        fTokenList = fTokenList.endsWith(",") ? fTokenList.substring(0, fTokenList.length() - 1) : fTokenList;
+        AppConfig.setFullTokenApplications(fTokenList);
+
+
     }
 
     private static void log(long startTime, String msg) {
