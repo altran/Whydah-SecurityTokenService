@@ -13,6 +13,8 @@ public class ApplicationModelFacade {
     public static URI userAdminServiceUri = null;
     private static AppConfig appConfig = new AppConfig();
 
+    public static String fTokenList = "";
+
     static {
         userAdminServiceUri = URI.create(appConfig.getProperty("useradminservice"));
     }
@@ -37,15 +39,15 @@ public class ApplicationModelFacade {
     }
     
     public static void updateApplicationList() {
-    	
-    	if(ApplicationModelUtil.shouldUpdate() || ApplicationModelUtil.getApplicationList()==null || ApplicationModelUtil.getApplicationList().size()==0){
-    		//get all applications from UAS
+
+        if (ApplicationModelUtil.shouldUpdate() || fTokenList == null || fTokenList.length() < 2) {
+            //get all applications from UAS
             ApplicationToken token = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
             ApplicationModelUtil.updateApplicationList(userAdminServiceUri, token.getApplicationTokenId());
     		
     		//update full token from applications
-    		String fTokenList = "";
-    		for (Application application : ApplicationModelUtil.getApplicationList()) {
+            fTokenList = "";
+            for (Application application : ApplicationModelUtil.getApplicationList()) {
     			if (application.isFullTokenApplication()) {
     				fTokenList = fTokenList + application.getId() + ",";
     			}
