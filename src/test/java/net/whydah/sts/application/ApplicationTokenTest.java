@@ -5,7 +5,7 @@ import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.config.ApplicationMode;
-import net.whydah.sts.application.authentication.ApplicationAuthenticationUASClient;
+import net.whydah.sts.health.HealthResource;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -84,7 +84,7 @@ public class ApplicationTokenTest {
     @Test
     public void testSomeTimecalculations() throws Exception {
         long l1 = Instant.now().getEpochSecond();
-        long l2 = ApplicationAuthenticationUASClient.getRunningSince().getEpochSecond();
+        long l2 = HealthResource.getRunningSince().getEpochSecond();
         if (l1 - l2 < 0) {
             fail();
         }
