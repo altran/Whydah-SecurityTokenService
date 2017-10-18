@@ -32,9 +32,9 @@ public class ApplicationModelFacade {
             TimeLimitedCodeBlock.runWithTimeout(new Callable<String>() {
                 @Override
                 public String call() {
-                    logTimedCode(startTime, "starting sleep!");
+                    logTimedCode(startTime, "starting processing!");
                     updateApplicationList(99);
-                    logTimedCode(startTime, "woke up!");
+                    logTimedCode(startTime, "processing completed!");
                     return "";
                 }
 
@@ -51,9 +51,9 @@ public class ApplicationModelFacade {
             TimeLimitedCodeBlock.runWithTimeout(new Callable<String>() {
                 @Override
                 public String call() {
-                    logTimedCode(startTime, "starting sleep!");
+                    logTimedCode(startTime, "starting processing!");
                     updateApplicationList(99);
-                    logTimedCode(startTime, "woke up!");
+                    logTimedCode(startTime, "processing completed!");
                     return "";
                 }
 
