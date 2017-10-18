@@ -107,6 +107,6 @@ public class ApplicationModelFacade {
 
     private static void logTimedCode(long startTime, String msg) {
         long elapsedSeconds = (System.currentTimeMillis() - startTime);
-        log.trace("%1$5sms [%2$16s] %3$s\n", elapsedSeconds, Thread.currentThread().getName(), msg);
+        log.info("%1$5sms [%2$16s] %3$s\n", elapsedSeconds, Thread.currentThread().getName(), msg);
     }
 }
