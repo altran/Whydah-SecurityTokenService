@@ -38,7 +38,7 @@ public class ApplicationModelFacade {
                     return "";
                 }
 
-            }, 3, TimeUnit.SECONDS);
+            }, 20, TimeUnit.SECONDS);
         } catch (Exception e) {
             log(startTime, "was interrupted!");
         }
@@ -57,7 +57,7 @@ public class ApplicationModelFacade {
                     return "";
                 }
 
-            }, 10, TimeUnit.SECONDS);
+            }, 20, TimeUnit.SECONDS);
         } catch (Exception e) {
             log(startTime, "was interrupted!");
         }
