@@ -28,7 +28,7 @@ public class ApplicationTokenTest {
         ApplicationCredential cred = new ApplicationCredential("1212","testapp","dummy");
         ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
         //System.out.println(imp.toXML());
-        assertEquals("The generated application sts is wrong.", cred.getApplicationID(), imp.getApplicationID());
+        assertEquals("The generated application userToken is wrong.", cred.getApplicationID(), imp.getApplicationID());
         assertTrue(imp.getApplicationTokenId().length() > 12);
     }
 
@@ -37,7 +37,7 @@ public class ApplicationTokenTest {
         ApplicationCredential cred = new ApplicationCredential("1212","testapp","dummy");
         ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
         //System.out.println(imp.toXML());
-        assertEquals("The generated application sts is wrong.", cred.getApplicationID(), imp.getApplicationID());
+        assertEquals("The generated application userToken is wrong.", cred.getApplicationID(), imp.getApplicationID());
         assertTrue(imp.getApplicationTokenId().length() > 12);
     }
 
@@ -58,7 +58,7 @@ public class ApplicationTokenTest {
         // Second attempt - with sensible expires
         ApplicationToken imp2 = AuthenticatedApplicationTokenRepository.getApplicationToken(imp.getApplicationTokenId());
         //System.out.println(imp.toXML());
-        assertEquals("The generated application sts is wrong.", cred.getApplicationID(), imp2.getApplicationID());
+        assertEquals("The generated application userToken is wrong.", cred.getApplicationID(), imp2.getApplicationID());
         assertTrue(imp2.getApplicationTokenId().length() > 12);
     }
 

@@ -71,7 +71,7 @@ public class DummyUserAuthenticator implements UserAuthenticator {
 
     private static String loadFromFile(String dummytokenuser) throws IOException {
         String xmlToken;
-        try (BufferedReader br = new BufferedReader(new FileReader("t_" + dummytokenuser + ".sts"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("t_" + dummytokenuser + ".token"))) {
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
 

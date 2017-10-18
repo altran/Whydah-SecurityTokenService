@@ -82,7 +82,7 @@ public class UserTokenTest {
         userToken.setPersonRef("78125637812638");
 
         AuthenticatedUserTokenRepository.addUserToken(userToken, "2012xxxx", "");
-        assertTrue("Verification of valid sts failed", AuthenticatedUserTokenRepository.verifyUserToken(userToken, "2012"));
+        assertTrue("Verification of valid userToken failed", AuthenticatedUserTokenRepository.verifyUserToken(userToken, "2012"));
 
         userToken.setFirstName("Pelle");
         String usertokenfromfreemarkertransformation = freemarkerProcessor.toXml(userToken);
@@ -102,7 +102,7 @@ public class UserTokenTest {
         userToken.setTimestamp(String.valueOf(System.currentTimeMillis() - 1000));
         userToken.setLifespan("0");
         AuthenticatedUserTokenRepository.addUserToken(userToken, "", "");
-        assertFalse("Verification of timed-out sts successful", AuthenticatedUserTokenRepository.verifyUserToken(userToken, ""));
+        assertFalse("Verification of timed-out userToken successful", AuthenticatedUserTokenRepository.verifyUserToken(userToken, ""));
     }
 
     @Test
@@ -203,14 +203,14 @@ public class UserTokenTest {
 
 
         String appXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \n " +
-                " <sts>\n" +
+                " <token>\n" +
                 "     <params>\n" +
                 "         <applicationtoken>123123123123</applicationtoken>\n" +
                 "         <applicationid>123</applicationid>\n" +
                 "         <applicationname>ACS</applicationname>\n" +
                 "         <expires>3213213212</expires>\n" +
                 "     </params> \n" +
-                " </sts>\n";
+                " </token>\n";
         //UserToken2 userToken = UserToken2.createUserTokenFromUserAggregate(appXML, identityXML);
 
         UserToken userToken = UserTokenMapper.fromUserAggregateXml(identityXML);
@@ -396,12 +396,12 @@ public class UserTokenTest {
         utoken.setPersonRef("78125637812638");
 
         AuthenticatedUserTokenRepository.addUserToken(utoken, "", "");
-        assertTrue("Verification of valid sts failed", AuthenticatedUserTokenRepository.verifyUserToken(utoken, ""));
+        assertTrue("Verification of valid userToken failed", AuthenticatedUserTokenRepository.verifyUserToken(utoken, ""));
 
         utoken.setFirstName("Pelle");
         String token = freemarkerProcessor.toXml(utoken);
         assertTrue("Token not updated", token.indexOf("Pelle") > 0);
-        assertFalse("Verification of in-valid sts successful", AuthenticatedUserTokenRepository.verifyUserToken(utoken, ""));
+        assertFalse("Verification of in-valid userToken successful", AuthenticatedUserTokenRepository.verifyUserToken(utoken, ""));
     }
 
     @Test

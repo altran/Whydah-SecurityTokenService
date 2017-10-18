@@ -173,7 +173,7 @@ public class AuthenticatedUserTokenRepository {
             return false;
         }
         if (!userToken.toString().equals(resToken.toString())) {
-            log.info("UserToken not valid: not the same as in repo. sts: {}  repotoken: {}", userToken, resToken);
+            log.info("UserToken not valid: not the same as in repo. userToken: {}  repoToken: {}", userToken, resToken);
             return false;
         }
         ObservedActivity observedActivity = new UserSessionObservedActivity(resToken.getUid(), "userSessionVerification", applicationTokenId);

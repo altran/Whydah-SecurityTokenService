@@ -145,7 +145,7 @@ public class UserTokenFactory {
             userToken.setLastName("Demographics: Oslo");
             List<UserApplicationRoleEntry> roleList = new ArrayList<>();
             userToken.setRoleList(roleList);
-            log.debug("getFilteredUserToken - returning anonymous sts {}", userToken);
+            log.debug("getFilteredUserToken - returning anonymous userToken {}", userToken);
             return userToken;
         } else if (shouldReturnFullUserToken(myappid)) {
             log.debug("b) shouldReturnFullUserToken({})=true - no filtering", myappid);

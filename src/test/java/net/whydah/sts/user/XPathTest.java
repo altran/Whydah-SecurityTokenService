@@ -22,7 +22,7 @@ public class XPathTest extends TestCase {
     public void testCreateApplicationToken() throws Exception {
         ApplicationCredential cred = new ApplicationCredential("12345678","apps","dummy");
         ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
-        assertTrue("The generated application sts is wrong.", imp.getApplicationID().equals(cred.getApplicationID()));
+        assertTrue("The generated application userToken is wrong.", imp.getApplicationID().equals(cred.getApplicationID()));
         assertTrue(imp.getApplicationTokenId().length() > 12);
         xpathParseAppToken(ApplicationTokenMapper.toXML(imp));
     }

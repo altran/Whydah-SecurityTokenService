@@ -141,8 +141,8 @@ public class HealthResource {
 
     private static String getThreatMapDetails() {
         String threatSignalJson = " ";
-//        if (valid user with right role)  // todo:  Implement this limitation
-
+        //        if (valid user with right role)  // todo:  Implement this limitation
+        // using isExtendedInfoEnabled for now
 
         // Lets trigger map-cleanup first
         AuthenticatedApplicationTokenRepository.cleanApplicationTokenMap();
