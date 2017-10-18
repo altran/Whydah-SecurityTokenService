@@ -52,7 +52,7 @@ public class ApplicationModelFacade {
                 @Override
                 public String call() {
                     log(startTime, "starting sleep!");
-                    updateApplicationList(5);
+                    updateApplicationList(50);
                     log(startTime, "woke up!");
                     return "";
                 }
