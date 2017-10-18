@@ -8,7 +8,6 @@ import net.whydah.sso.user.types.UserToken;
 import net.whydah.sts.config.AppConfig;
 import net.whydah.sts.threat.ThreatResource;
 import net.whydah.sts.user.statistics.UserSessionObservedActivity;
-import net.whydah.sts.util.ApplicationSessionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.valuereporter.agent.MonitorReporter;
@@ -183,13 +182,15 @@ public class AuthenticatedUserTokenRepository {
     }
 
     public static void renewUserToken(String usertokenid, String applicationTokenId) {
-        UserToken utoken = activeusertokensmap.remove(usertokenid);
-        active_username_usertokenids_map.remove(utoken.getUserName());
-        utoken.setDefcon(ThreatResource.getDEFCON());
-        utoken.setTimestamp(String.valueOf(System.currentTimeMillis()));
-        utoken.setLifespan(String.valueOf(1000 * ApplicationSessionHelper.getApplicationLifeSpanSeconds(applicationTokenId)));
-        addUserToken(utoken, applicationTokenId, "renew");
-        ObservedActivity observedActivity = new UserSessionObservedActivity(utoken.getUid(), "userSessionRenewal", applicationTokenId);
+        UserToken userToken = activeusertokensmap.remove(usertokenid);
+        active_username_usertokenids_map.remove(userToken.getUserName());
+        userToken.setDefcon(ThreatResource.getDEFCON());
+        userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+//        userToken.setLifespan(String.valueOf(1000 * ApplicationSessionHelper.getApplicationLifeSpanSeconds(applicationTokenId)));
+        userToken.setLifespan(String.valueOf(86400000));
+
+        addUserToken(userToken, applicationTokenId, "renew");
+        ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUid(), "userSessionRenewal", applicationTokenId);
         MonitorReporter.reportActivity(observedActivity);
 
     }
@@ -213,7 +214,8 @@ public class AuthenticatedUserTokenRepository {
 
         if (userToken.getLifespan() == null) {
             log.debug("addUserToken: UserToken has no lifespan");
-            userToken.setLifespan(String.valueOf(1000 * ApplicationSessionHelper.getApplicationLifeSpanSeconds(applicationTokenId)));
+//            userToken.setLifespan(String.valueOf(1000 * ApplicationSessionHelper.getApplicationLifeSpanSeconds(applicationTokenId)));
+            userToken.setLifespan(String.valueOf(86400000));
             userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
         }

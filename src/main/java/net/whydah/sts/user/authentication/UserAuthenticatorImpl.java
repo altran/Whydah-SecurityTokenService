@@ -19,7 +19,6 @@ import net.whydah.sts.errorhandling.AuthenticationFailedException;
 import net.whydah.sts.threat.ThreatResource;
 import net.whydah.sts.user.AuthenticatedUserTokenRepository;
 import net.whydah.sts.user.UserTokenFactory;
-import net.whydah.sts.util.ApplicationSessionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +92,9 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 					String userIdentityJson = uasResponse.getEntity(String.class);
 					UserToken userToken = UserTokenFactory.fromUserIdentityJson(userIdentityJson);
 					userToken.setSecurityLevel("0");  // 3rd party sts as source = securitylevel=0
-					userToken.setLifespan(String.valueOf(1000 * ApplicationSessionHelper.getApplicationLifeSpanSeconds(applicationtokenid)));
+//					userToken.setLifespan(String.valueOf(1000 * ApplicationSessionHelper.getApplicationLifeSpanSeconds(applicationtokenid)));
+                    userToken.setLifespan(String.valueOf(86400000));
+
 					userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
 					AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
@@ -109,16 +110,16 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 	}
 
 	public UserToken getRefreshedUserToken(String usertokenid) {
-		ApplicationToken stsToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
-		AuthenticatedApplicationTokenRepository.addApplicationToken(stsToken);
-		String user = appConfig.getProperty("whydah.adminuser.username");
+        ApplicationToken stsApplicationToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
+//		AuthenticatedApplicationTokenRepository.addApplicationToken(stsApplicationToken);
+        String user = appConfig.getProperty("whydah.adminuser.username");
 		String password = appConfig.getProperty("whydah.adminuser.password");
 		UserCredential userCredential = new UserCredential(user, password);
-        UserToken whydahUserAdminUserToken = logonUser(stsToken.getApplicationTokenId(), ApplicationTokenMapper.toXML(stsToken), userCredential.toXML());
+        UserToken whydahUserAdminUserToken = logonUser(stsApplicationToken.getApplicationTokenId(), ApplicationTokenMapper.toXML(stsApplicationToken), userCredential.toXML());
 
-		UserToken oldUserToken = AuthenticatedUserTokenRepository.getUserToken(usertokenid, stsToken.getApplicationTokenId());
+        UserToken oldUserToken = AuthenticatedUserTokenRepository.getUserToken(usertokenid, stsApplicationToken.getApplicationTokenId());
 
-        String userAggregateJson = new CommandGetUserAggregate(useradminservice, stsToken.getApplicationTokenId(), whydahUserAdminUserToken.getUserTokenId(), oldUserToken.getUid()).execute();
+        String userAggregateJson = new CommandGetUserAggregate(useradminservice, stsApplicationToken.getApplicationTokenId(), whydahUserAdminUserToken.getUserTokenId(), oldUserToken.getUid()).execute();
 
         UserToken refreshedUserToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
         
@@ -143,7 +144,9 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
 				UserToken userToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
 				userToken.setSecurityLevel("0");  // UserIdentity as source = securitylevel=0
-				userToken.setLifespan(String.valueOf(1000 * ApplicationSessionHelper.getApplicationLifeSpanSeconds(applicationtokenid)));
+//				userToken.setLifespan(String.valueOf(1000 * ApplicationSessionHelper.getApplicationLifeSpanSeconds(applicationtokenid)));
+                userToken.setLifespan(String.valueOf(86400000));
+
 				userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
 				AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
@@ -212,7 +215,9 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 			userToken.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
 			userToken.setUserTokenId(generateID());
 			userToken.setDefcon(ThreatResource.getDEFCON());
-			userToken.setLifespan(String.valueOf(1000 * ApplicationSessionHelper.getApplicationLifeSpanSeconds(applicationtokenid)));
+//			userToken.setLifespan(String.valueOf(1000 * ApplicationSessionHelper.getApplicationLifeSpanSeconds(applicationtokenid)));
+            userToken.setLifespan(String.valueOf(86400000));
+
 			userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
 			AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "usertokenid");
