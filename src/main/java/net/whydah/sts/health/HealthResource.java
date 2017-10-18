@@ -38,11 +38,15 @@ public class HealthResource {
 
     private static Map<String, ThreatSignal> threatSignalMap = new TreeMap<>();
     private static ObjectMapper mapper = new ObjectMapper();
-    private static final boolean isExtendedInfoEnabled;
+    private static boolean isExtendedInfoEnabled = false;
 
     static {
         AppConfig appConfig = new AppConfig();
-        isExtendedInfoEnabled = (appConfig.getProperty("testpage").equalsIgnoreCase("enabled"));
+        try {
+            isExtendedInfoEnabled = (appConfig.getProperty("testpage").equalsIgnoreCase("enabled"));
+        } catch (Exception e) {
+            log.info("Ubanle to find testpage property or property file, returning isExtendedInfoEnabled=false");
+        }
         String xmlFileName = System.getProperty("hazelcast.config");
         log.info("Loading hazelcast configuration from :" + xmlFileName);
         Config hazelcastConfig = new Config();
