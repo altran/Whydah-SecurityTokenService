@@ -20,7 +20,7 @@ public class ApplicationModelFacade {
     private final static Logger log = LoggerFactory.getLogger(ApplicationResource.class);
 
 
-    public static String fTokenList = "";
+    public static String xfTokenList = "";
 
     static {
         userAdminServiceUri = URI.create(appConfig.getProperty("useradminservice"));
@@ -32,15 +32,15 @@ public class ApplicationModelFacade {
             TimeLimitedCodeBlock.runWithTimeout(new Callable<String>() {
                 @Override
                 public String call() {
-                    log(startTime, "starting sleep!");
-                    updateApplicationList(100);
-                    log(startTime, "woke up!");
+                    logTimedCode(startTime, "starting sleep!");
+                    updateApplicationList(99);
+                    logTimedCode(startTime, "woke up!");
                     return "";
                 }
 
             }, 20, TimeUnit.SECONDS);
         } catch (Exception e) {
-            log(startTime, "was interrupted!");
+            logTimedCode(startTime, "was interrupted!");
         }
         return ApplicationModelUtil.getApplication(applicationID);
     }
@@ -51,15 +51,15 @@ public class ApplicationModelFacade {
             TimeLimitedCodeBlock.runWithTimeout(new Callable<String>() {
                 @Override
                 public String call() {
-                    log(startTime, "starting sleep!");
-                    updateApplicationList(100);
-                    log(startTime, "woke up!");
+                    logTimedCode(startTime, "starting sleep!");
+                    updateApplicationList(99);
+                    logTimedCode(startTime, "woke up!");
                     return "";
                 }
 
             }, 20, TimeUnit.SECONDS);
         } catch (Exception e) {
-            log(startTime, "was interrupted!");
+            logTimedCode(startTime, "was interrupted!");
         }
         return ApplicationModelUtil.getApplicationList();
     }
@@ -75,14 +75,16 @@ public class ApplicationModelFacade {
 
     public static void updateApplicationList(int percentage) {
 
-        if (ApplicationModelUtil.shouldUpdate(percentage) || fTokenList == null || fTokenList.length() < 2) {
+
+        if (ApplicationModelUtil.shouldUpdate(percentage) || ApplicationModelUtil.getApplicationList() == null || ApplicationModelUtil.getApplicationList().size() == 0) {
+//        if (ApplicationModelUtil.shouldUpdate(percentage) || fTokenList == null || fTokenList.length() < 2) {
             //get all applications from UAS
             ApplicationToken stsApplicationToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
             ApplicationModelUtil.updateApplicationList(userAdminServiceUri, stsApplicationToken.getApplicationTokenId());
         }
 
         //update full sts from applications
-        fTokenList = "";
+        String fTokenList = "";
         for (Application application : ApplicationModelUtil.getApplicationList()) {
             if (application.isFullTokenApplication()) {
                 fTokenList = fTokenList + application.getId() + ",";
@@ -103,7 +105,7 @@ public class ApplicationModelFacade {
 
     }
 
-    private static void log(long startTime, String msg) {
+    private static void logTimedCode(long startTime, String msg) {
         long elapsedSeconds = (System.currentTimeMillis() - startTime);
         log.trace("%1$5sms [%2$16s] %3$s\n", elapsedSeconds, Thread.currentThread().getName(), msg);
     }
