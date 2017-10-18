@@ -3,7 +3,7 @@ package net.whydah.sso.commands;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.commands.systemtestbase.SystemTestBaseConfig;
 import net.whydah.sts.application.AuthenticatedApplicationTokenRepository;
-import net.whydah.sts.application.commands.CommandCheckApplicationCredentialInUAS;
+import net.whydah.sts.application.authentication.commands.CommandCheckApplicationCredentialInUAS;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;

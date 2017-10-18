@@ -1,14 +1,16 @@
-package net.whydah.sts.application;
+package net.whydah.sts.util;
 
 import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationToken;
+import net.whydah.sts.application.ApplicationModelFacade;
+import net.whydah.sts.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.sts.user.AuthenticatedUserTokenRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SessionHelper {
+public class ApplicationSessionHelper {
 
-    private static final Logger log = LoggerFactory.getLogger(SessionHelper.class);
+    private static final Logger log = LoggerFactory.getLogger(ApplicationSessionHelper.class);
     public static long defaultlifespan = AuthenticatedUserTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000;
 
     public static long getApplicationLifeSpanSeconds(String applicationtokenid) {

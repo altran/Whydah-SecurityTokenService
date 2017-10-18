@@ -1,19 +1,19 @@
-package net.whydah.sts.application;
+package net.whydah.sts.application.authentication;
 
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
-import net.whydah.sso.util.WhydahUtil;
-import net.whydah.sso.whydah.ThreatSignal;
-import net.whydah.sts.application.commands.CommandCheckApplicationCredentialInUAS;
+import net.whydah.sts.application.AuthenticatedApplicationTokenRepository;
+import net.whydah.sts.application.authentication.commands.CommandCheckApplicationCredentialInUAS;
 import net.whydah.sts.config.AppConfig;
 import net.whydah.sts.health.HealthResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.management.ManagementFactory;
 import java.net.URI;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+
+import static net.whydah.sso.session.WhydahApplicationSession.createThreat;
+import static net.whydah.sts.health.HealthResource.getRunningSince;
 
 
 public class ApplicationAuthenticationUASClient {
@@ -49,17 +49,5 @@ public class ApplicationAuthenticationUASClient {
         return false;
     }
 
-    public static Instant getRunningSince() {
-        long uptimeInMillis = ManagementFactory.getRuntimeMXBean().getUptime();
-        return Instant.now().minus(uptimeInMillis, ChronoUnit.MILLIS);
-    }
 
-    public static ThreatSignal createThreat(String text) {
-        ThreatSignal threatSignal = new ThreatSignal();
-        threatSignal.setSignalEmitter("SecurityTokenService");
-        threatSignal.setAdditionalProperty("EMITTER IP", WhydahUtil.getMyIPAddresssesString());
-        threatSignal.setInstant(Instant.now().toString());
-        threatSignal.setText(text);
-        return threatSignal;
-    }
 }

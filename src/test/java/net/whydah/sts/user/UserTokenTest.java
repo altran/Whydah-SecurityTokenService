@@ -8,10 +8,10 @@ import net.whydah.sso.config.ApplicationMode;
 import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
-import net.whydah.sts.application.ApplicationThreatResource;
 import net.whydah.sts.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.sts.config.AppConfig;
 import net.whydah.sts.file.FreemarkerProcessor;
+import net.whydah.sts.threat.ThreatResource;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -57,7 +57,7 @@ public class UserTokenTest {
         userToken.setLastName("Nordmann");
         userToken.setTimestamp("123123123");
         userToken.setPersonRef("73637276722376");
-        userToken.setDefcon(ApplicationThreatResource.getDEFCON());
+        userToken.setDefcon(ThreatResource.getDEFCON());
         userToken.setUserTokenId(UUID.randomUUID().toString());
         String xml = freemarkerProcessor.toXml(userToken);
 

@@ -11,6 +11,7 @@ import net.whydah.sso.config.ApplicationMode;
 import net.whydah.sso.session.baseclasses.CryptoUtil;
 import net.whydah.sso.session.baseclasses.ExchangeableKey;
 import net.whydah.sso.user.types.UserCredential;
+import net.whydah.sts.application.authentication.ApplicationAuthenticationUASClient;
 import net.whydah.sts.config.AppConfig;
 import net.whydah.sts.errorhandling.AppException;
 import net.whydah.sts.errorhandling.AppExceptionCode;
@@ -28,8 +29,8 @@ import java.util.Set;
 import static net.whydah.sso.util.LoggerUtil.first50;
 
 @Path("/")
-public class ApplicationAuthenticationResource {
-    private final static Logger log = LoggerFactory.getLogger(ApplicationAuthenticationResource.class);
+public class ApplicationResource {
+    private final static Logger log = LoggerFactory.getLogger(ApplicationResource.class);
 
     private final static Set<String> encryptionEnabledApplicationIDs = new HashSet<>(Arrays.asList("9999", "99999"));
 

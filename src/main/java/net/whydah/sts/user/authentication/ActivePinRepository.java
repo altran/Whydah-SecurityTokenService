@@ -1,4 +1,4 @@
-package net.whydah.sts.user;
+package net.whydah.sts.user.authentication;
 
 
 import com.hazelcast.config.Config;

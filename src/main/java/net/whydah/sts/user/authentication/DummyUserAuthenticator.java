@@ -1,4 +1,4 @@
-package net.whydah.sts.user;
+package net.whydah.sts.user.authentication;
 
 import net.whydah.sso.config.ApplicationMode;
 import net.whydah.sso.user.mappers.UserTokenMapper;

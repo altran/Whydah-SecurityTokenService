@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class ApplicationModelFacade {
     public static URI userAdminServiceUri = null;
     private static AppConfig appConfig = new AppConfig();
-    private final static Logger log = LoggerFactory.getLogger(ApplicationAuthenticationResource.class);
+    private final static Logger log = LoggerFactory.getLogger(ApplicationResource.class);
 
 
     public static String fTokenList = "";

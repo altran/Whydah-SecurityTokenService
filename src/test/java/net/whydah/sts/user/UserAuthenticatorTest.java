@@ -2,6 +2,8 @@ package net.whydah.sts.user;
 
 import net.whydah.sso.config.ApplicationMode;
 import net.whydah.sso.user.types.UserToken;
+import net.whydah.sts.user.authentication.DummyUserAuthenticator;
+import net.whydah.sts.user.authentication.UserAuthenticator;
 import org.junit.Test;
 
 import java.util.HashMap;

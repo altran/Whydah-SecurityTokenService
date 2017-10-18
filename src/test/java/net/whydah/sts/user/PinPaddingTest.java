@@ -1,6 +1,7 @@
 package net.whydah.sts.user;
 
 import net.whydah.sso.config.ApplicationMode;
+import net.whydah.sts.user.authentication.ActivePinRepository;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

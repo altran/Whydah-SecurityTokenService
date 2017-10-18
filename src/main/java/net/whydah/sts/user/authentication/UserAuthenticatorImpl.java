@@ -1,4 +1,4 @@
-package net.whydah.sts.user;
+package net.whydah.sts.user.authentication;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -13,11 +13,13 @@ import net.whydah.sso.user.mappers.UserCredentialMapper;
 import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserCredential;
 import net.whydah.sso.user.types.UserToken;
-import net.whydah.sts.application.ApplicationThreatResource;
 import net.whydah.sts.application.AuthenticatedApplicationTokenRepository;
-import net.whydah.sts.application.SessionHelper;
 import net.whydah.sts.config.AppConfig;
 import net.whydah.sts.errorhandling.AuthenticationFailedException;
+import net.whydah.sts.threat.ThreatResource;
+import net.whydah.sts.user.AuthenticatedUserTokenRepository;
+import net.whydah.sts.user.UserTokenFactory;
+import net.whydah.sts.util.ApplicationSessionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,8 +93,8 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 					String userIdentityJson = uasResponse.getEntity(String.class);
 					UserToken userToken = UserTokenFactory.fromUserIdentityJson(userIdentityJson);
 					userToken.setSecurityLevel("0");  // 3rd party sts as source = securitylevel=0
-					userToken.setLifespan(String.valueOf(1000 * SessionHelper.getApplicationLifeSpanSeconds(applicationtokenid)));
-                    userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+					userToken.setLifespan(String.valueOf(1000 * ApplicationSessionHelper.getApplicationLifeSpanSeconds(applicationtokenid)));
+					userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
 					AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
 					return userToken;
@@ -141,8 +143,8 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
 				UserToken userToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
 				userToken.setSecurityLevel("0");  // UserIdentity as source = securitylevel=0
-                userToken.setLifespan(String.valueOf(1000 * SessionHelper.getApplicationLifeSpanSeconds(applicationtokenid)));
-                userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+				userToken.setLifespan(String.valueOf(1000 * ApplicationSessionHelper.getApplicationLifeSpanSeconds(applicationtokenid)));
+				userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
 				AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
 				return userToken;
@@ -209,9 +211,9 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 			UserToken userToken = UserTokenMapper.fromUserAggregateXml(userAggregateJson);
 			userToken.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
 			userToken.setUserTokenId(generateID());
-			userToken.setDefcon(ApplicationThreatResource.getDEFCON());
-            userToken.setLifespan(String.valueOf(1000 * SessionHelper.getApplicationLifeSpanSeconds(applicationtokenid)));
-            userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+			userToken.setDefcon(ThreatResource.getDEFCON());
+			userToken.setLifespan(String.valueOf(1000 * ApplicationSessionHelper.getApplicationLifeSpanSeconds(applicationtokenid)));
+			userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
 			AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "usertokenid");
 			return userToken;

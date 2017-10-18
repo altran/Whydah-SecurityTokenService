@@ -12,13 +12,15 @@ import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.sso.util.SSLTool;
 import net.whydah.sts.application.ApplicationModelFacade;
-import net.whydah.sts.application.ApplicationThreatResource;
 import net.whydah.sts.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.sts.config.AppConfig;
 import net.whydah.sts.config.DevModeHelper;
 import net.whydah.sts.errorhandling.AppException;
 import net.whydah.sts.errorhandling.AppExceptionCode;
 import net.whydah.sts.errorhandling.AuthenticationFailedException;
+import net.whydah.sts.threat.ThreatResource;
+import net.whydah.sts.user.authentication.ActivePinRepository;
+import net.whydah.sts.user.authentication.UserAuthenticator;
 import net.whydah.sts.user.statistics.UserSessionObservedActivity;
 import net.whydah.sts.util.DelayedSendSMSTask;
 import org.slf4j.Logger;
@@ -1281,8 +1283,8 @@ public class UserTokenResource {
             //return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
             throw AppExceptionCode.USER_INVALID_USERTOKENID_6002;
         }
-        userToken.setDefcon(ApplicationThreatResource.getDEFCON());
-        return createUserTokenResponse(newAppTokenId, userToken);
+		userToken.setDefcon(ThreatResource.getDEFCON());
+		return createUserTokenResponse(newAppTokenId, userToken);
     }
 
     /**
@@ -1683,7 +1685,7 @@ public class UserTokenResource {
             applicationtokenidmap.put(applicationtokenid, applicationtokenid);
             UserToken userToken = userAuthenticator.createAndLogonUser(applicationtokenid, appTokenXml, userCredentialXml, thirdPartyUserTokenXml);
 			userticketmap.put(userticket, userToken.getUserTokenId());
-			userToken.setDefcon(ApplicationThreatResource.getDEFCON());
+			userToken.setDefcon(ThreatResource.getDEFCON());
 			userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getUserTokenId());
 			// Report to statistics
             ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUserName(), "userCreated", applicationtokenid);
@@ -1797,7 +1799,7 @@ public class UserTokenResource {
             UserToken userToken = userAuthenticator.createAndLogonPinUser(applicationtokenid, appTokenXml, adminUserTokenId, cellPhone, pin, newUserjson);
 			userticketmap.put(userticket, userToken.getUserTokenId());
 			log.debug("createAndLogOnPinUser Added ticket:{} for usertoken:{} username: {}", userticket, userToken.getUserTokenId(), userToken.getUserName());
-			userToken.setDefcon(ApplicationThreatResource.getDEFCON());
+			userToken.setDefcon(ThreatResource.getDEFCON());
 			userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getUserTokenId());
 			// Report to statistics
             ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUserName(), "userCreated", applicationtokenid);
@@ -1814,8 +1816,8 @@ public class UserTokenResource {
         log.trace("getUserTokenByUserTokenId OK. Response={}", userToken.toString());
 		userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getUserTokenId());
 		userToken.setLastSeen(AuthenticatedUserTokenRepository.getLastSeen(userToken));
-		userToken.setDefcon(ApplicationThreatResource.getDEFCON());
-        UserToken filteredUserToken = UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken);
+		userToken.setDefcon(ThreatResource.getDEFCON());
+		UserToken filteredUserToken = UserTokenFactory.getFilteredUserToken(applicationtokenid, userToken);
 		AuthenticatedUserTokenRepository.setLastSeen(filteredUserToken);
 		Map<String, Object> model = new HashMap();
         model.put("it", filteredUserToken);

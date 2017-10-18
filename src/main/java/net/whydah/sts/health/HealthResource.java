@@ -8,11 +8,11 @@ import com.hazelcast.core.HazelcastInstance;
 import net.whydah.sso.util.WhydahUtil;
 import net.whydah.sso.whydah.ThreatSignal;
 import net.whydah.sts.application.ApplicationModelFacade;
-import net.whydah.sts.application.ApplicationThreatResource;
 import net.whydah.sts.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.sts.config.AppConfig;
-import net.whydah.sts.user.ActivePinRepository;
+import net.whydah.sts.threat.ThreatResource;
 import net.whydah.sts.user.AuthenticatedUserTokenRepository;
+import net.whydah.sts.user.authentication.ActivePinRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,8 +23,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
@@ -75,7 +77,7 @@ public class HealthResource {
     public static String getHealthText() {
         return "Status: OK" +
                 "\nVersion:" + getVersion() +
-                "\nDEFCON: " + ApplicationThreatResource.getDEFCON() +
+                "\nDEFCON: " + ThreatResource.getDEFCON() +
                 "\nmax application session time: " + AuthenticatedApplicationTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS +
                 "\nClusterSize: " + AuthenticatedUserTokenRepository.getNoOfClusterMembers() +
                 "\nUserLastSeenMapSize: " + AuthenticatedUserTokenRepository.getLastSeenMapSize() +
@@ -93,7 +95,7 @@ public class HealthResource {
                 return "{\n" +
                         "  \"Status\": \"OK\",\n" +
                         "  \"Version\": \"" + getVersion() + "\",\n" +
-                        "  \"DEFCON\": \"" + ApplicationThreatResource.getDEFCON() + "\",\n" +
+                        "  \"DEFCON\": \"" + ThreatResource.getDEFCON() + "\",\n" +
                         "  \"max application session time (s)\": \"" + AuthenticatedApplicationTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS + "\",\n" +
                         "  \"ClusterSize\": \"" + AuthenticatedUserTokenRepository.getNoOfClusterMembers() + "\",\n" +
                         "  \"UserLastSeenMapSize\": \"" + AuthenticatedUserTokenRepository.getLastSeenMapSize() + "\",\n" +
@@ -114,7 +116,7 @@ public class HealthResource {
             return "{\n" +
                     "  \"Status\": \"OK\",\n" +
                     "  \"Version\": \"" + getVersion() + "\",\n" +
-                    "  \"DEFCON\": \"" + ApplicationThreatResource.getDEFCON() + "\",\n" +
+                    "  \"DEFCON\": \"" + ThreatResource.getDEFCON() + "\",\n" +
                     "  \"max application session time (s)\": \"" + AuthenticatedApplicationTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS + "\",\n" +
                     "  \"ClusterSize\": \"" + AuthenticatedUserTokenRepository.getNoOfClusterMembers() + "\",\n" +
                     "  \"UserLastSeenMapSize\": \"" + AuthenticatedUserTokenRepository.getLastSeenMapSize() + "\",\n" +
@@ -131,7 +133,7 @@ public class HealthResource {
             return "{\n" +
                     "  \"Status\": \"UNCONNECTED\",\n" +
                     "  \"Version\": \"" + getVersion() + "\",\n" +
-                    "  \"DEFCON\": \"" + ApplicationThreatResource.getDEFCON() + "\",\n" +
+                    "  \"DEFCON\": \"" + ThreatResource.getDEFCON() + "\",\n" +
                     "  \"now\": \"" + Instant.now() + "\",\n" +
                     "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\"" +
                     "}\n\n";
@@ -202,4 +204,10 @@ public class HealthResource {
         }
         threatSignalMap.put(Instant.now().toString(), signal);
     }
+
+    public static Instant getRunningSince() {
+        long uptimeInMillis = ManagementFactory.getRuntimeMXBean().getUptime();
+        return Instant.now().minus(uptimeInMillis, ChronoUnit.MILLIS);
+    }
+
 }

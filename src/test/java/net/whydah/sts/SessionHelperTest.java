@@ -4,8 +4,8 @@ import net.whydah.sso.application.helpers.ApplicationHelper;
 import net.whydah.sso.application.mappers.ApplicationMapper;
 import net.whydah.sso.application.types.Application;
 import net.whydah.sso.config.ApplicationMode;
-import net.whydah.sts.application.SessionHelper;
 import net.whydah.sts.config.AppConfig;
+import net.whydah.sts.util.ApplicationSessionHelper;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -24,9 +24,9 @@ public class SessionHelperTest {
    
 	@Test
 	public void testApplicationLiefSpan(){
-		//TODO: test should be updated when implementing the SessionHelper
-		List<Application> applications = ApplicationMapper.fromJsonList(ApplicationHelper.getDummyAppllicationListJson());
-        Assert.assertTrue(SessionHelper.getApplicationLifeSpanSeconds(applications.get(0)) == 86400);
+        //TODO: test should be updated when implementing the ApplicationSessionHelper
+        List<Application> applications = ApplicationMapper.fromJsonList(ApplicationHelper.getDummyAppllicationListJson());
+        Assert.assertTrue(ApplicationSessionHelper.getApplicationLifeSpanSeconds(applications.get(0)) == 86400);
 
 		
 	}

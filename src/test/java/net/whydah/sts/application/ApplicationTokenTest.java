@@ -5,6 +5,7 @@ import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.config.ApplicationMode;
+import net.whydah.sts.application.authentication.ApplicationAuthenticationUASClient;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;

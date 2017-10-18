@@ -1,8 +1,9 @@
-package net.whydah.sts.application;
+package net.whydah.sts.threat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.whydah.sso.whydah.DEFCON;
 import net.whydah.sso.whydah.ThreatSignal;
+import net.whydah.sts.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.sts.health.HealthResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +13,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("/threat")
-public class ApplicationThreatResource {
-    private final static Logger log = LoggerFactory.getLogger(ApplicationThreatResource.class);
+public class ThreatResource {
+    private final static Logger log = LoggerFactory.getLogger(ThreatResource.class);
     private static final ObjectMapper mapper = new ObjectMapper();
     private static String defconvalue= DEFCON.DEFCON5.toString();
 

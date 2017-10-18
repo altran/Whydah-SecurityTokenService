@@ -1,4 +1,4 @@
-package net.whydah.sts.application.commands;
+package net.whydah.sts.application.authentication.commands;
 
 import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
 import net.whydah.sso.application.types.ApplicationCredential;

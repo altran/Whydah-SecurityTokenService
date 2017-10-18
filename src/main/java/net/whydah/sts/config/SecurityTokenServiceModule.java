@@ -7,9 +7,9 @@ import net.whydah.sso.config.ApplicationMode;
 import net.whydah.sts.errorhandling.AppExceptionMapper;
 import net.whydah.sts.errorhandling.GenericExceptionMapper;
 import net.whydah.sts.errorhandling.NotFoundExceptionMapper;
-import net.whydah.sts.user.DummyUserAuthenticator;
-import net.whydah.sts.user.UserAuthenticator;
-import net.whydah.sts.user.UserAuthenticatorImpl;
+import net.whydah.sts.user.authentication.DummyUserAuthenticator;
+import net.whydah.sts.user.authentication.UserAuthenticator;
+import net.whydah.sts.user.authentication.UserAuthenticatorImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
