@@ -147,28 +147,24 @@ public class HealthResource {
 
     private static String getThreatMapDetails() {
         String threatSignalJson = " ";
-        //        if (valid user with right role)  // todo:  Implement this limitation
-        // using isExtendedInfoEnabled for now
-
-        // Lets trigger map-cleanup first
         AuthenticatedApplicationTokenRepository.cleanApplicationTokenMap();
         AuthenticatedUserTokenRepository.cleanUserTokenMap();
 
 
         // OK... let us obfucscate/filter sessionsid's in signalEmitter field
-        for (Map.Entry<String, ThreatSignal> entry : threatSignalMap.entrySet()) {
-            ThreatSignal threatSignal = entry.getValue();
-            threatSignal.setSignalEmitter(threatSignal.getSignalEmitter().replace("a", "*").replace("b", "*").replace("c", "*").replace("d", "*").replace("e", "*"));
+        for (String key : threatSignalMap.keySet()) {
+            ThreatSignal threatSignal = threatSignalMap.get(key);
+            threatSignal.setSignalEmitter(threatSignal.getSignalEmitter().replace("a", "*").replace("b", "*").replace("c", "*"));
             Map<String, Object> additionalProperties = threatSignal.getAdditionalProperties();
         	
             List<String> obfuscateList = Arrays.asList("usertokenid", "apptokenid","appName");
             for(String pro : additionalProperties.keySet()){
             	if(obfuscateList.contains(pro)){
-            		threatSignal.getAdditionalProperties().put(pro, threatSignal.getAdditionalProperties().get(pro).toString().replace("a", "*").replace("b", "*").replace("c", "*").replace("d", "*").replace("e", "*"));
-            	}
+                    threatSignal.getAdditionalProperties().put(pro, threatSignal.getAdditionalProperties().get(pro).toString().replace("a", "*").replace("b", "*").replace("c", "*"));
+                }
             }
-            
-            threatSignalMap.put(entry.getKey(), threatSignal);
+
+            threatSignalMap.put(key, threatSignal);
         }
         try {
             // add minor json prettifying intendation
