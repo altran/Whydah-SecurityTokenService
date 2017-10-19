@@ -36,7 +36,7 @@ import java.util.*;
 public class HealthResource {
     private static final Logger log = LoggerFactory.getLogger(HealthResource.class);
 
-    private static Map<String, ThreatSignal> threatSignalMap = new TreeMap<>();
+    private static Map<String, ThreatSignal> threatSignalMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private static ObjectMapper mapper = new ObjectMapper();
     private static boolean isExtendedInfoEnabled = false;
 
