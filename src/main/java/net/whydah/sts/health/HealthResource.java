@@ -183,7 +183,7 @@ public class HealthResource {
 
     private static String getVersion() {
         Properties mavenProperties = new Properties();
-        String resourcePath = "/META-INF/maven/net.whydah.sts/SecurityTokenService/pom.properties";
+        String resourcePath = "/META-INF/maven/net.whydah.token/SecurityTokenService/pom.properties";
         URL mavenVersionResource = HealthResource.class.getResource(resourcePath);
         if (mavenVersionResource != null) {
             try {
