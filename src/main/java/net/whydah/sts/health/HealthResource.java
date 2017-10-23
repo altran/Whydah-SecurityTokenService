@@ -42,6 +42,7 @@ public class HealthResource {
 
     static {
         AppConfig appConfig = new AppConfig();
+
         try {
             isExtendedInfoEnabled = (appConfig.getProperty("testpage").equalsIgnoreCase("enabled"));
         } catch (Exception e) {
@@ -184,12 +185,12 @@ public class HealthResource {
         if (mavenVersionResource != null) {
             try {
                 mavenProperties.load(mavenVersionResource.openStream());
-                return mavenProperties.getProperty("version", "missing version info in " + resourcePath);
+                return mavenProperties.getProperty("version", "missing version info in " + resourcePath) + " [" + WhydahUtil.getMyIPAddresssesString() + "]";
             } catch (IOException e) {
                 log.warn("Problem reading version resource from classpath: ", e);
             }
         }
-        return "(DEV VERSION)";
+        return "(DEV VERSION)" + " [" + WhydahUtil.getMyIPAddresssesString() + "]";
     }
 
     public static void addThreatSignal(ThreatSignal signal) {
