@@ -39,12 +39,14 @@ public class HealthResource {
     private static Map<String, ThreatSignal> threatSignalMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private static ObjectMapper mapper = new ObjectMapper();
     private static boolean isExtendedInfoEnabled = false;
+    private static String applicationInstanceName;
 
     static {
         AppConfig appConfig = new AppConfig();
 
         try {
             isExtendedInfoEnabled = (appConfig.getProperty("testpage").equalsIgnoreCase("enabled"));
+            applicationInstanceName = appConfig.getProperty("applicationname");
         } catch (Exception e) {
             log.info("Ubanle to find testpage property or property file, returning isExtendedInfoEnabled=false");
         }
@@ -185,12 +187,12 @@ public class HealthResource {
         if (mavenVersionResource != null) {
             try {
                 mavenProperties.load(mavenVersionResource.openStream());
-                return mavenProperties.getProperty("version", "missing version info in " + resourcePath) + " [" + WhydahUtil.getMyIPAddresssesString() + "]";
+                return mavenProperties.getProperty("version", "missing version info in " + resourcePath) + " [" + applicationInstanceName + " - " + WhydahUtil.getMyIPAddresssesString() + "]";
             } catch (IOException e) {
                 log.warn("Problem reading version resource from classpath: ", e);
             }
         }
-        return "(DEV VERSION)" + " [" + WhydahUtil.getMyIPAddresssesString() + "]";
+        return "(DEV VERSION)" + " [" + applicationInstanceName + " - " + WhydahUtil.getMyIPAddresssesString() + "]";
     }
 
     public static void addThreatSignal(ThreatSignal signal) {
