@@ -40,6 +40,7 @@ public class HealthResource {
     private static ObjectMapper mapper = new ObjectMapper();
     private static boolean isExtendedInfoEnabled = false;
     private static String applicationInstanceName;
+    private static String threadMapDetailJson = "";
 
     static {
         AppConfig appConfig = new AppConfig();
@@ -116,7 +117,7 @@ public class HealthResource {
                         "  \"now\": \"" + Instant.now() + "\",\n" +
                         "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\"," +
                         "  \n\n" +
-                        getThreatMapDetails() +
+                        threadMapDetailJson +
                         "}\n\n";
 
             }
@@ -148,7 +149,8 @@ public class HealthResource {
         }
     }
 
-    private static String getThreatMapDetails() {
+
+    private static void getThreatMapDetails() {
         String threatSignalJson = " ";
         AuthenticatedApplicationTokenRepository.cleanApplicationTokenMap();
         AuthenticatedUserTokenRepository.cleanUserTokenMap();
@@ -172,9 +174,9 @@ public class HealthResource {
         try {
             // add minor json prettifying intendation
             threatSignalJson = "  " + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(threatSignalMap).replace("\n", "\n  ");
-            return "  \"Threat Signals\": \n" + threatSignalJson + "\n";
+            threadMapDetailJson = threatSignalJson;
         } catch (Exception e) {
-            return "";
+            threadMapDetailJson = "";
         }
 
 
@@ -204,8 +206,10 @@ public class HealthResource {
                 // Do nothing
             }
             threatSignalMap.clear();
+            getThreatMapDetails();
         }
         threatSignalMap.put(Instant.now().toString(), signal);
+        getThreatMapDetails();
     }
 
     public static Instant getRunningSince() {

@@ -52,7 +52,7 @@ public class ApplicationModelFacade {
                 @Override
                 public String call() {
                     logTimedCode(startTime, "starting processing!");
-                    updateApplicationList(99);
+                    updateApplicationList(10);
                     logTimedCode(startTime, "processing completed!");
                     return "";
                 }
