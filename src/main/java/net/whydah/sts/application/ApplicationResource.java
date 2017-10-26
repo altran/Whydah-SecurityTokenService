@@ -365,7 +365,7 @@ public class ApplicationResource {
 
     private boolean verifyApplicationCredentialAgainstLocalAndUAS_UIB(String appCredentials) {
         try {
-            if (appCredentials == null || (appCredentials.indexOf("applicationcredential") < 70) || appCredentials.length() != sanitize(appCredentials).length()) {
+            if (appCredentials == null || !(appCredentials.indexOf("applicationcredential") < 70) || appCredentials.length() != sanitize(appCredentials).length()) {
                 log.trace("verifyApplicationCredentialAgainstLocalAndUAS_UIB - suspicious XML received, rejected.");
                 return false;
             }
