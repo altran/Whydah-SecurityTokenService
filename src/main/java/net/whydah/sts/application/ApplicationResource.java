@@ -431,7 +431,7 @@ public class ApplicationResource {
                 .replaceAll("alert", "")    // alerts
                 .replaceAll("prompt", "")    // prompt
                 .replaceAll("ENTITY", "")//ENTITY
-                .replaceAll("entity", "")//ENTITY
+//                .replaceAll("entity", "")//ENTITY
                 .replaceAll("DOCTYPE", "")//DOCTYPE
                 .replaceAll("doctype", "")//DOCTYPE
                 .replaceAll("%00", "")    // null byte

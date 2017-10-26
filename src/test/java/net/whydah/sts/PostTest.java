@@ -10,6 +10,7 @@ import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.config.ApplicationMode;
 import net.whydah.sso.user.types.UserCredential;
+import net.whydah.sts.application.ApplicationResource;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -49,6 +50,27 @@ public class PostTest {
     public void testLogonApplication() {
         String appCredential = "<?xml version='1.0' encoding='UTF-8' standalone='yes'?><applicationcredential><appid>app123</appid><appsecret>123123</appsecret></applicationcredential>";
 //        String  appCredential = ApplicationCredentialMapper.toXML(ApplicationCredentialMapper.fromXml("<?xml version='1.0' encoding='UTF-8' standalone='yes'?><applicationcredential><appid>app123</appid><appsecret>123123</appsecret></applicationcredential>"));
+        String responseXML = logonApplication(appCredential);
+        assertTrue(responseXML.contains("applicationtoken"));
+        assertTrue(responseXML.contains("applicationid"));
+        assertTrue(responseXML.contains("expires"));
+        assertTrue(responseXML.contains("Url"));
+    }
+
+    @Test
+    public void testLogonUIBApplication() {
+        String appCredential =
+                " <applicationcredential>\n" +
+                        "    <params>\n" +
+                        "        <applicationID>2210</applicationID>\n" +
+                        "        <applicationName>Whydah-UserIdentityBackend</applicationName>\n" +
+                        "        <applicationSecret>6r46g3q986Ep6By7B9J46m96D</applicationSecret>\n" +
+                        "        <applicationurl></applicationurl>\n" +
+                        "        <minimumsecuritylevel>0</minimumsecuritylevel>" +
+                        "    </params> \n" +
+                        "</applicationcredential>\n";
+
+        String appCredentia1 = ApplicationResource.sanitize(appCredential);
         String responseXML = logonApplication(appCredential);
         assertTrue(responseXML.contains("applicationtoken"));
         assertTrue(responseXML.contains("applicationid"));
