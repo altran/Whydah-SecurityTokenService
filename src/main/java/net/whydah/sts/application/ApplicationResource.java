@@ -363,9 +363,9 @@ public class ApplicationResource {
         }
     }
 
-    private boolean verifyApplicationCredentialAgainstLocalAndUAS_UIB(String appCredentials) {
+    private boolean verifyApplicationCredentialAgainstLocalAndUAS_UIB(String appCredential) {
         try {
-            if (appCredentials == null || !(appCredentials.indexOf("applicationcredential") < 70) || appCredentials.length() != sanitize(appCredentials).length()) {
+            if (appCredential == null || !(appCredential.indexOf("applicationcredential") < 70) || appCredential.length() != sanitize(appCredential).length()) {
                 log.trace("verifyApplicationCredentialAgainstLocalAndUAS_UIB - suspicious XML received, rejected.");
                 return false;
             }
@@ -374,7 +374,7 @@ public class ApplicationResource {
                 return true;
             }
 
-            ApplicationCredential applicationCredential = ApplicationCredentialMapper.fromXml(appCredentials);
+            ApplicationCredential applicationCredential = ApplicationCredentialMapper.fromXml(appCredential);
             if (applicationCredential == null || applicationCredential.getApplicationID() == null || applicationCredential.getApplicationID().length() < 2) {
                 log.warn("Application authentication failed. No or null applicationID");
                 return false;
@@ -432,8 +432,10 @@ public class ApplicationResource {
                 .replaceAll("prompt", "")    // prompt
                 .replaceAll("ENTITY", "")//ENTITY
                 .replaceAll("entity", "")//ENTITY
-                .replaceAll("%00", "")    // prompt
-                .replaceAll("\0", "")    // prompt
+                .replaceAll("DOCTYPE", "")//DOCTYPE
+                .replaceAll("doctype", "")//DOCTYPE
+                .replaceAll("%00", "")    // null byte
+                .replaceAll("\0", "")    // null byte
                 .replaceAll("confirm", "");  // confirms
     }
 
