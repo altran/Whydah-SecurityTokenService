@@ -126,20 +126,25 @@ public class ApplicationResource {
     public Response logonApplication(@FormParam("applicationcredential") String appCredentialXml) throws AppException {
         log.trace("logonApplication with applicationcredential={}", first50(appCredentialXml));
         if (!verifyApplicationCredentialAgainstLocalAndUAS_UIB(appCredentialXml)) {
-            log.warn("logonApplication - illegal applicationcredential applicationID:{} , returning FORBIDDEN", ApplicationCredentialMapper.fromXml(appCredentialXml).getApplicationID());
+            log.warn("logonApplication - illegal applicationcredential applicationID:{} , returning FORBIDDEN :{}", first50(appCredentialXml));
             //return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
-        ApplicationToken applicationToken = ApplicationTokenMapper.fromApplicationCredentialXML(appCredentialXml);
-        if (applicationToken.getApplicationName() == null || applicationToken.getApplicationName().length() < 1) {
-            log.warn("Old Whydah ApplicationCredential received, please inform application owner to update the ApplicationCredential. ApplicationCredential:" + appCredentialXml);
+        try {
+            ApplicationToken applicationToken = ApplicationTokenMapper.fromApplicationCredentialXML(appCredentialXml);
+            if (applicationToken.getApplicationName() == null || applicationToken.getApplicationName().length() < 1) {
+                log.warn("Old Whydah ApplicationCredential received, please inform application owner to update the ApplicationCredential. ApplicationCredential:" + appCredentialXml);
+            }
+            applicationToken.setBaseuri(appConfig.getProperty("myuri"));
+            applicationToken.setExpires(String.valueOf((System.currentTimeMillis()) + AuthenticatedApplicationTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000));
+            AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken);
+            String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
+            log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
+            return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        } catch (Exception e) {
+            log.error("Something went really wrong here", e);
         }
-        applicationToken.setBaseuri(appConfig.getProperty("myuri"));
-        applicationToken.setExpires(String.valueOf((System.currentTimeMillis()) + AuthenticatedApplicationTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000));
-        AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken);
-        String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
-        log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
-        return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        throw AppExceptionCode.APP_ILLEGAL_7000;
     }
 
     /**
@@ -359,16 +364,16 @@ public class ApplicationResource {
     }
 
     private boolean verifyApplicationCredentialAgainstLocalAndUAS_UIB(String appCredentials) {
-        if (appCredentials == null && !(appCredentials.indexOf("applicationcredential") < 10) && appCredentials.length() != sanitize(appCredentials).length()) {
-            log.trace("verifyApplicationCredentialAgainstLocalAndUAS_UIB - suspicious XML received, rejected.");
-            return false;
-        }
-        if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
-            log.trace("verifyApplicationCredentialAgainstLocalAndUAS_UIB - running in DEV mode, auto accepted.");
-            return true;
-        }
-
         try {
+            if (appCredentials == null && !(appCredentials.indexOf("applicationcredential") < 10) && appCredentials.length() != sanitize(appCredentials).length()) {
+                log.trace("verifyApplicationCredentialAgainstLocalAndUAS_UIB - suspicious XML received, rejected.");
+                return false;
+            }
+            if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
+                log.trace("verifyApplicationCredentialAgainstLocalAndUAS_UIB - running in DEV mode, auto accepted.");
+                return true;
+            }
+
             ApplicationCredential applicationCredential = ApplicationCredentialMapper.fromXml(appCredentials);
             if (applicationCredential == null || applicationCredential.getApplicationID() == null || applicationCredential.getApplicationID().length() < 2) {
                 log.warn("Application authentication failed. No or null applicationID");
@@ -412,6 +417,7 @@ public class ApplicationResource {
         return true;
     }
 
+
     public static String sanitize(String string) {
         if (string == null || string.length() < 3) {
             return string;
@@ -424,6 +430,8 @@ public class ApplicationResource {
                 .replaceAll("(?i)<.*?\\s+on.*?>.*?</.*?>", "") // case 3
                 .replaceAll("alert", "")    // alerts
                 .replaceAll("prompt", "")    // prompt
+                .replaceAll("ENTITY", "")//ENTITY
+                .replaceAll("entity", "")//ENTITY
                 .replaceAll("%00", "")    // prompt
                 .replaceAll("\0", "")    // prompt
                 .replaceAll("confirm", "");  // confirms
