@@ -125,7 +125,7 @@ public class ApplicationResource {
     @Produces(MediaType.APPLICATION_XML)
     public Response logonApplication(@FormParam("applicationcredential") String appCredentialXml) throws AppException {
         log.trace("logonApplication with applicationcredential={}", first50(appCredentialXml));
-        if (!verifyApplicationCredentials(appCredentialXml)) {
+        if (!verifyApplicationCredentialAgainstLocalAndUAS_UIB(appCredentialXml)) {
             log.warn("logonApplication - illegal applicationcredential applicationID:{} , returning FORBIDDEN", ApplicationCredentialMapper.fromXml(appCredentialXml).getApplicationID());
             //return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
@@ -358,13 +358,13 @@ public class ApplicationResource {
         }
     }
 
-    private boolean verifyApplicationCredentials(String appCredentials) {
+    private boolean verifyApplicationCredentialAgainstLocalAndUAS_UIB(String appCredentials) {
         if (appCredentials == null && !(appCredentials.indexOf("applicationcredential") < 10)) {
-            log.trace("verifyApplicationCredentials - suspicious XML received, rejected.");
+            log.trace("verifyApplicationCredentialAgainstLocalAndUAS_UIB - suspicious XML received, rejected.");
             return false;
         }
         if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
-            log.trace("verifyApplicationCredentials - running in DEV mode, auto accepted.");
+            log.trace("verifyApplicationCredentialAgainstLocalAndUAS_UIB - running in DEV mode, auto accepted.");
             return true;
         }
 
@@ -376,14 +376,14 @@ public class ApplicationResource {
 
             }
             if (applicationCredential.getApplicationSecret() == null || applicationCredential.getApplicationSecret().length() < 2) {
-                log.warn("verifyApplicationCredentials - verify appSecret failed. No or null applicationSecret");
+                log.warn("verifyApplicationCredentialAgainstLocalAndUAS_UIB - verify appSecret failed. No or null applicationSecret");
                 log.warn("Application authentication failed. No or null applicationSecret for applicationId={}", applicationCredential.getApplicationID());
                 return false;
             }
 
 
             String expectedAppSecret = appConfig.getProperty(applicationCredential.getApplicationID());
-            log.trace("verifyApplicationCredentials: appid={}, appSecret={}, expectedAppSecret={}", applicationCredential.getApplicationID(), applicationCredential.getApplicationSecret(), expectedAppSecret);
+            log.trace("verifyApplicationCredentialAgainstLocalAndUAS_UIB: appid={}, appSecret={}, expectedAppSecret={}", applicationCredential.getApplicationID(), applicationCredential.getApplicationSecret(), expectedAppSecret);
 
             if (expectedAppSecret == null || expectedAppSecret.length() < 2) {
                 log.debug("No application secret in property file for applicationId={} - applicationName: {} - Trying UAS/UIB", applicationCredential.getApplicationID(), applicationCredential.getApplicationName());
@@ -406,7 +406,7 @@ public class ApplicationResource {
                 }
             }
         } catch (Exception e) {
-            log.error("Error in verifyApplicationCredentials.", e);
+            log.error("Error in verifyApplicationCredentialAgainstLocalAndUAS_UIB.", e);
             return false;
         }
         return true;
