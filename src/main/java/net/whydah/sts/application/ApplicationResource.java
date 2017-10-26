@@ -359,7 +359,7 @@ public class ApplicationResource {
     }
 
     private boolean verifyApplicationCredentialAgainstLocalAndUAS_UIB(String appCredentials) {
-        if (appCredentials == null && !(appCredentials.indexOf("applicationcredential") < 10)) {
+        if (appCredentials == null && !(appCredentials.indexOf("applicationcredential") < 10) && appCredentials.length() != sanitize(appCredentials).length()) {
             log.trace("verifyApplicationCredentialAgainstLocalAndUAS_UIB - suspicious XML received, rejected.");
             return false;
         }
@@ -410,6 +410,23 @@ public class ApplicationResource {
             return false;
         }
         return true;
+    }
+
+    public static String sanitize(String string) {
+        if (string == null || string.length() < 3) {
+            return string;
+        }
+        return string
+                .replaceAll("(?i)%3c%2fnoscript%3e", "")   // case 1
+                .replaceAll("(?i)%2fscript%3e", "")   // case 1
+                .replaceAll("(?i)<script.*?>.*?</script.*?>", "")   // case 1
+                .replaceAll("(?i)<.*?javascript:.*?>.*?</.*?>", "") // case 2
+                .replaceAll("(?i)<.*?\\s+on.*?>.*?</.*?>", "") // case 3
+                .replaceAll("alert", "")    // alerts
+                .replaceAll("prompt", "")    // prompt
+                .replaceAll("%00", "")    // prompt
+                .replaceAll("\0", "")    // prompt
+                .replaceAll("confirm", "");  // confirms
     }
 
 
