@@ -124,7 +124,7 @@ public class ApplicationResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response logonApplication(@FormParam("applicationcredential") String appCredentialXml) throws AppException {
-        log.trace("logonApplication with applicationcredential={}", appCredentialXml);
+        log.trace("logonApplication with applicationcredential={}", first50(appCredentialXml));
         if (!verifyApplicationCredentials(appCredentialXml)) {
             log.warn("logonApplication - illegal applicationcredential applicationID:{} , returning FORBIDDEN", ApplicationCredentialMapper.fromXml(appCredentialXml).getApplicationID());
             //return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
@@ -342,7 +342,7 @@ public class ApplicationResource {
     @GET
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response getApplicationCryptoKeyFromApplicationTokenId(@PathParam("applicationtokenid") String
-                                                                    applicationtokenid) throws AppException {
+                                                                          applicationtokenid) throws AppException {
         log.debug("verify ApplicationTokenId {}", applicationtokenid);
         ApplicationToken applicationToken = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
         if (applicationToken != null && applicationToken.toString().length() > 10) {
@@ -359,6 +359,10 @@ public class ApplicationResource {
     }
 
     private boolean verifyApplicationCredentials(String appCredentials) {
+        if (appCredentials == null && !(appCredentials.indexOf("applicationcredential") < 10)) {
+            log.trace("verifyApplicationCredentials - suspicious XML received, rejected.");
+            return false;
+        }
         if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
             log.trace("verifyApplicationCredentials - running in DEV mode, auto accepted.");
             return true;
