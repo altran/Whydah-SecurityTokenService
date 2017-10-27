@@ -6,6 +6,7 @@ import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.sso.whydah.DEFCON;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -232,6 +233,7 @@ public class UserTokenFactoryTest {
 
 
     @Test
+    @Ignore
     public void testFromUserAggregateJsonNoRoles() throws Exception {
         UserToken userToken = UserTokenMapper.fromUserAggregateJson(userAggregateJsonNoRoles);
 
