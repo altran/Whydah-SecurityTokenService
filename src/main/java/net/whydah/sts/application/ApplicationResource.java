@@ -369,7 +369,7 @@ public class ApplicationResource {
                 log.trace("verifyApplicationCredentialAgainstLocalAndUAS_UIB - suspicious XML received, rejected.");
                 return false;
             }
-            if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
+            if (ApplicationMode.getApplicationMode().equals(ApplicationMode.PROD)) {
                 log.trace("verifyApplicationCredentialAgainstLocalAndUAS_UIB - running in DEV mode, auto accepted.");
                 return true;
             }
@@ -411,8 +411,9 @@ public class ApplicationResource {
                     log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret in UIB");
                     return false;
                 }
+            } else {  // Everything is in order in UIB
+                return true;
             }
-            return false;
         } catch (Exception e) {
             log.error("Error in verifyApplicationCredentialAgainstLocalAndUAS_UIB.", e);
             return false;
