@@ -369,7 +369,7 @@ public class ApplicationResource {
                 log.trace("verifyApplicationCredentialAgainstLocalAndUAS_UIB - suspicious XML received, rejected.");
                 return false;
             }
-            if (ApplicationMode.getApplicationMode().equals(ApplicationMode.PROD)) {
+            if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
                 log.trace("verifyApplicationCredentialAgainstLocalAndUAS_UIB - running in DEV mode, auto accepted.");
                 return true;
             }
