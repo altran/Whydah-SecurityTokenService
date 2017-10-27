@@ -390,31 +390,33 @@ public class ApplicationResource {
             String expectedAppSecret = appConfig.getProperty(applicationCredential.getApplicationID());
             log.trace("verifyApplicationCredentialAgainstLocalAndUAS_UIB: appid={}, appSecret={}, expectedAppSecret={}", applicationCredential.getApplicationID(), applicationCredential.getApplicationSecret(), expectedAppSecret);
 
+
+            // Check non-local configured applications
             if (expectedAppSecret == null || expectedAppSecret.length() < 2) {
                 log.debug("No application secret in property file for applicationId={} - applicationName: {} - Trying UAS/UIB", applicationCredential.getApplicationID(), applicationCredential.getApplicationName());
-                if (!ApplicationAuthenticationUASClient.checkAppsecretFromUAS(applicationCredential)) {
-                    log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret in UIB");
-                    return false;
-                } else {
+                if (ApplicationAuthenticationUASClient.checkAppsecretFromUAS(applicationCredential)) {
                     log.info("Application authentication OK for appId:{}, applicationName: {} from UAS", applicationCredential.getApplicationID(), applicationCredential.getApplicationName());
                     return true;
+                } else {
+                    log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret in UIB");
+                    return false;
                 }
             }
             if (!applicationCredential.getApplicationSecret().equalsIgnoreCase(expectedAppSecret)) {
                 log.info("Incoming applicationSecret does not match applicationSecret from property file. - Trying UAS/UIB");
-                if (!ApplicationAuthenticationUASClient.checkAppsecretFromUAS(applicationCredential)) {
-                    log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret in UIB");
-                    return false;
-                } else {
+                if (ApplicationAuthenticationUASClient.checkAppsecretFromUAS(applicationCredential)) {
                     log.info("Application authentication OK for appId:{}, applicationName: {} from UAS", applicationCredential.getApplicationID(), applicationCredential.getApplicationName());
                     return true;
+                } else {
+                    log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret in UIB");
+                    return false;
                 }
             }
+            return false;
         } catch (Exception e) {
             log.error("Error in verifyApplicationCredentialAgainstLocalAndUAS_UIB.", e);
             return false;
         }
-        return true;
     }
 
 
