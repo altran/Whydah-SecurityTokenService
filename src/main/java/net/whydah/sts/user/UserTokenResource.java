@@ -1703,7 +1703,7 @@ public class UserTokenResource {
     }
 
     private Response createUserTokenResponse(@PathParam("applicationtokenid") String applicationtokenid, UserToken userToken) {
-        log.trace("getUserTokenByUserTokenId OK. Response={}", userToken.toString());
+        log.debug("getUserTokenByUserTokenId OK. Response={}", userToken.toString());
         userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getUserTokenId());
         userToken.setLastSeen(AuthenticatedUserTokenRepository.getLastSeen(userToken));
         userToken.setDefcon(ThreatResource.getDEFCON());
@@ -1712,7 +1712,7 @@ public class UserTokenResource {
         Map<String, Object> model = new HashMap();
         model.put("it", filteredUserToken);
         model.put("DEFCON", filteredUserToken.getDefcon());
-        log.debug("Response:{}", new Viewable("/usertoken.ftl", model));
+        log.debug("Response (it):{}", filteredUserToken);
         return Response.ok(new Viewable("/usertoken.ftl", model)).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
     }
 
