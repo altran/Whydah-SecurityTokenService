@@ -6,6 +6,31 @@
     <name>SecurityTokenService</name>
     <url>https://wiki.cantara.no/display/iam/SecurityTokenService</url>
 
+
+    <parent>
+        <groupId>no.cantara.emi</groupId>
+        <artifactId>parent</artifactId>
+        <version>6</version>
+    </parent>
+
+    <scm>
+        <developerConnection>scm:git:ssh://git@github.com/cantara/Whydah-SecurityTokenService.git</developerConnection>
+        <connection>scm:git:https://github.com/cantara/Whydah-SecurityTokenService.git</connection>
+        <url>https://github.com/cantara/Whydah-SecurityTokenService</url>
+    </scm>
+
+    <properties>
+        <service.name>Whydah-SecurityTokenService</service.name>
+        <whydah.admin.sdk.version>2.3.37</whydah.admin.sdk.version>
+        <org.valuereporter.agent>0.8</org.valuereporter.agent>
+        <jersey-version>1.19.4</jersey-version>
+        <grizzy-version>2.3.33</grizzy-version>
+        <guice-version>4.1.0</guice-version>
+        <slf4j.version>1.7.21</slf4j.version>
+        <jetty.plugin.version>8.0.3.v20111011</jetty.plugin.version>
+        <additionalparam>-Xdoclint:none</additionalparam>
+    </properties>
+
     <developers>
         <developer>
             <id>totto</id>
@@ -39,31 +64,6 @@
         </developer>
     </developers>
 
-
-    <parent>
-        <groupId>no.cantara.emi</groupId>
-        <artifactId>parent</artifactId>
-        <version>6</version>
-    </parent>
-
-    <scm>
-        <developerConnection>scm:git:ssh://git@github.com/cantara/Whydah-SecurityTokenService.git</developerConnection>
-        <connection>scm:git:https://github.com/cantara/Whydah-SecurityTokenService.git</connection>
-        <url>https://github.com/cantara/Whydah-SecurityTokenService</url>
-      <tag>SecurityTokenService-2.3.23</tag>
-  </scm>
-
-    <properties>
-        <service.name>Whydah-SecurityTokenService</service.name>
-        <whydah.admin.sdk.version>2.3.36</whydah.admin.sdk.version>
-        <org.valuereporter.agent>0.8</org.valuereporter.agent>
-        <jersey-version>1.19.4</jersey-version>
-        <grizzy-version>2.3.33</grizzy-version>
-        <guice-version>4.1.0</guice-version>
-        <slf4j.version>1.7.21</slf4j.version>
-        <jetty.plugin.version>8.0.3.v20111011</jetty.plugin.version>
-        <additionalparam>-Xdoclint:none</additionalparam>
-    </properties>
 
     <repositories>
         <!-- Needed for parent  -->
