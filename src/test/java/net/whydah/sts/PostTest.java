@@ -10,7 +10,6 @@ import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.config.ApplicationMode;
 import net.whydah.sso.user.types.UserCredential;
-import net.whydah.sts.application.ApplicationResource;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -70,7 +69,6 @@ public class PostTest {
                         "    </params> \n" +
                         "</applicationcredential>\n";
 
-        String appCredentia1 = ApplicationResource.sanitize(appCredential);
         String responseXML = logonApplication(appCredential);
         assertTrue(responseXML.contains("applicationtoken"));
         assertTrue(responseXML.contains("applicationid"));
@@ -78,6 +76,24 @@ public class PostTest {
         assertTrue(responseXML.contains("Url"));
     }
 
+    @Test
+    public void testLogonUASApplication() {
+        String appCredential =
+                "<applicationcredential>\n" +
+                        "    <params>\n" +
+                        "        <applicationID>2212</applicationID>\n" +
+                        "        <applicationName>INN UserAdminService-3</applicationName>\n" +
+                        "        <applicationSecret>9ju592A4t8dzz8mz7a5QQJ7Px</applicationSecret>\n" +
+                        "        <applicationurl></applicationurl>\n" +
+                        "        <minimumsecuritylevel>0</minimumsecuritylevel>    </params> \n" +
+                        "</applicationcredential>\n";
+
+        String responseXML = logonApplication(appCredential);
+        assertTrue(responseXML.contains("applicationtoken"));
+        assertTrue(responseXML.contains("applicationid"));
+        assertTrue(responseXML.contains("expires"));
+        assertTrue(responseXML.contains("Url"));
+    }
     @Test
     public void testPostToGetUserToken() {
         String apptokenxml = getAppToken();

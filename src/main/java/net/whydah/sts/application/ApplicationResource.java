@@ -395,7 +395,7 @@ public class ApplicationResource {
             if (expectedAppSecret == null || expectedAppSecret.length() < 2) {
                 log.debug("No application secret in property file for applicationId={} - applicationName: {} - Trying UAS/UIB", applicationCredential.getApplicationID(), applicationCredential.getApplicationName());
                 if (ApplicationAuthenticationUASClient.checkAppsecretFromUAS(applicationCredential)) {
-                    log.info("Application authentication OK for appId:{}, applicationName: {} from UAS", applicationCredential.getApplicationID(), applicationCredential.getApplicationName());
+                    log.info("Application authentication(no local) OK for appId:{}, applicationName: {} from UAS", applicationCredential.getApplicationID(), applicationCredential.getApplicationName());
                     return true;
                 } else {
                     log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret in UIB");
@@ -405,7 +405,7 @@ public class ApplicationResource {
             if (!applicationCredential.getApplicationSecret().equalsIgnoreCase(expectedAppSecret)) {
                 log.info("Incoming applicationSecret does not match applicationSecret from property file. - Trying UAS/UIB");
                 if (ApplicationAuthenticationUASClient.checkAppsecretFromUAS(applicationCredential)) {
-                    log.info("Application authentication OK for appId:{}, applicationName: {} from UAS", applicationCredential.getApplicationID(), applicationCredential.getApplicationName());
+                    log.info("Application authentication(local mismatch fallback) OK for appId:{}, applicationName: {} from UAS", applicationCredential.getApplicationID(), applicationCredential.getApplicationName());
                     return true;
                 } else {
                     log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret in UIB");
