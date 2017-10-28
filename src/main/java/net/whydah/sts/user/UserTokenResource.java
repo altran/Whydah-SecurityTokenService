@@ -761,7 +761,7 @@ public class UserTokenResource {
             throw AppExceptionCode.MISC_MISSING_PARAMS_9998;
         }
 
-        log.trace("getUserTokenByUserTicket: applicationtokenid={}, userticket={}, appTokenXml={}", applicationtokenid, userticket, appTokenXml);
+        log.debug("getUserTokenByUserTicket: applicationtokenid={}, userticket={}, appTokenXml={}", applicationtokenid, userticket, appTokenXml);
 
         if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
             return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
@@ -788,7 +788,7 @@ public class UserTokenResource {
             //return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build(); //406
             throw AppExceptionCode.USER_INVALID_USERTOKENID_6002.setDeveloperMessage("getUserTokenByUserTicket - illegal/Null userticket received");
         }
-        log.trace("getUserTokenByUserTicket OK. Response={}", userToken.toString());
+        log.debug("getUserTokenByUserTicket OK. Response={}", userToken.toString());
         return createUserTokenResponse(applicationtokenid, userToken);
     }
 
@@ -1712,6 +1712,7 @@ public class UserTokenResource {
         Map<String, Object> model = new HashMap();
         model.put("it", filteredUserToken);
         model.put("DEFCON", filteredUserToken.getDefcon());
+        log.debug("Response:{}", new Viewable("/usertoken.ftl", model));
         return Response.ok(new Viewable("/usertoken.ftl", model)).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
     }
 
