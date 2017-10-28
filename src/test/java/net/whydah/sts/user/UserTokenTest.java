@@ -320,14 +320,14 @@ public class UserTokenTest {
                 "    </identity>\n" +
                 "    <applications>\n" +
                 "        <application>\n" +
-                "            <appId>19</appId>\n" +
+                "            <appId>193</appId>\n" +
                 "            <applicationName>UserAdminWebApplication</applicationName>\n" +
                 "            <orgName>Support</orgName>\n" +
                 "            <roleName>WhydahUserAdmin</roleName>\n" +
                 "            <roleValue>1</roleValue>\n" +
                 "        </application>\n" +
                 "        <application>\n" +
-                "            <appId>19</appId>\n" +
+                "            <appId>194</appId>\n" +
                 "            <applicationName>UserAdminWebApplication</applicationName>\n" +
                 "            <orgName>Support</orgName>\n" +
                 "            <roleName>UserAdmin</roleName>\n" +
@@ -341,7 +341,7 @@ public class UserTokenTest {
                 "            <roleValue>100</roleValue>\n" +
                 "        </application>\n" +
                 "        <application>\n" +
-                "            <appId>19</appId>\n" +
+                "            <appId>195</appId>\n" +
                 "            <applicationName>UserAdminWebApplication</applicationName>\n" +
                 "            <orgName>Support</orgName>\n" +
                 "            <roleName>TEST</roleName>\n" +
