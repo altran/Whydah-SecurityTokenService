@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="${it.tokenid!}">
+<usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="${it.userTokenId!}">
     <uid>${it.uid!?xml}</uid>
     <timestamp>${it.timestamp!}</timestamp>
     <lifespan>${it.lifespan!}</lifespan>

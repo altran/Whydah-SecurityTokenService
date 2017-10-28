@@ -27,10 +27,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import java.io.StringReader;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.*;
@@ -431,6 +428,31 @@ public class UserTokenTest {
         int noOfUsersAfter2 = AuthenticatedUserTokenRepository.getMapSize();
         log.debug("Users (after2):" + noOfUsersAfter2);
         assertTrue(noOfUsersAfter2 < noOfUsersAfter);
+
+    }
+
+    @Test
+    public void testUserTokenFreemarker() throws Exception {
+        UserToken userToken = new UserToken();
+//        userToken.setUserTokenId(UUID.randomUUID().toString());
+        userToken.setUid(UUID.randomUUID().toString());
+        userToken.setFirstName("Ola");
+        userToken.setLastName("Nordmann");
+        userToken.setEmail("test@whydah.net");
+        userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+        userToken.setPersonRef("78125637812638");
+        userToken.setLifespan(String.valueOf(1 * 1000));
+        String userTokenId = userToken.getUserTokenId();
+        Map<String, Object> model = new HashMap();
+        model.put("it", userToken);
+        model.put("DEFCON", userToken.getDefcon());
+        log.debug("freemarkerProcessor.toXml(userToken):{}", freemarkerProcessor.toXml(userToken));
+        assertTrue(freemarkerProcessor.toXml(userToken).indexOf(userTokenId) > 0);
+        assertTrue(freemarkerProcessor.toXml(userToken).indexOf(userToken.getUid()) > 0);
+        assertTrue(freemarkerProcessor.toXml(userToken).indexOf(userToken.getEmail()) > 0);
+        assertTrue(freemarkerProcessor.toXml(userToken).indexOf(userToken.getFirstName()) > 0);
+        assertTrue(freemarkerProcessor.toXml(userToken).indexOf(userToken.getPersonRef()) > 0);
+        assertTrue(freemarkerProcessor.toXml(userToken).indexOf(userToken.getLifespan()) > 0);
 
     }
 }
