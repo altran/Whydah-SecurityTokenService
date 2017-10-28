@@ -243,14 +243,14 @@ public class UserTokenTest {
                 "    </identity>\n" +
                 "    <applications>\n" +
                 "        <application>\n" +
-                "            <appId>19</appId>\n" +
+                "            <appId>193</appId>\n" +
                 "            <applicationName>UserAdminWebApplication</applicationName>\n" +
                 "            <orgName>Support</orgName>\n" +
                 "            <roleName>WhydahUserAdmin</roleName>\n" +
                 "            <roleValue>1</roleValue>\n" +
                 "        </application>\n" +
                 "        <application>\n" +
-                "            <appId>19</appId>\n" +
+                "            <appId>193</appId>\n" +
                 "            <applicationName>UserAdminWebApplication</applicationName>\n" +
                 "            <orgName>Support</orgName>\n" +
                 "            <roleName>UserAdmin</roleName>\n" +
@@ -264,7 +264,7 @@ public class UserTokenTest {
                 "            <roleValue>100</roleValue>\n" +
                 "        </application>\n" +
                 "        <application>\n" +
-                "            <appId>19</appId>\n" +
+                "            <appId>193</appId>\n" +
                 "            <applicationName>UserAdminWebApplication</applicationName>\n" +
                 "            <orgName>Support</orgName>\n" +
                 "            <roleName>TEST</roleName>\n" +
@@ -327,7 +327,7 @@ public class UserTokenTest {
                 "            <roleValue>1</roleValue>\n" +
                 "        </application>\n" +
                 "        <application>\n" +
-                "            <appId>194</appId>\n" +
+                "            <appId>193</appId>\n" +
                 "            <applicationName>UserAdminWebApplication</applicationName>\n" +
                 "            <orgName>Support</orgName>\n" +
                 "            <roleName>UserAdmin</roleName>\n" +
@@ -341,7 +341,7 @@ public class UserTokenTest {
                 "            <roleValue>100</roleValue>\n" +
                 "        </application>\n" +
                 "        <application>\n" +
-                "            <appId>195</appId>\n" +
+                "            <appId>193</appId>\n" +
                 "            <applicationName>UserAdminWebApplication</applicationName>\n" +
                 "            <orgName>Support</orgName>\n" +
                 "            <roleName>TEST</roleName>\n" +
@@ -361,11 +361,13 @@ public class UserTokenTest {
         assertEquals("User", userToken.getFirstName());
         assertEquals("Admin", userToken.getLastName());
         assertEquals("useradmin@getwhydah.com", userToken.getEmail());
+        String userTokenId = UUID.randomUUID().toString();
+        userToken.setUserTokenId(userTokenId);
 
         assertTrue(freemarkerProcessor.toXml(userToken).indexOf("UserAdmin") > 0);
         assertTrue(freemarkerProcessor.toXml(userToken).indexOf("WhydahUserAdmin") > 0);
 
-        ApplicationCredential cred = new ApplicationCredential("1912", "myapp", "dummy");
+        ApplicationCredential cred = new ApplicationCredential("193", "myapp", "dummy");
         ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
         AuthenticatedApplicationTokenRepository.addApplicationToken(imp);
 
