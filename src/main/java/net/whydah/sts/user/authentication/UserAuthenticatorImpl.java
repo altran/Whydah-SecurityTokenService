@@ -110,21 +110,26 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 	}
 
 	public UserToken getRefreshedUserToken(String usertokenid) {
-        ApplicationToken stsApplicationToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
+        try {
+            ApplicationToken stsApplicationToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
 //		AuthenticatedApplicationTokenRepository.addApplicationToken(stsApplicationToken);
-        String user = appConfig.getProperty("whydah.adminuser.username");
-		String password = appConfig.getProperty("whydah.adminuser.password");
-		UserCredential userCredential = new UserCredential(user, password);
-        UserToken whydahUserAdminUserToken = logonUser(stsApplicationToken.getApplicationTokenId(), ApplicationTokenMapper.toXML(stsApplicationToken), userCredential.toXML());
+            String user = appConfig.getProperty("whydah.adminuser.username");
+            String password = appConfig.getProperty("whydah.adminuser.password");
+            UserCredential userCredential = new UserCredential(user, password);
+            UserToken whydahUserAdminUserToken = logonUser(stsApplicationToken.getApplicationTokenId(), ApplicationTokenMapper.toXML(stsApplicationToken), userCredential.toXML());
 
-        UserToken oldUserToken = AuthenticatedUserTokenRepository.getUserToken(usertokenid, stsApplicationToken.getApplicationTokenId());
+            UserToken oldUserToken = AuthenticatedUserTokenRepository.getUserToken(usertokenid, stsApplicationToken.getApplicationTokenId());
 
-        String userAggregateJson = new CommandGetUserAggregate(useradminservice, stsApplicationToken.getApplicationTokenId(), whydahUserAdminUserToken.getUserTokenId(), oldUserToken.getUid()).execute();
+            String userAggregateJson = new CommandGetUserAggregate(useradminservice, stsApplicationToken.getApplicationTokenId(), whydahUserAdminUserToken.getUserTokenId(), oldUserToken.getUid()).execute();
 
-        UserToken refreshedUserToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
-        
-        
-		return refreshedUserToken;
+            UserToken refreshedUserToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
+
+
+            return refreshedUserToken;
+        } catch (Exception e) {
+            log.warn("Unable to use STScredentials to refresh usertoken", e);
+        }
+        return null;
 
 	}
 
