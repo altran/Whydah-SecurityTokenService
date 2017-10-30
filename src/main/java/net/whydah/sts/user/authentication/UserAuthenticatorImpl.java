@@ -124,6 +124,9 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
             UserToken refreshedUserToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
 
+            refreshedUserToken.setTimestamp(oldUserToken.getTimestamp());
+            refreshedUserToken.setLifespan(oldUserToken.getLifespan());
+            refreshedUserToken.setUserTokenId(usertokenid);
 
             return refreshedUserToken;
         } catch (Exception e) {

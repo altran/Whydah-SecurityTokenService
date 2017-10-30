@@ -73,12 +73,17 @@ public class AuthenticatedApplicationTokenRepository {
         log.info("Connecting to map {} - map size: {}", appConfig.getProperty("gridprefix") + "_authenticated_applicationtokens", getMapSize());
     }
 
+    public static void updateApplicationToken(ApplicationToken applicationToken) {
+    	 long remainingSecs = (Long.parseLong(applicationToken.getExpires()) - System.currentTimeMillis()) / 1000;
+    	 applicationTokenMap.put(applicationToken.getApplicationTokenId(), applicationToken);
+    }
 
     public static void addApplicationToken(ApplicationToken applicationToken) {
         long remainingSecs = (Long.parseLong(applicationToken.getExpires()) - System.currentTimeMillis()) / 1000;
         log.debug("Added {} expires in {} seconds", applicationToken.getApplicationName(), remainingSecs);
         applicationTokenMap.put(applicationToken.getApplicationTokenId(), applicationToken);
-        if (applicationCryptoKeyMap.containsKey(applicationToken.getApplicationTokenId())) {
+        
+        if (applicationCryptoKeyMap.containsKey(applicationToken.getApplicationTokenId())) { 
                 // Maybe update key here...
                 log.debug("updating cryptokey for applicationId: {} with applicationTokenId:{}", applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
                 try {
@@ -322,7 +327,9 @@ public class AuthenticatedApplicationTokenRepository {
         } else {  // update expires
             mySTSApplicationToken = applicationTokenMap.get(mySTSApplicationTokenId);
             mySTSApplicationToken.setExpires(String.valueOf((System.currentTimeMillis() + DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * numberOfApplicationSessionTimeSTSTokenExpands)));  // 100 times the default
-            addApplicationToken(mySTSApplicationToken);
+            //very costly to generate key every time, just update
+            //addApplicationToken(mySTSApplicationToken);
+            updateApplicationToken(mySTSApplicationToken);
         }
         return mySTSApplicationToken;
 

@@ -197,7 +197,6 @@ public class AuthenticatedUserTokenRepository {
 
     public static void refreshUserToken(String usertokenid, String applicationTokenId, UserToken refreshedUserToken) {
         UserToken oldusertoken = activeusertokensmap.remove(usertokenid);
-        refreshedUserToken.setUserTokenId(usertokenid);
         addUserToken(refreshedUserToken, applicationTokenId, "refresh");
 
     }
@@ -212,7 +211,7 @@ public class AuthenticatedUserTokenRepository {
             userToken.setUserTokenId(generateID());
         }
 
-        if (userToken.getLifespan() == null) {
+        if (userToken.getLifespan() == null || userToken.getLifespan() == "0") {
             log.debug("addUserToken: UserToken has no lifespan");
 //            userToken.setLifespan(String.valueOf(1000 * ApplicationSessionHelper.getApplicationLifeSpanSeconds(applicationTokenId)));
             userToken.setLifespan(String.valueOf(86400000));
@@ -225,10 +224,12 @@ public class AuthenticatedUserTokenRepository {
             lastSeenMap.put(userToken.getEmail(), new Date());
 
         }
-        if (activeusertokensmap.containsKey(userToken.getUserTokenId())) {
-            log.error("Error: trying to update an already existing UserToken in repo..");
-            return;
-        }
+       
+        //JUST IGNORE THIS CHECK
+//        if (activeusertokensmap.containsKey(userToken.getUserTokenId())) {
+//            log.error("Error: trying to update an already existing UserToken in repo..");
+//            return;
+//        }
         //UserToken copy = userToken.copy();
         activeusertokensmap.put(userToken.getUserTokenId(), userToken);
       
