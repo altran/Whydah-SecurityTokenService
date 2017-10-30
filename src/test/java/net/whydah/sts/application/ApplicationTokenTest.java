@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 
-import static net.whydah.sts.application.AuthenticatedApplicationTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS;
+import static net.whydah.sts.application.AuthenticatedApplicationTokenRepository.DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS;
 import static org.junit.Assert.*;
 
 public class ApplicationTokenTest {
@@ -54,7 +54,7 @@ public class ApplicationTokenTest {
         ApplicationToken imp3 = AuthenticatedApplicationTokenRepository.getApplicationToken(imp.getApplicationTokenId());
         assertTrue(imp3 == null);
 
-        imp.setExpires(String.valueOf(System.currentTimeMillis() + DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000));
+        imp.setExpires(String.valueOf(System.currentTimeMillis() + DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000));
         AuthenticatedApplicationTokenRepository.addApplicationToken(imp);
         // Second attempt - with sensible expires
         ApplicationToken imp2 = AuthenticatedApplicationTokenRepository.getApplicationToken(imp.getApplicationTokenId());
@@ -67,7 +67,7 @@ public class ApplicationTokenTest {
     public void testIsApplicationTokenExpired() throws Exception {
         ApplicationCredential cred = new ApplicationCredential("1212", "testapp", "dummy");
         ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
-        imp.setExpires(String.valueOf(System.currentTimeMillis() + DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000));
+        imp.setExpires(String.valueOf(System.currentTimeMillis() + DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000));
         AuthenticatedApplicationTokenRepository.addApplicationToken(imp);
 
         ApplicationToken imp2 = AuthenticatedApplicationTokenRepository.getApplicationToken(imp.getApplicationTokenId());
@@ -96,7 +96,7 @@ public class ApplicationTokenTest {
         log.debug("Applications:" + applications);
         ApplicationCredential cred = new ApplicationCredential("1212", "testapp", "dummy");
         ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
-        imp.setExpires(String.valueOf(System.currentTimeMillis() + DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000));
+        imp.setExpires(String.valueOf(System.currentTimeMillis() + DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000));
         AuthenticatedApplicationTokenRepository.addApplicationToken(imp);
 
         ApplicationToken imp2 = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));

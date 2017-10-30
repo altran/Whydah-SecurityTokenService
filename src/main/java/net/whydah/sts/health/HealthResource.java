@@ -86,7 +86,7 @@ public class HealthResource {
         return "Status: OK" +
                 "\nVersion:" + getVersion() +
                 "\nDEFCON: " + ThreatResource.getDEFCON() +
-                "\nmax application session time: " + AuthenticatedApplicationTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS +
+                "\nmax application session time: " + AuthenticatedApplicationTokenRepository.DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS +
                 "\nClusterSize: " + AuthenticatedUserTokenRepository.getNoOfClusterMembers() +
                 "\nUserLastSeenMapSize: " + AuthenticatedUserTokenRepository.getLastSeenMapSize() +
                 "\nUserPinMapSize: " + ActivePinRepository.getPinMap().size() +
@@ -104,7 +104,7 @@ public class HealthResource {
                         "  \"Status\": \"OK\",\n" +
                         "  \"Version\": \"" + getVersion() + "\",\n" +
                         "  \"DEFCON\": \"" + ThreatResource.getDEFCON() + "\",\n" +
-                        "  \"max application session time (s)\": \"" + AuthenticatedApplicationTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS + "\",\n" +
+                        "  \"max application session time (s)\": \"" + AuthenticatedApplicationTokenRepository.DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS + "\",\n" +
                         "  \"ClusterSize\": \"" + AuthenticatedUserTokenRepository.getNoOfClusterMembers() + "\",\n" +
                         "  \"UserLastSeenMapSize\": \"" + AuthenticatedUserTokenRepository.getLastSeenMapSize() + "\",\n" +
                         "  \"UserPinMapSize\": \"" + ActivePinRepository.getPinMap().size() + "\",\n" +
@@ -125,7 +125,7 @@ public class HealthResource {
                     "  \"Status\": \"OK\",\n" +
                     "  \"Version\": \"" + getVersion() + "\",\n" +
                     "  \"DEFCON\": \"" + ThreatResource.getDEFCON() + "\",\n" +
-                    "  \"max application session time (s)\": \"" + AuthenticatedApplicationTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS + "\",\n" +
+                    "  \"max application session time (s)\": \"" + AuthenticatedApplicationTokenRepository.DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS + "\",\n" +
                     "  \"ClusterSize\": \"" + AuthenticatedUserTokenRepository.getNoOfClusterMembers() + "\",\n" +
                     "  \"UserLastSeenMapSize\": \"" + AuthenticatedUserTokenRepository.getLastSeenMapSize() + "\",\n" +
                     "  \"UserPinMapSize\": \"" + ActivePinRepository.getPinMap().size() + "\",\n" +

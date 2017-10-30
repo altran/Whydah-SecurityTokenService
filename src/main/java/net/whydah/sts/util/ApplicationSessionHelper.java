@@ -4,14 +4,15 @@ import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sts.application.ApplicationModelFacade;
 import net.whydah.sts.application.AuthenticatedApplicationTokenRepository;
-import net.whydah.sts.user.AuthenticatedUserTokenRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static net.whydah.sts.application.AuthenticatedApplicationTokenRepository.DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS;
 
 public class ApplicationSessionHelper {
 
     private static final Logger log = LoggerFactory.getLogger(ApplicationSessionHelper.class);
-    public static long defaultlifespan = AuthenticatedUserTokenRepository.DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS * 1000;
+    public static long defaultlifespan = DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000;
 
     public static long getApplicationLifeSpanSeconds(String applicationtokenid) {
         ApplicationToken appToken = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
@@ -31,7 +32,7 @@ public class ApplicationSessionHelper {
         if (app.getSecurity() != null) {
             long maxUserSessionFromApplication = Long.valueOf(app.getSecurity().getMaxSessionTimeoutSeconds());
             if (maxUserSessionFromApplication / 1000 > 10) {  // Avoid setting timeout to 0 is missing getMaxSessionTimeoutSeconds.
-                if (maxUserSessionFromApplication / 1000 < AuthenticatedUserTokenRepository.DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS) {
+                if (maxUserSessionFromApplication / 1000 < DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS) {
                     log.debug("Returning ApplicationToken MaxSessionTimeoutSeconds:{} for Application:{}", maxUserSessionFromApplication / 1000, app.getName());
                     return maxUserSessionFromApplication;
                 }

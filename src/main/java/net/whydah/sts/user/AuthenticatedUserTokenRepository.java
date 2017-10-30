@@ -59,7 +59,7 @@ public class AuthenticatedUserTokenRepository {
         noOfClusterMembers = clusterMembers.size();
         String applicationDefaultTimeout = System.getProperty("user.session.timeout");
         if (applicationDefaultTimeout != null && (Integer.parseInt(applicationDefaultTimeout) > 0)) {
-            log.info("Updated DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS to " + applicationDefaultTimeout);
+            log.info("Updated DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS to " + applicationDefaultTimeout);
             DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(applicationDefaultTimeout);
         }
 

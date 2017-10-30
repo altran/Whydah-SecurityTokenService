@@ -34,7 +34,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class AuthenticatedApplicationTokenRepository {
     private final static Logger log = LoggerFactory.getLogger(AuthenticatedApplicationTokenRepository.class);
 
-    public static long DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10; //One minute = 60 seconds //2400;
+    public static long DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10; //One minute = 60 seconds //2400;
     private static int numberOfApplicationSessionTimeSTSTokenExpands = 100;
     private static AppConfig appConfig = new AppConfig();
     private static String mySTSApplicationTokenId = "";
@@ -64,9 +64,9 @@ public class AuthenticatedApplicationTokenRepository {
         applicationCryptoKeyMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "_applicationkeys");
         String applicationDefaultTimeout = System.getProperty("application.session.timeout");
         if (applicationDefaultTimeout != null && (Integer.parseInt(applicationDefaultTimeout) > 0)) {
-            log.info("Updated DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS to " + applicationDefaultTimeout);
-            DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(applicationDefaultTimeout);
-            if (DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS < WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10) {
+            log.info("Updated DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS to " + applicationDefaultTimeout);
+            DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(applicationDefaultTimeout);
+            if (DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS < WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10) {
                 log.warn("Attempt to set application.session.timeout to low, overriding with WhydahApplicationSession.SESSION_CHECK_INTERVAL*4: {} ",WhydahApplicationSession.SESSION_CHECK_INTERVAL*4);
             }
         }
@@ -239,15 +239,15 @@ public class AuthenticatedApplicationTokenRepository {
         if (applicationMaxSessionTime != null && (applicationMaxSessionTime.length() > 0) && (Long.parseLong(applicationMaxSessionTime) > 0)) {
             log.info("maxSessionTimeoutSeconds found: {} for applicationId: {}", Long.parseLong(applicationMaxSessionTime), applicationID);
             // Set to application configured maxSessionTimeoutSeconds if found and shave off 10 seconds
-            if (Long.parseLong(applicationMaxSessionTime) < DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS) {
+            if (Long.parseLong(applicationMaxSessionTime) < DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS) {
                 return String.valueOf(System.currentTimeMillis() + Long.parseLong(applicationMaxSessionTime) * 1000 - 10 * 1000);
             }
-            log.info("maxSessionTimeoutSeconds: {} higher than the default, using default: {} for applicationID: {}", applicationMaxSessionTime, DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS, applicationID);
+            log.info("maxSessionTimeoutSeconds: {} higher than the default, using default: {} for applicationID: {}", applicationMaxSessionTime, DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS, applicationID);
 
 
         }
-        log.info("maxSessionTimeoutSeconds not found, using default: {} for applicationID: {}", DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS, applicationID);
-        return String.valueOf(System.currentTimeMillis() + DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000);
+        log.info("maxSessionTimeoutSeconds not found, using default: {} for applicationID: {}", DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS, applicationID);
+        return String.valueOf(System.currentTimeMillis() + DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000);
     }
 
 
@@ -321,12 +321,12 @@ public class AuthenticatedApplicationTokenRepository {
         if (mySTSApplicationTokenId.equals("") || !applicationTokenMap.containsKey(mySTSApplicationTokenId)) {  // First time
             ApplicationCredential ac = new ApplicationCredential(applicationId, applicationName, applicationsecret);
             mySTSApplicationToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(ac));
-            mySTSApplicationToken.setExpires(String.valueOf((System.currentTimeMillis() + DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * numberOfApplicationSessionTimeSTSTokenExpands)));  // 100 times the default
+            mySTSApplicationToken.setExpires(String.valueOf((System.currentTimeMillis() + DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * numberOfApplicationSessionTimeSTSTokenExpands)));  // 100 times the default
             mySTSApplicationTokenId = mySTSApplicationToken.getApplicationTokenId();
             addApplicationToken(mySTSApplicationToken);
         } else {  // update expires
             mySTSApplicationToken = applicationTokenMap.get(mySTSApplicationTokenId);
-            mySTSApplicationToken.setExpires(String.valueOf((System.currentTimeMillis() + DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * numberOfApplicationSessionTimeSTSTokenExpands)));  // 100 times the default
+            mySTSApplicationToken.setExpires(String.valueOf((System.currentTimeMillis() + DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * numberOfApplicationSessionTimeSTSTokenExpands)));  // 100 times the default
             //very costly to generate key every time, just update
             //addApplicationToken(mySTSApplicationToken);
             updateApplicationToken(mySTSApplicationToken);
