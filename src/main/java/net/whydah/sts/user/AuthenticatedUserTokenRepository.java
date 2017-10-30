@@ -211,7 +211,7 @@ public class AuthenticatedUserTokenRepository {
             userToken.setUserTokenId(generateID());
         }
 
-        if (userToken.getLifespan() == null || userToken.getLifespan().equals("0") || userToken.getLifespan().equals("")) {
+        if (userToken.getLifespan() == null) {
             log.debug("addUserToken: UserToken has no lifespan");
 //            userToken.setLifespan(String.valueOf(1000 * ApplicationSessionHelper.getApplicationLifeSpanSeconds(applicationTokenId)));
             userToken.setLifespan(String.valueOf(86400000));
