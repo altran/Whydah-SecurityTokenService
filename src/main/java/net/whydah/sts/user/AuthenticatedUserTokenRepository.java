@@ -196,7 +196,7 @@ public class AuthenticatedUserTokenRepository {
     }
 
     public static void refreshUserToken(String usertokenid, String applicationTokenId, UserToken refreshedUserToken) {
-        UserToken oldusertoken = activeusertokensmap.remove(usertokenid);
+        //UserToken oldusertoken = activeusertokensmap.remove(usertokenid);
         addUserToken(refreshedUserToken, applicationTokenId, "refresh");
 
     }
@@ -211,7 +211,7 @@ public class AuthenticatedUserTokenRepository {
             userToken.setUserTokenId(generateID());
         }
 
-        if (userToken.getLifespan() == null || userToken.getLifespan() == "0") {
+        if (userToken.getLifespan() == null || userToken.getLifespan().equals("0") || userToken.getLifespan().equals("")) {
             log.debug("addUserToken: UserToken has no lifespan");
 //            userToken.setLifespan(String.valueOf(1000 * ApplicationSessionHelper.getApplicationLifeSpanSeconds(applicationTokenId)));
             userToken.setLifespan(String.valueOf(86400000));
