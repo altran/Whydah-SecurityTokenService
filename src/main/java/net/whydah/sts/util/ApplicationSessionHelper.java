@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 public class ApplicationSessionHelper {
 
     private static final Logger log = LoggerFactory.getLogger(ApplicationSessionHelper.class);
-    public static long defaultlifespan = AuthenticatedUserTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS * 1000;
+    public static long defaultlifespan = AuthenticatedUserTokenRepository.DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS * 1000;
 
     public static long getApplicationLifeSpanSeconds(String applicationtokenid) {
         ApplicationToken appToken = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
@@ -31,7 +31,7 @@ public class ApplicationSessionHelper {
         if (app.getSecurity() != null) {
             long maxUserSessionFromApplication = Long.valueOf(app.getSecurity().getMaxSessionTimeoutSeconds());
             if (maxUserSessionFromApplication / 1000 > 10) {  // Avoid setting timeout to 0 is missing getMaxSessionTimeoutSeconds.
-                if (maxUserSessionFromApplication / 1000 < AuthenticatedUserTokenRepository.DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS) {
+                if (maxUserSessionFromApplication / 1000 < AuthenticatedUserTokenRepository.DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS) {
                     log.debug("Returning ApplicationToken MaxSessionTimeoutSeconds:{} for Application:{}", maxUserSessionFromApplication / 1000, app.getName());
                     return maxUserSessionFromApplication;
                 }
