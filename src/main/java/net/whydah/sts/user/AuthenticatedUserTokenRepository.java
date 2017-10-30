@@ -4,7 +4,9 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import net.whydah.sso.ddd.user.UserTokenLifespan;
 import net.whydah.sso.user.types.UserToken;
+import net.whydah.sso.user.types.UserTokenID;
 import net.whydah.sts.config.AppConfig;
 import net.whydah.sts.threat.ThreatResource;
 import net.whydah.sts.user.statistics.UserSessionObservedActivity;
@@ -26,7 +28,8 @@ public class AuthenticatedUserTokenRepository {
     private static Map<String, Date> lastSeenMap;
     private static int noOfClusterMembers = 0;
     private static HazelcastInstance hazelcastInstance;
-    public static long DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = 14 * 24 * 60 * 60;  // 14 days
+    public static long DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = 14 * 24 * 60 * 60;  // 14 days
+    public static long DEFAULT_USER_SESSION_TIME_IN_SECONDS = 7 * 24 * 60 * 60;  // 7 days
 
 
     static {
@@ -57,7 +60,7 @@ public class AuthenticatedUserTokenRepository {
         String applicationDefaultTimeout = System.getProperty("user.session.timeout");
         if (applicationDefaultTimeout != null && (Integer.parseInt(applicationDefaultTimeout) > 0)) {
             log.info("Updated DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS to " + applicationDefaultTimeout);
-            DEFAULT_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(applicationDefaultTimeout);
+            DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(applicationDefaultTimeout);
         }
 
     }
@@ -187,7 +190,7 @@ public class AuthenticatedUserTokenRepository {
         userToken.setDefcon(ThreatResource.getDEFCON());
         userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 //        userToken.setLifespan(String.valueOf(1000 * ApplicationSessionHelper.getApplicationLifeSpanSeconds(applicationTokenId)));
-        userToken.setLifespan(String.valueOf(86400000));
+        userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_TIME_IN_SECONDS * 1000));
 
         addUserToken(userToken, applicationTokenId, "renew");
         ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUid(), "userSessionRenewal", applicationTokenId);
@@ -206,15 +209,15 @@ public class AuthenticatedUserTokenRepository {
     }
 
     public static void addUserToken(UserToken userToken, String applicationTokenId, String authType) {
-        if (userToken.getUserTokenId() == null) {
-            log.error("Error: UserToken has no usertokenid");
+        if (!UserTokenID.isValid(userToken.getUserTokenId())) {
+            log.error("Error: UserToken has no valid usertokenid");
             userToken.setUserTokenId(generateID());
         }
 
-        if (userToken.getLifespan() == null) {
-            log.debug("addUserToken: UserToken has no lifespan");
+        if (!UserTokenLifespan.isValid(userToken.getLifespan())) {
+            log.debug("addUserToken: UserToken has valid lifespan");
 //            userToken.setLifespan(String.valueOf(1000 * ApplicationSessionHelper.getApplicationLifeSpanSeconds(applicationTokenId)));
-            userToken.setLifespan(String.valueOf(86400000));
+            userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_TIME_IN_SECONDS * 1000));
             userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
         }
