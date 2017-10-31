@@ -160,7 +160,7 @@ public class AuthenticatedApplicationTokenRepository {
             applicationCryptoKeyMap.remove(applicationtokenid);
             String oldExpires = temp.getExpiresFormatted();
             temp.setExpires(updateExpires(temp.getExpires(), temp.getApplicationID()));
-            log.info("Updated expiry for applicationId:{}  oldExpiry:{}, newExpiry: {}", applicationtokenid, oldExpires, temp.getExpiresFormatted());
+            log.info("Updated expiry for applicationId:{} applicationtokenid:{} oldExpiry:{}, newExpiry: {}", temp.getApplicationID(), applicationtokenid, oldExpires, temp.getExpiresFormatted());
             applicationTokenMap.put(temp.getApplicationTokenId(), temp);
             log.debug("updating cryptokey for applicationId: {} with applicationTokenId:{}", temp.getApplicationID(), temp.getApplicationTokenId());
             try {
