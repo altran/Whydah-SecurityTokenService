@@ -271,11 +271,11 @@ public class AuthenticatedUserTokenRepository {
     }
 
     public static void logUserTokenMap() {
-        String logString = "";
-        for (Map.Entry<String, UserToken> entry : activeusertokensmap.entrySet()) {
-            logString = logString + entry.getValue().getUserTokenId() + "(" + entry.getValue().getUserName() + "), ";
-        }
-        log.debug("UserToken map:{}", logString);
+//        String logString = "";
+//        for (Map.Entry<String, UserToken> entry : activeusertokensmap.entrySet()) {
+//            logString = logString + entry.getValue().getUserTokenId() + "(" + entry.getValue().getUserName() + "), ";
+//        }
+        log.debug("UserToken mapsize :{} - content:{}", activeusertokensmap.size(), activeusertokensmap);
     }
 
     public static int getLastSeenMapSize() {
