@@ -8,6 +8,7 @@ import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
+import net.whydah.sso.ddd.application.ApplicationTokenExpires;
 import net.whydah.sso.session.WhydahApplicationSession;
 import net.whydah.sso.session.baseclasses.ApplicationModelUtil;
 import net.whydah.sso.session.baseclasses.ExchangeableKey;
@@ -79,7 +80,9 @@ public class AuthenticatedApplicationTokenRepository {
     }
 
     public static void addApplicationToken(ApplicationToken applicationToken) {
-        applicationToken.setExpires(String.valueOf((System.currentTimeMillis() + DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000)));
+        if (!ApplicationTokenExpires.isValid(applicationToken.getExpires())) {
+            //     applicationToken.setExpires(String.valueOf((System.currentTimeMillis() + DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000)));
+        }
         long remainingSecs = (Long.parseLong(applicationToken.getExpires()) - System.currentTimeMillis()) / 1000;
         log.info("Added {} applicationID:{} applicationTokenId:{} - expires in {} seconds", applicationToken.getApplicationName(), applicationToken.getApplicationID(), applicationToken.getApplicationTokenId(), remainingSecs);
         applicationTokenMap.put(applicationToken.getApplicationTokenId(), applicationToken);
@@ -117,6 +120,7 @@ public class AuthenticatedApplicationTokenRepository {
             return null;
         }
         if (isApplicationTokenExpired(applicationToken.getApplicationTokenId())) {
+            log.warn("Attempting to get an expired applicationtoken.  ApplicationId:{} ApplicationTokenId:{}", applicationToken.getApplicationID(), applicationtokenid);
             applicationTokenMap.remove(applicationToken.getApplicationTokenId());
             applicationCryptoKeyMap.remove(applicationToken.getApplicationTokenId());
             return null;
