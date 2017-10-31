@@ -79,8 +79,9 @@ public class AuthenticatedApplicationTokenRepository {
     }
 
     public static void addApplicationToken(ApplicationToken applicationToken) {
+        applicationToken.setExpires(updateExpires(applicationToken.getExpires(), applicationToken.getApplicationID()));
         long remainingSecs = (Long.parseLong(applicationToken.getExpires()) - System.currentTimeMillis()) / 1000;
-        log.debug("Added {} expires in {} seconds", applicationToken.getApplicationName(), remainingSecs);
+        log.debug("Added {} applicationID:{} applicationTokenId:{} - expires in {} seconds", applicationToken.getApplicationName(), applicationToken.getApplicationID(), applicationToken.getApplicationTokenId(), remainingSecs);
         applicationTokenMap.put(applicationToken.getApplicationTokenId(), applicationToken);
         
         if (applicationCryptoKeyMap.containsKey(applicationToken.getApplicationTokenId())) { 
