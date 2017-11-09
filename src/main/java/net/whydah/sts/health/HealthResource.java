@@ -28,6 +28,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Endpoint for health check
@@ -99,6 +100,12 @@ public class HealthResource {
         int applicationMapSize = 0;
         try {
             applicationMapSize = ApplicationModelFacade.getApplicationList().size();
+
+            // Do some housekeeping once in a while
+            if (ThreadLocalRandom.current().nextInt(0, 100 + 1) < 3) {  // for 3% of the requests - remember health is used by the elb so we get frequent requests
+                AuthenticatedApplicationTokenRepository.cleanApplicationTokenMap();
+                AuthenticatedUserTokenRepository.cleanUserTokenMap();
+            }
             if (isExtendedInfoEnabled) {
                 return "{\n" +
                         "  \"Status\": \"OK\",\n" +
