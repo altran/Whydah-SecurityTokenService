@@ -48,7 +48,7 @@ public class ApplicationTokenTest {
         ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
         imp.setExpires(String.valueOf(System.currentTimeMillis()));
         AuthenticatedApplicationTokenRepository.addApplicationToken(imp);
-        Thread.sleep(200);
+        Thread.sleep(1000);
 
         // First attempt - with expires = now...
         ApplicationToken imp3 = AuthenticatedApplicationTokenRepository.getApplicationToken(imp.getApplicationTokenId());

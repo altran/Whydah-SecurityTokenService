@@ -22,7 +22,7 @@ public class UserTokenFactoryTest {
     private final String userTokenXml1 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"+
             "<usertoken xmlns:ns2=\"http://www.w3.org/1999/xhtml\" id=\"6f04e78e-bb75-4214-a786-2be7657bb38a\">\n"+
             "    <uid>uid1</uid>\n"+
-            "    <timestamp>1415091487335</timestamp>\n"+
+            "    <timestamp>" + String.valueOf(System.currentTimeMillis() + (300 * 1000)) + "</timestamp>\n" +
             "    <lifespan>82800</lifespan>\n"+
             "    <issuer>https://sso.whydah.no/tokenservice/user/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06</issuer>\n"+
             "    <securitylevel>0</securitylevel>\n"+
@@ -51,7 +51,7 @@ public class UserTokenFactoryTest {
     private final String userTokenXmlWithFourRoles = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
             "<usertoken xmlns:ns2=\"http://www.w3.org/1999/xhtml\" id=\"8e4020b6-ea61-44f1-8b31-ecdd84869784\">\n" +
             "    <uid>8d563960-7b4f-4c44-a241-1ac359999b63</uid>\n" +
-            "    <timestamp>1415091757670</timestamp>\n" +
+            "    <timestamp>" + String.valueOf(System.currentTimeMillis() + (300 * 1000)) + "</timestamp>\n" +
             "    <lifespan>3600000</lifespan>\n" +
             "    <issuer>https://sso.whydah.no/tokenservice/user/ac627ab1ccbdb62ec96e702f07f6425b/validate_usertokenid/02c8c7d2-08e0-4bbc-9852-c2afec342e06</issuer>\n" +
             "    <securitylevel>0</securitylevel>\n" +
@@ -61,7 +61,7 @@ public class UserTokenFactoryTest {
             "    <lastname>Norman</lastname>\n" +
             "    <email>anders.norman@company.com</email>\n" +
             "    <personRef>Anders Norman</personRef>\n" +
-            "    <application ID=\"99\">\n" +
+            "    <application ID=\"199\">\n" +
             "        <applicationName>WhydahTestWebApplication</applicationName>\n" +
             "        <organizationName>Whydah</organizationName>\n" +
             "        <role name=\"WhydahDefaultUser\" value=\"anders.norman@company.com\"/>\n" +
