@@ -1,25 +1,27 @@
 package net.whydah.sts.user;
 
-import com.hazelcast.config.Config;
-import com.hazelcast.config.XmlConfigBuilder;
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
-import net.whydah.sso.ddd.user.UserTokenLifespan;
-import net.whydah.sso.user.types.UserToken;
-import net.whydah.sso.user.types.UserTokenID;
-import net.whydah.sts.config.AppConfig;
-import net.whydah.sts.threat.ThreatResource;
-import net.whydah.sts.user.statistics.UserSessionObservedActivity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.valuereporter.agent.MonitorReporter;
-import org.valuereporter.agent.activity.ObservedActivity;
-
 import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import net.whydah.sso.ddd.model.UserTokenId;
+import net.whydah.sso.ddd.model.UserTokenLifespan;
+import net.whydah.sso.user.types.UserToken;
+import net.whydah.sts.config.AppConfig;
+import net.whydah.sts.threat.ThreatResource;
+import net.whydah.sts.user.statistics.UserSessionObservedActivity;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.valuereporter.agent.MonitorReporter;
+import org.valuereporter.agent.activity.ObservedActivity;
+
+import com.hazelcast.config.Config;
+import com.hazelcast.config.XmlConfigBuilder;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
 
 public class AuthenticatedUserTokenRepository {
     private final static Logger log = LoggerFactory.getLogger(AuthenticatedUserTokenRepository.class);
@@ -209,7 +211,7 @@ public class AuthenticatedUserTokenRepository {
     }
 
     public static void addUserToken(UserToken userToken, String applicationTokenId, String authType) {
-        if (!UserTokenID.isValid(userToken.getUserTokenId())) {
+        if (!UserTokenId.isValid(userToken.getUserTokenId())) {
             log.error("Error: UserToken has no valid usertokenid");
             userToken.setUserTokenId(generateID());
         }
