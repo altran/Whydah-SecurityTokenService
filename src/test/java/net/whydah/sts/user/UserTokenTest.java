@@ -366,7 +366,7 @@ public class UserTokenTest {
         assertTrue(freemarkerProcessor.toXml(userToken).indexOf("UserAdmin") > 0);
         assertTrue(freemarkerProcessor.toXml(userToken).indexOf("WhydahUserAdmin") > 0);
 
-        ApplicationCredential cred = new ApplicationCredential("193", "myapp", "dummy");
+        ApplicationCredential cred = new ApplicationCredential("193", "myapp", "dummysecret");
         ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
         AuthenticatedApplicationTokenRepository.addApplicationToken(imp);
 

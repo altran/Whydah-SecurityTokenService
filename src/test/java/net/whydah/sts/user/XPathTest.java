@@ -20,7 +20,7 @@ import java.io.StringReader;
 public class XPathTest extends TestCase {
 
     public void testCreateApplicationToken() throws Exception {
-        ApplicationCredential cred = new ApplicationCredential("12345678","apps","dummy");
+        ApplicationCredential cred = new ApplicationCredential("12345678", "apps", "dummysecret");
         ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
         assertTrue("The generated application userToken is wrong.", imp.getApplicationID().equals(cred.getApplicationID()));
         assertTrue(imp.getApplicationTokenId().length() > 12);
