@@ -1,27 +1,26 @@
 package net.whydah.sts.user;
 
-import java.io.FileNotFoundException;
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
+import com.hazelcast.config.Config;
+import com.hazelcast.config.XmlConfigBuilder;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
+import net.whydah.sso.ddd.model.LastSeen;
 import net.whydah.sso.ddd.model.UserTokenId;
 import net.whydah.sso.ddd.model.UserTokenLifespan;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.sts.config.AppConfig;
 import net.whydah.sts.threat.ThreatResource;
 import net.whydah.sts.user.statistics.UserSessionObservedActivity;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.valuereporter.agent.MonitorReporter;
 import org.valuereporter.agent.activity.ObservedActivity;
 
-import com.hazelcast.config.Config;
-import com.hazelcast.config.XmlConfigBuilder;
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
+import java.io.FileNotFoundException;
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class AuthenticatedUserTokenRepository {
     private final static Logger log = LoggerFactory.getLogger(AuthenticatedUserTokenRepository.class);
@@ -81,7 +80,7 @@ public class AuthenticatedUserTokenRepository {
                 return d.toString();
             }
         }
-        return "Not seen";
+        return LastSeen.WHITE_LIST[0];
     }
 
     public static String getLastSeenByEmail(String email) {
@@ -91,7 +90,7 @@ public class AuthenticatedUserTokenRepository {
                 return d.toString();
             }
         }
-        return "Not seen";
+        return LastSeen.WHITE_LIST[0];
     }
 
     /**
@@ -225,7 +224,10 @@ public class AuthenticatedUserTokenRepository {
         }
 
         if (userToken.getEmail() != null) {
-            userToken.setLastSeen(AuthenticatedUserTokenRepository.getLastSeen(userToken));
+            String lastSeenString = AuthenticatedUserTokenRepository.getLastSeen(userToken);
+
+            userToken.setLastSeen(lastSeenString);
+
             lastSeenMap.put(userToken.getEmail(), new Date());
 
         }

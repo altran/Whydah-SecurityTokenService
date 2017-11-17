@@ -98,7 +98,7 @@ public class PostTest {
     public void testPostToGetUserToken() {
         String apptokenxml = getAppToken();
         String applicationtokenid = getApplicationTokenIdFromAppToken(apptokenxml);
-        UserCredential user = new UserCredential("nalle", "puh");
+        UserCredential user = new UserCredential("nalle", "puhpassword");
 
 
         WebResource userTokenResource = restClient.resource(baseUri).path("user").path(applicationtokenid).path("/usertoken");
@@ -116,7 +116,7 @@ public class PostTest {
     }
 
     private String getAppToken() {
-        ApplicationCredential acred = new ApplicationCredential("21356253","ine app","dummy");
+        ApplicationCredential acred = new ApplicationCredential("21356253", "ine app", "dummysecret");
         return logonApplication(ApplicationCredentialMapper.toXML(acred));
     }
 

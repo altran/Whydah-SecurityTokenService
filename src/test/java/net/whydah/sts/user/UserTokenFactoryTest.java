@@ -91,7 +91,7 @@ public class UserTokenFactoryTest {
             "\"result\":\n" +
             "[{\n" +
             " \"personRef\":\"1\",\n" +
-            " \"uid\":\"anders.flaten\",\n" +
+            " \"uid\":\"andersflaten\",\n" +
             " \"username\":\"91609953\",\n" +
             " \"firstName\":\"Anders\",\n" +
             " \"lastName\":\"Flaten\",\n" +
