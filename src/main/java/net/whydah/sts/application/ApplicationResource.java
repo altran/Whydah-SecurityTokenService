@@ -76,7 +76,7 @@ public class ApplicationResource {
     @GET
     @Produces(MediaType.APPLICATION_XML)
     public Response getUserCredentialsTemplate() {
-        UserCredential template = new UserCredential("", "");
+        UserCredential template = new UserCredential("dummyUserName", "dummyUserpassword");
         return Response.ok().entity(template.toXML()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
     }
 
