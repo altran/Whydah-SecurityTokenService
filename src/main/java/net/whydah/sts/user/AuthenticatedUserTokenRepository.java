@@ -165,6 +165,7 @@ public class AuthenticatedUserTokenRepository {
         }
         if (!ApplicationTokenID.isValid(applicationTokenId)) {
             log.debug("Matching against invalid ApplicationTokenId: {] - returning false", applicationTokenId);
+            return false;
         }
         UserToken resToken = activeusertokensmap.get(userToken.getUserTokenId());
         if (resToken == null) {
@@ -183,6 +184,7 @@ public class AuthenticatedUserTokenRepository {
             log.info("UserToken not valid: not the same as in repo. userToken: {}  repoToken: {}", userToken, resToken);
             return false;
         }
+
         ObservedActivity observedActivity = new UserSessionObservedActivity(resToken.getUid(), "userSessionVerification", applicationTokenId);
         MonitorReporter.reportActivity(observedActivity);
 
