@@ -49,10 +49,12 @@ public class UserTokenTest {
     @Ignore
     public void testCreateUserToken() throws Exception {
         UserToken userToken = new UserToken();
+        userToken.setUid("MyUUIDValue");
         userToken.setFirstName("Ola");
         userToken.setEmail("test@whydah.net");
         userToken.setLastName("Nordmann");
-        userToken.setTimestamp("123123123");
+        userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+        userToken.setLifespan("3000");
         userToken.setPersonRef("73637276722376");
         userToken.setDefcon(ThreatResource.getDEFCON());
         userToken.setUserTokenId(UUID.randomUUID().toString());
@@ -68,7 +70,8 @@ public class UserTokenTest {
     @Test
     public void testActiveUserTokenRepository() {
         UserToken userToken = new UserToken();
-        userToken.setUserName(UUID.randomUUID().toString());
+        userToken.setUserTokenId(UUID.randomUUID().toString());
+        userToken.setUserName("myusername");
         userToken.setFirstName("Ola");
         userToken.setLastName("Nordmann");
         userToken.setEmail("test@whydah.net");
@@ -78,8 +81,9 @@ public class UserTokenTest {
         userToken.setUserTokenId(UUID.randomUUID().toString());
         userToken.setPersonRef("78125637812638");
 
-        AuthenticatedUserTokenRepository.addUserToken(userToken, "2012xxxx", "");
-        assertTrue("Verification of valid userToken failed", AuthenticatedUserTokenRepository.verifyUserToken(userToken, "2012"));
+        String apptokenId = UUID.randomUUID().toString();
+        AuthenticatedUserTokenRepository.addUserToken(userToken, apptokenId, "");
+        assertTrue("Verification of valid userToken failed", AuthenticatedUserTokenRepository.verifyUserToken(userToken, apptokenId));
 
         userToken.setFirstName("Pelle");
         String usertokenfromfreemarkertransformation = freemarkerProcessor.toXml(userToken);
@@ -396,13 +400,14 @@ public class UserTokenTest {
         utoken.setUserTokenId(UUID.randomUUID().toString());
         utoken.setPersonRef("78125637812638");
 
-        AuthenticatedUserTokenRepository.addUserToken(utoken, "", "");
-        assertTrue("Verification of valid userToken failed", AuthenticatedUserTokenRepository.verifyUserToken(utoken, "2212"));
+        String applicationTokenId = UUID.randomUUID().toString();
+        AuthenticatedUserTokenRepository.addUserToken(utoken, applicationTokenId, "test");
+        assertTrue("Verification of valid userToken failed", AuthenticatedUserTokenRepository.verifyUserToken(utoken, applicationTokenId));
 
         utoken.setFirstName("Pelle");
         String token = freemarkerProcessor.toXml(utoken);
         assertTrue("Token not updated", token.indexOf("Pelle") > 0);
-        assertFalse("Verification of in-valid userToken successful", AuthenticatedUserTokenRepository.verifyUserToken(utoken, "2212"));
+        assertFalse("Verification of in-valid userToken successful", AuthenticatedUserTokenRepository.verifyUserToken(utoken, applicationTokenId));
     }
 
     @Test
