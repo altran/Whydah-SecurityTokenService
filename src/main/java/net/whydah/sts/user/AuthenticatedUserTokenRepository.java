@@ -4,6 +4,7 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import net.whydah.sso.ddd.model.ApplicationTokenID;
 import net.whydah.sso.ddd.model.LastSeen;
 import net.whydah.sso.ddd.model.UserTokenId;
 import net.whydah.sso.ddd.model.UserTokenLifespan;
@@ -161,6 +162,9 @@ public class AuthenticatedUserTokenRepository {
         if (userToken.getEmail() != null) {
             lastSeenMap.put(userToken.getEmail(), new Date());
 
+        }
+        if (!ApplicationTokenID.isValid(applicationTokenId)) {
+            log.debug("Matching against invalid ApplicationTokenId: {] - returning false", applicationTokenId);
         }
         UserToken resToken = activeusertokensmap.get(userToken.getUserTokenId());
         if (resToken == null) {
