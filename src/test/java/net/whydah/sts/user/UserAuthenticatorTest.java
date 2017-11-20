@@ -19,9 +19,9 @@ public class UserAuthenticatorTest {
     String appTokenXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><token>\n" +
             "     <params>\n" +
             "         <applicationtokenID>81dc9bdb52d04dc20036dbd8313ed055</applicationtokenID>\n" +
-            "         <applicationid>23</applicationid>\n" +
+            "         <applicationid>2312</applicationid>\n" +
             "         <applicationname>TestApplication</applicationname>\n" +
-            "         <expires>1403187368265</expires>\n" +
+            "         <expires>" + System.currentTimeMillis() + 2000 + "</expires>\n" +
             "     </params> \n" +
             "     <Url type=\"application/xml\" method=\"POST\" template=\"http://localhost:9998/tokenservice/user/81dc9bdb52d04dc20036dbd8313ed055/get_usertoken_by_usertokenid\"/> \n" +
             " </token>";

@@ -164,7 +164,7 @@ public class AuthenticatedUserTokenRepository {
 
         }
         if (!ApplicationTokenID.isValid(applicationTokenId)) {
-            log.debug("Matching against invalid ApplicationTokenId: {] - returning false", applicationTokenId);
+            log.debug("Matching against invalid ApplicationTokenId: {} - returning false", applicationTokenId);
             return false;
         }
         UserToken resToken = activeusertokensmap.get(userToken.getUserTokenId());
