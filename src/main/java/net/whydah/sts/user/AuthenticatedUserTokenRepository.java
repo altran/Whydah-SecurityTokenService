@@ -304,6 +304,7 @@ public class AuthenticatedUserTokenRepository {
         for (Map.Entry<String, UserToken> entry : activeusertokensmap.entrySet()) {
             UserToken userToken = entry.getValue();
             if (!userToken.isValid()) {
+                log.debug("Removed userTokenID {} - marked as incvalid", userToken.getUserTokenId());
                 activeusertokensmap.remove(userToken.getUserTokenId());
             }
         }

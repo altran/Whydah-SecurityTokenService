@@ -416,11 +416,12 @@ public class UserTokenTest {
         utoken.setUserTokenId(UUID.randomUUID().toString());
         utoken.setPersonRef("78125637812638");
         utoken.setLifespan(String.valueOf(1 * 1000));
+        utoken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
         int noOfUsers = AuthenticatedUserTokenRepository.getMapSize();
         log.debug("Users:" + noOfUsers);
 
-        AuthenticatedUserTokenRepository.addUserToken(utoken, "", "");
+        AuthenticatedUserTokenRepository.addUserToken(utoken, "2212", "test");
         int noOfUsersAfter = AuthenticatedUserTokenRepository.getMapSize();
         log.debug("Users (after):" + noOfUsersAfter);
         assertTrue(noOfUsers < noOfUsersAfter);
