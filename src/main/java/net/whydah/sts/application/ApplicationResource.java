@@ -365,7 +365,7 @@ public class ApplicationResource {
 
     private boolean verifyApplicationCredentialAgainstLocalAndUAS_UIB(String appCredential) {
         try {
-            if (appCredential == null || !(appCredential.indexOf("applicationcredential") < 70) || appCredential.length() != sanitize(appCredential).length()) {
+            if (!ApplicationCredential.isValid(appCredential)) {
                 log.trace("verifyApplicationCredentialAgainstLocalAndUAS_UIB - suspicious XML received, rejected.");
                 return false;
             }
@@ -421,26 +421,6 @@ public class ApplicationResource {
     }
 
 
-    public static String sanitize(String string) {
-        if (string == null || string.length() < 3) {
-            return string;
-        }
-        return string
-                .replaceAll("(?i)%3c%2fnoscript%3e", "")   // case 1
-                .replaceAll("(?i)%2fscript%3e", "")   // case 1
-                .replaceAll("(?i)<script.*?>.*?</script.*?>", "")   // case 1
-                .replaceAll("(?i)<.*?javascript:.*?>.*?</.*?>", "") // case 2
-                .replaceAll("(?i)<.*?\\s+on.*?>.*?</.*?>", "") // case 3
-                .replaceAll("alert", "")    // alerts
-                .replaceAll("prompt", "")    // prompt
-                .replaceAll("ENTITY", "")//ENTITY
-//                .replaceAll("entity", "")//ENTITY
-                .replaceAll("DOCTYPE", "")//DOCTYPE
-                .replaceAll("doctype", "")//DOCTYPE
-                .replaceAll("%00", "")    // null byte
-                .replaceAll("\0", "")    // null byte
-                .replaceAll("confirm", "");  // confirms
-    }
 
 
     private static boolean handleCryptoKey(ApplicationToken applicationToken) {
