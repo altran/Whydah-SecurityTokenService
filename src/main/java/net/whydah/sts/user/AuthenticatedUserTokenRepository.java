@@ -59,10 +59,10 @@ public class AuthenticatedUserTokenRepository {
         log.info("Connecting to map {} - size: {}", appConfig.getProperty("gridprefix") + "lastSeenMap", getLastSeenMapSize());
         Set clusterMembers = hazelcastInstance.getCluster().getMembers();
         noOfClusterMembers = clusterMembers.size();
-        String applicationDefaultTimeout = System.getProperty("user.session.timeout");
-        if (applicationDefaultTimeout != null && (Integer.parseInt(applicationDefaultTimeout) > 0)) {
-            log.info("Updated DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS to " + applicationDefaultTimeout);
-            DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(applicationDefaultTimeout);
+        String userTokenDefaultTimeout = System.getProperty("user.session.timeout");
+        if (userTokenDefaultTimeout != null && (Integer.parseInt(userTokenDefaultTimeout) > 0)) {
+            log.info("Updated DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS to " + userTokenDefaultTimeout);
+            DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(userTokenDefaultTimeout);
         }
 
     }
@@ -197,7 +197,7 @@ public class AuthenticatedUserTokenRepository {
         userToken.setDefcon(ThreatResource.getDEFCON());
         userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 //        userToken.setLifespan(String.valueOf(1000 * ApplicationSessionHelper.getApplicationLifeSpanSeconds(applicationTokenId)));
-        userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_TIME_IN_SECONDS * 1000));
+        userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS * 1000));
 
         addUserToken(userToken, applicationTokenId, "renew");
         ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUid(), "userSessionRenewal", applicationTokenId);

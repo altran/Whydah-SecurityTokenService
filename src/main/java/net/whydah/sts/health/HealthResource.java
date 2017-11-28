@@ -88,6 +88,7 @@ public class HealthResource {
                 "\nVersion:" + getVersion() +
                 "\nDEFCON: " + ThreatResource.getDEFCON() +
                 "\nmax application session time: " + AuthenticatedApplicationTokenRepository.DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS +
+                "\nmax user session extension time: " + AuthenticatedUserTokenRepository.DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS +
                 "\nClusterSize: " + AuthenticatedUserTokenRepository.getNoOfClusterMembers() +
                 "\nUserLastSeenMapSize: " + AuthenticatedUserTokenRepository.getLastSeenMapSize() +
                 "\nUserPinMapSize: " + ActivePinRepository.getPinMap().size() +

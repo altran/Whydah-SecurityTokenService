@@ -1,19 +1,9 @@
 package net.whydah.sts.application;
 
-import java.io.FileNotFoundException;
-import java.io.StringReader;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
-
-import javax.crypto.spec.IvParameterSpec;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
-
+import com.hazelcast.config.Config;
+import com.hazelcast.config.XmlConfigBuilder;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
 import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
@@ -22,23 +12,30 @@ import net.whydah.sso.session.WhydahApplicationSession;
 import net.whydah.sso.session.baseclasses.ApplicationModelUtil;
 import net.whydah.sso.session.baseclasses.ExchangeableKey;
 import net.whydah.sts.config.AppConfig;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import com.hazelcast.config.Config;
-import com.hazelcast.config.XmlConfigBuilder;
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
+import javax.crypto.spec.IvParameterSpec;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+import java.io.FileNotFoundException;
+import java.io.StringReader;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 public class AuthenticatedApplicationTokenRepository {
     private final static Logger log = LoggerFactory.getLogger(AuthenticatedApplicationTokenRepository.class);
 
     public static long DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10; //One minute = 60 seconds //2400;
-    private static int numberOfApplicationSessionTimeSTSTokenExpands = 100;
+    private static final int STS_TOKEN_MULTIPLIER = 100;
     private static AppConfig appConfig = new AppConfig();
     private static String mySTSApplicationTokenId = "";
     private static ApplicationToken mySTSApplicationToken;
@@ -61,6 +58,7 @@ public class AuthenticatedApplicationTokenRepository {
                 log.error("Error - not able to load hazelcast.xml configuration.  Using embedded configuration as fallback");
             }
         }
+
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         applicationTokenMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "_authenticated_applicationtokens");
@@ -70,7 +68,8 @@ public class AuthenticatedApplicationTokenRepository {
             log.info("Updated DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS to " + applicationDefaultTimeout);
             DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(applicationDefaultTimeout);
             if (DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS < WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10) {
-                log.warn("Attempt to set application.session.timeout to low, overriding with WhydahApplicationSession.SESSION_CHECK_INTERVAL*4: {} ",WhydahApplicationSession.SESSION_CHECK_INTERVAL*4);
+                log.warn("Attempt to set application.session.timeout to low, overriding with WhydahApplicationSession.SESSION_CHECK_INTERVAL*4: {} ", WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10);
+                DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10;
             }
         }
         log.info("Connecting to map {} - map size: {}", appConfig.getProperty("gridprefix") + "_authenticated_applicationtokens", getMapSize());
@@ -326,12 +325,12 @@ public class AuthenticatedApplicationTokenRepository {
         if (mySTSApplicationTokenId.equals("") || !applicationTokenMap.containsKey(mySTSApplicationTokenId)) {  // First time
             ApplicationCredential ac = new ApplicationCredential(applicationId, applicationName, applicationsecret);
             mySTSApplicationToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(ac));
-            mySTSApplicationToken.setExpires(String.valueOf((System.currentTimeMillis() + DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * numberOfApplicationSessionTimeSTSTokenExpands)));  // 100 times the default
+            mySTSApplicationToken.setExpires(String.valueOf((System.currentTimeMillis() + DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * STS_TOKEN_MULTIPLIER)));  // 100 times the default
             mySTSApplicationTokenId = mySTSApplicationToken.getApplicationTokenId();
             addApplicationToken(mySTSApplicationToken);
         } else {  // update expires
             mySTSApplicationToken = applicationTokenMap.get(mySTSApplicationTokenId);
-            mySTSApplicationToken.setExpires(String.valueOf((System.currentTimeMillis() + DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * numberOfApplicationSessionTimeSTSTokenExpands)));  // 100 times the default
+            mySTSApplicationToken.setExpires(String.valueOf((System.currentTimeMillis() + DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * STS_TOKEN_MULTIPLIER)));  // 100 times the default
             //very costly to generate key every time, just update
             //addApplicationToken(mySTSApplicationToken);
             updateApplicationToken(mySTSApplicationToken);
