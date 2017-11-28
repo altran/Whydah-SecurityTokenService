@@ -67,6 +67,9 @@ public class UserTokenFactory {
     }
 
     public static boolean shouldReturnAnonymousUserToken(String applicationID, UserToken userToken) {
+        if (shouldReturnFullUserToken(applicationID)) {
+            return false;
+        }
         if ("true".equalsIgnoreCase(appConfig.getProperty("ANONYMOUSTOKEN"))) {
             List<UserApplicationRoleEntry> origRoleList = userToken.getRoleList();
             log.info("shouldReturnAnonymousUserToken - ANONYMOUSTOKEN active");
