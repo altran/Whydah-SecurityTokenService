@@ -68,7 +68,7 @@ public class AuthenticatedApplicationTokenRepository {
             log.info("Updated DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS to " + applicationDefaultTimeout);
             DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(applicationDefaultTimeout);
             if (DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS < WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10) {
-                log.warn("Attempt to set application.session.timeout to low, overriding with WhydahApplicationSession.SESSION_CHECK_INTERVAL*4: {} ", WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10);
+                log.warn("Attempt to set application.session.timeout to low, overriding with WhydahApplicationSession.SESSION_CHECK_INTERVAL*10: {} ", WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10);
                 DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10;
             }
         }
