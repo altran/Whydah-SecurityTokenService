@@ -35,7 +35,7 @@ public class AuthenticatedApplicationTokenRepository {
     private final static Logger log = LoggerFactory.getLogger(AuthenticatedApplicationTokenRepository.class);
 
     public static long DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10; //One minute = 60 seconds //2400;
-    private static final int STS_TOKEN_MULTIPLIER = 100;
+    public static final int STS_TOKEN_MULTIPLIER = 50;
     private static AppConfig appConfig = new AppConfig();
     private static String mySTSApplicationTokenId = "";
     private static ApplicationToken mySTSApplicationToken;
@@ -326,12 +326,12 @@ public class AuthenticatedApplicationTokenRepository {
         if (mySTSApplicationTokenId.equals("") || !applicationTokenMap.containsKey(mySTSApplicationTokenId)) {  // First time
             ApplicationCredential ac = new ApplicationCredential(applicationId, applicationName, applicationsecret);
             mySTSApplicationToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(ac));
-            mySTSApplicationToken.setExpires(String.valueOf((System.currentTimeMillis() + DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * STS_TOKEN_MULTIPLIER)));  // 100 times the default
+            mySTSApplicationToken.setExpires(String.valueOf((System.currentTimeMillis() + DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000L * STS_TOKEN_MULTIPLIER)));  // 100 times the default
             mySTSApplicationTokenId = mySTSApplicationToken.getApplicationTokenId();
             addApplicationToken(mySTSApplicationToken);
         } else {  // update expires
             mySTSApplicationToken = applicationTokenMap.get(mySTSApplicationTokenId);
-            mySTSApplicationToken.setExpires(String.valueOf((System.currentTimeMillis() + DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * STS_TOKEN_MULTIPLIER)));  // 100 times the default
+            mySTSApplicationToken.setExpires(String.valueOf((System.currentTimeMillis() + DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000L * STS_TOKEN_MULTIPLIER)));  // 100 times the default
             //very costly to generate key every time, just update
             //addApplicationToken(mySTSApplicationToken);
             updateApplicationToken(mySTSApplicationToken);
