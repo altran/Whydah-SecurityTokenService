@@ -145,7 +145,7 @@ public class UserTokenFactory {
             userToken.setEmail(null);
             userToken.setFirstName(null);
             userToken.setCellPhone(null);
-            userToken.setLastName("Demographics: Oslo");
+            userToken.setLastName("Demographics Oslo");
             List<UserApplicationRoleEntry> roleList = new ArrayList<>();
             userToken.setRoleList(roleList);
             log.debug("getFilteredUserToken - returning anonymous userToken {}", userToken);

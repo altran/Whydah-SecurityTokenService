@@ -12,6 +12,7 @@ import net.whydah.sts.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.sts.config.AppConfig;
 import net.whydah.sts.file.FreemarkerProcessor;
 import net.whydah.sts.threat.ThreatResource;
+
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -26,6 +27,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
+
 import java.io.StringReader;
 import java.util.*;
 
@@ -45,6 +47,17 @@ public class UserTokenTest {
     }
 
 
+    @Test
+    public void testCreateAnonymousToken(){
+    	UserToken userToken = new UserToken();
+    	userToken.setUserName("anonymous");
+        userToken.setEmail(null);
+        userToken.setFirstName(null);
+        userToken.setCellPhone(null);
+        userToken.setLastName("Demographics Oslo");
+        List<UserApplicationRoleEntry> roleList = new ArrayList<>();
+        userToken.setRoleList(roleList);
+    }
     @Test
     @Ignore
     public void testCreateUserToken() throws Exception {
