@@ -141,10 +141,10 @@ public class UserTokenFactory {
         	return userToken;
         } else if (shouldReturnAnonymousUserToken(myappid, userToken)) {
             log.debug("a) shouldReturnAnonymousUserToken = TRUE");
-            userToken.setUserName("");
-            userToken.setEmail("");
-            userToken.setFirstName("");
-            userToken.setCellPhone("");
+            userToken.setUserName("anonymous");
+            userToken.setEmail(null);
+            userToken.setFirstName(null);
+            userToken.setCellPhone(null);
             userToken.setLastName("Demographics: Oslo");
             List<UserApplicationRoleEntry> roleList = new ArrayList<>();
             userToken.setRoleList(roleList);
