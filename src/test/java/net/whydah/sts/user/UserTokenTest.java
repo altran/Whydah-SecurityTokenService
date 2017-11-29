@@ -12,7 +12,6 @@ import net.whydah.sts.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.sts.config.AppConfig;
 import net.whydah.sts.file.FreemarkerProcessor;
 import net.whydah.sts.threat.ThreatResource;
-
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -27,7 +26,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
-
 import java.io.StringReader;
 import java.util.*;
 
@@ -475,5 +473,28 @@ public class UserTokenTest {
         assertTrue(freemarkerProcessor.toXml(userToken).indexOf(userToken.getPersonRef()) > 0);
         assertTrue(freemarkerProcessor.toXml(userToken).indexOf(userToken.getLifespan()) > 0);
 
+    }
+
+    @Test
+    public void testAnynomousUserTokenCreation() {
+        UserToken userToken = new UserToken();
+
+        userToken.setUserName("anonymous");
+        userToken.setEmail(null);
+        userToken.setFirstName(null);
+        userToken.setCellPhone(null);
+        userToken.setLastName("Demographics Oslo");
+        List<UserApplicationRoleEntry> roleList = new ArrayList<>();
+        userToken.setRoleList(roleList);
+        log.debug("getFilteredUserToken - returning anonymous userToken {}", userToken);
+
+        userToken.setLifespan(String.valueOf(1 * 1000));
+        String userTokenId = userToken.getUserTokenId();
+        Map<String, Object> model = new HashMap();
+        model.put("it", userToken);
+        model.put("DEFCON", userToken.getDefcon());
+        log.debug("freemarkerProcessor.toXml(userToken):{}", freemarkerProcessor.toXml(userToken));
+        assertTrue(freemarkerProcessor.toXml(userToken).indexOf(userTokenId) > 0);
+        assertTrue(freemarkerProcessor.toXml(userToken).indexOf(userToken.getLifespan()) > 0);
     }
 }
