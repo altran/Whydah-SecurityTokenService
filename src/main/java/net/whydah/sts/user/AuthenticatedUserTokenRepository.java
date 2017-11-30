@@ -6,6 +6,7 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import net.whydah.sso.ddd.model.application.ApplicationId;
 import net.whydah.sso.ddd.model.application.ApplicationTokenID;
+import net.whydah.sso.ddd.model.sso.UserTokenLifespan;
 import net.whydah.sso.ddd.model.user.LastSeen;
 import net.whydah.sso.ddd.model.user.UserTokenId;
 import net.whydah.sso.user.types.UserToken;
@@ -224,6 +225,11 @@ public class AuthenticatedUserTokenRepository {
     }
 
     public static UserToken addUserToken(UserToken userToken, String applicationTokenId, String authType) {
+
+        return addUserToken(userToken, applicationTokenId, authType, false);
+    }
+
+    public static UserToken addUserToken(UserToken userToken, String applicationTokenId, String authType, boolean useExistingUserTokenLifespan) {
         if (!UserTokenId.isValid(userToken.getUserTokenId())) {
             log.error("Error: UserToken has no valid usertokenid, generating new userTokenId");
             userToken.setUserTokenId(generateID());
@@ -236,11 +242,13 @@ public class AuthenticatedUserTokenRepository {
         } catch (Exception e) {
             log.warn("addUserToken called without resolveable aplicationTokenId:{}", applicationTokenId);
         }
+        if (!useExistingUserTokenLifespan) {
 
-        if (applicationUserTokenLifespanInSeconds < DEFAULT_USER_SESSION_TIME_IN_SECONDS) {
-            userToken.setLifespan(String.valueOf(applicationUserTokenLifespanInSeconds * 1000));
-        } else {
-            userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_TIME_IN_SECONDS * 1000));
+            if (applicationUserTokenLifespanInSeconds < DEFAULT_USER_SESSION_TIME_IN_SECONDS) {
+                userToken.setLifespan(String.valueOf(applicationUserTokenLifespanInSeconds * 1000));
+            } else {
+                userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_TIME_IN_SECONDS * 1000));
+            }
         }
         userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
@@ -313,7 +321,11 @@ public class AuthenticatedUserTokenRepository {
         for (Map.Entry<String, UserToken> entry : activeusertokensmap.entrySet()) {
             UserToken userToken = entry.getValue();
             if (!userToken.isValid()) {
-                log.debug("Removed userTokenID {} - marked as icvalid", userToken.getUserTokenId());
+                log.debug("Removed userTokenID {} - marked as invalid", userToken.getUserTokenId());
+                activeusertokensmap.remove(userToken.getUserTokenId());
+            }
+            if (new UserTokenLifespan(userToken.getLifespan()).getValueAsAbsoluteTimeInMilliseconds() < System.currentTimeMillis()) {
+                log.debug("Removed userTokenID {} - marked as timeout", userToken.getUserTokenId());
                 activeusertokensmap.remove(userToken.getUserTokenId());
             }
         }

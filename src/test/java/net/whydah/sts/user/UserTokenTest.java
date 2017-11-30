@@ -5,6 +5,7 @@ import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.config.ApplicationMode;
+import net.whydah.sso.ddd.model.application.ApplicationTokenID;
 import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
@@ -437,12 +438,12 @@ public class UserTokenTest {
         int noOfUsers = AuthenticatedUserTokenRepository.getMapSize();
         log.debug("Users:" + noOfUsers);
 
-        AuthenticatedUserTokenRepository.addUserToken(utoken, "2212", "test");
+        AuthenticatedUserTokenRepository.addUserToken(utoken, new ApplicationTokenID(UUID.randomUUID().toString()).getId(), "test", true);
         int noOfUsersAfter = AuthenticatedUserTokenRepository.getMapSize();
         log.debug("Users (after):" + noOfUsersAfter);
         assertTrue(noOfUsers < noOfUsersAfter);
 
-        Thread.sleep(2000);
+        Thread.sleep(2 * 1000);
         AuthenticatedUserTokenRepository.cleanUserTokenMap();
         int noOfUsersAfter2 = AuthenticatedUserTokenRepository.getMapSize();
         log.debug("Users (after2):" + noOfUsersAfter2);
