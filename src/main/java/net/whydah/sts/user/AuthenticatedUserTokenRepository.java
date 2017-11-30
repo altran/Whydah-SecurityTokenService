@@ -5,7 +5,6 @@ import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import net.whydah.sso.ddd.model.application.ApplicationTokenID;
-import net.whydah.sso.ddd.model.sso.UserTokenLifespan;
 import net.whydah.sso.ddd.model.user.LastSeen;
 import net.whydah.sso.ddd.model.user.UserTokenId;
 import net.whydah.sso.user.types.UserToken;
@@ -51,11 +50,11 @@ public class AuthenticatedUserTokenRepository {
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         activeusertokensmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "activeusertokensmap");
-        active_username_usertokenids_map =  hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "active_username_usertokenids_map");
-        
+        active_username_usertokenids_map = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "active_username_usertokenids_map");
+
         log.info("Connecting to map {} - size: {}", appConfig.getProperty("gridprefix") + "activeusertokensmap", getMapSize());
         log.info("Connecting to map {} - size: {}", appConfig.getProperty("gridprefix") + "active_username_usertokenids_map", getMapSize());
-        
+
         lastSeenMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "lastSeenMap");
         log.info("Connecting to map {} - size: {}", appConfig.getProperty("gridprefix") + "lastSeenMap", getLastSeenMapSize());
         Set clusterMembers = hazelcastInstance.getCluster().getMembers();
@@ -124,29 +123,29 @@ public class AuthenticatedUserTokenRepository {
         log.debug("No usertoken found for usertokenId=" + usertokenId);
         return null;
     }
-    
+
     public static UserToken getUserTokenByUserName(String userName, String applicationTokenId) {
         log.debug("getUserToken with userName=" + userName);
         if (userName == null) {
             return null;
         }
-        if(active_username_usertokenids_map.containsKey(userName)){
-        	String usertokenid = active_username_usertokenids_map.get(userName);
-        	 UserToken resToken = activeusertokensmap.get(usertokenid);
-             if (resToken != null && verifyUserToken(resToken, applicationTokenId)) {
-                 resToken.setLastSeen(AuthenticatedUserTokenRepository.getLastSeen(resToken));
-                 lastSeenMap.put(resToken.getEmail(), new Date());
-                 log.info("Valid userToken found: " + resToken);
-                 log.debug("userToken=" + resToken);
+        if (active_username_usertokenids_map.containsKey(userName)) {
+            String usertokenid = active_username_usertokenids_map.get(userName);
+            UserToken resToken = activeusertokensmap.get(usertokenid);
+            if (resToken != null && verifyUserToken(resToken, applicationTokenId)) {
+                resToken.setLastSeen(AuthenticatedUserTokenRepository.getLastSeen(resToken));
+                lastSeenMap.put(resToken.getEmail(), new Date());
+                log.info("Valid userToken found: " + resToken);
+                log.debug("userToken=" + resToken);
 
-                 ObservedActivity observedActivity = new UserSessionObservedActivity(resToken.getUid(), "userSessionAccess", applicationTokenId);
-                 MonitorReporter.reportActivity(observedActivity);
-                 log.trace("Adding activity to statistics cache {}", observedActivity);
+                ObservedActivity observedActivity = new UserSessionObservedActivity(resToken.getUid(), "userSessionAccess", applicationTokenId);
+                MonitorReporter.reportActivity(observedActivity);
+                log.trace("Adding activity to statistics cache {}", observedActivity);
 
-                 return resToken;
-             }
+                return resToken;
+            }
         }
-       
+
         log.debug("No usertoken found for username=" + userName);
         return null;
     }
@@ -180,7 +179,7 @@ public class AuthenticatedUserTokenRepository {
             log.debug("resToken is not valid");
             activeusertokensmap.remove(userToken.getUserTokenId());
             active_username_usertokenids_map.remove(userToken.getUserName());
-            
+
             return false;
         }
         if (!userToken.toString().equals(resToken.toString())) {
@@ -225,41 +224,31 @@ public class AuthenticatedUserTokenRepository {
 
     public static UserToken addUserToken(UserToken userToken, String applicationTokenId, String authType) {
         if (!UserTokenId.isValid(userToken.getUserTokenId())) {
-            log.error("Error: UserToken has no valid usertokenid");
+            log.error("Error: UserToken has no valid usertokenid, generating new userTokenId");
             userToken.setUserTokenId(generateID());
         }
 
-        if (!UserTokenLifespan.isValid(userToken.getLifespan())) {
-            log.debug("addUserToken: UserToken has valid lifespan");
-            long applicationUserTokenLifespanInSeconds = ApplicationModelHelper.getUserTokenLifeSpanSecondsFromApplication(applicationTokenId);
-            log.debug("addUserToken: found applicationUserTokenLifespanInSeconds {} for ApplicationID:{}", applicationUserTokenLifespanInSeconds, ApplicationModelHelper.getApplicationId(new ApplicationTokenID(applicationTokenId)));
-            if (applicationUserTokenLifespanInSeconds < DEFAULT_USER_SESSION_TIME_IN_SECONDS) {
-                userToken.setLifespan(String.valueOf(applicationUserTokenLifespanInSeconds * 1000));
-            } else {
-                userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_TIME_IN_SECONDS * 1000));
-            }
-            userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
-
+        long applicationUserTokenLifespanInSeconds = ApplicationModelHelper.getUserTokenLifeSpanSecondsFromApplication(applicationTokenId);
+        log.debug("addUserToken: found applicationUserTokenLifespanInSeconds {} for ApplicationID:{}", applicationUserTokenLifespanInSeconds, ApplicationModelHelper.getApplicationId(new ApplicationTokenID(applicationTokenId)));
+        if (applicationUserTokenLifespanInSeconds < DEFAULT_USER_SESSION_TIME_IN_SECONDS) {
+            userToken.setLifespan(String.valueOf(applicationUserTokenLifespanInSeconds * 1000));
+        } else {
+            userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_TIME_IN_SECONDS * 1000));
         }
+        userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+
 
         if (userToken.getEmail() != null) {
             String lastSeenString = AuthenticatedUserTokenRepository.getLastSeen(userToken);
-
             userToken.setLastSeen(lastSeenString);
-
             lastSeenMap.put(userToken.getEmail(), new Date());
 
         }
-       
-        //JUST IGNORE THIS CHECK
-//        if (activeusertokensmap.containsKey(userToken.getUserTokenId())) {
-//            log.error("Error: trying to update an already existing UserToken in repo..");
-//            return;
-//        }
-        //UserToken copy = userToken.copy();
+
         activeusertokensmap.put(userToken.getUserTokenId(), userToken);
-      
-        if(userToken.getUserName()!=null){
+        log.info("Added userToken with id {}", userToken.getUserTokenId(), " content:" + userToken.toString());
+
+        if (userToken.getUserName() != null) {
             active_username_usertokenids_map.put(userToken.getUserName(), userToken.getUserTokenId());
         }
         if ("renew".equalsIgnoreCase(authType)) {
@@ -273,14 +262,13 @@ public class AuthenticatedUserTokenRepository {
             observedActivity = new UserSessionObservedActivity(userToken.getUid(), "userSessionCreatedByPin", applicationTokenId);
         }
         MonitorReporter.reportActivity(observedActivity);
-        log.info("Added sts with id {}", userToken.getUserTokenId(), " content:" + userToken.toString());
         return userToken;
     }
 
     public static void removeUserToken(String userTokenId, String applicationTokenId) {
         UserToken removedToken = activeusertokensmap.remove(userTokenId);
         active_username_usertokenids_map.remove(removedToken.getUserName());
-        
+
         ObservedActivity observedActivity = new UserSessionObservedActivity(removedToken.getUid(), "userSessionRemoved", applicationTokenId);
         MonitorReporter.reportActivity(observedActivity);
 
