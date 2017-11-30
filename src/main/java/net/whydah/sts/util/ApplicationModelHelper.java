@@ -21,6 +21,7 @@ public class ApplicationModelHelper {
 			Application app = ApplicationModelFacade.getApplication(appToken.getApplicationID());
 			//set the correct timeout depends on the application's security
 			if(app!=null){
+                log.debug("Returning ApplicationToken applicationlifespanseconds:{} for applicationtokenid:{}", getUserTokenLifeSpanSeconds(app), applicationtokenid);
                 return getUserTokenLifeSpanSeconds(app);
             }
 		}
@@ -31,7 +32,7 @@ public class ApplicationModelHelper {
     public static long getUserTokenLifeSpanSeconds(Application app) {
         //TODO: a correlation between securityLevel and lifespan?
         if (app.getSecurity() != null) {
-            long maxUserSessionFromApplication = Long.valueOf(app.getSecurity().getMaxSessionTimeoutSeconds());
+            long maxUserSessionFromApplication = Long.valueOf(app.getSecurity().getMaxSessionTimeoutSeconds()) / 1000;
             if (maxUserSessionFromApplication > 10) {  // Avoid setting timeout to 0 is missing getMaxSessionTimeoutSeconds.
                 if (maxUserSessionFromApplication < DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS) {
                     log.debug("Returning ApplicationToken MaxSessionTimeoutSeconds:{} for Application:{}", maxUserSessionFromApplication, app.getName());
