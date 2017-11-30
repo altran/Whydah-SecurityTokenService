@@ -72,7 +72,7 @@ public class UserTokenFactory {
         }
         if ("true".equalsIgnoreCase(appConfig.getProperty("ANONYMOUSTOKEN"))) {
             List<UserApplicationRoleEntry> origRoleList = userToken.getRoleList();
-            log.info("shouldReturnAnonymousUserToken - ANONYMOUSTOKEN active");
+            log.info("shouldReturnAnonymousUserToken - ANONYMOUSTOKEN active, checking for role with ApplicationID: {}", applicationID);
 
             for (int i = 0; i < origRoleList.size(); i++) {
                 UserApplicationRoleEntry are = origRoleList.get(i);
@@ -82,6 +82,7 @@ public class UserTokenFactory {
                     return false;
                 }
             }
+            log.info("shouldReturnAnonymousUserToken - no expected role, returning true");
             // Role not found,ANONYMOUSTOKEN flag set - we should ANONYMOUSTOKEN
             return true;
 
@@ -140,7 +141,7 @@ public class UserTokenFactory {
         	log.debug("Is Whydahadmin shouldReturnFullUserToken({})=true - no filtering", myappid);
         	return userToken;
         } else if (shouldReturnAnonymousUserToken(myappid, userToken)) {
-            log.debug("a) shouldReturnAnonymousUserToken = TRUE");
+            log.debug("a) shouldReturnAnonymousUserToken({})=true", myappid);
             userToken.setUserName("anonymous");
             userToken.setEmail(null);
             userToken.setFirstName(null);

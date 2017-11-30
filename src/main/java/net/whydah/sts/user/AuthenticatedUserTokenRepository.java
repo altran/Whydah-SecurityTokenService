@@ -4,6 +4,7 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import net.whydah.sso.ddd.model.application.ApplicationId;
 import net.whydah.sso.ddd.model.application.ApplicationTokenID;
 import net.whydah.sso.ddd.model.user.LastSeen;
 import net.whydah.sso.ddd.model.user.UserTokenId;
@@ -61,10 +62,10 @@ public class AuthenticatedUserTokenRepository {
         noOfClusterMembers = clusterMembers.size();
         String userTokenDefaultTimeout = appConfig.getProperty("user.session.timeout");
         if (userTokenDefaultTimeout != null && (Integer.parseInt(userTokenDefaultTimeout) > 0)) {
-            log.info("Updated DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS to " + userTokenDefaultTimeout);
             DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(userTokenDefaultTimeout);
-            log.info("Updated DEFAULT_USER_SESSION_TIME_IN_SECONDS to " + userTokenDefaultTimeout);
+            log.info("Updated DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS to " + DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS);
             DEFAULT_USER_SESSION_TIME_IN_SECONDS = DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS / 2;
+            log.info("Updated DEFAULT_USER_SESSION_TIME_IN_SECONDS to " + DEFAULT_USER_SESSION_TIME_IN_SECONDS);
         }
 
     }
@@ -227,9 +228,15 @@ public class AuthenticatedUserTokenRepository {
             log.error("Error: UserToken has no valid usertokenid, generating new userTokenId");
             userToken.setUserTokenId(generateID());
         }
+        long applicationUserTokenLifespanInSeconds = DEFAULT_USER_SESSION_TIME_IN_SECONDS;
+        try {
+            ApplicationId applicationID = ApplicationModelHelper.getApplicationId(new ApplicationTokenID(applicationTokenId));
+            applicationUserTokenLifespanInSeconds = ApplicationModelHelper.getUserTokenLifeSpanSecondsFromApplication(applicationTokenId);
+            log.debug("addUserToken: found applicationUserTokenLifespanInSeconds {} for ApplicationID:{}", applicationUserTokenLifespanInSeconds, applicationID);
+        } catch (Exception e) {
+            log.warn("addUserToken called without resolveable aplicationTokenId:{}", applicationTokenId);
+        }
 
-        long applicationUserTokenLifespanInSeconds = ApplicationModelHelper.getUserTokenLifeSpanSecondsFromApplication(applicationTokenId);
-        log.debug("addUserToken: found applicationUserTokenLifespanInSeconds {} for ApplicationID:{}", applicationUserTokenLifespanInSeconds, ApplicationModelHelper.getApplicationId(new ApplicationTokenID(applicationTokenId)));
         if (applicationUserTokenLifespanInSeconds < DEFAULT_USER_SESSION_TIME_IN_SECONDS) {
             userToken.setLifespan(String.valueOf(applicationUserTokenLifespanInSeconds * 1000));
         } else {
