@@ -249,6 +249,7 @@ public class AuthenticatedUserTokenRepository {
             } else {
                 userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_TIME_IN_SECONDS * 1000));
             }
+            log.debug("addUserToken: set Lifespan to {} ", userToken.getLifespan());
         }
         userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
