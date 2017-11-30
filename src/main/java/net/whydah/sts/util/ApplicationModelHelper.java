@@ -32,10 +32,10 @@ public class ApplicationModelHelper {
     public static long getUserTokenLifeSpanSeconds(Application app) {
         //TODO: a correlation between securityLevel and lifespan?
         if (app.getSecurity() != null) {
-            long maxUserSessionFromApplication = Long.valueOf(app.getSecurity().getMaxSessionTimeoutSeconds()) / 1000;
+            long maxUserSessionFromApplication = Long.valueOf(app.getSecurity().getMaxSessionTimeoutSeconds());
             if (maxUserSessionFromApplication > 10) {  // Avoid setting timeout to 0 is missing getMaxSessionTimeoutSeconds.
                 if (maxUserSessionFromApplication < DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS) {
-                    log.debug("Returning ApplicationToken MaxSessionTimeoutSeconds:{} for Application:{}", maxUserSessionFromApplication, app.getName());
+                    log.debug("Returning ApplicationToken MaxUserSessionTimeoutSeconds:{} for Application:{}", maxUserSessionFromApplication, app.getName());
                     return maxUserSessionFromApplication;
                 }
 
