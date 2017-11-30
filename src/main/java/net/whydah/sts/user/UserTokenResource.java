@@ -1053,8 +1053,8 @@ public class UserTokenResource {
 
         try {
             UserToken refreshedUserToken = userAuthenticator.getRefreshedUserToken(usertokenid);
-            AuthenticatedUserTokenRepository.refreshUserToken(usertokenid, applicationtokenid, refreshedUserToken);
-            final UserToken userToken = AuthenticatedUserTokenRepository.getUserToken(usertokenid, applicationtokenid);
+
+            final UserToken userToken = AuthenticatedUserTokenRepository.refreshUserToken(applicationtokenid, refreshedUserToken);
             log.debug("refresh_usertoken - usertoken refreshed, usertokenid={}", usertokenid);
             return createUserTokenResponse(applicationtokenid, userToken);
         } catch (AuthenticationFailedException ae) {
@@ -1087,10 +1087,9 @@ public class UserTokenResource {
 
         try {
             UserToken refreshedUserToken = userAuthenticator.getRefreshedUserToken(usertoken.getUserTokenId());
-            AuthenticatedUserTokenRepository.refreshUserToken(usertoken.getUserTokenId(), applicationtokenid, refreshedUserToken);
-            final UserToken ut = AuthenticatedUserTokenRepository.getUserToken(usertoken.getUserTokenId(), applicationtokenid);
-            log.debug("refresh_usertoken_by_username - usertoken refreshed, usertokenid={}", ut.getUserTokenId());
-            return createUserTokenResponse(applicationtokenid, ut);
+            final UserToken userToken = AuthenticatedUserTokenRepository.refreshUserToken(applicationtokenid, refreshedUserToken);
+            log.debug("refresh_usertoken_by_username - usertoken refreshed, usertokenid={}", userToken.getUserTokenId());
+            return createUserTokenResponse(applicationtokenid, userToken);
         } catch (AuthenticationFailedException ae) {
             throw AppExceptionCode.USER_AUTHENTICATION_FAILED_6000.setDeveloperMessage(ae.getMessage());
         }

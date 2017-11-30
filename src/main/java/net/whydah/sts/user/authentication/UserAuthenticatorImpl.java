@@ -92,15 +92,8 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 					String userIdentityJson = uasResponse.getEntity(String.class);
 					UserToken userToken = UserTokenFactory.fromUserIdentityJson(userIdentityJson);
 					userToken.setSecurityLevel("0");  // 3rd party sts as source = securitylevel=0
-//					userToken.setLifespan(String.valueOf(1000 * ApplicationModelHelper.getApplicationLifeSpanSeconds(applicationtokenid)));
-                    userToken.setLifespan(String.valueOf(86400000));
-
-					userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
-
-					AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
-					return userToken;
-					// return Response.ok(new Viewable("/usertoken.ftl", myToken)).build();
-				}
+                    return AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
+                }
 			} catch (Exception e) {
 				log.error("createAndLogonPinUser - Problems connecting to {}", useradminservice);
 				throw e;
@@ -152,13 +145,9 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
 				UserToken userToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
 				userToken.setSecurityLevel("0");  // UserIdentity as source = securitylevel=0
-//				userToken.setLifespan(String.valueOf(1000 * ApplicationModelHelper.getApplicationLifeSpanSeconds(applicationtokenid)));
-                userToken.setLifespan(String.valueOf(86400000));
-
 				userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
-				AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
-				return userToken;
+                return AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
 
 			} else {
 				log.error("Unable to find a user matching the given phonenumber.");
@@ -223,13 +212,9 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 			userToken.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
 			userToken.setUserTokenId(generateID());
 			userToken.setDefcon(ThreatResource.getDEFCON());
-//			userToken.setLifespan(String.valueOf(1000 * ApplicationModelHelper.getApplicationLifeSpanSeconds(applicationtokenid)));
-            userToken.setLifespan(String.valueOf(86400000));
-
 			userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
-			AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "usertokenid");
-			return userToken;
+            return AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "usertokenid");
 
 		} else {
 			log.error("getUserToken - Response from UAS: {}: {}", response.getStatus(), response.getEntity(String.class));

@@ -213,9 +213,9 @@ public class AuthenticatedUserTokenRepository {
 
     }
 
-    public static void refreshUserToken(String usertokenid, String applicationTokenId, UserToken refreshedUserToken) {
+    public static UserToken refreshUserToken(String applicationTokenId, UserToken refreshedUserToken) {
         //UserToken oldusertoken = activeusertokensmap.remove(usertokenid);
-        addUserToken(refreshedUserToken, applicationTokenId, "refresh");
+        return addUserToken(refreshedUserToken, applicationTokenId, "refresh");
 
     }
 
@@ -223,7 +223,7 @@ public class AuthenticatedUserTokenRepository {
         return UUID.randomUUID().toString();
     }
 
-    public static void addUserToken(UserToken userToken, String applicationTokenId, String authType) {
+    public static UserToken addUserToken(UserToken userToken, String applicationTokenId, String authType) {
         if (!UserTokenId.isValid(userToken.getUserTokenId())) {
             log.error("Error: UserToken has no valid usertokenid");
             userToken.setUserTokenId(generateID());
@@ -263,10 +263,10 @@ public class AuthenticatedUserTokenRepository {
             active_username_usertokenids_map.put(userToken.getUserName(), userToken.getUserTokenId());
         }
         if ("renew".equalsIgnoreCase(authType)) {
-            return;  // alreqdy reported
+            return userToken;  // alreqdy reported
         }
         if ("refresh".equalsIgnoreCase(authType)) {
-            return;  // alreqdy reported
+            return userToken;  // alreqdy reported
         }
         ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUid(), "userSessionCreatedByPassword", applicationTokenId);
         if ("pin".equalsIgnoreCase(authType)) {
@@ -274,6 +274,7 @@ public class AuthenticatedUserTokenRepository {
         }
         MonitorReporter.reportActivity(observedActivity);
         log.info("Added sts with id {}", userToken.getUserTokenId(), " content:" + userToken.toString());
+        return userToken;
     }
 
     public static void removeUserToken(String userTokenId, String applicationTokenId) {
