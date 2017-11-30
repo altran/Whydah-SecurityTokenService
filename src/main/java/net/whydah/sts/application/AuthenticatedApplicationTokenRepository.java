@@ -8,23 +8,15 @@ import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
+import net.whydah.sso.ddd.model.application.ApplicationTokenExpires;
 import net.whydah.sso.session.WhydahApplicationSession;
-import net.whydah.sso.session.baseclasses.ApplicationModelUtil;
 import net.whydah.sso.session.baseclasses.ExchangeableKey;
 import net.whydah.sts.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
 
 import javax.crypto.spec.IvParameterSpec;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
 import java.io.FileNotFoundException;
-import java.io.StringReader;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -158,27 +150,27 @@ public class AuthenticatedApplicationTokenRepository {
     }
 
     public static ApplicationToken renewApplicationTokenId(String applicationtokenid) {
-        ApplicationToken temp = applicationTokenMap.get(applicationtokenid);  // Can't remove as verify check in map
+        ApplicationToken renewApplicationToken = applicationTokenMap.get(applicationtokenid);  // Can't remove as verify check in map
         String exchangeableKey = applicationCryptoKeyMap.get(applicationtokenid);  // Can't remove as verify check in map
-        if (verifyApplicationToken(temp)) {
+        if (verifyApplicationToken(renewApplicationToken)) {
             applicationTokenMap.remove(applicationtokenid);
             applicationCryptoKeyMap.remove(applicationtokenid);
-            String oldExpires = temp.getExpiresFormatted();
-            temp.setExpires(updateExpires(temp.getExpires(), temp.getApplicationID()));
-            log.info("Updated expiry for applicationId:{} applicationtokenid:{} oldExpiry:{}, newExpiry: {}", temp.getApplicationID(), applicationtokenid, oldExpires, temp.getExpiresFormatted());
-            applicationTokenMap.put(temp.getApplicationTokenId(), temp);
-            log.debug("updating cryptokey for applicationId: {} with applicationTokenId:{}", temp.getApplicationID(), temp.getApplicationTokenId());
+            String oldExpires = renewApplicationToken.getExpiresFormatted();
+            renewApplicationToken.setExpires(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS).getInput());
+            log.info("Updated expiry for applicationId:{} applicationtokenid:{} oldExpiry:{}, newExpiry: {}", renewApplicationToken.getApplicationID(), applicationtokenid, oldExpires, renewApplicationToken.getExpiresFormatted());
+            applicationTokenMap.put(renewApplicationToken.getApplicationTokenId(), renewApplicationToken);
+            log.debug("updating cryptokey for applicationId: {} with applicationTokenId:{}", renewApplicationToken.getApplicationID(), renewApplicationToken.getApplicationTokenId());
             try {
                 String iv = "MDEyMzQ1Njc4OTBBQkNERQ==";
                 ExchangeableKey applicationKey = new ExchangeableKey();
-                applicationKey.setEncryptionSecret(System.currentTimeMillis() + temp.getApplicationTokenId());
+                applicationKey.setEncryptionSecret(System.currentTimeMillis() + renewApplicationToken.getApplicationTokenId());
                 applicationKey.setIv(new IvParameterSpec(decoder.decode(iv)));
-                applicationCryptoKeyMap.put(temp.getApplicationTokenId(), applicationKey.toJsonEncoded());
+                applicationCryptoKeyMap.put(renewApplicationToken.getApplicationTokenId(), applicationKey.toJsonEncoded());
             } catch (Exception e) {
-                log.warn("Unable to create cryotokey for applicationId: {}, re-using old", temp.getApplicationID());
-                applicationCryptoKeyMap.put(temp.getApplicationTokenId(), exchangeableKey);
+                log.warn("Unable to create cryotokey for applicationId: {}, re-using old", renewApplicationToken.getApplicationID());
+                applicationCryptoKeyMap.put(renewApplicationToken.getApplicationTokenId(), exchangeableKey);
             }
-            return temp;
+            return renewApplicationToken;
         }
         return null;
     }
@@ -221,8 +213,8 @@ public class AuthenticatedApplicationTokenRepository {
         if (applicationTokenXML == null) {
             log.debug("applicationTokenXML was empty, so returning empty applicationTokenId.");
         } else {
-            String expression = "/applicationtoken/params/applicationtokenID[1]";
-            applicationTokenId = findValue(applicationTokenXML, expression);
+            ApplicationToken applicationToken = ApplicationTokenMapper.fromXml(applicationTokenXML);
+            applicationTokenId = applicationToken.getApplicationTokenId();
         }
         return applicationTokenId;
     }
@@ -239,39 +231,7 @@ public class AuthenticatedApplicationTokenRepository {
         return true;
     }
 
-    private static String updateExpires(String oldExpiry, String applicationID) {
-        String applicationMaxSessionTime = ApplicationModelFacade.getParameterForApplication(ApplicationModelUtil.maxSessionTimeoutSeconds, applicationID);
-        if (applicationMaxSessionTime != null && (applicationMaxSessionTime.length() > 0) && (Long.parseLong(applicationMaxSessionTime) > 0)) {
-            log.info("maxSessionTimeoutSeconds found: {} for applicationId: {}", Long.parseLong(applicationMaxSessionTime), applicationID);
-            // Set to application configured maxSessionTimeoutSeconds if found and shave off 10 seconds
-            if (Long.parseLong(applicationMaxSessionTime) < DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS) {
-                return String.valueOf(System.currentTimeMillis() + Long.parseLong(applicationMaxSessionTime) * 1000 - 10 * 1000);
-            }
-            log.info("maxSessionTimeoutSeconds: {} higher than the default, using default: {} for applicationID: {}", applicationMaxSessionTime, DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS, applicationID);
 
-
-        }
-        log.info("maxSessionTimeoutSeconds not found, using default: {} for applicationID: {}", DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS, applicationID);
-        return String.valueOf(System.currentTimeMillis() + DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000);
-    }
-
-
-    private static String findValue(String xmlString, String expression) {
-        String value = "";
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(new InputSource(new StringReader(xmlString)));
-            XPath xPath = XPathFactory.newInstance().newXPath();
-
-
-            XPathExpression xPathExpression = xPath.compile(expression);
-            value = xPathExpression.evaluate(doc);
-        } catch (Exception e) {
-            log.warn("Failed to parse xml. Expression {}, xml {}, ", expression, xmlString, e);
-        }
-        return value;
-    }
 
     public static int getMapSize() {
         return applicationTokenMap.size();
