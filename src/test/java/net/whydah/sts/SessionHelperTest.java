@@ -5,7 +5,7 @@ import net.whydah.sso.application.mappers.ApplicationMapper;
 import net.whydah.sso.application.types.Application;
 import net.whydah.sso.config.ApplicationMode;
 import net.whydah.sts.config.AppConfig;
-import net.whydah.sts.util.ApplicationSessionHelper;
+import net.whydah.sts.util.ApplicationModelHelper;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -23,10 +23,10 @@ public class SessionHelperTest {
 
    
 	@Test
-	public void testApplicationLiefSpan(){
-        //TODO: test should be updated when implementing the ApplicationSessionHelper
+    public void testUserTokenLifeSpanSeconds() {
+        //TODO: test should be updated when implementing the ApplicationModelHelper
         List<Application> applications = ApplicationMapper.fromJsonList(ApplicationHelper.getDummyAppllicationListJson());
-        Assert.assertTrue(ApplicationSessionHelper.getApplicationLifeSpanSeconds(applications.get(0)) == 86400);
+        Assert.assertTrue(ApplicationModelHelper.getUserTokenLifeSpanSeconds(applications.get(0)) == 86400);
 
 		
 	}
