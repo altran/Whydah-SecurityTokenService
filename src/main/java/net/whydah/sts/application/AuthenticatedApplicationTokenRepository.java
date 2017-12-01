@@ -69,7 +69,6 @@ public class AuthenticatedApplicationTokenRepository {
     }
 
     public static void updateApplicationToken(ApplicationToken applicationToken) {
-    	 long remainingSecs = (Long.parseLong(applicationToken.getExpires()) - System.currentTimeMillis()) / 1000;
     	 applicationTokenMap.put(applicationToken.getApplicationTokenId(), applicationToken);
     }
 
@@ -124,6 +123,7 @@ public class AuthenticatedApplicationTokenRepository {
         ExchangeableKey exchangeableKey = new ExchangeableKey(applicationCryptoKeyMap.get(applicationToken.getApplicationTokenId()));
         if (exchangeableKey.getIv() == null) {
             log.warn("Attempt fo find key for applicationID:{} with applicationTokenId:[} failed", applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
+            return null;
         }
         return exchangeableKey;
     }

@@ -15,7 +15,6 @@ import net.whydah.sts.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.*;
 
 /**
@@ -26,7 +25,6 @@ public class UserTokenFactory {
     static final String TOKEN_ISSUER = "/sts/TOKEN_ISSUER/tokenverifier";
 
     private static final Logger log = LoggerFactory.getLogger(UserTokenFactory.class);
-    private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     private static String defcon = DEFCON.DEFCON5.toString();
 
     private static AppConfig appConfig = new AppConfig();
@@ -176,8 +174,8 @@ public class UserTokenFactory {
         if (applicationtokenid != null) {
             return AuthenticatedApplicationTokenRepository.verifyApplicationTokenId(applicationtokenid);
         } else {
-            log.warn("verifyApplicationToken - not expecting null values applicationtokenid {}, applicationtokenXml {}", applicationtokenid, applicationtokenXml);
-            return validAppToken;
+            log.warn("verifyApplicationToken - not expecting null values applicationtokenid null, applicationtokenXml {}", applicationtokenXml);
+            return false;
         }
     }
 
