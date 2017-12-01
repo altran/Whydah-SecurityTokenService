@@ -26,7 +26,7 @@ public class ExceptionConfig {
 				if(error.getCode()== 9999){
 					error.setDeveloperMessage("");
 				}
-			} else if(level == 1){
+			} else if (level == 2) {
 				error.setDeveloperMessage("");
 			}
 			return error;
@@ -35,7 +35,7 @@ public class ExceptionConfig {
 	}
 	
 	//SET THE HIGHEST SECURITY AS DEFAULT
-	public static ErrorLevel level = ErrorLevel.SHOW_NO_DEVELOPER_MESSAGE_AND_EXCEPTION_STACKTRACE;
+	private static ErrorLevel level = ErrorLevel.SHOW_NO_DEVELOPER_MESSAGE_AND_EXCEPTION_STACKTRACE;
 	
 	static {
 		AppConfig config = new AppConfig();

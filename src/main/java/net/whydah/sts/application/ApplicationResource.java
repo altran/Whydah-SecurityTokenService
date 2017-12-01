@@ -8,6 +8,8 @@ import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.config.ApplicationMode;
+import net.whydah.sso.ddd.model.application.ApplicationName;
+import net.whydah.sso.ddd.model.application.ApplicationTokenID;
 import net.whydah.sso.session.baseclasses.CryptoUtil;
 import net.whydah.sso.session.baseclasses.ExchangeableKey;
 import net.whydah.sso.user.types.UserCredential;
@@ -275,13 +277,13 @@ public class ApplicationResource {
         log.trace("verify ApplicationTokenId {}", applicationtokenid);
         ApplicationToken applicationToken = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
         log.trace("Found applicationtoken:{}", first50(applicationToken));
-        if (applicationToken != null || applicationToken.toString().length() > 10) {
-            log.debug("ApplicationTokenId for {} is valid", applicationToken.getApplicationID());
-            return Response.ok(applicationToken.getApplicationID()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
-        } else {
-            log.debug("ApplicationTokenId {} is not valid", applicationtokenid);
+        if (applicationToken == null || !ApplicationName.isValid(applicationToken.getApplicationID())) {
+            log.debug("ApplicationTokenId {} is not valid", new ApplicationTokenID(applicationtokenid).getInput());
             //return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
+        } else {
+            log.debug("ApplicationTokenId for {} is valid", applicationToken.getApplicationID());
+            return Response.ok(applicationToken.getApplicationID()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
     }
 
@@ -313,12 +315,12 @@ public class ApplicationResource {
                                                                      applicationtokenid) throws AppException {
         log.debug("verify ApplicationTokenId {}", applicationtokenid);
         ApplicationToken applicationToken = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
-        if (applicationToken != null || applicationToken.toString().length() > 10) {
-            log.debug("ApplicationTokenId valid");
-            return Response.ok(applicationToken.getApplicationName()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
-        } else {
+        if (applicationToken == null || !ApplicationTokenID.isValid(applicationToken.getApplicationID())) {
             log.debug("ApplicationTokenId not valid");
             throw AppExceptionCode.APP_ILLEGAL_7000;
+        } else {
+            log.debug("ApplicationTokenId valid");
+            return Response.ok(applicationToken.getApplicationName()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
     }
 
