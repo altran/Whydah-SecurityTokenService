@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 
 public class ApplicationModelFacade {
-    public static URI userAdminServiceUri = null;
+    public static final URI userAdminServiceUri;
     private static AppConfig appConfig = new AppConfig();
     private final static Logger log = LoggerFactory.getLogger(ApplicationModelFacade.class);
 
