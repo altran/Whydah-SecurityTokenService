@@ -59,6 +59,8 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
         }
 
+        new CommaneVerifyUserCredential(useradminservice, appTokenXml, applicationTokenId, userCredentialXml).queue();
+
 		WebResource webResource = uasResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH);
 		ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, userCredentialXml);
 		UserToken userToken = getUserToken(applicationTokenId, appTokenXml, response);
