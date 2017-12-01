@@ -69,7 +69,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 		log.trace("createAndLogonUser - Calling UserAdminService at with appTokenXml:\n" + appTokenXml + "userCredentialXml:\n" + userCredentialXml + "fbUserXml:\n" + fbUserXml);
         WebResource webResource = uasResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH).path(CREATE_AND_LOGON_OPERATION);
 
-        new CommandVerifyUserCredential(useradminservice, appTokenXml, applicationTokenId, fbUserXml).queue();
+        new CommandCreateFBUser(useradminservice, appTokenXml, applicationTokenId, fbUserXml).queue();
 
 
         log.debug("createAndLogonUser - Calling createandlogon " + webResource.toString());
@@ -85,7 +85,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     public UserToken createAndLogonPinUser(String applicationTokenId, String appTokenXml, String adminUserTokenId, String cellPhone, String pin, String userJson) {
 		if (ActivePinRepository.usePin(cellPhone, pin)) {
 			try {
-                new CommandVerifyUserCredential(useradminservice, appTokenXml, applicationTokenId, userJson).queue();
+                new CommandCreatePinUser(useradminservice, appTokenXml, applicationTokenId, adminUserTokenId, userJson).queue();
 
                 WebResource uasWR = uasResource.path(applicationTokenId).path(adminUserTokenId).path("user");
 				ClientResponse uasResponse = uasWR.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, userJson);
