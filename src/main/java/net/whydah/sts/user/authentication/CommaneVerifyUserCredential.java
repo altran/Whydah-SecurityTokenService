@@ -34,7 +34,7 @@ public class CommaneVerifyUserCredential extends BaseHttpPostHystrixCommand<User
     protected UserToken dealWithResponse(String response) {
 
         if (response.length() > 32) {
-            log.info("Response from UserAdminService: {}", response);
+            log.trace("Response from UserAdminService: {}", response);
             if (response.contains("logonFailed")) {
                 throw new AuthenticationFailedException("Authentication failed.");
             }
@@ -44,7 +44,7 @@ public class CommaneVerifyUserCredential extends BaseHttpPostHystrixCommand<User
             userToken.setUserTokenId(UUID.randomUUID().toString());
             userToken.setDefcon(ThreatResource.getDEFCON());
             userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
-            log.info("Returning UserToken: {}", userToken);
+            log.debug("Returning UserToken: {}", userToken);
 
 
             return userToken;
