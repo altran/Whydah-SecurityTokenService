@@ -31,9 +31,9 @@ public class AuthenticatedUserTokenRepository {
     private static Map<String, String> active_username_usertokenids_map;
     private static Map<String, Date> lastSeenMap;
     private static int noOfClusterMembers = 0;
-    private static HazelcastInstance hazelcastInstance;
-    public static long DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = 14 * 24 * 60 * 60;  // 14 days
-    public static long DEFAULT_USER_SESSION_TIME_IN_SECONDS = 7 * 24 * 60 * 60;  // 7 days
+    private static final HazelcastInstance hazelcastInstance;
+    public static final long DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS;
+    public static final long DEFAULT_USER_SESSION_TIME_IN_SECONDS;
 
 
     static {
@@ -67,6 +67,11 @@ public class AuthenticatedUserTokenRepository {
             log.info("Updated DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS to " + DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS);
             DEFAULT_USER_SESSION_TIME_IN_SECONDS = DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS / 2;
             log.info("Updated DEFAULT_USER_SESSION_TIME_IN_SECONDS to " + DEFAULT_USER_SESSION_TIME_IN_SECONDS);
+        } else {
+
+            DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = 14 * 24 * 60 * 60;  // 14 days
+            DEFAULT_USER_SESSION_TIME_IN_SECONDS = 7 * 24 * 60 * 60;  // 7 days
+
         }
 
     }

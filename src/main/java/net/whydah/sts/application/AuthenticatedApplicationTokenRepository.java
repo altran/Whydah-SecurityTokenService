@@ -26,7 +26,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class AuthenticatedApplicationTokenRepository {
     private final static Logger log = LoggerFactory.getLogger(AuthenticatedApplicationTokenRepository.class);
 
-    public static long DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10; //One minute = 60 seconds //2400;
+    public static final long DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS;
     public static final int STS_TOKEN_MULTIPLIER = 50;
     private static AppConfig appConfig = new AppConfig();
     private static String mySTSApplicationTokenId = "";
@@ -54,18 +54,26 @@ public class AuthenticatedApplicationTokenRepository {
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         applicationTokenMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "_authenticated_applicationtokens");
+        log.info("Connecting to map {} - map size: {}", appConfig.getProperty("gridprefix") + "_authenticated_applicationtokens", getMapSize());
+
         applicationCryptoKeyMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "_applicationkeys");
+        log.info("Connecting to map {} - map size: {}", appConfig.getProperty("gridprefix") + "_applicationkeys", getKeyMapSize());
+
+
         String applicationDefaultTimeout = appConfig.getProperty("application.session.timeout");
         log.info("Read DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS from properties " + applicationDefaultTimeout);
         if (applicationDefaultTimeout != null && (Integer.parseInt(applicationDefaultTimeout) > 0)) {
-            log.info("Updated DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS to " + applicationDefaultTimeout);
-            DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(applicationDefaultTimeout);
-            if (DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS < WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10) {
+            if (Integer.parseInt(applicationDefaultTimeout) < WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10) {
                 log.warn("Attempt to set application.session.timeout to low, overriding with WhydahApplicationSession.SESSION_CHECK_INTERVAL*10: {} ", WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10);
                 DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10;
+            } else {
+                DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(applicationDefaultTimeout);
             }
+        } else {
+            DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10; //One minute = 60 seconds //2400;
         }
-        log.info("Connecting to map {} - map size: {}", appConfig.getProperty("gridprefix") + "_authenticated_applicationtokens", getMapSize());
+        log.info("Set DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS to " + DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS);
+
     }
 
     public static void updateApplicationToken(ApplicationToken applicationToken) {
