@@ -3,8 +3,6 @@ package net.whydah.sts.user.authentication;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.client.apache.ApacheHttpClient;
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.commands.adminapi.user.CommandGetUserAggregate;
@@ -22,7 +20,6 @@ import net.whydah.sts.user.UserTokenFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.List;
@@ -36,7 +33,6 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
 	private URI useradminservice;
 	private final AppConfig appConfig;
-	private final WebResource uasResource;
 	private final UserTokenFactory userTokenFactory;
 
 
@@ -44,7 +40,6 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 	public UserAuthenticatorImpl(@Named("useradminservice") URI useradminservice, UserTokenFactory userTokenFactory, AppConfig appConfig) {
 		this.useradminservice = useradminservice;
 		this.appConfig = appConfig;
-		this.uasResource = ApacheHttpClient.create().resource(useradminservice);
 		this.userTokenFactory = userTokenFactory;
 	}
 
@@ -67,17 +62,18 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 	@Override
     public UserToken createAndLogonUser(String applicationTokenId, String appTokenXml, String userCredentialXml, String fbUserXml) throws AuthenticationFailedException {
 		log.trace("createAndLogonUser - Calling UserAdminService at with appTokenXml:\n" + appTokenXml + "userCredentialXml:\n" + userCredentialXml + "fbUserXml:\n" + fbUserXml);
-        WebResource webResource = uasResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH).path(CREATE_AND_LOGON_OPERATION);
+//        WebResource webResource = uasResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH).path(CREATE_AND_LOGON_OPERATION);
 
-        new CommandCreateFBUser(useradminservice, appTokenXml, applicationTokenId, fbUserXml).queue();
+        UserToken userToken = new CommandCreateFBUser(useradminservice, appTokenXml, applicationTokenId, fbUserXml).execute();
+        return AuthenticatedUserTokenRepository.addUserToken(userToken, applicationTokenId, "usertokenid");
 
 
-        log.debug("createAndLogonUser - Calling createandlogon " + webResource.toString());
-		ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, fbUserXml);
+//        log.debug("createAndLogonUser - Calling createandlogon " + webResource.toString());//
+//		ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, fbUserXml);
 
-        UserToken token = getUserToken(applicationTokenId, appTokenXml, response);
-		token.setSecurityLevel("0");  // 3rd party sts as source = securitylevel=0
-		return token;
+//        UserToken token = getUserToken(applicationTokenId, appTokenXml, response);
+//		token.setSecurityLevel("0");  // 3rd party sts as source = securitylevel=0
+//		return token;
 	}
 
 
@@ -85,17 +81,17 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
     public UserToken createAndLogonPinUser(String applicationTokenId, String appTokenXml, String adminUserTokenId, String cellPhone, String pin, String userJson) {
 		if (ActivePinRepository.usePin(cellPhone, pin)) {
 			try {
-                new CommandCreatePinUser(useradminservice, appTokenXml, applicationTokenId, adminUserTokenId, userJson).queue();
+                UserToken userToken = new CommandCreatePinUser(useradminservice, appTokenXml, applicationTokenId, adminUserTokenId, userJson).execute();
+//                return AuthenticatedUserTokenRepository.addUserToken(userToken, applicationTokenId, "usertokenid");
 
-                WebResource uasWR = uasResource.path(applicationTokenId).path(adminUserTokenId).path("user");
-				ClientResponse uasResponse = uasWR.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, userJson);
-				if (uasResponse.getStatus() != ClientResponse.Status.OK.getStatusCode()) {
-					String error = uasResponse.getEntity(String.class);
-					log.error(error);
-				} else {
-					String userIdentityJson = uasResponse.getEntity(String.class);
-					UserToken userToken = UserTokenFactory.fromUserIdentityJson(userIdentityJson);
-					userToken.setSecurityLevel("0");  // 3rd party sts as source = securitylevel=0
+//                WebResource uasWR = uasResource.path(applicationTokenId).path(adminUserTokenId).path("user");
+//				ClientResponse uasResponse = uasWR.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, userJson);
+                if (userToken == null) {
+//					String error = uasResponse.getEntity(String.class);
+//					log.error(error);
+                    throw new AuthenticationFailedException("Pin uthentication failed. Status code ");
+
+                } else {
                     return AuthenticatedUserTokenRepository.addUserToken(userToken, applicationTokenId, "pin");
                 }
 			} catch (Exception e) {
@@ -103,7 +99,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 				throw e;
 			}
 		}
-		throw new AuthenticationFailedException("APin uthentication failed. Status code ");
+        throw new AuthenticationFailedException("Pin uthentication failed. Status code ");
 	}
 
 	public UserToken getRefreshedUserToken(String usertokenid) {
