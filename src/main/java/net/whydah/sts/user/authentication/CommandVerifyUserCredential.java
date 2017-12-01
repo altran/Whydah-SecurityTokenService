@@ -12,11 +12,11 @@ import javax.ws.rs.core.MediaType;
 import java.net.URI;
 import java.util.UUID;
 
-public class CommaneVerifyUserCredential extends BaseHttpPostHystrixCommand<UserToken> {
+public class CommandVerifyUserCredential extends BaseHttpPostHystrixCommand<UserToken> {
 
     private String userCredentialXml;
 
-    public CommaneVerifyUserCredential(URI userAdminServiceUri, String appTokenXml, String myAppTokenId, String userCredentialXml) {
+    public CommandVerifyUserCredential(URI userAdminServiceUri, String appTokenXml, String myAppTokenId, String userCredentialXml) {
         super(userAdminServiceUri, appTokenXml, myAppTokenId, "UASUserAdminGroup", 2000);
 
         this.userCredentialXml = userCredentialXml;

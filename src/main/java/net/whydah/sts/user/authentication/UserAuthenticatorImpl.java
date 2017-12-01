@@ -32,7 +32,6 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 	private static final Logger log = LoggerFactory.getLogger(UserAuthenticatorImpl.class);
 	private static final String USER_AUTHENTICATION_PATH = "/auth/logon/user";
 	private static final String CREATE_AND_LOGON_OPERATION = "createandlogon";
-	private static final String defaultlifespan = "245000";
 
 
 	private URI useradminservice;
@@ -59,34 +58,36 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
         }
 
-        UserToken userToken = new CommaneVerifyUserCredential(useradminservice, appTokenXml, applicationTokenId, userCredentialXml).execute();
+        UserToken userToken = new CommandVerifyUserCredential(useradminservice, appTokenXml, applicationTokenId, userCredentialXml).execute();
         return AuthenticatedUserTokenRepository.addUserToken(userToken, applicationTokenId, "usertokenid");
 
-        //WebResource webResource = uasResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH);
-        //ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, userCredentialXml);
-        //UserToken userToken = getUserToken(applicationTokenId, appTokenXml, response);
-        //return userToken;
 
 	}
 
 	@Override
-	public UserToken createAndLogonUser(String applicationtokenid, String appTokenXml, String userCredentialXml, String fbUserXml) throws AuthenticationFailedException {
+    public UserToken createAndLogonUser(String applicationTokenId, String appTokenXml, String userCredentialXml, String fbUserXml) throws AuthenticationFailedException {
 		log.trace("createAndLogonUser - Calling UserAdminService at with appTokenXml:\n" + appTokenXml + "userCredentialXml:\n" + userCredentialXml + "fbUserXml:\n" + fbUserXml);
-		WebResource webResource = uasResource.path(applicationtokenid).path(USER_AUTHENTICATION_PATH).path(CREATE_AND_LOGON_OPERATION);
-		log.debug("createAndLogonUser - Calling createandlogon " + webResource.toString());
+        WebResource webResource = uasResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH).path(CREATE_AND_LOGON_OPERATION);
+
+        new CommandVerifyUserCredential(useradminservice, appTokenXml, applicationTokenId, fbUserXml).queue();
+
+
+        log.debug("createAndLogonUser - Calling createandlogon " + webResource.toString());
 		ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, fbUserXml);
 
-		UserToken token = getUserToken(applicationtokenid, appTokenXml, response);
+        UserToken token = getUserToken(applicationTokenId, appTokenXml, response);
 		token.setSecurityLevel("0");  // 3rd party sts as source = securitylevel=0
 		return token;
 	}
 
 
 	@Override
-	public UserToken createAndLogonPinUser(String applicationtokenid, String appTokenXml, String adminUserTokenId, String cellPhone, String pin, String userJson) {
+    public UserToken createAndLogonPinUser(String applicationTokenId, String appTokenXml, String adminUserTokenId, String cellPhone, String pin, String userJson) {
 		if (ActivePinRepository.usePin(cellPhone, pin)) {
 			try {
-				WebResource uasWR = uasResource.path(applicationtokenid).path(adminUserTokenId).path("user");
+                new CommandVerifyUserCredential(useradminservice, appTokenXml, applicationTokenId, userJson).queue();
+
+                WebResource uasWR = uasResource.path(applicationTokenId).path(adminUserTokenId).path("user");
 				ClientResponse uasResponse = uasWR.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, userJson);
 				if (uasResponse.getStatus() != ClientResponse.Status.OK.getStatusCode()) {
 					String error = uasResponse.getEntity(String.class);
@@ -95,7 +96,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 					String userIdentityJson = uasResponse.getEntity(String.class);
 					UserToken userToken = UserTokenFactory.fromUserIdentityJson(userIdentityJson);
 					userToken.setSecurityLevel("0");  // 3rd party sts as source = securitylevel=0
-                    return AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
+                    return AuthenticatedUserTokenRepository.addUserToken(userToken, applicationTokenId, "pin");
                 }
 			} catch (Exception e) {
 				log.error("createAndLogonPinUser - Problems connecting to {}", useradminservice);
