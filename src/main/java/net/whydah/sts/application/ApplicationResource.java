@@ -9,6 +9,7 @@ import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.config.ApplicationMode;
 import net.whydah.sso.ddd.model.application.ApplicationName;
+import net.whydah.sso.ddd.model.application.ApplicationTokenExpires;
 import net.whydah.sso.ddd.model.application.ApplicationTokenID;
 import net.whydah.sso.session.baseclasses.CryptoUtil;
 import net.whydah.sso.session.baseclasses.ExchangeableKey;
@@ -29,6 +30,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static net.whydah.sso.util.LoggerUtil.first50;
+import static net.whydah.sts.application.AuthenticatedApplicationTokenRepository.DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS;
 
 @Path("/")
 public class ApplicationResource {
@@ -138,7 +140,7 @@ public class ApplicationResource {
                 log.warn("Old Whydah ApplicationCredential received, please inform application owner to update the ApplicationCredential. ApplicationCredential:" + appCredentialXml);
             }
             applicationToken.setBaseuri(appConfig.getProperty("myuri"));
-            applicationToken.setExpires(String.valueOf((System.currentTimeMillis()) + AuthenticatedApplicationTokenRepository.DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000));
+            applicationToken.setExpires(String.valueOf(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000).getValue()));
             AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken);
             String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
             log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
