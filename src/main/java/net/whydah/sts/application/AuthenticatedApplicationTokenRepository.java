@@ -164,7 +164,7 @@ public class AuthenticatedApplicationTokenRepository {
             applicationTokenMap.remove(applicationtokenid);
             applicationCryptoKeyMap.remove(applicationtokenid);
             String oldExpires = renewApplicationToken.getExpiresFormatted();
-            renewApplicationToken.setExpires(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS).getInput());
+            renewApplicationToken.setExpires(String.valueOf(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS).getValue()));
             log.info("Updated expiry for applicationId:{} applicationtokenid:{} oldExpiry:{}, newExpiry: {}", renewApplicationToken.getApplicationID(), applicationtokenid, oldExpires, renewApplicationToken.getExpiresFormatted());
             applicationTokenMap.put(renewApplicationToken.getApplicationTokenId(), renewApplicationToken);
             log.debug("updating cryptokey for applicationId: {} with applicationTokenId:{}", renewApplicationToken.getApplicationID(), renewApplicationToken.getApplicationTokenId());
