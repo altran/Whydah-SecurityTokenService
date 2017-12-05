@@ -63,14 +63,14 @@ public class AuthenticatedApplicationTokenRepository {
         String applicationDefaultTimeout = appConfig.getProperty("application.session.timeout");
         log.info("Read DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS from properties " + applicationDefaultTimeout);
         if (applicationDefaultTimeout != null && (Integer.parseInt(applicationDefaultTimeout) > 0)) {
-            if (Integer.parseInt(applicationDefaultTimeout) < WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10) {
-                log.warn("Attempt to set application.session.timeout to low, overriding with WhydahApplicationSession.SESSION_CHECK_INTERVAL*10: {} ", WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10);
-                DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10;
+            if (Integer.parseInt(applicationDefaultTimeout) < WhydahApplicationSession.APPLICATION_SESSION_CHECK_INTERVAL_IN_SECONDS * 10) {
+                log.warn("Attempt to set application.session.timeout to low, overriding with WhydahApplicationSession.APPLICATION_SESSION_CHECK_INTERVAL_IN_SECONDS*10: {} ", WhydahApplicationSession.APPLICATION_SESSION_CHECK_INTERVAL_IN_SECONDS * 10);
+                DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = WhydahApplicationSession.APPLICATION_SESSION_CHECK_INTERVAL_IN_SECONDS * 10;
             } else {
                 DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(applicationDefaultTimeout);
             }
         } else {
-            DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = WhydahApplicationSession.SESSION_CHECK_INTERVAL * 10; //One minute = 60 seconds //2400;
+            DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = WhydahApplicationSession.APPLICATION_SESSION_CHECK_INTERVAL_IN_SECONDS * 10; //One minute = 60 seconds //2400;
         }
         log.info("Set DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS to " + DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS);
 
