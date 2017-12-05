@@ -15,7 +15,7 @@ public class CommandCheckApplicationCredentialInUAS extends BaseHttpPostHystrixC
     private String stsApplicationTokenId;
 
     public CommandCheckApplicationCredentialInUAS(URI uasServiceUri, String stsApplicationTokenId, ApplicationCredential appCredential) {
-        super(uasServiceUri, null, stsApplicationTokenId, "UASApplicationAuthGroup", 3000);
+        super(uasServiceUri, null, stsApplicationTokenId, "UASApplicationAuthGroup", 5000);
         this.appCredential = appCredential;
         this.stsApplicationTokenId = stsApplicationTokenId;
         if (uasServiceUri == null || appCredential == null) {
