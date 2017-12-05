@@ -118,7 +118,7 @@ public class AuthenticatedApplicationTokenRepository {
         if (applicationToken == null) {
             return null;
         }
-        if (isApplicationTokenExpired(applicationToken.getApplicationTokenId())) {
+        if (isApplicationTokenExpired(applicationToken)) {
             log.warn("Attempting to get an expired applicationtoken.  ApplicationId:{} ApplicationTokenId:{}", applicationToken.getApplicationID(), applicationtokenid);
             applicationTokenMap.remove(applicationToken.getApplicationTokenId());
             applicationCryptoKeyMap.remove(applicationToken.getApplicationTokenId());
@@ -144,7 +144,7 @@ public class AuthenticatedApplicationTokenRepository {
         if (applicationTokenFromMap == null) {
             return false;
         }
-        if (isApplicationTokenExpired(applicationTokenFromMap.getApplicationTokenId())) {
+        if (isApplicationTokenExpired(applicationTokenFromMap)) {
             applicationTokenMap.remove(applicationTokenFromMap.getApplicationTokenId());
             applicationCryptoKeyMap.remove(applicationTokenFromMap.getApplicationTokenId());
 
@@ -183,15 +183,6 @@ public class AuthenticatedApplicationTokenRepository {
         return null;
     }
 
-    public static boolean verifyApplicationTokenXml(String applicationtokenXml) {
-        try {
-            String applicationID = getApplocationTokenIdFromApplicationTokenXML(applicationtokenXml);
-            ApplicationToken applicationToken = applicationTokenMap.get(applicationID);
-            return verifyApplicationToken(applicationToken);
-        } catch (StringIndexOutOfBoundsException e) {
-            return false;
-        }
-    }
 
     public static String getApplicationIdFromApplicationTokenID(String applicationtokenid) {
         ApplicationToken applicationToken = applicationTokenMap.get(applicationtokenid);
@@ -216,22 +207,10 @@ public class AuthenticatedApplicationTokenRepository {
         return applicationKey;
     }
 
-    public static String getApplocationTokenIdFromApplicationTokenXML(String applicationTokenXML) {
-        String applicationTokenId = "";
-        if (applicationTokenXML == null) {
-            log.debug("applicationTokenXML was empty, so returning empty applicationTokenId.");
-        } else {
-            ApplicationToken applicationToken = ApplicationTokenMapper.fromXml(applicationTokenXML);
-            applicationTokenId = applicationToken.getApplicationTokenId();
-        }
-        return applicationTokenId;
-    }
 
+    public static boolean isApplicationTokenExpired(ApplicationToken applicationtoken) {
 
-    public static boolean isApplicationTokenExpired(String applicationtokenid) {
-        ApplicationToken temp = applicationTokenMap.get(applicationtokenid);
-
-        Long expires = Long.parseLong(temp.getExpires());
+        Long expires = Long.parseLong(applicationtoken.getExpires());
         Long now = System.currentTimeMillis();
         if (expires > now) {
             return false;
@@ -312,7 +291,7 @@ public class AuthenticatedApplicationTokenRepository {
         // OK... let us obfucscate/filter sessionsid's in signalEmitter field
         for (Map.Entry<String, ApplicationToken> entry : applicationTokenMap.entrySet()) {
             ApplicationToken applicationToken = entry.getValue();
-            if (isApplicationTokenExpired(applicationToken.getApplicationTokenId())) {
+            if (isApplicationTokenExpired(applicationToken)) {
                 applicationTokenMap.remove(applicationToken.getApplicationTokenId());
                 applicationCryptoKeyMap.remove(applicationToken.getApplicationTokenId());
             }
