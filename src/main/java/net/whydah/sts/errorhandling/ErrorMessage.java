@@ -2,6 +2,9 @@ package net.whydah.sts.errorhandling;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Produces;
@@ -14,8 +17,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Produces("application/xml")
 @XmlRootElement
 public class ErrorMessage {
-	
-	/** contains the same HTTP Status code returned by the server */
+
+    private final static Logger log = LoggerFactory.getLogger(ErrorMessage.class);
+
+    /**
+     * contains the same HTTP Status code returned by the server
+     */
 	@XmlElement(name = "status")
 	int status;
 	
@@ -77,6 +84,11 @@ public class ErrorMessage {
 	
 	public ErrorMessage(AppException ex){
         // BeanUtils.copyProperties(ex,this);
+        try {
+            BeanUtils.copyProperties(this, ex);
+        } catch (Exception iae) {
+            log.warn("Unable to copy properties",iae);
+        }
 		this.status = ex.getStatus().getStatusCode();
 	}
 	
