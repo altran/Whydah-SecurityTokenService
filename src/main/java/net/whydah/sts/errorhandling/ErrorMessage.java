@@ -2,7 +2,6 @@ package net.whydah.sts.errorhandling;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.BeanUtils;
 
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Produces;
@@ -77,7 +76,7 @@ public class ErrorMessage {
 	}
 	
 	public ErrorMessage(AppException ex){
-		BeanUtils.copyProperties(ex,this);
+        // BeanUtils.copyProperties(ex,this);
 		this.status = ex.getStatus().getStatusCode();
 	}
 	
