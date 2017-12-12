@@ -1,4 +1,4 @@
-package net.whydah.sts.user.authentication;
+package net.whydah.sts.user.authentication.commands;
 
 import com.github.kevinsawicki.http.HttpRequest;
 import net.whydah.sso.commands.baseclasses.BaseHttpPostHystrixCommand;
