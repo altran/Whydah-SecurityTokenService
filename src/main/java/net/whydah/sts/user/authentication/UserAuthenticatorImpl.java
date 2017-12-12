@@ -2,7 +2,6 @@ package net.whydah.sts.user.authentication;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.sun.jersey.api.client.ClientResponse;
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.commands.adminapi.user.CommandGetUserAggregate;
@@ -14,33 +13,30 @@ import net.whydah.sso.user.types.UserToken;
 import net.whydah.sts.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.sts.config.AppConfig;
 import net.whydah.sts.errorhandling.AuthenticationFailedException;
-import net.whydah.sts.threat.ThreatResource;
 import net.whydah.sts.user.AuthenticatedUserTokenRepository;
 import net.whydah.sts.user.UserTokenFactory;
+import net.whydah.sts.user.authentication.commands.CommandCreateFBUser;
+import net.whydah.sts.user.authentication.commands.CommandCreatePinUser;
+import net.whydah.sts.user.authentication.commands.CommandVerifyUserCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
 public class UserAuthenticatorImpl implements UserAuthenticator {
 	private static final Logger log = LoggerFactory.getLogger(UserAuthenticatorImpl.class);
-	private static final String USER_AUTHENTICATION_PATH = "/auth/logon/user";
-	private static final String CREATE_AND_LOGON_OPERATION = "createandlogon";
 
 
 	private URI useradminservice;
 	private final AppConfig appConfig;
-	private final UserTokenFactory userTokenFactory;
 
 
 	@Inject
 	public UserAuthenticatorImpl(@Named("useradminservice") URI useradminservice, UserTokenFactory userTokenFactory, AppConfig appConfig) {
 		this.useradminservice = useradminservice;
 		this.appConfig = appConfig;
-		this.userTokenFactory = userTokenFactory;
 	}
 
 	@Override
@@ -62,18 +58,8 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 	@Override
     public UserToken createAndLogonUser(String applicationTokenId, String appTokenXml, String userCredentialXml, String fbUserXml) throws AuthenticationFailedException {
 		log.trace("createAndLogonUser - Calling UserAdminService at with appTokenXml:\n" + appTokenXml + "userCredentialXml:\n" + userCredentialXml + "fbUserXml:\n" + fbUserXml);
-//        WebResource webResource = uasResource.path(applicationTokenId).path(USER_AUTHENTICATION_PATH).path(CREATE_AND_LOGON_OPERATION);
-
         UserToken userToken = new CommandCreateFBUser(useradminservice, appTokenXml, applicationTokenId, fbUserXml).execute();
         return AuthenticatedUserTokenRepository.addUserToken(userToken, applicationTokenId, "usertokenid");
-
-
-//        log.debug("createAndLogonUser - Calling createandlogon " + webResource.toString());//
-//		ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, fbUserXml);
-
-//        UserToken token = getUserToken(applicationTokenId, appTokenXml, response);
-//		token.setSecurityLevel("0");  // 3rd party sts as source = securitylevel=0
-//		return token;
 	}
 
 
@@ -82,13 +68,7 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 		if (ActivePinRepository.usePin(cellPhone, pin)) {
 			try {
                 UserToken userToken = new CommandCreatePinUser(useradminservice, appTokenXml, applicationTokenId, adminUserTokenId, userJson).execute();
-//                return AuthenticatedUserTokenRepository.addUserToken(userToken, applicationTokenId, "usertokenid");
-
-//                WebResource uasWR = uasResource.path(applicationTokenId).path(adminUserTokenId).path("user");
-//				ClientResponse uasResponse = uasWR.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, userJson);
                 if (userToken == null) {
-//					String error = uasResponse.getEntity(String.class);
-//					log.error(error);
                     throw new AuthenticationFailedException("Pin uthentication failed. Status code ");
 
                 } else {
@@ -105,7 +85,6 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 	public UserToken getRefreshedUserToken(String usertokenid) {
         try {
             ApplicationToken stsApplicationToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
-//		AuthenticatedApplicationTokenRepository.addApplicationToken(stsApplicationToken);
             String user = appConfig.getProperty("whydah.adminuser.username");
             String password = appConfig.getProperty("whydah.adminuser.password");
             UserCredential userCredential = new UserCredential(user, password);
@@ -200,27 +179,6 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 	}
 
 
-	private UserToken getUserToken(String applicationtokenid, String appTokenXml, ClientResponse response) {
-		if (response.getStatus() == Response.Status.OK.getStatusCode() || response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
-			String userAggregateJson = response.getEntity(String.class);
-			log.debug("Response from UserAdminService: {}", userAggregateJson);
-			if (userAggregateJson.contains("logonFailed")) {
-				throw new AuthenticationFailedException("Authentication failed.");
-			}
-
-			UserToken userToken = UserTokenMapper.fromUserAggregateXml(userAggregateJson);
-			userToken.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
-			userToken.setUserTokenId(generateID());
-			userToken.setDefcon(ThreatResource.getDEFCON());
-			userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
-
-            return AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "usertokenid");
-
-		} else {
-			log.error("getUserToken - Response from UAS: {}: {}", response.getStatus(), response.getEntity(String.class));
-			throw new AuthenticationFailedException("Authentication failed. Status code from UAS: " + response.getStatus());
-		}
-	}
 
     private static String generateID() {
         return UUID.randomUUID().toString();
