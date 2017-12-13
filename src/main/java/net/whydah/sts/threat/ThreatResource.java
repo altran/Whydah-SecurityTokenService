@@ -27,7 +27,6 @@ public class ThreatResource {
         log.warn("logSignal with applicationtokenid: {} - signal={}", applicationtokenid, jsonSignal);
 
         ThreatSignal receivedSignal;
-        String formattedSignal;
         try {
 
             receivedSignal = mapper.readValue(jsonSignal, ThreatSignal.class);

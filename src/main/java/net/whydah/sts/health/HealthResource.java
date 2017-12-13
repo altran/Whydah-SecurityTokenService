@@ -208,7 +208,7 @@ public class HealthResource {
     }
 
     public static void addThreatSignal(ThreatSignal signal) {
-        if (threatSignalMap.size() > 5000) {
+        if (threatSignalMap.size() > 1000) {
             try {
                 log.warn("ThreatSignalMap overrun, dumping and clearing");
                 log.warn(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(threatSignalMap));
@@ -216,7 +216,6 @@ public class HealthResource {
                 // Do nothing
             }
             threatSignalMap.clear();
-            getThreatMapDetails();
         }
         threatSignalMap.put(Instant.now().toString(), signal);
         getThreatMapDetails();
