@@ -11,12 +11,14 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.concurrent.Executors;
 
 @Path("/threat")
 public class ThreatResource {
     private final static Logger log = LoggerFactory.getLogger(ThreatResource.class);
     private static final ObjectMapper mapper = new ObjectMapper();
     private static String defconvalue= DEFCON.DEFCON5.toString();
+    private static ThreatSignal receivedSignal;
 
 
     @Path("/{applicationtokenid}/signal")
@@ -26,7 +28,6 @@ public class ThreatResource {
                               @FormParam("signal") String jsonSignal) {
         log.warn("logSignal with applicationtokenid: {} - signal={}", applicationtokenid, jsonSignal);
 
-        ThreatSignal receivedSignal;
         try {
 
             receivedSignal = mapper.readValue(jsonSignal, ThreatSignal.class);
@@ -48,7 +49,13 @@ public class ThreatResource {
         }
 
         receivedSignal.setSignalEmitter(applicationtokenid + " - " + receivedSignal.getSignalEmitter());
-        HealthResource.addThreatSignal(receivedSignal);
+
+        Executors.newCachedThreadPool().execute(new Runnable() {
+            @Override
+            public void run() {
+                HealthResource.addThreatSignal(receivedSignal);
+            }
+        });
         return Response.ok().build();
     }
 
