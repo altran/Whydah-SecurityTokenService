@@ -58,7 +58,7 @@ public class ActivePinRepository {
         log.debug("Used pin {} for phone {}: ", pin, phoneNr);
         if (isValidPin(phoneNr, pin)) {
             log.info("Used pin for phone: "+ phoneNr);
-            pinMap.remove(phoneNr);
+            //pinMap.remove(phoneNr);
             smsResponseLogMap.remove(phoneNr);
             return true;
         }
