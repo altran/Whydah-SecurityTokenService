@@ -62,8 +62,8 @@ public class AuthenticatedUserTokenRepository {
         Set clusterMembers = hazelcastInstance.getCluster().getMembers();
         noOfClusterMembers = clusterMembers.size();
         String userTokenDefaultTimeout = appConfig.getProperty("user.session.timeout");
-        if (userTokenDefaultTimeout != null && (Integer.parseInt(userTokenDefaultTimeout) > 0)) {
-            DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(userTokenDefaultTimeout);
+        if (userTokenDefaultTimeout != null && (Long.parseLong(userTokenDefaultTimeout) > 0)) {
+            DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = Long.parseLong(userTokenDefaultTimeout);
             log.info("Updated DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS to " + DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS);
             DEFAULT_USER_SESSION_TIME_IN_SECONDS = DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS / 2;
             log.info("Updated DEFAULT_USER_SESSION_TIME_IN_SECONDS to " + DEFAULT_USER_SESSION_TIME_IN_SECONDS);
