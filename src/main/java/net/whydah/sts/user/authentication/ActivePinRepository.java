@@ -45,7 +45,7 @@ public class ActivePinRepository {
 
     public static void setPin(String phoneNr, String pin, String smsResponse) {
         pin = paddPin(pin);
-        log.debug("Adding pin: " + pin + " to phone: "+ phoneNr);
+        log.debug("Adding pin:{}  to phone:{} ", pin, phoneNr);
         log.debug("SMS log for " + phoneNr + ": "+ smsResponse);
         pinMap.put(phoneNr, pin);
         if(smsResponse!=null){
@@ -55,13 +55,14 @@ public class ActivePinRepository {
 
     public static boolean usePin(String phoneNr, String pin) {
         pin = paddPin(pin);
-        log.debug("Used pin {} for phone {}: ", pin, phoneNr);
+        log.debug("usePin - Trying pin {} for phone {}: ", pin, phoneNr);
         if (isValidPin(phoneNr, pin)) {
-            log.info("Used pin for phone: "+ phoneNr);
+            log.info("usePin - Used pin:{} for phone: {}", pin, phoneNr);
             //pinMap.remove(phoneNr);
             smsResponseLogMap.remove(phoneNr);
             return true;
         }
+        log.debug("usePin - Failed to use pin {} for phone {}  ", pin, phoneNr);
         return false;
     }
     public static Map<String, String> getPinMap(){
@@ -75,11 +76,11 @@ public class ActivePinRepository {
     private static boolean isValidPin(String phoneNr, String pin) {
         pin = paddPin(pin);
         String storedPin = pinMap.get(phoneNr);
-        log.debug("isValidPin on pin: " + pin + " storedpin: " + storedPin + " phonenumber: " + phoneNr);
+        log.debug("isValidPin on pin:{},  storedpin:{}, phone:{}", pin, storedPin, phoneNr);
         if (storedPin != null && storedPin.equals(pin)) {
             return true;
         }
-        log.warn("Illegal pin logon attempted. PhoneNo: {} invalid pin: {}", phoneNr, pin);
+        log.warn("Illegal pin logon attempted. phone: {} invalid pin attempted:{}", phoneNr, pin);
         return false;
     }
 
