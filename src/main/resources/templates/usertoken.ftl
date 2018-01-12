@@ -16,7 +16,7 @@
     <application ID="${role.applicationId!?xml}">
         <applicationName>${role.applicationName!?xml}</applicationName>
         <organizationName>${role.orgName!?xml}</organizationName>
-        <role name="${role.roleName!?xml}" value="${role.roleValue!?xml}"/>
+        <role id="${role.id!?xml}" name="${role.roleName!?xml}" value="${role.roleValue!?xml}"/>
     </application>
     </#list>
 
