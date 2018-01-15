@@ -161,8 +161,8 @@ public class AuthenticatedApplicationTokenRepository {
         ApplicationToken renewApplicationToken = applicationTokenMap.get(applicationtokenid);  // Can't remove as verify check in map
         String exchangeableKey = applicationCryptoKeyMap.get(applicationtokenid);  // Can't remove as verify check in map
         if (verifyApplicationToken(renewApplicationToken)) {
-            applicationTokenMap.remove(applicationtokenid);
-            applicationCryptoKeyMap.remove(applicationtokenid);
+            //applicationTokenMap.remove(applicationtokenid);
+            //applicationCryptoKeyMap.remove(applicationtokenid); //HUYDO: BUG HERE, don't remove. It should be there as we are extending the expiry date
             String oldExpires = renewApplicationToken.getExpiresFormatted();
             renewApplicationToken.setExpires(String.valueOf(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000).getValueAsAbsoluteTimeInMilliseconds()));
             log.info("Updated expiry for applicationId:{} applicationtokenid:{} oldExpiry:{}, newExpiry: {}", renewApplicationToken.getApplicationID(), applicationtokenid, oldExpires, renewApplicationToken.getExpiresFormatted());
