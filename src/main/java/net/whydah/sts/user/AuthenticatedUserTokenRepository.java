@@ -32,8 +32,8 @@ public class AuthenticatedUserTokenRepository {
     private static Map<String, Date> lastSeenMap;
     private static int noOfClusterMembers = 0;
     private static final HazelcastInstance hazelcastInstance;
-    public static final long DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS;
-    public static final long DEFAULT_USER_SESSION_TIME_IN_SECONDS;
+    public static long DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS;
+    //public static final long DEFAULT_USER_SESSION_TIME_IN_SECONDS;
 
 
     static {
@@ -62,18 +62,20 @@ public class AuthenticatedUserTokenRepository {
         Set clusterMembers = hazelcastInstance.getCluster().getMembers();
         noOfClusterMembers = clusterMembers.size();
 //        String userTokenDefaultTimeout = new UserTokenLifespan(appConfig.getProperty("user.session.timeout")).;
-        if (UserTokenLifespan.isValid(appConfig.getProperty("user.session.timeout")) && appConfig.getProperty("user.session.timeout") != null) {
-//        if (userTokenDefaultTimeout != null && (Long.parseLong(userTokenDefaultTimeout) > 0)) {
-            DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = new UserTokenLifespan(appConfig.getProperty("user.session.timeout")).getValue();
-            log.info("Updated DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS to " + DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS);
-            DEFAULT_USER_SESSION_TIME_IN_SECONDS = DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS / 2;
-            log.info("Updated DEFAULT_USER_SESSION_TIME_IN_SECONDS to " + DEFAULT_USER_SESSION_TIME_IN_SECONDS);
-        } else {
+        try{
+        	if (UserTokenLifespan.isValid(appConfig.getProperty("user.session.timeout")) && appConfig.getProperty("user.session.timeout") != null) {
+        		//        if (userTokenDefaultTimeout != null && (Long.parseLong(userTokenDefaultTimeout) > 0)) {
+        		DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = new UserTokenLifespan(Long.parseLong(appConfig.getProperty("user.session.timeout"))*1000L, Integer.MAX_VALUE).getSecondValue();
+        		log.info("Updated DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS to " + DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS);
+        		//DEFAULT_USER_SESSION_TIME_IN_SECONDS = DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS / 2;
+        		//log.info("Updated DEFAULT_USER_SESSION_TIME_IN_SECONDS to " + DEFAULT_USER_SESSION_TIME_IN_SECONDS);
+        	} else {
+        		DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = 14 * 24 * 60 * 60;  // 14 days
+        		//DEFAULT_USER_SESSION_TIME_IN_SECONDS = 7 * 24 * 60 * 60;  // 7 days
 
-            DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = 14 * 24 * 60 * 60;  // 14 days
-            DEFAULT_USER_SESSION_TIME_IN_SECONDS = 7 * 24 * 60 * 60;  // 7 days
-
-        }
+        	}}catch(Exception ex){
+        		DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = 14 * 24 * 60 * 60;  // 14 days
+        	}
 
     }
 
@@ -215,12 +217,12 @@ public class AuthenticatedUserTokenRepository {
             log.warn("renewUserToken called without resolveable aplicationTokenId:{}", applicationTokenId);
         }
         if (applicationUserTokenLifespanInSeconds < DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS) {
-            userToken.setLifespan(String.valueOf(applicationUserTokenLifespanInSeconds * 1000));
+            userToken.setLifespan(String.valueOf(applicationUserTokenLifespanInSeconds * 1000L));
         } else {
-            userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS * 1000));
+            userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS * 1000L));
         }
         log.debug("renewUserToken: " +
-                "set Lifespan(ms) to {}/{} -  ApplicationMax(ms):{}, DefaultMax(ms):{}", userToken.getLifespan(), new UserTokenLifespan(userToken.getLifespan()).getDateFormatted(), applicationUserTokenLifespanInSeconds * 1000, DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS * 1000);
+                "set Lifespan(ms) to {}/{} -  ApplicationMax(ms):{}, DefaultMax(ms):{}", userToken.getLifespan(), new UserTokenLifespan(userToken.getLifespan()).getDateFormatted(), applicationUserTokenLifespanInSeconds * 1000L, DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS * 1000L);
 
         addUserToken(userToken, applicationTokenId, "renew");
         ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUid(), "userSessionRenewal", applicationTokenId);
@@ -248,7 +250,7 @@ public class AuthenticatedUserTokenRepository {
             log.error("Error: UserToken has no valid usertokenid, generating new userTokenId");
             userToken.setUserTokenId(generateID());
         }
-        long applicationUserTokenLifespanInSeconds = DEFAULT_USER_SESSION_TIME_IN_SECONDS;
+        long applicationUserTokenLifespanInSeconds = DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS;//DEFAULT_USER_SESSION_TIME_IN_SECONDS;
         try {
             ApplicationId applicationID = ApplicationModelHelper.getApplicationId(new ApplicationTokenID(applicationTokenId));
             applicationUserTokenLifespanInSeconds = ApplicationModelHelper.getUserTokenLifeSpanSecondsFromApplication(applicationTokenId);
@@ -258,12 +260,15 @@ public class AuthenticatedUserTokenRepository {
         }
         if (!useExistingUserTokenLifespan) {
 
-            if (applicationUserTokenLifespanInSeconds < DEFAULT_USER_SESSION_TIME_IN_SECONDS) {
-                userToken.setLifespan(String.valueOf(applicationUserTokenLifespanInSeconds * 1000));
+            //if (applicationUserTokenLifespanInSeconds < DEFAULT_USER_SESSION_TIME_IN_SECONDS) {
+            if (applicationUserTokenLifespanInSeconds < DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS) {
+                userToken.setLifespan(String.valueOf(applicationUserTokenLifespanInSeconds * 1000L));
             } else {
-                userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_TIME_IN_SECONDS * 1000));
+                //userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_TIME_IN_SECONDS * 1000));
+            	userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS * 1000L));
             }
-            log.debug("addUserToken: set Lifespan(ms) to {}/{} -  ApplicationMax(ms):{}, DefaultMax(ms):{}", userToken.getLifespan(), new UserTokenLifespan(userToken.getLifespan()).getDateFormatted(), applicationUserTokenLifespanInSeconds * 1000, DEFAULT_USER_SESSION_TIME_IN_SECONDS * 1000);
+            //log.debug("addUserToken: set Lifespan(ms) to {}/{} -  ApplicationMax(ms):{}, DefaultMax(ms):{}", userToken.getLifespan(), new UserTokenLifespan(userToken.getLifespan()).getDateFormatted(), applicationUserTokenLifespanInSeconds * 1000, DEFAULT_USER_SESSION_TIME_IN_SECONDS * 1000);
+            log.debug("addUserToken: set Lifespan(ms) to {}/{} -  ApplicationMax(ms):{}, DefaultMax(ms):{}", userToken.getLifespan(), new UserTokenLifespan(userToken.getLifespan()).getDateFormatted(), applicationUserTokenLifespanInSeconds * 1000L, DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS * 1000L);
         }
         userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
