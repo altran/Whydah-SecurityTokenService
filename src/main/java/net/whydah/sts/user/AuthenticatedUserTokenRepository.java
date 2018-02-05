@@ -65,7 +65,7 @@ public class AuthenticatedUserTokenRepository {
         try{
         	if (UserTokenLifespan.isValid(appConfig.getProperty("user.session.timeout")) && appConfig.getProperty("user.session.timeout") != null) {
         		//        if (userTokenDefaultTimeout != null && (Long.parseLong(userTokenDefaultTimeout) > 0)) {
-        		DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = new UserTokenLifespan(Long.parseLong(appConfig.getProperty("user.session.timeout"))*1000L, Integer.MAX_VALUE).getSecondValue();
+        		DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = new UserTokenLifespan(Long.parseLong(appConfig.getProperty("user.session.timeout"))*1000L).getSecondValue();
         		log.info("Updated DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS to " + DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS);
         		//DEFAULT_USER_SESSION_TIME_IN_SECONDS = DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS / 2;
         		//log.info("Updated DEFAULT_USER_SESSION_TIME_IN_SECONDS to " + DEFAULT_USER_SESSION_TIME_IN_SECONDS);
@@ -344,10 +344,10 @@ public class AuthenticatedUserTokenRepository {
                 log.debug("Removed userTokenID {} - marked as invalid", userToken.getUserTokenId());
                 activeusertokensmap.remove(userToken.getUserTokenId());
             }
-            if (new UserTokenLifespan(userToken.getLifespan()).getValueAsAbsoluteTimeInMilliseconds() < System.currentTimeMillis()) {
-                log.debug("Removed userTokenID {} - marked as timeout", userToken.getUserTokenId());
-                activeusertokensmap.remove(userToken.getUserTokenId());
-            }
+//            if (new UserTokenLifespan(userToken.getLifespan()).getValueAsAbsoluteTimeInMilliseconds() < System.currentTimeMillis()) {
+//                log.debug("Removed userTokenID {} - marked as timeout", userToken.getUserTokenId());
+//                activeusertokensmap.remove(userToken.getUserTokenId());
+//            }
         }
     }
 
