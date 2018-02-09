@@ -9,6 +9,7 @@ import net.whydah.sso.ddd.model.application.ApplicationTokenID;
 import net.whydah.sso.ddd.model.sso.UserTokenLifespan;
 import net.whydah.sso.ddd.model.user.LastSeen;
 import net.whydah.sso.ddd.model.user.UserTokenId;
+import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.sts.config.AppConfig;
 import net.whydah.sts.threat.ThreatResource;
@@ -341,7 +342,7 @@ public class AuthenticatedUserTokenRepository {
         for (Map.Entry<String, UserToken> entry : activeusertokensmap.entrySet()) {
             UserToken userToken = entry.getValue();
             if (!userToken.isValid()) {
-                log.debug("Removed userTokenID {} - marked as invalid", userToken.getUserTokenId());
+                log.debug("Removed userTokenID {} - marked as invalid,  UserTokenXML:  {}", userToken.getUserTokenId(), UserTokenMapper.toXML(userToken));
                 activeusertokensmap.remove(userToken.getUserTokenId());
             }
 //            if (new UserTokenLifespan(userToken.getLifespan()).getValueAsAbsoluteTimeInMilliseconds() < System.currentTimeMillis()) {

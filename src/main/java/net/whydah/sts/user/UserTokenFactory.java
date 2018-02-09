@@ -8,7 +8,6 @@ import net.whydah.sso.application.types.Application;
 import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
-import net.whydah.sso.whydah.DEFCON;
 import net.whydah.sts.application.ApplicationModelFacade;
 import net.whydah.sts.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.sts.config.AppConfig;
@@ -25,7 +24,7 @@ public class UserTokenFactory {
     static final String TOKEN_ISSUER = "/sts/TOKEN_ISSUER/tokenverifier";
 
     private static final Logger log = LoggerFactory.getLogger(UserTokenFactory.class);
-    private static String defcon = DEFCON.DEFCON5.toString();
+    private static String defcon;
 
     private static AppConfig appConfig = new AppConfig();
 
