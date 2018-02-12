@@ -6,6 +6,7 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import net.whydah.sso.ddd.model.application.ApplicationId;
 import net.whydah.sso.ddd.model.application.ApplicationTokenID;
+import net.whydah.sso.ddd.model.base.BaseExpires;
 import net.whydah.sso.ddd.model.sso.UserTokenLifespan;
 import net.whydah.sso.ddd.model.user.LastSeen;
 import net.whydah.sso.ddd.model.user.UserTokenId;
@@ -21,10 +22,7 @@ import org.valuereporter.agent.MonitorReporter;
 import org.valuereporter.agent.activity.ObservedActivity;
 
 import java.io.FileNotFoundException;
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class AuthenticatedUserTokenRepository {
     private final static Logger log = LoggerFactory.getLogger(AuthenticatedUserTokenRepository.class);
@@ -71,11 +69,11 @@ public class AuthenticatedUserTokenRepository {
         		//DEFAULT_USER_SESSION_TIME_IN_SECONDS = DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS / 2;
         		//log.info("Updated DEFAULT_USER_SESSION_TIME_IN_SECONDS to " + DEFAULT_USER_SESSION_TIME_IN_SECONDS);
         	} else {
-        		DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = 14 * 24 * 60 * 60;  // 14 days
+                DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = BaseExpires.addPeriod(Calendar.MONTH, 6); //14 * 24 * 60 * 60;  // 14 days
         		//DEFAULT_USER_SESSION_TIME_IN_SECONDS = 7 * 24 * 60 * 60;  // 7 days
 
         	}}catch(Exception ex){
-        		DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = 14 * 24 * 60 * 60;  // 14 days
+            DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = BaseExpires.addPeriod(Calendar.MONTH, 1);//14 * 24 * 60 * 60;  // 14 days
         	}
 
     }
