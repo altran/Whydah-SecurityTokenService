@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-import static net.whydah.sts.user.AuthenticatedUserTokenRepository.DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS;
 import static org.junit.Assert.assertTrue;
 
 
@@ -27,13 +26,14 @@ public class UserSessionTimeoutTest {
         EnvHelper.setEnv(envs);
 
     }
-
+    
+    long DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS=0;
 
     @Test
     public void testSettingDefaultUserTokenLifespan() throws Exception {
         try {
             AppConfig appConfig = new AppConfig();
-
+           
             if (UserTokenLifespan.isValid(appConfig.getProperty("user.session.timeout")) && appConfig.getProperty("user.session.timeout") != null) {
                 //        if (userTokenDefaultTimeout != null && (Long.parseLong(userTokenDefaultTimeout) > 0)) {
                 DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = new UserTokenLifespan(Long.parseLong(appConfig.getProperty("user.session.timeout")) * 1000L).getSecondValue();
@@ -46,7 +46,7 @@ public class UserSessionTimeoutTest {
 
             }
         } catch (Exception ex) {
-            DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = 14 * 24 * 60 * 60;  // 14 days
+        	DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = 14 * 24 * 60 * 60;  // 14 days
         }
 
         log.info("Updated DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS to " + DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS);
