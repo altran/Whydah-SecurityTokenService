@@ -61,21 +61,31 @@ public class AuthenticatedUserTokenRepository {
         Set clusterMembers = hazelcastInstance.getCluster().getMembers();
         noOfClusterMembers = clusterMembers.size();
 //        String userTokenDefaultTimeout = new UserTokenLifespan(appConfig.getProperty("user.session.timeout")).;
+        DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = updateDefaultUserSessionExtensionTime(appConfig);
+
+    }
+
+    protected static long updateDefaultUserSessionExtensionTime(AppConfig appConfig) {
+        long userSessionExtensionTime = 0;
         try{
-        	if (UserTokenLifespan.isValid(appConfig.getProperty("user.session.timeout")) && appConfig.getProperty("user.session.timeout") != null) {
-        		//        if (userTokenDefaultTimeout != null && (Long.parseLong(userTokenDefaultTimeout) > 0)) {
-                DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = new UserTokenLifespan(Long.parseLong(appConfig.getProperty("user.session.timeout")) * 1000L).getTimeoutInterval();
-        		log.info("Updated DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS to " + DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS);
-        		//DEFAULT_USER_SESSION_TIME_IN_SECONDS = DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS / 2;
-        		//log.info("Updated DEFAULT_USER_SESSION_TIME_IN_SECONDS to " + DEFAULT_USER_SESSION_TIME_IN_SECONDS);
-        	} else {
-                DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = BaseExpires.addPeriod(Calendar.MONTH, 6); //14 * 24 * 60 * 60;  // 14 days
-        		//DEFAULT_USER_SESSION_TIME_IN_SECONDS = 7 * 24 * 60 * 60;  // 7 days
+            if (UserTokenLifespan.isValid(appConfig.getProperty("user.session.timeout")) && appConfig.getProperty("user.session.timeout") != null) {
+                //        if (userTokenDefaultTimeout != null && (Long.parseLong(userTokenDefaultTimeout) > 0)) {
+                userSessionExtensionTime = new UserTokenLifespan(Long.parseLong(appConfig.getProperty("user.session.timeout")) * 1000L).getTimeoutInterval();
+                log.info("Updated DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS to " + userSessionExtensionTime);
+                //DEFAULT_USER_SESSION_TIME_IN_SECONDS = DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS / 2;
+                //log.info("Updated DEFAULT_USER_SESSION_TIME_IN_SECONDS to " + DEFAULT_USER_SESSION_TIME_IN_SECONDS);
+            } else {
+                userSessionExtensionTime = BaseExpires.addPeriod(Calendar.MONTH, 6); //14 * 24 * 60 * 60;  // 14 days
+                //DEFAULT_USER_SESSION_TIME_IN_SECONDS = 7 * 24 * 60 * 60;  // 7 days
+                log.info("Added 6 months. DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS is " + userSessionExtensionTime);
 
-        	}}catch(Exception ex){
-            DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = BaseExpires.addPeriod(Calendar.MONTH, 1);//14 * 24 * 60 * 60;  // 14 days
-        	}
+            }
+        }catch(Exception ex){
+            userSessionExtensionTime = BaseExpires.addPeriod(Calendar.MONTH, 1);//14 * 24 * 60 * 60;  // 14 days
+            log.info("Added 1 month. DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS is " + userSessionExtensionTime);
+        }
 
+        return userSessionExtensionTime;
     }
 
     public static void setLastSeen(UserToken userToken) {
