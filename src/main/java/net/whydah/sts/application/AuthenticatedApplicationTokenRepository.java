@@ -214,10 +214,10 @@ public class AuthenticatedApplicationTokenRepository {
         log.info("Checking {} for timeout, ",applicationtoken.getApplicationID());
         Long now = System.currentTimeMillis();
         if (expires > now) {
-            log.info("Checking applicationId {} for timeout, result true",applicationtoken.getApplicationID());
+            log.trace("Checking applicationId {} for timeout, result false",applicationtoken.getApplicationID());
             return false;
         }
-        log.info("Checking applicationId {} for timeout, result: false",applicationtoken.getApplicationID());
+        log.trace("Checking applicationId {} for timeout, result: false",applicationtoken.getApplicationID());
         return true;
     }
 
