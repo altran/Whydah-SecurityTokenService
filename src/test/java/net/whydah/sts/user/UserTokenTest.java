@@ -467,6 +467,7 @@ public class UserTokenTest {
         model.put("it", userToken);
         model.put("DEFCON", userToken.getDefcon());
         log.debug("freemarkerProcessor.toXml(userToken):{}", freemarkerProcessor.toXml(userToken));
+        assertTrue(userToken.isValid());
         assertTrue(freemarkerProcessor.toXml(userToken).indexOf(userTokenId) > 0);
         assertTrue(freemarkerProcessor.toXml(userToken).indexOf(userToken.getUid()) > 0);
         assertTrue(freemarkerProcessor.toXml(userToken).indexOf(userToken.getEmail()) > 0);

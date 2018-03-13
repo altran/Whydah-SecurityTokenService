@@ -350,7 +350,7 @@ public class AuthenticatedUserTokenRepository {
         for (Map.Entry<String, UserToken> entry : activeusertokensmap.entrySet()) {
             UserToken userToken = entry.getValue();
             if (!userToken.isValid()) {
-                log.debug("Removed userTokenID {} - marked as invalid,  UserTokenXML:  {}", userToken.getUserTokenId(), UserTokenMapper.toXML(userToken));
+                log.debug("Removed userTokenID {} - marked as invalid, getLifespanFormatted: {}  UserTokenXML:  {}", userToken.getUserTokenId(),userToken.getLifespanFormatted(), UserTokenMapper.toXML(userToken));
                 activeusertokensmap.remove(userToken.getUserTokenId());
             }
 //            if (new UserTokenLifespan(userToken.getLifespan()).getValueAsAbsoluteTimeInMilliseconds() < System.currentTimeMillis()) {
