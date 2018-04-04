@@ -66,31 +66,12 @@ public class ServiceStarter {
             int forwardInterval = Integer.parseInt(appConfig.getProperty("valuereporter.activity.postintervalms"));
             new Thread(new ObservedActivityDistributer(reporterHost, reporterPort, prefix, cacheSize, forwardInterval)).start();
             log.info("Started ObservedActivityDistributer({},{},{},{},{})",reporterHost, reporterPort, prefix, cacheSize, forwardInterval);
-            new Thread(new HttpObservationDistributer(reporterHost, reporterPort, prefix)).start();
-            log.info("Started HttpObservationDistributer({},{},{})",reporterHost, reporterPort, prefix);
 
         } catch (Exception e) {
-            log.warn("Error in valueReporter property configuration - unable to start observers");
+            log.warn("Error in valueReporter property configuration - unable to start ObservedActivityDistributer");
         }
         
-     
-      
-        //HUYDO: this is the old implementation which will break when grizzly dependencies are updated 
-        
-//		  ServletHandler adapter = new ServletHandler();
-//        adapter.setContextPath(CONTEXTPATH);
-//        adapter.addInitParameter("com.sun.jersey.config.property.packages", "net.whydah");
-//        adapter.setProperty(ServletHandler.LOAD_ON_STARTUP, "1");
-//
-//        
-//        GuiceFilter filter = new GuiceFilter();
-//        adapter.addFilter(filter, "guiceFilter", null);
-//       
-//        GuiceContainer container = new GuiceContainer(injector);
-//        adapter.setServletInstance(container);
-       
-        
-        //HUYDO: new implementation
+
 
         final WebappContext context = new WebappContext("grizzly", CONTEXTPATH);
         GuiceContainer container = new GuiceContainer(injector);

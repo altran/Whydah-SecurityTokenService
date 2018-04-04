@@ -35,6 +35,7 @@ public class MonitorReporterTest {
         int forwardInterval = 10;
         new Thread(new ObservedActivityDistributer(reporterHost, reporterPort, prefix.replace(" ",""), cacheSize, forwardInterval)).start();
         log.info("Started ObservedActivityDistributer({},{},{},{},{})",reporterHost, reporterPort, prefix, cacheSize, forwardInterval);
+
     }
 
 
