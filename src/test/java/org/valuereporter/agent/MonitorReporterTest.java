@@ -30,10 +30,11 @@ public class MonitorReporterTest {
 
         String reporterHost = "localhost";
         String reporterPort = "4901";
-        String prefix = "report";
+        String prefix = "SecurityTokenService";
         int cacheSize = 10;
         int forwardInterval = 10;
-        new Thread(new ObservedActivityDistributer(reporterHost, reporterPort, prefix, cacheSize, forwardInterval)).start();
+        new Thread(new ObservedActivityDistributer(reporterHost, reporterPort, prefix.replace(" ",""), cacheSize, forwardInterval)).start();
+        log.info("Started ObservedActivityDistributer({},{},{},{},{})",reporterHost, reporterPort, prefix, cacheSize, forwardInterval);
     }
 
 

@@ -61,11 +61,13 @@ public class ServiceStarter {
         try {
             String reporterHost = appConfig.getProperty("valuereporter.host");
             String reporterPort = appConfig.getProperty("valuereporter.port");
-            String prefix = appConfig.getProperty("applicationname");
+            String prefix = appConfig.getProperty("applicationname").replace(" ","");
             int cacheSize = Integer.parseInt(appConfig.getProperty("valuereporter.activity.batchsize"));
             int forwardInterval = Integer.parseInt(appConfig.getProperty("valuereporter.activity.postintervalms"));
             new Thread(new ObservedActivityDistributer(reporterHost, reporterPort, prefix, cacheSize, forwardInterval)).start();
+            log.info("Started ObservedActivityDistributer({},{},{},{},{})",reporterHost, reporterPort, prefix, cacheSize, forwardInterval);
             new Thread(new HttpObservationDistributer(reporterHost, reporterPort, prefix)).start();
+            log.info("Started HttpObservationDistributer({},{},{})",reporterHost, reporterPort, prefix);
 
         } catch (Exception e) {
             log.warn("Error in valueReporter property configuration - unable to start observers");
