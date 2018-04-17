@@ -75,6 +75,7 @@ public class ApplicationTokenTest {
         assertFalse(AuthenticatedApplicationTokenRepository.isApplicationTokenExpired(imp2));
         imp2.setExpires(String.valueOf(System.currentTimeMillis()));
         AuthenticatedApplicationTokenRepository.addApplicationToken(imp2);
+        Thread.sleep(300);
         ApplicationToken imp3 = AuthenticatedApplicationTokenRepository.getApplicationToken(imp.getApplicationTokenId());
 
         assertTrue(imp3 == null);
