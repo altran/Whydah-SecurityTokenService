@@ -46,7 +46,7 @@ public class ApplicationTokenTest {
     public void testCreateApplicationToken() throws Exception {
         ApplicationCredential cred = new ApplicationCredential("1212", "testapp", "dummysecret");
         ApplicationToken imp = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(cred));
-        imp.setExpires(String.valueOf(System.currentTimeMillis() + 100));
+        imp.setExpires(String.valueOf(System.currentTimeMillis() / 1000));
         AuthenticatedApplicationTokenRepository.addApplicationToken(imp);
         Thread.sleep(1000);
 
