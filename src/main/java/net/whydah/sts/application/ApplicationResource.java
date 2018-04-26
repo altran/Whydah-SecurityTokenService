@@ -130,7 +130,7 @@ public class ApplicationResource {
     public Response logonApplication(@FormParam("applicationcredential") String appCredentialXml) throws AppException {
         log.trace("logonApplication with applicationcredential={}", first50(appCredentialXml));
         if (!verifyApplicationCredentialAgainstLocalAndUAS_UIB(appCredentialXml)) {
-            log.warn("logonApplication - illegal applicationcredential applicationID:{} , returning FORBIDDEN :{}", first50(appCredentialXml));
+            log.warn("logonApplication - illegal applicationcredential applicationID:{} , returning FORBIDDEN :{}", appCredentialXml);
             //return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }

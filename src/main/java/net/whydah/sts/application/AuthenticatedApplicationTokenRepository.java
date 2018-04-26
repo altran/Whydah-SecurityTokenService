@@ -211,7 +211,7 @@ public class AuthenticatedApplicationTokenRepository {
     public static boolean isApplicationTokenExpired(ApplicationToken applicationtoken) {
 
         Long expires = Long.parseLong(applicationtoken.getExpires());
-        log.info("Checking {} for timeout, ",applicationtoken.getApplicationID());
+        //log.info("Checking {} for timeout, ",applicationtoken.getApplicationID());
         Long now = System.currentTimeMillis();
         if (expires > now) {
             log.trace("Checking applicationId {} for timeout, result false",applicationtoken.getApplicationID());
