@@ -1296,10 +1296,15 @@ public class UserTokenResource {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_XML)
 	public Response sendgenerateAndSendSMSPin(@PathParam("applicationtokenid") String applicationtokenid,
-			@FormParam("phoneNo") String phoneNo) throws AppException {
+			@FormParam("phoneNo") String phoneNo, @FormParam("msg") String msg) throws AppException {
 		log.info("sendgenerateAndSendSMSPin: phoneNo:" + phoneNo);
 
 		String smsPin = generatePin();
+		if(msg==null || !msg.contains("{}")) {
+			msg = smsPin;
+		} else {
+			msg = msg.replace("{}", smsPin);
+		}
 		if (isEmpty(phoneNo)) {
 			log.warn("sendSMSPin: attempt to use service with emty parameters");
 			//return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
@@ -1314,7 +1319,7 @@ public class UserTokenResource {
 		String response = null;
 		try{
 			log.trace("CommandSendSMSToUser - ({}, {}, {}, {}, {}, {}, {})", SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin);
-			response = new CommandSendSMSToUser(SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin).execute();
+			response = new CommandSendSMSToUser(SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, msg).execute();
 			log.trace("Answer from smsgw: " + response);
 		} catch(Exception ex){
 			ex.printStackTrace();
