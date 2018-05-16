@@ -280,7 +280,7 @@ public class ApplicationResource {
         ApplicationToken applicationToken = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
         log.trace("Found applicationtoken:{}", first50(applicationToken));
         if (applicationToken == null || !ApplicationName.isValid(applicationToken.getApplicationID())) {
-            log.debug("ApplicationTokenId {} is not valid", new ApplicationTokenID(applicationtokenid).getInput());
+            log.warn("ApplicationTokenId {} is not valid", new ApplicationTokenID(applicationtokenid).getInput());
             //return Response.status(Response.Status.FORBIDDEN).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
             throw AppExceptionCode.APP_ILLEGAL_7000;
         } else {

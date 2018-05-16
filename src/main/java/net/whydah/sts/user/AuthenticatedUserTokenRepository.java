@@ -49,6 +49,7 @@ public class AuthenticatedUserTokenRepository {
             }
         }
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
+        hazelcastConfig.getGroupConfig().setName("STS_ACTIVE_USERS_HAZELCAST");
         hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         activeusertokensmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "activeusertokensmap");
         active_username_usertokenids_map = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "active_username_usertokenids_map");
@@ -353,7 +354,7 @@ public class AuthenticatedUserTokenRepository {
                 log.debug("Removed userTokenID {} - marked as invalid, userName: {}, getLastName: {}, getLifespanFormatted: {}  UserTokenXML:  {}", userToken.getUserTokenId(),userToken.getUserName(),userToken.getLastName(),userToken.getLifespanFormatted(), UserTokenMapper.toXML(userToken));
                 activeusertokensmap.remove(userToken.getUserTokenId());
             } else {
-                log.debug("Checked userTokenID {} - marked as valid, userName: {}, getLastName: {}, getLifespanFormatted: {}  UserTokenXML:  {}", userToken.getUserTokenId(),userToken.getUserName(),userToken.getLastName(),userToken.getLifespanFormatted(), UserTokenMapper.toXML(userToken));
+               // log.debug("Checked userTokenID {} - marked as valid, userName: {}, getLastName: {}, getLifespanFormatted: {}  UserTokenXML:  {}", userToken.getUserTokenId(),userToken.getUserName(),userToken.getLastName(),userToken.getLifespanFormatted(), UserTokenMapper.toXML(userToken));
 
             }
 //            if (new UserTokenLifespan(userToken.getLifespan()).getValueAsAbsoluteTimeInMilliseconds() < System.currentTimeMillis()) {

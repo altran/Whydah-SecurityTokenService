@@ -63,6 +63,7 @@ public class HealthResource {
                 log.error("Error - not able to load hazelcast.xml configuration.  Using embedded as fallback");
             }
         }
+        hazelcastConfig.getGroupConfig().setName("STS_HEALTH_HAZELCAST");
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         threatSignalMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "threatSignalMap");
@@ -162,8 +163,8 @@ public class HealthResource {
 
     private static void getThreatMapDetails() {
         String threatSignalJson = " ";
-        AuthenticatedApplicationTokenRepository.cleanApplicationTokenMap();
-        AuthenticatedUserTokenRepository.cleanUserTokenMap();
+        //AuthenticatedApplicationTokenRepository.cleanApplicationTokenMap();
+        //AuthenticatedUserTokenRepository.cleanUserTokenMap();
 
 
         // OK... let us obfucscate/filter sessionsid's in signalEmitter field
