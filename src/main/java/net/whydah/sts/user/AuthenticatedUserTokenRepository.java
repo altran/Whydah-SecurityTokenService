@@ -49,7 +49,7 @@ public class AuthenticatedUserTokenRepository {
             }
         }
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
-        hazelcastConfig.getGroupConfig().setName("STS_HAZELCAST");
+        //hazelcastConfig.getGroupConfig().setName("STS_HAZELCAST");
         hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         activeusertokensmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "activeusertokensmap");
         active_username_usertokenids_map = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "active_username_usertokenids_map");

@@ -50,7 +50,7 @@ public class AuthenticatedApplicationTokenRepository {
                 log.error("Error - not able to load hazelcast.xml configuration.  Using embedded configuration as fallback");
             }
         }
-        hazelcastConfig.getGroupConfig().setName("STS_HAZELCAST");
+        //hazelcastConfig.getGroupConfig().setName("STS_HAZELCAST");
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         applicationTokenMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "_authenticated_applicationtokens");

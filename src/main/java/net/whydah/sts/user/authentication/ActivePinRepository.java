@@ -34,8 +34,9 @@ public class ActivePinRepository {
                 log.error("Error - not able to load hazelcast.xml configuration.  Using embedded as fallback");
             }
         }
+        
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
-        hazelcastConfig.getGroupConfig().setName("STS_HAZELCAST");
+        //hazelcastConfig.getGroupConfig().setName("STS_HAZELCAST");
         HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         pinMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"pinMap");
         smsResponseLogMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"smsResponseLogMap");
