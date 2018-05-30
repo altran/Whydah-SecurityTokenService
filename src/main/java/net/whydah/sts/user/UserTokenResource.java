@@ -884,7 +884,6 @@ public class UserTokenResource {
 
 		try {
 			UserToken userToken = userAuthenticator.logonPinUser(applicationtokenid, appTokenXml, adminUserTokenId, phoneno, pin);
-			ApplicationModelFacade.updateApplicationList(applicationtokenid, adminUserTokenId);
 			return createUserTokenResponse(applicationtokenid, userToken);
 
 		} catch (AuthenticationFailedException ae) {
