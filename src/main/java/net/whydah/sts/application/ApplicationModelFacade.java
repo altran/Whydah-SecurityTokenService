@@ -1,20 +1,20 @@
 package net.whydah.sts.application;
 
+import java.net.URI;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.session.baseclasses.ApplicationModelUtil;
 import net.whydah.sso.util.Lock;
 import net.whydah.sso.whydah.TimeLimitedCodeBlock;
 import net.whydah.sts.config.AppConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.net.URI;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 
 public class ApplicationModelFacade {
@@ -27,6 +27,7 @@ public class ApplicationModelFacade {
     static ScheduledExecutorService app_update_scheduler; 
     static {
         userAdminServiceUri = URI.create(appConfig.getProperty("useradminservice"));
+        app_update_scheduler = Executors.newScheduledThreadPool(1);
         app_update_scheduler.scheduleAtFixedRate(
 				new Runnable() {
 					public void run() {
