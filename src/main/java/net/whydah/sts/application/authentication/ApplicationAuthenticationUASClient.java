@@ -28,7 +28,13 @@ public class ApplicationAuthenticationUASClient {
         String useradminservice = appConfig.getProperty("useradminservice");
         ApplicationToken stsToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
 
-
+        //HUY fix the start-up problem here
+        //should bypass request from UAS/UIB if the credential is found correct
+        String secret = appConfig.getProperty(applicationCredential.getApplicationID());
+        if(secret!=null && applicationCredential.getApplicationSecret().equals(secret)) {
+        	return true;
+        }
+        
         /**
          * Command version of UAS auth call
          */
