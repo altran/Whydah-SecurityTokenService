@@ -38,6 +38,7 @@ public class HealthResource {
     private static final Logger log = LoggerFactory.getLogger(HealthResource.class);
 
     private static Map<String, ThreatSignal> threatSignalMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    private static Map<String, ThreatSignal> obfuscatedThreatSignalMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private static ObjectMapper mapper = new ObjectMapper();
     private static boolean isExtendedInfoEnabled = false;
     private static String applicationInstanceName;
@@ -162,35 +163,35 @@ public class HealthResource {
 
 
     private static void getThreatMapDetails() {
-        String threatSignalJson = " ";
-        //AuthenticatedApplicationTokenRepository.cleanApplicationTokenMap();
-        //AuthenticatedUserTokenRepository.cleanUserTokenMap();
+        if (isExtendedInfoEnabled) {
+
+            String threatSignalJson = " ";
+            //AuthenticatedApplicationTokenRepository.cleanApplicationTokenMap();
+            //AuthenticatedUserTokenRepository.cleanUserTokenMap();
 
 
-        // OK... let us obfucscate/filter sessionsid's in signalEmitter field
-        for (String key : threatSignalMap.keySet()) {
-            ThreatSignal threatSignal = threatSignalMap.get(key);
-            threatSignal.setSignalEmitter(threatSignal.getSignalEmitter().replace("a", "*").replace("b", "*").replace("c", "*"));
-            Map<String, Object> additionalProperties = threatSignal.getAdditionalProperties();
-        	
-            List<String> obfuscateList = Arrays.asList("usertokenid", "apptokenid","appName");
-            for(String pro : additionalProperties.keySet()){
-            	if(obfuscateList.contains(pro)){
-                    threatSignal.getAdditionalProperties().put(pro, threatSignal.getAdditionalProperties().get(pro).toString().replace("a", "*").replace("b", "*").replace("c", "*"));
+            // OK... let us obfuscate/filter sessionsid's in signalEmitter field
+            for (String key : threatSignalMap.keySet()) {
+                ThreatSignal threatSignal = threatSignalMap.get(key);
+                threatSignal.setSignalEmitter(threatSignal.getSignalEmitter().replace("a", "*").replace("b", "*").replace("c", "*"));
+                Map<String, Object> additionalProperties = threatSignal.getAdditionalProperties();
+
+                List<String> obfuscateList = Arrays.asList("usertokenid", "apptokenid", "appName");
+                for (String pro : additionalProperties.keySet()) {
+                    if (obfuscateList.contains(pro)) {
+                        threatSignal.getAdditionalProperties().put(pro, threatSignal.getAdditionalProperties().get(pro).toString().replace("a", "*").replace("b", "*").replace("c", "*"));
+                    }
                 }
+                obfuscatedThreatSignalMap.put(key, threatSignal);
             }
-
-            threatSignalMap.put(key, threatSignal);
+            try {
+                // add minor json prettifying intendation
+                threatSignalJson = "  " + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(obfuscatedThreatSignalMap).replace("\n", "\n  ");
+                threadMapDetailJson = threatSignalJson;
+            } catch (Exception e) {
+                threadMapDetailJson = "";
+            }
         }
-        try {
-            // add minor json prettifying intendation
-            threatSignalJson = "  " + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(threatSignalMap).replace("\n", "\n  ");
-            threadMapDetailJson = threatSignalJson;
-        } catch (Exception e) {
-            threadMapDetailJson = "";
-        }
-
-
     }
 
     private static String getVersion() {
@@ -219,7 +220,9 @@ public class HealthResource {
             threatSignalMap.clear();
         }
         threatSignalMap.put(Instant.now().toString(), signal);
-        getThreatMapDetails();
+        if (isExtendedInfoEnabled) {
+            getThreatMapDetails();
+        }
     }
 
     public static Instant getRunningSince() {
