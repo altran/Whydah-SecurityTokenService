@@ -48,10 +48,13 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
             log.trace("logonUser - Unable to map userCredentialXML - Calling UserAdminService at " + useradminservice + " appTokenXml:" + appTokenXml + " userCredentialXml:" + userCredentialXml);
 
         }
-
-        UserToken userToken = new CommandVerifyUserCredential(useradminservice, appTokenXml, applicationTokenId, userCredentialXml).execute();
-        return AuthenticatedUserTokenRepository.addUserToken(userToken, applicationTokenId, "usertokenid");
-
+        
+        UserToken uToken = AuthenticatedUserTokenRepository.getUserTokenByUserName(userCredential.getUserName(), applicationTokenId);
+        if(uToken==null) {
+        	uToken = new CommandVerifyUserCredential(useradminservice, appTokenXml, applicationTokenId, userCredentialXml).execute();
+            return AuthenticatedUserTokenRepository.addUserToken(uToken, applicationTokenId, "usertokenid");
+        }
+        return uToken; 
 
 	}
 
