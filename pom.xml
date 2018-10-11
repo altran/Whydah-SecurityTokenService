@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.whydah.token</groupId>
     <artifactId>SecurityTokenService</artifactId>
-    <version>2.5.1-SNAPSHOT</version>
+    <version>2.5.4-SNAPSHOT</version>
     <name>SecurityTokenService</name>
     <url>https://wiki.cantara.no/display/iam/SecurityTokenService</url>
 
