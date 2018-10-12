@@ -1,11 +1,9 @@
 package net.whydah.sts.health;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.whydah.sso.commands.systemtestbase.SystemTestBaseConfig;
 import net.whydah.sso.config.ApplicationMode;
 import net.whydah.sso.whydah.ThreatSignal;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +13,6 @@ import static junit.framework.TestCase.assertTrue;
 public class HealthResourceTest {
 
     private static final Logger log = LoggerFactory.getLogger(HealthResourceTest.class);
-    private static ObjectMapper mapper = new ObjectMapper();
 
     static SystemTestBaseConfig config;
 
@@ -28,14 +25,18 @@ public class HealthResourceTest {
 
 
     @Test
-    @Ignore
+    // @Ignore
     public void testThreatListOutput() throws Exception {
-        ThreatSignal t = new ThreatSignal();
-        t.setText("jkljl");
-        HealthResource.addThreatSignal(t);
+        String threatSignalText = "A very important ThreatSignal";
+        ThreatSignal threatSignal = new ThreatSignal();
+        threatSignal.setText(threatSignalText);
+        HealthResource.addThreatSignal(threatSignal);
 
-        String threatSignalJson = HealthResource.getHealthTextJson();
-        assertTrue(threatSignalJson.indexOf("jkljl") > 0);
+        String healthResponseJson = HealthResource.getHealthTextJson();
+        log.debug("Response from /health: {}", healthResponseJson);
+        assertTrue(healthResponseJson.indexOf("Status") > 0);
+        assertTrue(healthResponseJson.indexOf("DEFCON") > 0);
+        assertTrue(healthResponseJson.indexOf(threatSignalText) > 0);
 
     }
 }
