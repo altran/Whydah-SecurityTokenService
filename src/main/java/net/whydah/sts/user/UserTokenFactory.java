@@ -46,19 +46,19 @@ public class UserTokenFactory {
     }
 
     public static boolean shouldReturnFullUserToken(String applicationID) {
-    	if(applicationID==null || applicationID.length()==0){
-    		return false;
-    	}
-        for(String app : AppConfig.getPredefinedFullTokenApplications()){
-        	 if (app.equalsIgnoreCase(applicationID)) {
-                 log.info("shouldReturnFullUserToken from properties=true");
-                 return true;
-             }
-		}
+        if(applicationID==null || applicationID.length()==0){
+            return false;
+        }
+        for (String app : AppConfig.getPredefinedFullTokenApplications()){
+            if (app.equalsIgnoreCase(applicationID)) {
+                log.info("shouldReturnFullUserToken from properties=true");
+                return true;
+            }
+        }
         //check if the application has been configured without filtering
         Application app = ApplicationModelFacade.getApplication(applicationID);
         if(app!=null){
-        	return app.isFullTokenApplication();
+            return app.isFullTokenApplication();
         }
         return false;
     }
@@ -71,8 +71,7 @@ public class UserTokenFactory {
             List<UserApplicationRoleEntry> origRoleList = userToken.getRoleList();
             log.info("shouldReturnAnonymousUserToken - ANONYMOUSTOKEN active, checking for role with ApplicationID: {}", applicationID);
 
-            for (int i = 0; i < origRoleList.size(); i++) {
-                UserApplicationRoleEntry are = origRoleList.get(i);
+            for (UserApplicationRoleEntry are : origRoleList) {
                 if (are.getApplicationId().equalsIgnoreCase(applicationID)) {
                     // Role found, no ANONYMOUSTOKEN filtering
                     log.info("shouldReturnAnonymousUserToken - found expected role, returning false");
@@ -87,7 +86,6 @@ public class UserTokenFactory {
             // No ANONYMOUSTOKEN configured
             return false;
         }
-
     }
 
     public static UserToken fromUserIdentityJson(String userIdentityJSON) {
@@ -104,8 +102,8 @@ public class UserTokenFactory {
         Object document = Configuration.defaultConfiguration().jsonProvider().parse(usersIdentityJSON);
         JSONArray users  = JsonPath.read(document, "$.result");
 
-        for (int i = 0; i < users.size(); i++) {
-            LinkedHashMap user = (LinkedHashMap) users.get(i);
+        for (Object user1 : users) {
+            LinkedHashMap user = (LinkedHashMap) user1;
             UserToken userToken = new UserToken();
             userToken.setUid((String) user.get("uid"));
             userToken.setUserTokenId(generateID());
@@ -117,7 +115,6 @@ public class UserTokenFactory {
             userToken.setCellPhone((String) user.get("cellPhone"));
             userTokens.add(userToken);
         }
-
         return userTokens;
     }
 
@@ -130,13 +127,12 @@ public class UserTokenFactory {
      */
 
     public static UserToken getFilteredUserToken(String applicationTokenID,UserToken userToken) {
-
         String myappid = AuthenticatedApplicationTokenRepository.getApplicationIdFromApplicationTokenID(applicationTokenID);
         log.debug("getFilteredUserToken - found appid={}", myappid);
         Application app = ApplicationModelFacade.getApplication(myappid);
-        if(app!=null && app.getSecurity()!=null && app.getSecurity().isWhydahAdmin()){
-        	log.debug("Is Whydahadmin shouldReturnFullUserToken({})=true - no filtering", myappid);
-        	return userToken;
+        if (app!=null && app.getSecurity()!=null && app.getSecurity().isWhydahAdmin()) {
+            log.debug("Is Whydahadmin shouldReturnFullUserToken({})=true - no filtering", myappid);
+            return userToken;
         } else if (shouldReturnAnonymousUserToken(myappid, userToken)) {
             log.debug("a) shouldReturnAnonymousUserToken({})=true", myappid);
             userToken.setUserName("anonymous");
@@ -155,9 +151,8 @@ public class UserTokenFactory {
             List<UserApplicationRoleEntry> origRoleList = userToken.getRoleList();
             List<UserApplicationRoleEntry> roleList = new LinkedList<>();
 
-            for (int i=0;i<origRoleList.size();i++){
-                UserApplicationRoleEntry are = origRoleList.get(i);
-                if (are.getApplicationId().equalsIgnoreCase(myappid)){
+            for (UserApplicationRoleEntry are : origRoleList) {
+                if (are.getApplicationId().equalsIgnoreCase(myappid)) {
                     roleList.add(are);
                 }
             }
