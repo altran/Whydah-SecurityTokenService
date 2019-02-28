@@ -5,6 +5,7 @@ import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
 import net.whydah.sso.application.types.Application;
+import net.whydah.sso.commands.extensions.crmapi.CommandGetCRMCustomer;
 import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserApplicationRoleEntry;
 import net.whydah.sso.user.types.UserToken;
@@ -14,6 +15,7 @@ import net.whydah.sts.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
 import java.util.*;
 
 /**
@@ -125,8 +127,7 @@ public class UserTokenFactory {
      * b) fulltoken
      * c) filtered
      */
-
-    public static UserToken getFilteredUserToken(String applicationTokenID,UserToken userToken) {
+    public static UserToken getFilteredUserToken(String applicationTokenID, UserToken userToken) {
         String myappid = AuthenticatedApplicationTokenRepository.getApplicationIdFromApplicationTokenID(applicationTokenID);
         log.debug("getFilteredUserToken - found appid={}", myappid);
         Application app = ApplicationModelFacade.getApplication(myappid);
@@ -139,7 +140,16 @@ public class UserTokenFactory {
             userToken.setEmail(null);
             userToken.setFirstName(null);
             userToken.setCellPhone(null);
-            userToken.setLastName("Demographics Oslo");
+
+            try {
+                URI crmServiceUri = URI.create(appConfig.getProperty("crmservice"));
+                String result = new CommandGetCRMCustomer(crmServiceUri, applicationTokenID, userToken.getUserTokenId(), userToken.getPersonRef()).execute();
+                String postalCode = extractPostalCode(result);
+                userToken.setLastName("Demographics " + postalCode);
+            } catch (Exception e){
+                userToken.setLastName("Demographics Oslo");
+            }
+
             List<UserApplicationRoleEntry> roleList = new ArrayList<>();
             userToken.setRoleList(roleList);
             log.debug("getFilteredUserToken - returning anonymous userToken {}", userToken);
@@ -160,6 +170,20 @@ public class UserTokenFactory {
             log.debug("getFilteredUserToken - filtering active for appid:{}", myappid);
             return userToken;
         }
+    }
+
+    /**
+     * @return  the postal code earliest in the json string (the first address)
+     */
+    static String extractPostalCode(String crmCustomer) {
+        int beginIndex = crmCustomer.indexOf("postalcode") + "postalcode".length();
+        int endIndex = crmCustomer.indexOf("postalcity");
+        return crmCustomer.substring(beginIndex, endIndex)
+                .replace("\"","")
+                .replace(",","")
+                .replace(",","")
+                .replace(":","")
+                .trim();
     }
 
     public static boolean verifyApplicationToken(String applicationtokenid, String applicationtokenXml) {

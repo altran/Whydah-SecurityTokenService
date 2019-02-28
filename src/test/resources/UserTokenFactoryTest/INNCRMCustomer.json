@@ -1,0 +1,85 @@
+{
+  "id": "90e1a025-910a-40a7-af60-9bd16be43e6c",
+  "firstname": "Capra",
+  "middlename": null,
+  "lastname": "Consulting",
+  "sex": "M",
+  "birthdate": "01-01-1970",
+  "defaultEmailLabel": "work",
+  "emailaddresses": {
+    "work": {
+      "emailaddress": "mail@capraconsulting.no",
+      "tags": "work",
+      "verified": true
+    },
+    "private": {
+      "emailaddress": "private.mail@hotmail.com",
+      "tags": "private",
+      "verified": false
+    }
+  },
+  "defaultPhoneLabel": "mobile",
+  "phonenumbers": {
+    "mobile": {
+      "phonenumber": "94003902",
+      "tags": null,
+      "verified": true
+    }
+  },
+  "defaultAddressLabel": "home",
+  "deliveryaddresses": {
+    "home": {
+      "name": "Tore Mottaker",
+      "company": "Acme",
+      "addressLine1": "Mottakerveien 14",
+      "addressLine2": "c/o Tina Mottaker",
+      "postalcode": "0659",
+      "postalcity": "OSLO",
+      "countryCode": "no",
+      "reference": "43242",
+      "tags": "home",
+      "contact": {
+        "name": "Tore Mottaker",
+        "email": "tore@mottakertest.no",
+        "phoneNumber": "88888888"
+      },
+      "deliveryinformation": {
+        "additionalAddressInfo": "Bruk ringeklokken",
+        "GPS/pickupPoint": null,
+        "Deliverytime": null
+      }
+    },
+    "work": {
+      "name": "Tore Jazztobakk",
+      "company": "Acme",
+      "addressLine1": "Mottakerveien 15",
+      "addressLine2": "c/o Tina Mottaker",
+      "postalcode": "2614",
+      "postalcity": "LILLEHAMMER",
+      "countryCode": "no",
+      "reference": "43242",
+      "tags": "work",
+      "contact": {
+        "name": "Tore Mottaker",
+        "email": "tore@mottakertest2.no",
+        "phoneNumber": "88888888"
+      },
+      "deliveryinformation": {
+        "additionalAddressInfo": "Bruk ringeklokken",
+        "GPS/pickupPoint": null,
+        "Deliverytime": null
+      }
+    }
+  },
+
+  "applications": {
+    "1124123": {
+      "name": "Expert",
+      "active": true
+    },
+    "2124122": {
+      "name": "Komplett",
+      "active": false
+    }
+  }
+}

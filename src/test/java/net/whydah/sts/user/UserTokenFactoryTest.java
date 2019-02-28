@@ -9,6 +9,12 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.net.URI;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -246,4 +252,21 @@ public class UserTokenFactoryTest {
         assertEquals("12341234", userToken.getCellPhone());
         assertEquals(0, userToken.getRoleList().size());
     }
+
+
+    @Test
+    public void testExtractPostalCode() throws Exception {
+        String customerJson = readFile("/UserTokenFactoryTest/INNCRMCustomer.json", Charset.forName("UTF-8"));
+        String postalCode = UserTokenFactory.extractPostalCode(customerJson);
+        assertEquals("0659", postalCode);
+    }
+
+    private String readFile(String inClassPath, Charset encoding) throws Exception {
+        URL url = getClass().getResource(inClassPath);
+        URI uri = url.toURI();
+        Path path = Paths.get(uri);
+        byte[] encoded = Files.readAllBytes(path);
+        return new String(encoded, encoding);
+    }
+
 }
