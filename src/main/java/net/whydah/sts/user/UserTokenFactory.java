@@ -138,7 +138,7 @@ public class UserTokenFactory {
             log.debug("a) shouldReturnAnonymousUserToken({})=true", myappid);
             userToken.setUserName("anonymous");
             userToken.setEmail(null);
-            userToken.setFirstName(null);
+            userToken.setFirstName("Anonymous");
             userToken.setCellPhone(null);
 
             try {
