@@ -9,7 +9,7 @@
     <parent>
         <groupId>no.cantara.emi</groupId>
         <artifactId>parent</artifactId>
-        <version>6</version>
+        <version>8</version>
     </parent>
 
     <scm>
@@ -21,13 +21,13 @@
 
     <properties>
         <service.name>Whydah-SecurityTokenService</service.name>
-        <whydah.admin.sdk.version>2.5.18</whydah.admin.sdk.version>
+        <whydah.admin.sdk.version>2.5.20</whydah.admin.sdk.version>
         <org.valuereporter.agent>1.0.6</org.valuereporter.agent>
         <jersey-version>1.19.4</jersey-version>
         <grizzy-version>2.3.33</grizzy-version>
         <guice-version>4.2.1</guice-version>
         <slf4j.version>1.7.21</slf4j.version>
-        <jetty.plugin.version>9.4.12.v20180830</jetty.plugin.version>
+        <jetty.plugin.version>9.4.19.v20190610</jetty.plugin.version>
         <additionalparam>-Xdoclint:none</additionalparam>
     </properties>
 
