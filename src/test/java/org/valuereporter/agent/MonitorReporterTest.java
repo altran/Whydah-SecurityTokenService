@@ -8,9 +8,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.valuereporter.agent.activity.ObservedActivity;
-import org.valuereporter.agent.activity.ObservedActivityDistributer;
-import org.valuereporter.agent.http.HttpObservationDistributer;
+import org.valuereporter.activity.ObservedActivity;
+import org.valuereporter.client.MonitorReporter;
+import org.valuereporter.client.activity.ObservedActivityDistributer;
+import org.valuereporter.client.http.HttpObservationDistributer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class MonitorReporterTest {
         String prefix = "SecurityTokenService";
         int cacheSize = 10;
         int forwardInterval = 10;
-        new Thread(new ObservedActivityDistributer(reporterHost, reporterPort, prefix.replace(" ",""), cacheSize, forwardInterval)).start();
+        new Thread(ObservedActivityDistributer.getInstance(reporterHost, reporterPort, prefix.replace(" ", ""), cacheSize, forwardInterval)).start();
         log.info("Started ObservedActivityDistributer({},{},{},{},{})",reporterHost, reporterPort, prefix, cacheSize, forwardInterval);
 
     }

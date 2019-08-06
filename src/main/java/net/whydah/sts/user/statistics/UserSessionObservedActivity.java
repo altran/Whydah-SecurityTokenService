@@ -1,7 +1,7 @@
 package net.whydah.sts.user.statistics;
 
 import net.whydah.sts.application.AuthenticatedApplicationTokenRepository;
-import org.valuereporter.agent.activity.ObservedActivity;
+import org.valuereporter.activity.ObservedActivity;
 
 public class UserSessionObservedActivity extends ObservedActivity {
     public static final String USER_SESSION_ACTIVITY = "userSession";

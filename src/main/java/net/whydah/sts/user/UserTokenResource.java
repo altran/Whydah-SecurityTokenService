@@ -11,7 +11,6 @@ import net.whydah.sso.config.ApplicationMode;
 import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.sso.util.SSLTool;
-import net.whydah.sts.application.ApplicationModelFacade;
 import net.whydah.sts.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.sts.config.AppConfig;
 import net.whydah.sts.config.DevModeHelper;
@@ -25,8 +24,8 @@ import net.whydah.sts.user.statistics.UserSessionObservedActivity;
 import net.whydah.sts.util.DelayedSendSMSTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.valuereporter.agent.MonitorReporter;
-import org.valuereporter.agent.activity.ObservedActivity;
+import org.valuereporter.activity.ObservedActivity;
+import org.valuereporter.client.MonitorReporter;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;

@@ -15,8 +15,7 @@ import org.glassfish.grizzly.servlet.WebappContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
-import org.valuereporter.agent.activity.ObservedActivityDistributer;
-import org.valuereporter.agent.http.HttpObservationDistributer;
+import org.valuereporter.client.activity.ObservedActivityDistributer;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -64,7 +63,7 @@ public class ServiceStarter {
             String prefix = appConfig.getProperty("applicationname").replace(" ","");
             int cacheSize = Integer.parseInt(appConfig.getProperty("valuereporter.activity.batchsize"));
             int forwardInterval = Integer.parseInt(appConfig.getProperty("valuereporter.activity.postintervalms"));
-            new Thread(new ObservedActivityDistributer(reporterHost, reporterPort, prefix, cacheSize, forwardInterval)).start();
+            new Thread(ObservedActivityDistributer.getInstance(reporterHost, reporterPort, prefix, cacheSize, forwardInterval)).start();
             log.info("Started ObservedActivityDistributer({},{},{},{},{})",reporterHost, reporterPort, prefix, cacheSize, forwardInterval);
 
         } catch (Exception e) {

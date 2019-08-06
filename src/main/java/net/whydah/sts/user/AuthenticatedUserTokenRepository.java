@@ -18,8 +18,8 @@ import net.whydah.sts.user.statistics.UserSessionObservedActivity;
 import net.whydah.sts.util.ApplicationModelHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.valuereporter.agent.MonitorReporter;
-import org.valuereporter.agent.activity.ObservedActivity;
+import org.valuereporter.activity.ObservedActivity;
+import org.valuereporter.client.MonitorReporter;
 
 import java.io.FileNotFoundException;
 import java.util.*;
