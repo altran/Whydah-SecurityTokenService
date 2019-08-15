@@ -65,6 +65,12 @@ public class ServiceStarterTest {
         assertTrue(responseMsg.contains("<usercredential>"));
     }
 
+    @Test
+    public void getHealthResource() {
+        WebResource webResource = restClient.resource(baseUri).path("/health");
+        String responseMsg = webResource.get(String.class);
+        assertTrue(responseMsg.contains("SecurityTokenService"));
+    }
     /**
      * Test if a WADL document is available at the relative path
      * "application.wadl".
