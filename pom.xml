@@ -21,8 +21,8 @@
 
     <properties>
         <service.name>Whydah-SecurityTokenService</service.name>
-        <whydah.admin.sdk.version>2.5.31</whydah.admin.sdk.version>
-        <org.valuereporter.agent>1.0.10</org.valuereporter.agent>
+        <whydah.admin.sdk.version>2.5.34</whydah.admin.sdk.version>
+        <org.valuereporter.agent>1.0.11</org.valuereporter.agent>
         <jersey-version>1.19.4</jersey-version>
         <grizzy-version>2.3.33</grizzy-version>
         <guice-version>4.2.2</guice-version>
@@ -39,8 +39,8 @@
             <roles>
                 <role>Developer</role>
             </roles>
-            <organization>Capra Consulting AS</organization>
-            <organizationUrl>http://www.capraconsulting.no/</organizationUrl>
+            <organization>Cantara</organization>
+            <organizationUrl>https://wiki.cantara.no/</organizationUrl>
         </developer>
         <developer>
             <id>kimcs</id>
@@ -59,8 +59,8 @@
             <roles>
                 <role>Developer</role>
             </roles>
-            <organization>Capra Consulting AS</organization>
-            <organizationUrl>http://www.capraconsulting.no/</organizationUrl>
+            <organization>Cantara</organization>
+            <organizationUrl>https://wiki.cantara.no/</organizationUrl>
         </developer>
     </developers>
 
