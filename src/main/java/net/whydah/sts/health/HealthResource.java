@@ -42,7 +42,7 @@ public class HealthResource {
     private static ObjectMapper mapper = new ObjectMapper();
     private static boolean isExtendedInfoEnabled = false;
     private static String applicationInstanceName;
-    private static String threadMapDetailJson = "\"threat_signals\" : \"{}\"";
+    private static String threadMapDetailJson = "\"threat_signals\" : {}";
 
     static {
         AppConfig appConfig = new AppConfig();
@@ -156,7 +156,7 @@ public class HealthResource {
                     "  \"DEFCON\": \"" + ThreatResource.getDEFCON() + "\",\n" +
                     "  \"now\": \"" + Instant.now() + "\",\n" +
                     "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\"" +
-                    "}\n\n";
+                    "}\n";
 
         }
     }
@@ -189,7 +189,7 @@ public class HealthResource {
                 threatSignalJson = "  " + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(obfuscatedThreatSignalMap).replace("\n", "\n  ");
                 threadMapDetailJson = "\"threat_signals\" : " + threatSignalJson;
             } catch (Exception e) {
-                // threadMapDetailJson = "";
+                threadMapDetailJson = "\"threat_signals\" : {}";
             }
         }
     }
