@@ -248,7 +248,7 @@ public class AuthenticatedApplicationTokenRepository {
             }
         }
         logActiveApplicationTokenIDs();
-        return applicationMap.toString();
+        return applicationMap.toString().replace("{", "").replace("}", "");
     }
 
 
