@@ -1,5 +1,6 @@
 package net.whydah.sts.application;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
@@ -31,6 +32,7 @@ public class AuthenticatedApplicationTokenRepository {
     private static AppConfig appConfig = new AppConfig();
     private static String mySTSApplicationTokenId = "";
     private static ApplicationToken mySTSApplicationToken;
+    private static ObjectMapper mapper = new ObjectMapper();
 
     private static final Map<String, ApplicationToken> applicationTokenMap;
     private static final Map<String, String> applicationCryptoKeyMap;
@@ -248,7 +250,13 @@ public class AuthenticatedApplicationTokenRepository {
             }
         }
         logActiveApplicationTokenIDs();
-        return applicationMap.toString();
+        String result = "{}";
+        try {
+            result = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(applicationMap);
+        } catch (Exception e) {
+
+        }
+        return result;
     }
 
 
