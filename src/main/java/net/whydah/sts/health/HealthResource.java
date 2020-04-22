@@ -122,9 +122,8 @@ public class HealthResource {
                         "  \"AuthenticatedUserTokenMapSize\": \"" + AuthenticatedUserTokenRepository.getMapSize() + "\",\n" +
                         "  \"AuthenticatedApplicationRepositoryMapSize\": \"" + AuthenticatedApplicationTokenRepository.getMapSize() + "\",\n" +
                         "  \"AuthenticatedApplicationKeyMapSize\": \"" + AuthenticatedApplicationTokenRepository.getKeyMapSize() + "\",\n" +
-                        "  \"ConfiguredApplications\":  " + applicationMapSize +
-                        "  \"ActiveApplications\": \"" + AuthenticatedApplicationTokenRepository.getActiveApplications().
-                        replace(",", ",\n                          ") + "\",\n" +
+                        "  \"ConfiguredApplications\":  \"" + applicationMapSize + "\",\n" +
+                        "  \"ActiveApplications\": " + AuthenticatedApplicationTokenRepository.getActiveApplications() +
                         "  \"ThreatSignalMapSize\": \"" + threatSignalMap.size() + "\",\n" +
                         "  \"now\": \"" + Instant.now() + "\",\n" +
                         "  \"running since\": \"" + WhydahUtil.getRunningSince() + "\"," +
