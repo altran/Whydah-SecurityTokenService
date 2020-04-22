@@ -42,7 +42,7 @@ public class HealthResource {
     private static ObjectMapper mapper = new ObjectMapper();
     private static boolean isExtendedInfoEnabled = false;
     private static String applicationInstanceName;
-    private static String threadMapDetailJson = "";
+    private static String threadMapDetailJson = "\"threat_signals\" : \"{}\"";
 
     static {
         AppConfig appConfig = new AppConfig();
@@ -187,9 +187,9 @@ public class HealthResource {
             try {
                 // add minor json prettifying intendation
                 threatSignalJson = "  " + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(obfuscatedThreatSignalMap).replace("\n", "\n  ");
-                threadMapDetailJson = threatSignalJson;
+                threadMapDetailJson = "\"threat_signals\" : " + threatSignalJson;
             } catch (Exception e) {
-                threadMapDetailJson = "";
+                // threadMapDetailJson = "";
             }
         }
     }
