@@ -31,7 +31,7 @@ public class AuthenticatedUserTokenRepository {
     private static Map<String, Date> lastSeenMap;
     private static int noOfClusterMembers = 0;
     private static final HazelcastInstance hazelcastInstance;
-    public static long DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS;
+    public static long DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS;
     //public static final long DEFAULT_USER_SESSION_TIME_IN_SECONDS;
 
 
@@ -62,30 +62,22 @@ public class AuthenticatedUserTokenRepository {
         Set clusterMembers = hazelcastInstance.getCluster().getMembers();
         noOfClusterMembers = clusterMembers.size();
 //        String userTokenDefaultTimeout = new UserTokenLifespan(appConfig.getProperty("user.session.timeout")).;
-        DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS = updateDefaultUserSessionExtensionTime(appConfig);
+        DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS = updateDefaultUserSessionExtensionTime(appConfig);
 
     }
 
     protected static long updateDefaultUserSessionExtensionTime(AppConfig appConfig) {
         long userSessionExtensionTime = 0;
         try{
-            if (UserTokenLifespan.isValid(appConfig.getProperty("user.session.timeout")) && appConfig.getProperty("user.session.timeout") != null) {
-                //        if (userTokenDefaultTimeout != null && (Long.parseLong(userTokenDefaultTimeout) > 0)) {
+            if (appConfig.getProperty("user.session.timeout") != null && UserTokenLifespan.isValid(appConfig.getProperty("user.session.timeout"))) {
                 userSessionExtensionTime = new UserTokenLifespan(Long.parseLong(appConfig.getProperty("user.session.timeout"))).getTimeoutInterval();
-                log.info("Updated DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS to " + userSessionExtensionTime);
-                //DEFAULT_USER_SESSION_TIME_IN_SECONDS = DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS / 2;
-                //log.info("Updated DEFAULT_USER_SESSION_TIME_IN_SECONDS to " + DEFAULT_USER_SESSION_TIME_IN_SECONDS);
             } else {
-                userSessionExtensionTime = BaseExpires.addPeriod(Calendar.MONTH, 6); //14 * 24 * 60 * 60;  // 14 days
-                //DEFAULT_USER_SESSION_TIME_IN_SECONDS = 7 * 24 * 60 * 60;  // 7 days
-                log.info("Added 6 months. DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS is " + userSessionExtensionTime);
-
+                userSessionExtensionTime = BaseExpires.addPeriod(Calendar.MONTH, 6);
             }
-        }catch(Exception ex){
-            userSessionExtensionTime = BaseExpires.addPeriod(Calendar.MONTH, 1);//14 * 24 * 60 * 60;  // 14 days
-            log.info("Added 1 month. DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS is " + userSessionExtensionTime);
+        } catch(Exception ex){
+            userSessionExtensionTime = BaseExpires.addPeriod(Calendar.MONTH, 1);
         }
-
+        log.info("DEFAULT_USER_SESSION is set to " + userSessionExtensionTime);
         return userSessionExtensionTime;
     }
 
@@ -218,98 +210,82 @@ public class AuthenticatedUserTokenRepository {
         active_username_usertokenids_map.remove(userToken.getUserName());
         userToken.setDefcon(ThreatResource.getDEFCON());
         userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
-        long applicationUserTokenLifespanInSeconds = DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS;
-        try {
-            ApplicationId applicationID = ApplicationModelHelper.getApplicationId(new ApplicationTokenID(applicationTokenId));
-            applicationUserTokenLifespanInSeconds = ApplicationModelHelper.getUserTokenLifeSpanSecondsFromApplication(applicationTokenId);
-            log.debug("renewUserToken: found applicationUserTokenLifespanInSeconds {} for ApplicationID:{}", applicationUserTokenLifespanInSeconds, applicationID);
-        } catch (Exception e) {
-            log.warn("renewUserToken called without resolveable aplicationTokenId:{}", applicationTokenId);
-        }
-        if (applicationUserTokenLifespanInSeconds < DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS) {
-            userToken.setLifespan(String.valueOf(applicationUserTokenLifespanInSeconds * 1000L));
-        } else {
-            userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS * 1000L));
-        }
-        log.debug("renewUserToken: " +
-                "set Lifespan(ms) to {}/{} -  ApplicationMax(ms):{}, DefaultMax(ms):{}", userToken.getLifespan(), new UserTokenLifespan(userToken.getLifespan()).getDateFormatted(), applicationUserTokenLifespanInSeconds * 1000L, DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS * 1000L);
-
-        addUserToken(userToken, applicationTokenId, "renew");
+        addUserToken(userToken, applicationTokenId, "renew", false);
         ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUid(), "userSessionRenewal", applicationTokenId);
         MonitorReporter.reportActivity(observedActivity);
 
     }
 
+	private static void applyUserLifespan(UserToken userToken, long applicationUserTokenLifespan) {
+		if (applicationUserTokenLifespan < DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS) {
+            userToken.setLifespan(String.valueOf(applicationUserTokenLifespan));
+        } else {
+            userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS));
+        }
+	}
+
     public static UserToken refreshUserToken(String applicationTokenId, UserToken refreshedUserToken) {
         //UserToken oldusertoken = activeusertokensmap.remove(usertokenid);
-        return addUserToken(refreshedUserToken, applicationTokenId, "refresh");
+        return addUserToken(refreshedUserToken, applicationTokenId, "refresh", false);
 
     }
 
     private static String generateID() {
         return UUID.randomUUID().toString();
     }
-
+    
     public static UserToken addUserToken(UserToken userToken, String applicationTokenId, String authType) {
-
-        return addUserToken(userToken, applicationTokenId, authType, false);
+    	return addUserToken(userToken, applicationTokenId, authType, false);
     }
 
-    public static UserToken addUserToken(UserToken userToken, String applicationTokenId, String authType, boolean useExistingUserTokenLifespan) {
-        if (!UserTokenId.isValid(userToken.getUserTokenId())) {
-            log.error("Error: UserToken has no valid usertokenid, generating new userTokenId");
-            userToken.setUserTokenId(generateID());
-        }
-        long applicationUserTokenLifespanInSeconds = DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS;//DEFAULT_USER_SESSION_TIME_IN_SECONDS;
-        try {
-            ApplicationId applicationID = ApplicationModelHelper.getApplicationId(new ApplicationTokenID(applicationTokenId));
-            applicationUserTokenLifespanInSeconds = ApplicationModelHelper.getUserTokenLifeSpanSecondsFromApplication(applicationTokenId);
-            log.debug("addUserToken: found applicationUserTokenLifespanInSeconds {} for ApplicationID:{}", applicationUserTokenLifespanInSeconds, applicationID);
-        } catch (Exception e) {
-            log.warn("addUserToken called without resolveable aplicationTokenId:{}", applicationTokenId);
-        }
-        if (!useExistingUserTokenLifespan) {
+    public static UserToken addUserToken(UserToken userToken, String applicationTokenId, String authType, boolean useExistingLifespan) {
 
-            //if (applicationUserTokenLifespanInSeconds < DEFAULT_USER_SESSION_TIME_IN_SECONDS) {
-            if (applicationUserTokenLifespanInSeconds < DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS) {
-                userToken.setLifespan(String.valueOf(applicationUserTokenLifespanInSeconds * 1000L));
-            } else {
-                //userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_TIME_IN_SECONDS * 1000));
-            	userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS * 1000L));
-            }
-            //log.debug("addUserToken: set Lifespan(ms) to {}/{} -  ApplicationMax(ms):{}, DefaultMax(ms):{}", userToken.getLifespan(), new UserTokenLifespan(userToken.getLifespan()).getDateFormatted(), applicationUserTokenLifespanInSeconds * 1000, DEFAULT_USER_SESSION_TIME_IN_SECONDS * 1000);
-            log.debug("addUserToken: set Lifespan(ms) to {}/{} -  ApplicationMax(ms):{}, DefaultMax(ms):{}", userToken.getLifespan(), new UserTokenLifespan(userToken.getLifespan()).getDateFormatted(), applicationUserTokenLifespanInSeconds * 1000L, DEFAULT_USER_SESSION_EXTENSION_TIME_IN_SECONDS * 1000L);
-        }
-        userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+    	 if (!UserTokenId.isValid(userToken.getUserTokenId())) {
+             log.error("Error: UserToken has no valid usertokenid, generating new userTokenId");
+             userToken.setUserTokenId(generateID());
+         }
+    	 if(!useExistingLifespan) {
+    		 try {
+
+    			 long applicationUserTokenLifespan = ApplicationModelHelper.getUserTokenLifeSpan(applicationTokenId);
+    			 applyUserLifespan(userToken, applicationUserTokenLifespan);
+    			 log.debug("addUserToken: found applicationUserTokenLifespan {} for application token Id {} - apply the lifespan (ms) to {}/{}", applicationUserTokenLifespan, applicationTokenId, userToken.getLifespan(), new UserTokenLifespan(userToken.getLifespan()).getDateFormatted());
+    		 } catch (Exception e) {
+    			 log.warn("addUserToken called without resolveable aplicationTokenId:{}", applicationTokenId);
+    		 }
+
+    	 }
+         userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
 
-        if (userToken.getEmail() != null) {
-            String lastSeenString = AuthenticatedUserTokenRepository.getLastSeen(userToken);
-            userToken.setLastSeen(lastSeenString);
-            lastSeenMap.put(userToken.getEmail(), new Date());
+         if (userToken.getEmail() != null) {
+             String lastSeenString = AuthenticatedUserTokenRepository.getLastSeen(userToken);
+             userToken.setLastSeen(lastSeenString);
+             lastSeenMap.put(userToken.getEmail(), new Date());
 
-        }
+         }
 
-        activeusertokensmap.put(userToken.getUserTokenId(), userToken);
-        log.info("Added userToken with id {}", userToken.getUserTokenId(), " content:" + userToken.toString());
+         activeusertokensmap.put(userToken.getUserTokenId(), userToken);
+         log.info("Added userToken with id {}", userToken.getUserTokenId(), " content:" + userToken.toString());
 
-        if (userToken.getUserName() != null) {
-            active_username_usertokenids_map.put(userToken.getUserName(), userToken.getUserTokenId());
-        }
-        if ("renew".equalsIgnoreCase(authType)) {
-            return userToken;  // alreqdy reported
-        }
-        if ("refresh".equalsIgnoreCase(authType)) {
-            return userToken;  // alreqdy reported
-        }
-        ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUid(), "userSessionCreatedByPassword", applicationTokenId);
-        if ("pin".equalsIgnoreCase(authType)) {
-            observedActivity = new UserSessionObservedActivity(userToken.getUid(), "userSessionCreatedByPin", applicationTokenId);
-        }
-        MonitorReporter.reportActivity(observedActivity);
-        return userToken;
+         if (userToken.getUserName() != null) {
+             active_username_usertokenids_map.put(userToken.getUserName(), userToken.getUserTokenId());
+         }
+         if ("renew".equalsIgnoreCase(authType)) {
+             return userToken;  // alreqdy reported
+         }
+         if ("refresh".equalsIgnoreCase(authType)) {
+             return userToken;  // alreqdy reported
+         }
+         ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUid(), "userSessionCreatedByPassword", applicationTokenId);
+         if ("pin".equalsIgnoreCase(authType)) {
+             observedActivity = new UserSessionObservedActivity(userToken.getUid(), "userSessionCreatedByPin", applicationTokenId);
+         }
+         MonitorReporter.reportActivity(observedActivity);
+         return userToken;
     }
 
+   
     public static void removeUserToken(String userTokenId, String applicationTokenId) {
         UserToken removedToken = activeusertokensmap.remove(userTokenId);
         active_username_usertokenids_map.remove(removedToken.getUserName());
