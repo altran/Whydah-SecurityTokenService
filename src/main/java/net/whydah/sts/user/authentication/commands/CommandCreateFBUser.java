@@ -14,20 +14,20 @@ import java.util.UUID;
 
 public class CommandCreateFBUser extends BaseHttpPostHystrixCommand<UserToken> {
 
-    private String fbUserXml;
+    private String userXml;
 
-    public CommandCreateFBUser(URI userAdminServiceUri, String appTokenXml, String myAppTokenId, String fbUserXml) {
+    public CommandCreateFBUser(URI userAdminServiceUri, String appTokenXml, String myAppTokenId, String userXml) {
         super(userAdminServiceUri, appTokenXml, myAppTokenId, "UASUserAdminGroup", 2000);
 
-        this.fbUserXml = fbUserXml;
-        if (userAdminServiceUri == null || !ApplicationTokenID.isValid(myAppTokenId) || fbUserXml == null) {
-            log.error(TAG + " initialized with null-values - will fail - userAdminServiceUri:{}, myAppTokenId:{},  fbUserXml:{}", userAdminServiceUri, myAppTokenId, fbUserXml);
+        this.userXml = userXml;
+        if (userAdminServiceUri == null || !ApplicationTokenID.isValid(myAppTokenId) || userXml == null) {
+            log.error(TAG + " initialized with null-values - will fail - userAdminServiceUri:{}, myAppTokenId:{},  UserXml:{}", userAdminServiceUri, myAppTokenId, userXml);
         }
     }
 
     @Override
     protected HttpRequest dealWithRequestBeforeSend(HttpRequest request) {
-        return request.contentType(MediaType.APPLICATION_XML).send(fbUserXml);
+        return request.contentType(MediaType.APPLICATION_XML).send(userXml);
     }
 
     @Override
@@ -54,22 +54,7 @@ public class CommandCreateFBUser extends BaseHttpPostHystrixCommand<UserToken> {
 
     @Override
     protected String getTargetPath() {
-        return myAppTokenId + "/auth/logon/user/createandlogon";
+        return myAppTokenId + "/createandlogon";
     }
-
-    /**
-     * 	private static final String USER_AUTHENTICATION_PATH = "/auth/logon/user";
-     private static final String CREATE_AND_LOGON_OPERATION = "createandlogon";
-
-     *
-     * 		log.trace("createAndLogonUser - Calling UserAdminService at with appTokenXml:\n" + appTokenXml + "userCredentialXml:\n" + userCredentialXml + "fbUserXml:\n" + fbUserXml);
-     WebResource webResource = uasResource.path(applicationtokenid).path(USER_AUTHENTICATION_PATH).path(CREATE_AND_LOGON_OPERATION);
-     log.debug("createAndLogonUser - Calling createandlogon " + webResource.toString());
-     ClientResponse response = webResource.type(MediaType.APPLICATION_XML).post(ClientResponse.class, fbUserXml);
-
-     UserToken token = getUserToken(applicationtokenid, appTokenXml, response);
-     token.setSecurityLevel("0");  // 3rd party sts as source = securitylevel=0
-
-     */
 }
 

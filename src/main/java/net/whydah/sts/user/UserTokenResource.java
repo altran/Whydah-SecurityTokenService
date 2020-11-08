@@ -1570,8 +1570,8 @@ public class UserTokenResource {
 			@PathParam("userticket") String userticket,
 			@FormParam("apptoken") String appTokenXml,
 			@FormParam("usercredential") String userCredentialXml,
-			@FormParam("fbuser") String thirdPartyUserTokenXml) throws AppException {
-		log.trace("Response createAndLogOnUser: usercredential:" + userCredentialXml + "fbuser:" + thirdPartyUserTokenXml);
+			@FormParam("userxml") String userxml) throws AppException {
+		log.trace("Response createAndLogOnUser: usercredential:" + userCredentialXml + "thirdpartyuser:" + userxml);
 
 		if (ApplicationMode.getApplicationMode() == ApplicationMode.DEV) {
 			return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
@@ -1586,7 +1586,7 @@ public class UserTokenResource {
 
 		try {
 			applicationtokenidmap.put(applicationtokenid, applicationtokenid);
-			UserToken userToken = userAuthenticator.createAndLogonUser(applicationtokenid, appTokenXml, userCredentialXml, thirdPartyUserTokenXml);
+			UserToken userToken = userAuthenticator.createAndLogonUser(applicationtokenid, appTokenXml, userCredentialXml, userxml);
 			userticketmap.put(userticket, userToken.getUserTokenId());
 			userToken.setDefcon(ThreatResource.getDEFCON());
 			userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getUserTokenId());
@@ -1595,7 +1595,7 @@ public class UserTokenResource {
 			MonitorReporter.reportActivity(observedActivity);
 			return createUserTokenResponse(applicationtokenid, userToken);
 		} catch (AuthenticationFailedException ae) {
-			log.warn("createAndLogOnUser - Error creating or authenticating user. thirdPartyUserTokenXml={}", thirdPartyUserTokenXml);
+			log.warn("createAndLogOnUser - Error creating or authenticating user. thirdPartyUserTokenXml={}", userxml);
 			//return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
 			throw AppExceptionCode.USER_AUTHENTICATION_FAILED_6000.setDeveloperMessage(ae.getMessage());
 		}

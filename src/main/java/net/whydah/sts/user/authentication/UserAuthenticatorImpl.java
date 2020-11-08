@@ -59,9 +59,9 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 	}
 
 	@Override
-    public UserToken createAndLogonUser(String applicationTokenId, String appTokenXml, String userCredentialXml, String fbUserXml) throws AuthenticationFailedException {
-		log.trace("createAndLogonUser - Calling UserAdminService at with appTokenXml:\n" + appTokenXml + "userCredentialXml:\n" + userCredentialXml + "fbUserXml:\n" + fbUserXml);
-        UserToken userToken = new CommandCreateFBUser(useradminservice, appTokenXml, applicationTokenId, fbUserXml).execute();
+    public UserToken createAndLogonUser(String applicationTokenId, String appTokenXml, String userCredentialXml, String thirdpartyUserXML) throws AuthenticationFailedException {
+		log.trace("createAndLogonUser - Calling UserAdminService at with appTokenXml:\n" + appTokenXml + "userCredentialXml:\n" + userCredentialXml + "thirdpartyUserXML:\n" + thirdpartyUserXML);
+        UserToken userToken = new CommandCreateFBUser(useradminservice, appTokenXml, applicationTokenId, thirdpartyUserXML).execute();
         return AuthenticatedUserTokenRepository.addUserToken(userToken, applicationTokenId, "usertokenid");
 	}
 
