@@ -5,23 +5,20 @@
     <version>2.6.5-SNAPSHOT</version>
     <name>SecurityTokenService</name>
     <url>https://wiki.cantara.no/display/iam/SecurityTokenService</url>
-
     <parent>
         <groupId>no.cantara.emi</groupId>
         <artifactId>parent</artifactId>
         <version>8</version>
     </parent>
-
     <scm>
         <developerConnection>scm:git:ssh://git@github.com/cantara/Whydah-SecurityTokenService.git</developerConnection>
         <connection>scm:git:https://github.com/cantara/Whydah-SecurityTokenService.git</connection>
         <url>https://github.com/cantara/Whydah-SecurityTokenService</url>
       <tag>HEAD</tag>
-  </scm>
-
+    </scm>
     <properties>
         <service.name>Whydah-SecurityTokenService</service.name>
-        <whydah.admin.sdk.version>2.6.6</whydah.admin.sdk.version>
+        <whydah.admin.sdk.version>2.6.10</whydah.admin.sdk.version>
         <org.valuereporter.agent>1.0.18</org.valuereporter.agent>
         <jersey-version>1.19.4</jersey-version>
         <grizzy-version>2.3.33</grizzy-version>
