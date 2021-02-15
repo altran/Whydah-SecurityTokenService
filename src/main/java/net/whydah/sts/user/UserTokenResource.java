@@ -83,7 +83,12 @@ public class UserTokenResource {
 		}
 		hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
 		//hazelcastConfig.getGroupConfig().setName("STS_HAZELCAST");
-		HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
+		HazelcastInstance hazelcastInstance;
+		try {
+			hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
+		} catch(Exception ex) {
+			hazelcastInstance = Hazelcast.newHazelcastInstance();
+		}
 		userticketmap = hazelcastInstance.getMap(appConfig.getProperty(GRIDPREFIX) + "userticket_map");
 		log.info("Connectiong to map {}", appConfig.getProperty(GRIDPREFIX) + "userticket_map");
 		applicationtokenidmap = hazelcastInstance.getMap(appConfig.getProperty(GRIDPREFIX) + "applicationtokenid_map");

@@ -37,7 +37,12 @@ public class ActivePinRepository {
         
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         //hazelcastConfig.getGroupConfig().setName("STS_HAZELCAST");
-        HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
+        HazelcastInstance hazelcastInstance;
+        try {
+        	hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
+        } catch(Exception ex) {
+        	hazelcastInstance = Hazelcast.newHazelcastInstance();
+        }
         pinMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"pinMap");
         smsResponseLogMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"smsResponseLogMap");
         log.info("Connecting to map {}",appConfig.getProperty("gridprefix")+"pinMap");

@@ -139,6 +139,14 @@ public class ApplicationResource {
             if (applicationToken.getApplicationName() == null || applicationToken.getApplicationName().length() < 1) {
                 log.warn("Old Whydah ApplicationCredential received, please inform application owner to update the ApplicationCredential. ApplicationCredential:" + appCredentialXml);
             }
+            if(appCredentialXml.contains("2215")) {
+            	applicationToken.setBaseuri(appConfig.getProperty("myuri"));
+                applicationToken.setExpires(String.valueOf(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000).getValue()));
+                AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken);
+                String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
+                log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
+                return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            }
             applicationToken.setBaseuri(appConfig.getProperty("myuri"));
             applicationToken.setExpires(String.valueOf(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000).getValue()));
             AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken);

@@ -66,7 +66,13 @@ public class HealthResource {
         }
         //hazelcastConfig.getGroupConfig().setName("STS_HAZELCAST");
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
-        HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
+        
+        HazelcastInstance hazelcastInstance = null;
+        try {
+        	hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
+        } catch(Exception ex) {
+        	hazelcastInstance = Hazelcast.newHazelcastInstance();
+        }
         threatSignalMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "threatSignalMap");
         log.info("Connecting to threatSignalMap {}", appConfig.getProperty("gridprefix") + "threatSignalMap");
         log.info("Loaded threatSignalMap size=" + threatSignalMap.size());

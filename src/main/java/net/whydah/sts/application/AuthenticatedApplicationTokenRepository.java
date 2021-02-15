@@ -37,7 +37,7 @@ public class AuthenticatedApplicationTokenRepository {
     private static final Map<String, ApplicationToken> applicationTokenMap;
     private static final Map<String, String> applicationCryptoKeyMap;
     private static Base64.Decoder decoder = Base64.getDecoder();
-
+    static HazelcastInstance hazelcastInstance;
 
     static {
         AppConfig appConfig = new AppConfig();
@@ -54,7 +54,11 @@ public class AuthenticatedApplicationTokenRepository {
         }
         //hazelcastConfig.getGroupConfig().setName("STS_HAZELCAST");
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
-        HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
+        try {
+        	hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
+        }catch (Exception ex) {
+        	hazelcastInstance = Hazelcast.newHazelcastInstance();
+        }
         applicationTokenMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "_authenticated_applicationtokens");
         log.info("Connecting to map {} - map size: {}", appConfig.getProperty("gridprefix") + "_authenticated_applicationtokens", getMapSize());
 
