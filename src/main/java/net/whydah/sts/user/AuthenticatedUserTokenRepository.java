@@ -65,7 +65,6 @@ public class AuthenticatedUserTokenRepository {
         log.info("Connecting to map {} - size: {}", appConfig.getProperty("gridprefix") + "lastSeenMap", getLastSeenMapSize());
         Set clusterMembers = hazelcastInstance.getCluster().getMembers();
         noOfClusterMembers = clusterMembers.size();
-//        String userTokenDefaultTimeout = new UserTokenLifespan(appConfig.getProperty("user.session.timeout")).;
         DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS = updateDefaultUserSessionExtensionTime(appConfig);
 
     }
@@ -79,7 +78,7 @@ public class AuthenticatedUserTokenRepository {
                 userSessionExtensionTime = BaseExpires.addPeriod(Calendar.MONTH, 6);
             }
         } catch(Exception ex){
-            userSessionExtensionTime = BaseExpires.addPeriod(Calendar.MONTH, 1);
+            userSessionExtensionTime = BaseExpires.addPeriod(Calendar.MONTH, 6);
         }
         log.info("DEFAULT_USER_SESSION is set to " + userSessionExtensionTime);
         return userSessionExtensionTime;
@@ -221,11 +220,12 @@ public class AuthenticatedUserTokenRepository {
     }
 
 	private static void applyUserLifespan(UserToken userToken, long applicationUserTokenLifespan) {
-		if (applicationUserTokenLifespan < DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS) {
-            userToken.setLifespan(String.valueOf(applicationUserTokenLifespan));
-        } else {
-            userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS));
-        }
+		userToken.setLifespan(String.valueOf(applicationUserTokenLifespan));
+//		if (applicationUserTokenLifespan < DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS) {
+//            userToken.setLifespan(String.valueOf(applicationUserTokenLifespan));
+//        } else {
+//            userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS));
+//        }
 	}
 
     public static UserToken refreshUserToken(String applicationTokenId, UserToken refreshedUserToken) {

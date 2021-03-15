@@ -96,7 +96,7 @@ public class HealthResource {
                 "\nVersion:" + getVersion() +
                 "\nDEFCON: " + ThreatResource.getDEFCON() +
                 "\nmax application session time: " + AuthenticatedApplicationTokenRepository.DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS +
-                "\nmax user session extension time: " + AuthenticatedUserTokenRepository.DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS +
+                "\nmax user session fallback time: " + AuthenticatedUserTokenRepository.DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS +
                 "\nClusterSize: " + AuthenticatedUserTokenRepository.getNoOfClusterMembers() +
                 "\nUserLastSeenMapSize: " + AuthenticatedUserTokenRepository.getLastSeenMapSize() +
                 "\nUserPinMapSize: " + ActivePinRepository.getPinMap().size() +
@@ -120,8 +120,8 @@ public class HealthResource {
                         "  \"Status\": \"OK\",\n" +
                         "  \"Version\": \"" + getVersion() + "\",\n" +
                         "  \"DEFCON\": \"" + ThreatResource.getDEFCON() + "\",\n" +
-                        "  \"max application session time (s)\": \"" + AuthenticatedApplicationTokenRepository.DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS + "\",\n" +
-                        "  \"max user session extension time (s)\": \"" + AuthenticatedUserTokenRepository.DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS + "\",\n" +
+                        "  \"max application session time \": \"" + AuthenticatedApplicationTokenRepository.DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS + "\",\n" +
+                        "  \"max user session fallback time\": \"" + AuthenticatedUserTokenRepository.DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS + "\",\n" +
                         "  \"ClusterSize\": \"" + AuthenticatedUserTokenRepository.getNoOfClusterMembers() + "\",\n" +
                         "  \"UserLastSeenMapSize\": \"" + AuthenticatedUserTokenRepository.getLastSeenMapSize() + "\",\n" +
                         "  \"UserPinMapSize\": \"" + ActivePinRepository.getPinMap().size() + "\",\n" +
@@ -143,7 +143,7 @@ public class HealthResource {
                     "  \"Version\": \"" + getVersion() + "\",\n" +
                     "  \"DEFCON\": \"" + ThreatResource.getDEFCON() + "\",\n" +
                     "  \"max application session time (s)\": \"" + AuthenticatedApplicationTokenRepository.DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS + "\",\n" +
-                    "  \"max user session extension time (s)\": \"" + AuthenticatedUserTokenRepository.DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS + "\",\n" +
+                    "  \"max user session fallback time\": \"" + AuthenticatedUserTokenRepository.DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS + "\",\n" +
                     "  \"ClusterSize\": \"" + AuthenticatedUserTokenRepository.getNoOfClusterMembers() + "\",\n" +
                     "  \"UserLastSeenMapSize\": \"" + AuthenticatedUserTokenRepository.getLastSeenMapSize() + "\",\n" +
                     "  \"UserPinMapSize\": \"" + ActivePinRepository.getPinMap().size() + "\",\n" +
