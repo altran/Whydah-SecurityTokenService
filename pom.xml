@@ -14,7 +14,7 @@
         <developerConnection>scm:git:ssh://git@github.com/cantara/Whydah-SecurityTokenService.git</developerConnection>
         <connection>scm:git:https://github.com/cantara/Whydah-SecurityTokenService.git</connection>
         <url>https://github.com/cantara/Whydah-SecurityTokenService</url>
-      <tag>HEAD</tag>
+        <tag>HEAD</tag>
     </scm>
     <properties>
         <service.name>Whydah-SecurityTokenService</service.name>
@@ -24,7 +24,7 @@
         <grizzy-version>2.3.33</grizzy-version>
         <guice-version>5.0.1</guice-version>
         <slf4j.version>1.7.30</slf4j.version>
-        <jetty.plugin.version>9.4.38.v20210224</jetty.plugin.version>
+        <jetty.plugin.version>9.4.39.v20210325</jetty.plugin.version>
         <additionalparam>-Xdoclint:none</additionalparam>
     </properties>
 
