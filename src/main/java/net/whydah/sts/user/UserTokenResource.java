@@ -1,5 +1,6 @@
 package net.whydah.sts.user;
 
+import com.fasterxml.jackson.databind.util.LRUMap;
 import com.google.inject.Inject;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
@@ -50,6 +51,7 @@ public class UserTokenResource {
 
 	private static Map userticketmap = new HashMap();
 	private static Map applicationtokenidmap = new HashMap();
+	private static LRUMap<String, String> failinguserTokenMap = new LRUMap<String, String>(20, 20);
 	private static java.util.Random generator = new SecureRandom();
 
 	private static final String SMS_GW_SERVICE_URL;
@@ -599,6 +601,11 @@ public class UserTokenResource {
 		if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
 			return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
 		}
+		if (failinguserTokenMap.get(userTokenId) != null) {
+			log.warn("getUserTokenByUserTokenId - repetedly attempt to access with non acceptable usertokenid={}", userTokenId);
+			//return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+			throw AppExceptionCode.USER_INVALID_USERTOKENID_6002.setDeveloperMessage("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid=" + userTokenId);
+		}
 
 		if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
 			log.warn("getUserTokenByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
@@ -610,6 +617,7 @@ public class UserTokenResource {
 		if (userToken == null) {
 			log.warn("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid={}", userTokenId);
 			//return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+			failinguserTokenMap.put(userTokenId, userTokenId);
 			throw AppExceptionCode.USER_INVALID_USERTOKENID_6002.setDeveloperMessage("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid=" + userTokenId);
 		}
 		log.info("getUserTokenByUserTokenId - valid session found for {} ", userTokenId);
