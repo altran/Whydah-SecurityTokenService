@@ -280,10 +280,10 @@ public class AuthenticatedUserTokenRepository {
             active_username_usertokenids_map.put(userToken.getUserName(), userToken.getUserTokenId());
         }
         if ("renew".equalsIgnoreCase(authType)) {
-            return userToken;  // alreqdy reported
+            return userToken;  // already reported
         }
          if ("refresh".equalsIgnoreCase(authType)) {
-             return userToken;  // alreqdy reported
+             return userToken;  // already reported
          }
          ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUid(), "userSessionCreatedByPassword", applicationTokenId);
          if ("pin".equalsIgnoreCase(authType)) {
