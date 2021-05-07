@@ -4,7 +4,6 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-import net.whydah.sso.ddd.model.application.ApplicationId;
 import net.whydah.sso.ddd.model.application.ApplicationTokenID;
 import net.whydah.sso.ddd.model.base.BaseExpires;
 import net.whydah.sso.ddd.model.sso.UserTokenLifespan;
@@ -12,6 +11,7 @@ import net.whydah.sso.ddd.model.user.LastSeen;
 import net.whydah.sso.ddd.model.user.UserTokenId;
 import net.whydah.sso.user.mappers.UserTokenMapper;
 import net.whydah.sso.user.types.UserToken;
+import net.whydah.sts.ServiceStarter;
 import net.whydah.sts.config.AppConfig;
 import net.whydah.sts.threat.ThreatResource;
 import net.whydah.sts.user.statistics.UserSessionObservedActivity;
@@ -213,6 +213,7 @@ public class AuthenticatedUserTokenRepository {
         active_username_usertokenids_map.remove(userToken.getUserName());
         userToken.setDefcon(ThreatResource.getDEFCON());
         userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+
         addUserToken(userToken, applicationTokenId, "renew", false);
         ObservedActivity observedActivity = new UserSessionObservedActivity(userToken.getUid(), "userSessionRenewal", applicationTokenId);
         MonitorReporter.reportActivity(observedActivity);
@@ -258,26 +259,29 @@ public class AuthenticatedUserTokenRepository {
     			 log.warn("addUserToken called without resolveable aplicationTokenId:{}", applicationTokenId);
     		 }
 
-    	 }
-         userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
-
-
-         if (userToken.getEmail() != null) {
-             String lastSeenString = AuthenticatedUserTokenRepository.getLastSeen(userToken);
-             userToken.setLastSeen(lastSeenString);
-             lastSeenMap.put(userToken.getEmail(), new Date());
-
          }
+        userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
-         activeusertokensmap.put(userToken.getUserTokenId(), userToken);
-         log.info("Added userToken with id {}", userToken.getUserTokenId(), " content:" + userToken.toString());
 
-         if (userToken.getUserName() != null) {
-             active_username_usertokenids_map.put(userToken.getUserName(), userToken.getUserTokenId());
-         }
-         if ("renew".equalsIgnoreCase(authType)) {
-             return userToken;  // alreqdy reported
-         }
+        if (userToken.getEmail() != null) {
+            String lastSeenString = AuthenticatedUserTokenRepository.getLastSeen(userToken);
+            userToken.setLastSeen(lastSeenString);
+            lastSeenMap.put(userToken.getEmail(), new Date());
+
+        }
+        if (ServiceStarter.getPublicKeyPair() != null) {
+            String encryptedSignature = userToken.getEncryptedSignature(ServiceStarter.getPublicKeyPair());
+        }
+
+        activeusertokensmap.put(userToken.getUserTokenId(), userToken);
+        log.info("Added userToken with id {}", userToken.getUserTokenId(), " content:" + userToken.toString());
+
+        if (userToken.getUserName() != null) {
+            active_username_usertokenids_map.put(userToken.getUserName(), userToken.getUserTokenId());
+        }
+        if ("renew".equalsIgnoreCase(authType)) {
+            return userToken;  // alreqdy reported
+        }
          if ("refresh".equalsIgnoreCase(authType)) {
              return userToken;  // alreqdy reported
          }

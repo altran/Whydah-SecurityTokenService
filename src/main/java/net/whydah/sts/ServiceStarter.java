@@ -18,6 +18,9 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.valuereporter.client.activity.ObservedActivityDistributer;
 
 import java.io.IOException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.SecureRandom;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
@@ -28,6 +31,7 @@ public class ServiceStarter {
     private static final String CONTEXTPATH = "/tokenservice";
     public static final String IMPLEMENTATION_VERSION = ServiceStarter.class.getPackage().getImplementationVersion();
 
+    private static KeyPair publicKeyPair;
 
     public static void main(String[] args) throws IOException {
         //http://www.slf4j.org/legacy.html#jul-to-slf4j
@@ -35,7 +39,7 @@ public class ServiceStarter {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
         LogManager.getLogManager().getLogger("").setLevel(Level.INFO);
-
+        setupPublicKey();
         ServiceStarter serviceStarter = new ServiceStarter();
         serviceStarter.startServer();
         try {
@@ -45,6 +49,22 @@ public class ServiceStarter {
             log.error("Running server killed by interrupt");
         }
         serviceStarter.stop();
+    }
+
+    private static void setupPublicKey() {
+        try {
+            if (publicKeyPair != null) {
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA", "SUN");
+
+                SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
+                keyGen.initialize(1024, random);
+
+                KeyPair pair = keyGen.generateKeyPair();
+                publicKeyPair = pair;
+            }
+        } catch (Exception e) {
+            log.error("Unable to create pgp security", e);
+        }
     }
 
     protected void startServer() throws IOException {
@@ -112,8 +132,12 @@ public class ServiceStarter {
         return webappPort;
     }
 
+    public static KeyPair getPublicKeyPair() {
+        return publicKeyPair;
+    }
+
     public void stop() {
-        if(httpServer != null) {
+        if (httpServer != null) {
             httpServer.stop();
         }
     }
