@@ -221,12 +221,12 @@ public class AuthenticatedUserTokenRepository {
     }
 
 	private static void applyUserLifespan(UserToken userToken, long applicationUserTokenLifespan) {
-		userToken.setLifespan(String.valueOf(applicationUserTokenLifespan));
-//		if (applicationUserTokenLifespan < DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS) {
-//            userToken.setLifespan(String.valueOf(applicationUserTokenLifespan));
-//        } else {
-//            userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS));
-//        }
+		//userToken.setLifespan(String.valueOf(applicationUserTokenLifespan));
+		if (applicationUserTokenLifespan < DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS) {
+            userToken.setLifespan(String.valueOf(applicationUserTokenLifespan * 1000));
+        } else {
+            userToken.setLifespan(String.valueOf(DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS));
+        }
 	}
 
     public static UserToken refreshUserToken(String applicationTokenId, UserToken refreshedUserToken) {
