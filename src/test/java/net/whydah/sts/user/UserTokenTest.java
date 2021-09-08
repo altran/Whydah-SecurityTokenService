@@ -438,7 +438,7 @@ public class UserTokenTest {
         int noOfUsers = AuthenticatedUserTokenRepository.getMapSize();
         log.debug("Users:" + noOfUsers);
 
-        AuthenticatedUserTokenRepository.addUserToken(utoken, new ApplicationTokenID(UUID.randomUUID().toString()).getId(), "test", true);
+        AuthenticatedUserTokenRepository.addUserToken(utoken, new ApplicationTokenID(UUID.randomUUID().toString()).getId(), "test");
         int noOfUsersAfter = AuthenticatedUserTokenRepository.getMapSize();
         log.debug("Users (after):" + noOfUsersAfter);
         assertTrue(noOfUsers < noOfUsersAfter);

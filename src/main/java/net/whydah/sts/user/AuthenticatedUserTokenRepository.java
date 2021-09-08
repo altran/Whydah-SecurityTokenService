@@ -240,10 +240,10 @@ public class AuthenticatedUserTokenRepository {
     }
     
     public static UserToken addUserToken(UserToken userToken, String applicationTokenId, String authType) {
-    	return addUserToken(userToken, applicationTokenId, authType, false);
+    	return addUserToken(userToken, applicationTokenId, authType, true);
     }
 
-    public static UserToken addUserToken(UserToken userToken, String applicationTokenId, String authType, boolean useExistingLifespan) {
+    private static UserToken addUserToken(UserToken userToken, String applicationTokenId, String authType, boolean useExistingLifespan) {
 
     	 if (!UserTokenId.isValid(userToken.getUserTokenId())) {
              log.error("Error: UserToken has no valid usertokenid, generating new userTokenId");
