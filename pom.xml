@@ -18,8 +18,8 @@
     </scm>
     <properties>
         <service.name>Whydah-SecurityTokenService</service.name>
-        <whydah.admin.sdk.version>2.7.22</whydah.admin.sdk.version>
-        <org.valuereporter.agent>1.7.1</org.valuereporter.agent>
+        <whydah.admin.sdk.version>2.8.0</whydah.admin.sdk.version>
+        <org.valuereporter.agent>1.8.0</org.valuereporter.agent>
         <jersey-version>1.19.4</jersey-version>
         <grizzy-version>2.3.33</grizzy-version>
         <guice-version>5.0.1</guice-version>
