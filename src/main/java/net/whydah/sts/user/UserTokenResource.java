@@ -28,7 +28,13 @@ import org.slf4j.LoggerFactory;
 import org.valuereporter.activity.ObservedActivity;
 import org.valuereporter.client.MonitorReporter;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -1697,7 +1703,7 @@ public class UserTokenResource {
 
 		if (pin == null || pin.length() < 4) {
 			pin = generatePin();
-			log.info("createAndLogOnPinUser - empty pin in request, gererating internal pin and use it");
+			log.info("createAndLogOnPinUser - empty pin in request, generating internal pin and use it");
 		}
 		if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
 			// TODO:  Limit this operation to SSOLoginWebApplication ONLY
@@ -1708,7 +1714,7 @@ public class UserTokenResource {
 		try {
 			UserToken userToken = userAuthenticator.createAndLogonPinUser(applicationtokenid, appTokenXml, adminUserTokenId, cellPhone, pin, newUserjson);
 			userticketmap.put(userticket, userToken.getUserTokenId());
-			log.debug("createAndLogOnPinUser Added ticket:{} for usertoken:{} username: {}", userticket, userToken.getUserTokenId(), userToken.getUserName());
+			log.debug("createAndLogOnPinUser Added ticket:{} for usertoken:{} username: {}", userticket, userToken.getUserTokenId(), userToken.getUserName());
 			userToken.setDefcon(ThreatResource.getDEFCON());
 			userToken.setNs2link(appConfig.getProperty("myuri") + "user/" + applicationtokenid + "/validate_usertokenid/" + userToken.getUserTokenId());
 			// Report to statistics
@@ -1716,7 +1722,7 @@ public class UserTokenResource {
 			MonitorReporter.reportActivity(observedActivity);
 			return createUserTokenResponse(applicationtokenid, userToken);
 		} catch (AuthenticationFailedException ae) {
-			log.warn("createAndLogOnPinUser - Error creating or authenticating user. jsonuser={}", newUserjson);
+			log.warn(String.format("createAndLogOnPinUser - Error creating or authenticating user. jsonuser=%s", newUserjson), ae);
 			//return Response.status(Response.Status.FORBIDDEN).entity("Error creating or authenticating user.").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
 			throw AppExceptionCode.USER_AUTHENTICATION_FAILED_6000;
 		}

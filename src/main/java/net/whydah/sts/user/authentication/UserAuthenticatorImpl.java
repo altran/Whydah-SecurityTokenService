@@ -72,17 +72,17 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 			try {
                 UserToken userToken = new CommandCreatePinUser(useradminservice, appTokenXml, applicationTokenId, adminUserTokenId, userJson).execute();
                 if (userToken == null) {
-                    throw new AuthenticationFailedException("Pin uthentication failed. Status code ");
+                    throw new AuthenticationFailedException("Pin authentication failed. Status code ");
 
                 } else {
                     return AuthenticatedUserTokenRepository.addUserToken(userToken, applicationTokenId, "pin");
                 }
 			} catch (Exception e) {
-				log.error("createAndLogonPinUser - Problems connecting to {}", useradminservice);
+				log.error(String.format("createAndLogonPinUser - Problems connecting to %s", useradminservice), e);
 				throw e;
 			}
 		}
-        throw new AuthenticationFailedException("Pin uthentication failed. Status code ");
+        throw new AuthenticationFailedException("Pin authentication failed. Status code ");
 	}
 
 	public UserToken getRefreshedUserToken(String usertokenid) {
