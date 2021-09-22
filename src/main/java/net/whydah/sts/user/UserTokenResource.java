@@ -50,7 +50,7 @@ public class UserTokenResource {
 	public static final String ILLEGAL_APPLICATION_FOR_THIS_SERVICE = "Illegal application for this service";
 
 	private static Map userticketmap = new HashMap();
-	private static Map applicationtokenidmap = new HashMap();
+	//private static Map applicationtokenidmap = new HashMap();
 	private static LRUMap<String, String> failinguserTokenMap = new LRUMap<String, String>(20, 20);
 	private static java.util.Random generator = new SecureRandom();
 
@@ -93,8 +93,8 @@ public class UserTokenResource {
 		}
 		userticketmap = hazelcastInstance.getMap(appConfig.getProperty(GRIDPREFIX) + "userticket_map");
 		log.info("Connectiong to map {}", appConfig.getProperty(GRIDPREFIX) + "userticket_map");
-		applicationtokenidmap = hazelcastInstance.getMap(appConfig.getProperty(GRIDPREFIX) + "applicationtokenid_map");
-		log.info("Connectiong to map {}", appConfig.getProperty(GRIDPREFIX) + "applicationtokenid_map");
+		//applicationtokenidmap = hazelcastInstance.getMap(appConfig.getProperty(GRIDPREFIX) + "applicationtokenid_map");
+		//log.info("Connectiong to map {}", appConfig.getProperty(GRIDPREFIX) + "applicationtokenid_map");
 
 		SMS_GW_SERVICE_URL = appConfig.getProperty("smsgw.serviceurl");  //URL https://smsgw.somewhere/../sendMessages/
 		SMS_GW_SERVICE_ACCOUNT = appConfig.getProperty("smsgw.serviceaccount");  //serviceAccount
@@ -1598,7 +1598,7 @@ public class UserTokenResource {
 		}
 
 		try {
-			applicationtokenidmap.put(applicationtokenid, applicationtokenid);
+			//applicationtokenidmap.put(applicationtokenid, applicationtokenid);
 			UserToken userToken = userAuthenticator.createAndLogonUser(applicationtokenid, appTokenXml, userCredentialXml, userxml);
 			userticketmap.put(userticket, userToken.getUserTokenId());
 			userToken.setDefcon(ThreatResource.getDEFCON());
