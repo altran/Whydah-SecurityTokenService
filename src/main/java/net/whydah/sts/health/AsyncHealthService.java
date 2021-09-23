@@ -81,10 +81,16 @@ public class AsyncHealthService implements Runnable {
     public AsyncHealthService(long updateInterval, TemporalUnit updateIntervalUnit) {
         this.updateInterval = updateInterval;
         this.updateIntervalUnit = updateIntervalUnit;
-        this.currentHealthSerialized = new AtomicReference<>("{}");
         this.appConfig = new AppConfig();
         this.applicationInstanceName = appConfig.getProperty("applicationname");
         this.version = readVersion();
+        {
+            ObjectNode health = mapper.createObjectNode();
+            health.put("Status", "false");
+            health.put("version", version);
+            health.put("running since", timeAtStart.toString());
+            this.currentHealthSerialized = new AtomicReference<>(health.toPrettyString());
+        }
         this.isExtendedInfoEnabled = (appConfig.getProperty("testpage").equalsIgnoreCase("enabled"));
         this.healthUpdateThread = new Thread(this, "health-updater-" + serviceSequence.incrementAndGet());
         this.healthUpdateThread.start();
@@ -138,6 +144,7 @@ public class AsyncHealthService implements Runnable {
     @Override
     public void run() {
         try {
+            log.info("Initializing hazelcast threat-signal ringbuffer...");
             String xmlFileName = System.getProperty("hazelcast.config");
             if (xmlFileName == null || xmlFileName.trim().isEmpty()) {
                 xmlFileName = appConfig.getProperty("hazelcast.config");
@@ -169,14 +176,8 @@ public class AsyncHealthService implements Runnable {
             log.info("Loaded threatSignalRingbuffer size={}, capacity={}", threatSignalRingbuffer.size(), threatSignalRingbuffer.capacity());
 
             // Initializing
-            log.info("Health initializing...");
+            log.info("Health initializing first full health...");
             try {
-                currentHealth = mapper.createObjectNode();
-                currentHealth.put("Status", "false");
-                currentHealth.put("version", version);
-                currentHealth.put("running since", timeAtStart.toString());
-                currentHealthSerialized.set(currentHealth.toPrettyString());
-
                 // first health-update can be very slow, have to wait for Hazelcast init
                 updateHealth(currentHealth);
                 currentHealthSerialized.set(currentHealth.toPrettyString());
