@@ -109,7 +109,7 @@ public class AsyncHealthService implements Runnable {
     }
 
     public String getHealthJson() {
-        String currentHealthJsonWithoutTimestamp = getCurrentHealthJson();
+        String currentHealthJsonWithoutTimestamp = currentHealthSerialized.get();
         ObjectNode health;
         try {
             health = (ObjectNode) mapper.readTree(currentHealthJsonWithoutTimestamp);
@@ -127,10 +127,6 @@ public class AsyncHealthService implements Runnable {
         health.put("health-updater-thread-alive", String.valueOf(activelyUpdatingCurrentHealth));
         String healthJson = health.toPrettyString();
         return healthJson;
-    }
-
-    public String getCurrentHealthJson() {
-        return currentHealthSerialized.get();
     }
 
     public long getHealthComputeTimeMs() {
@@ -178,6 +174,10 @@ public class AsyncHealthService implements Runnable {
             // Initializing
             log.info("Health initializing first full health...");
             try {
+                currentHealth = mapper.createObjectNode();
+                currentHealth.put("Status", "false");
+                currentHealth.put("version", version);
+                currentHealth.put("running since", timeAtStart.toString());
                 // first health-update can be very slow, have to wait for Hazelcast init
                 updateHealth(currentHealth);
                 currentHealthSerialized.set(currentHealth.toPrettyString());

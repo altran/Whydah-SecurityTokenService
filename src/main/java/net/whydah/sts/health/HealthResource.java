@@ -61,6 +61,6 @@ public class HealthResource {
     }
 
     public static String getHealthTextJson() {
-        return healthService.getCurrentHealthJson();
+        return healthService.getHealthJson();
     }
 }
