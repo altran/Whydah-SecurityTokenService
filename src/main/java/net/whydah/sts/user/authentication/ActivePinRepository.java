@@ -24,6 +24,9 @@ public class ActivePinRepository {
     static {
         AppConfig appConfig = new AppConfig();
         String xmlFileName = System.getProperty("hazelcast.config");
+        if (xmlFileName == null || xmlFileName.trim().isEmpty()) {
+            xmlFileName = appConfig.getProperty("hazelcast.config");
+        }
         log.info("Loading hazelcast configuration from :" + xmlFileName);
         Config hazelcastConfig = new Config();
         if (xmlFileName != null && xmlFileName.length() > 10) {

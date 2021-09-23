@@ -23,7 +23,11 @@ import org.valuereporter.activity.ObservedActivity;
 import org.valuereporter.client.MonitorReporter;
 
 import java.io.FileNotFoundException;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class AuthenticatedUserTokenRepository {
     private final static Logger log = LoggerFactory.getLogger(AuthenticatedUserTokenRepository.class);
@@ -38,6 +42,9 @@ public class AuthenticatedUserTokenRepository {
     static {
         AppConfig appConfig = new AppConfig();
         String xmlFileName = System.getProperty("hazelcast.config");
+        if (xmlFileName == null || xmlFileName.trim().isEmpty()) {
+            xmlFileName = appConfig.getProperty("hazelcast.config");
+        }
         log.info("Loading hazelcast configuration from :" + xmlFileName);
         Config hazelcastConfig = new Config();
         if (xmlFileName != null && xmlFileName.length() > 10) {
