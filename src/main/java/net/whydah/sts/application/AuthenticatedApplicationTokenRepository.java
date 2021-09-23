@@ -1,6 +1,7 @@
 package net.whydah.sts.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
@@ -58,9 +59,9 @@ public class AuthenticatedApplicationTokenRepository {
         //hazelcastConfig.getGroupConfig().setName("STS_HAZELCAST");
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         try {
-        	hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
-        }catch (Exception ex) {
-        	hazelcastInstance = Hazelcast.newHazelcastInstance();
+            hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
+        } catch (Exception ex) {
+            hazelcastInstance = Hazelcast.newHazelcastInstance();
         }
         applicationTokenMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "_authenticated_applicationtokens");
         log.info("Connecting to map {} - map size: {}", appConfig.getProperty("gridprefix") + "_authenticated_applicationtokens", getMapSize());
@@ -86,40 +87,40 @@ public class AuthenticatedApplicationTokenRepository {
     }
 
     public static void updateApplicationToken(ApplicationToken applicationToken) {
-    	 applicationTokenMap.put(applicationToken.getApplicationTokenId(), applicationToken);
+        applicationTokenMap.put(applicationToken.getApplicationTokenId(), applicationToken);
     }
 
     public static void addApplicationToken(ApplicationToken applicationToken) {
-       
+
         long remainingSecs = (Long.parseLong(applicationToken.getExpires()) - System.currentTimeMillis()) / 1000;
         log.info("Added {} applicationID:{} applicationTokenId:{} - expires in {} seconds", applicationToken.getApplicationName(), applicationToken.getApplicationID(), applicationToken.getApplicationTokenId(), remainingSecs);
         applicationTokenMap.put(applicationToken.getApplicationTokenId(), applicationToken);
-        
-        if (applicationCryptoKeyMap.containsKey(applicationToken.getApplicationTokenId())) { 
-                // Maybe update key here...
-                log.debug("updating cryptokey for applicationId: {} with applicationTokenId:{}", applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
-                try {
-                    String iv = "MDEyMzQ1Njc4OTBBQkNERQ==";
-                    ExchangeableKey applicationKey = new ExchangeableKey();
-                    applicationKey.setEncryptionSecret(System.currentTimeMillis() + applicationToken.getApplicationTokenId());
-                    applicationKey.setIv(new IvParameterSpec(decoder.decode(iv)));
-                    applicationCryptoKeyMap.put(applicationToken.getApplicationTokenId(), applicationKey.toJsonEncoded());
-                } catch (Exception e) {
-                    log.warn("Unable to create cryotokey for applicationIs: {}", applicationToken.getApplicationID());
-                }
-            } else {
-                // Bootstrap key initialization
-                log.debug("adding new cryptokey for applicationId: {} with applicationTokenId:{}", applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
-                try {
-                    String iv = "MDEyMzQ1Njc4OTBBQkNERQ==";
-                    ExchangeableKey applicationKey = new ExchangeableKey();
-                    applicationKey.setEncryptionSecret(applicationToken.getApplicationTokenId());
-                    applicationKey.setIv(new IvParameterSpec(decoder.decode(iv)));
-                    applicationCryptoKeyMap.put(applicationToken.getApplicationTokenId(), applicationKey.toJsonEncoded());
-                } catch (Exception e) {
-                    log.warn("Unable to create cryotokey for applicationIs: {}", applicationToken.getApplicationID());
-                }
+
+        if (applicationCryptoKeyMap.containsKey(applicationToken.getApplicationTokenId())) {
+            // Maybe update key here...
+            log.debug("updating cryptokey for applicationId: {} with applicationTokenId:{}", applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
+            try {
+                String iv = "MDEyMzQ1Njc4OTBBQkNERQ==";
+                ExchangeableKey applicationKey = new ExchangeableKey();
+                applicationKey.setEncryptionSecret(System.currentTimeMillis() + applicationToken.getApplicationTokenId());
+                applicationKey.setIv(new IvParameterSpec(decoder.decode(iv)));
+                applicationCryptoKeyMap.put(applicationToken.getApplicationTokenId(), applicationKey.toJsonEncoded());
+            } catch (Exception e) {
+                log.warn("Unable to create cryotokey for applicationIs: {}", applicationToken.getApplicationID());
             }
+        } else {
+            // Bootstrap key initialization
+            log.debug("adding new cryptokey for applicationId: {} with applicationTokenId:{}", applicationToken.getApplicationID(), applicationToken.getApplicationTokenId());
+            try {
+                String iv = "MDEyMzQ1Njc4OTBBQkNERQ==";
+                ExchangeableKey applicationKey = new ExchangeableKey();
+                applicationKey.setEncryptionSecret(applicationToken.getApplicationTokenId());
+                applicationKey.setIv(new IvParameterSpec(decoder.decode(iv)));
+                applicationCryptoKeyMap.put(applicationToken.getApplicationTokenId(), applicationKey.toJsonEncoded());
+            } catch (Exception e) {
+                log.warn("Unable to create cryotokey for applicationIs: {}", applicationToken.getApplicationID());
+            }
+        }
     }
 
     public static ApplicationToken getApplicationToken(String applicationtokenid) {
@@ -223,13 +224,12 @@ public class AuthenticatedApplicationTokenRepository {
         //log.info("Checking {} for timeout, ",applicationtoken.getApplicationID());
         Long now = System.currentTimeMillis();
         if (expires > now) {
-            log.trace("Checking applicationId {} for timeout, result false",applicationtoken.getApplicationID());
+            log.trace("Checking applicationId {} for timeout, result false", applicationtoken.getApplicationID());
             return false;
         }
-        log.trace("Checking applicationId {} for timeout, result: false",applicationtoken.getApplicationID());
+        log.trace("Checking applicationId {} for timeout, result: false", applicationtoken.getApplicationID());
         return true;
     }
-
 
 
     public static int getMapSize() {
@@ -240,7 +240,7 @@ public class AuthenticatedApplicationTokenRepository {
         return applicationCryptoKeyMap.size();
     }
 
-    public static String getActiveApplications() {
+    public static ObjectNode getActiveApplications() {
         Map<String, Integer> applicationMap = new HashMap<>();
         for (Map.Entry<String, ApplicationToken> entry : applicationTokenMap.entrySet()) {
             // Let us use ApplicationID to identify applications without applicationName
@@ -257,12 +257,7 @@ public class AuthenticatedApplicationTokenRepository {
             }
         }
         logActiveApplicationTokenIDs();
-        String result = "{}";
-        try {
-            result = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(applicationMap);
-        } catch (Exception e) {
-
-        }
+        ObjectNode result = mapper.convertValue(applicationMap, ObjectNode.class);
         return result;
     }
 
