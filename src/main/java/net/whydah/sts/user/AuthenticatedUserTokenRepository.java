@@ -1,5 +1,6 @@
 package net.whydah.sts.user;
 
+import com.hazelcast.cluster.Member;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
@@ -26,12 +27,11 @@ import java.util.*;
 
 public class AuthenticatedUserTokenRepository {
     private final static Logger log = LoggerFactory.getLogger(AuthenticatedUserTokenRepository.class);
-    private static Map<String, UserToken> activeusertokensmap;
-    private static Map<String, String> active_username_usertokenids_map;
-    private static Map<String, Date> lastSeenMap;
-    private static int noOfClusterMembers = 0;
-    private static HazelcastInstance hazelcastInstance;
-    public static long DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS;
+    private final static Map<String, UserToken> activeusertokensmap;
+    private final static Map<String, String> active_username_usertokenids_map;
+    private final static Map<String, Date> lastSeenMap;
+    private final static HazelcastInstance hazelcastInstance;
+    public final static long DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS;
     //public static final long DEFAULT_USER_SESSION_TIME_IN_SECONDS;
 
 
@@ -50,11 +50,13 @@ public class AuthenticatedUserTokenRepository {
         }
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
         //hazelcastConfig.getGroupConfig().setName("STS_HAZELCAST");
+        HazelcastInstance tmpInstance;
         try {
-        	hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
+            tmpInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
         } catch(Exception ex) {
-        	hazelcastInstance = Hazelcast.newHazelcastInstance();
+            tmpInstance = Hazelcast.newHazelcastInstance();
         }
+        hazelcastInstance = tmpInstance;
         activeusertokensmap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "activeusertokensmap");
         active_username_usertokenids_map = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "active_username_usertokenids_map");
 
@@ -63,8 +65,7 @@ public class AuthenticatedUserTokenRepository {
 
         lastSeenMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "lastSeenMap");
         log.info("Connecting to map {} - size: {}", appConfig.getProperty("gridprefix") + "lastSeenMap", getLastSeenMapSize());
-        Set clusterMembers = hazelcastInstance.getCluster().getMembers();
-        noOfClusterMembers = clusterMembers.size();
+        Set<Member> clusterMembers = hazelcastInstance.getCluster().getMembers();
         DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS = updateDefaultUserSessionExtensionTime(appConfig);
 
     }
@@ -324,9 +325,8 @@ public class AuthenticatedUserTokenRepository {
     }
 
     public static int getNoOfClusterMembers() {
-        Set clusterMembers = hazelcastInstance.getCluster().getMembers();
-        noOfClusterMembers = clusterMembers.size();
-        return noOfClusterMembers;
+        Set<Member> clusterMembers = hazelcastInstance.getCluster().getMembers();
+        return clusterMembers.size();
     }
 
 
