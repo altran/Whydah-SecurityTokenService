@@ -30,6 +30,7 @@ public class AuthenticatedApplicationTokenRepository {
 
     public static final long DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS;
     public static final int STS_TOKEN_MULTIPLIER = 50;
+    public static final int APP_TOKEN_MULTIPLIER = 50;
     private static AppConfig appConfig = new AppConfig();
     private static String mySTSApplicationTokenId = "";
     private static ApplicationToken mySTSApplicationToken;

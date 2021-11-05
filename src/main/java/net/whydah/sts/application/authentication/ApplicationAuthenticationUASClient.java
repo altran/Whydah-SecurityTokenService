@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 import static net.whydah.sso.session.WhydahApplicationSession.createThreat;
 import static net.whydah.sts.health.HealthResource.getRunningSince;
@@ -21,13 +22,20 @@ public class ApplicationAuthenticationUASClient {
     private final static Logger log = LoggerFactory.getLogger(ApplicationAuthenticationUASClient.class);
 
     private static AppConfig appConfig = new AppConfig();
+    
+    public static long lastChecked = 0;
+    
+    public static long WAITING_TIME_TO_CHECK_IN_SECONDS = 60;
 
 
     public static boolean checkAppsecretFromUAS(ApplicationCredential applicationCredential) {
 
+    	if(System.currentTimeMillis() - lastChecked < WAITING_TIME_TO_CHECK_IN_SECONDS*1000) {
+    		return true;
+    	}
+    	lastChecked = System.currentTimeMillis();
         String useradminservice = appConfig.getProperty("useradminservice");
-        ApplicationToken stsToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
-
+        
         //HUY fix the start-up problem here
         //should bypass request from UAS/UIB if the credential is found correct
         String secret = appConfig.getProperty(applicationCredential.getApplicationID());
@@ -39,6 +47,7 @@ public class ApplicationAuthenticationUASClient {
          * Command version of UAS auth call
          */
         try {
+        	ApplicationToken stsToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
             boolean isOKinUAS = new CommandCheckApplicationCredentialInUAS(URI.create(useradminservice), stsToken.getApplicationTokenId(), applicationCredential).execute();
             log.debug("CommandCheckApplicationCredentialInUAS returned: {}", isOKinUAS);
             if (isOKinUAS) {
