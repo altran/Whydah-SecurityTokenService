@@ -34,6 +34,7 @@ public class AuthenticatedApplicationTokenRepository {
     private static AppConfig appConfig = new AppConfig();
     private static String mySTSApplicationTokenId = "";
     private static ApplicationToken mySTSApplicationToken;
+    private static ApplicationToken uasApplicationToken;
     private static ObjectMapper mapper = new ObjectMapper();
 
     private static final Map<String, ApplicationToken> applicationTokenMap;
@@ -91,11 +92,18 @@ public class AuthenticatedApplicationTokenRepository {
         applicationTokenMap.put(applicationToken.getApplicationTokenId(), applicationToken);
     }
 
+    public static ApplicationToken getUASApplicationToken() {
+        return uasApplicationToken;
+    }
+
     public static void addApplicationToken(ApplicationToken applicationToken) {
 
         long remainingSecs = (Long.parseLong(applicationToken.getExpires()) - System.currentTimeMillis()) / 1000;
         log.info("Added {} applicationID:{} applicationTokenId:{} - expires in {} seconds", applicationToken.getApplicationName(), applicationToken.getApplicationID(), applicationToken.getApplicationTokenId(), remainingSecs);
         applicationTokenMap.put(applicationToken.getApplicationTokenId(), applicationToken);
+        if (applicationToken.getApplicationID().equalsIgnoreCase("2212")) {
+            uasApplicationToken = applicationToken;
+        }
 
         if (applicationCryptoKeyMap.containsKey(applicationToken.getApplicationTokenId())) {
             // Maybe update key here...
@@ -178,6 +186,10 @@ public class AuthenticatedApplicationTokenRepository {
             renewApplicationToken.setExpires(String.valueOf(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000).getValueAsAbsoluteTimeInMilliseconds()));
             log.info("Updated expiry for applicationId:{} applicationtokenid:{} oldExpiry:{}, newExpiry: {}", renewApplicationToken.getApplicationID(), applicationtokenid, oldExpires, renewApplicationToken.getExpiresFormatted());
             applicationTokenMap.put(renewApplicationToken.getApplicationTokenId(), renewApplicationToken);
+            if (renewApplicationToken.getApplicationID().equalsIgnoreCase("2212")) {
+                uasApplicationToken = renewApplicationToken;
+            }
+
             log.debug("updating cryptokey for applicationId: {} with applicationTokenId:{}", renewApplicationToken.getApplicationID(), renewApplicationToken.getApplicationTokenId());
             try {
                 String iv = "MDEyMzQ1Njc4OTBBQkNERQ==";

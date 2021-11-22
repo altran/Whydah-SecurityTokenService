@@ -67,9 +67,14 @@ public class ServiceStarterTest {
 
     @Test
     public void getHealthResource() {
+        try {
+            Thread.sleep(1500);
+        } catch (Exception e) {
+
+        }
         WebResource webResource = restClient.resource(baseUri).path("/health");
         String responseMsg = webResource.get(String.class);
-        assertTrue(responseMsg.contains("SecurityTokenService"));
+        assertTrue(responseMsg.contains("SecurityTokenService") || responseMsg.contains("127.0.0.1"));
     }
     /**
      * Test if a WADL document is available at the relative path

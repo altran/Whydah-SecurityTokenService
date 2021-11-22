@@ -1,7 +1,11 @@
 package net.whydah.sts.application.authentication;
 
+import net.whydah.sso.application.mappers.ApplicationMapper;
+import net.whydah.sso.application.mappers.ApplicationTagMapper;
+import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
+import net.whydah.sso.commands.adminapi.application.CommandGetApplicationById;
 import net.whydah.sts.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.sts.application.authentication.commands.CommandCheckApplicationCredentialInUAS;
 import net.whydah.sts.config.AppConfig;
@@ -11,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 import static net.whydah.sso.session.WhydahApplicationSession.createThreat;
 import static net.whydah.sts.health.HealthResource.getRunningSince;
@@ -64,5 +67,26 @@ public class ApplicationAuthenticationUASClient {
         return false;
     }
 
+
+    public static ApplicationToken addApplicationTagsFromUAS(ApplicationToken applicationToken, ApplicationToken uasApplicationToken) {
+
+
+        String useradminservice = appConfig.getProperty("useradminservice");
+
+        try {
+            ApplicationToken stsToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
+            Application application = ApplicationMapper.fromJson(
+                    new CommandGetApplicationById(URI.create(useradminservice), stsToken.getApplicationTokenId(), uasApplicationToken.getApplicationTokenId(), applicationToken.getApplicationID()).execute());
+            log.debug("CommandGetApplicationById returned: {}", application);
+            if (application != null) {
+                applicationToken.setTags(ApplicationTagMapper.getTagList(application.getTags()));
+                return applicationToken;
+            }
+        } catch (Exception e) {
+            log.info("Unable to access UAS by Command", e);
+        }
+
+        return applicationToken;
+    }
 
 }

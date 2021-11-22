@@ -432,7 +432,9 @@ public class ApplicationResource {
         }
     }
 
-
+    private ApplicationToken updateWithTags(ApplicationToken applicationToken) {
+        return ApplicationAuthenticationUASClient.addApplicationTagsFromUAS(applicationToken, AuthenticatedApplicationTokenRepository.getUASApplicationToken());
+    }
 
 
     private static boolean handleCryptoKey(ApplicationToken applicationToken) {
