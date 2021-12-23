@@ -1,5 +1,7 @@
 package net.whydah.sts.application;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.sun.jersey.api.view.Viewable;
 import net.whydah.sso.application.helpers.ApplicationCredentialHelper;
@@ -7,6 +9,7 @@ import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
+import net.whydah.sso.application.types.Tag;
 import net.whydah.sso.config.ApplicationMode;
 import net.whydah.sso.ddd.model.application.ApplicationName;
 import net.whydah.sso.ddd.model.application.ApplicationTokenExpires;
@@ -21,12 +24,21 @@ import net.whydah.sts.errorhandling.AppExceptionCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static net.whydah.sso.util.LoggerUtil.first50;
@@ -37,6 +49,7 @@ public class ApplicationResource {
     private final static Logger log = LoggerFactory.getLogger(ApplicationResource.class);
 
     private final static Set<String> encryptionEnabledApplicationIDs = new HashSet<>(Arrays.asList("9999", "99999"));
+    private final static ObjectMapper mapper = new ObjectMapper();
 
     @Inject
     private AppConfig appConfig;
@@ -332,6 +345,65 @@ public class ApplicationResource {
         } else {
             log.debug("ApplicationTokenId valid");
             return Response.ok(applicationToken.getApplicationName()).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        }
+    }
+
+    /**
+     * @throws AppException
+     * @api {get} :applicationtokenid/get_application_tags getApplicationTags
+     * @apiName getApplicationTagsFromApplicationTokenId
+     * @apiGroup Security Token Service (STS)
+     * @apiDescription Get my application tags from an application sts id
+     * @apiSuccessExample Success-Response:
+     * HTTP/1.1 200 OK plain/text
+     * Whydah-SystemTests
+     * @apiError 403/7000 Application is invalid.
+     * @apiError 500/9999 A generic exception or an unexpected error
+     * @apiErrorExample Error-Response:
+     * HTTP/1.1 403 Forbidden
+     * {
+     * "status": 403,
+     * "code": 7000,
+     * "message": "Illegal Application.",
+     * "link": "",
+     * "developerMessage": "Application is invalid."
+     * }
+     */
+    @Path("{applicationtokenid}/get_application_tags")
+    @GET
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getApplicationTagsFromApplicationTokenId(
+            @PathParam("applicationtokenid") String applicationtokenid,
+            @QueryParam("tagname_prefix") String tagNamePrefixFilter,
+            @QueryParam("tagname") String tagNameFilter,
+            @QueryParam("tagvalue_prefix") String tagValuePrefixFilter,
+            @QueryParam("tagvalue") String tagValueFilter) throws AppException {
+        log.debug("verify ApplicationTokenId {}", applicationtokenid);
+        ApplicationToken applicationToken = AuthenticatedApplicationTokenRepository.getApplicationToken(applicationtokenid);
+        if (applicationToken == null || !ApplicationTokenID.isValid(applicationToken.getApplicationID())) {
+            log.debug("ApplicationTokenId not valid");
+            throw AppExceptionCode.APP_ILLEGAL_7000;
+        } else {
+            log.debug("ApplicationTokenId valid");
+            List<Tag> tags = new ArrayList<>(applicationToken.getTags());
+            if (tagNamePrefixFilter != null || tagNameFilter != null || tagValuePrefixFilter != null || tagValueFilter != null) {
+                // tag filtering requested, allow all tags that passes any of the filters
+                tags.removeIf(tag -> !(
+                        (tagNamePrefixFilter != null && tag.getName().toLowerCase().startsWith(tagNamePrefixFilter.toLowerCase()))
+                                || (tagNameFilter != null && tag.getName().equalsIgnoreCase(tagNameFilter))
+                                || (tagValuePrefixFilter != null && tag.getValue().toLowerCase().startsWith(tagValuePrefixFilter.toLowerCase()))
+                                || (tagValueFilter != null && tag.getValue().equalsIgnoreCase(tagValueFilter))
+                ));
+            }
+            String tagsJson;
+            try {
+                tagsJson = mapper.writeValueAsString(tags);
+            } catch (JsonProcessingException e) {
+                log.error("", e);
+                return Response.serverError().build();
+            }
+            return Response.ok(tagsJson, MediaType.TEXT_PLAIN_TYPE).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         }
     }
 
