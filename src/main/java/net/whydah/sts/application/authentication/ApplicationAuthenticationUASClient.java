@@ -6,6 +6,7 @@ import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.commands.adminapi.application.CommandGetApplicationById;
+import net.whydah.sso.user.types.UserToken;
 import net.whydah.sts.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.sts.application.authentication.commands.CommandCheckApplicationCredentialInUAS;
 import net.whydah.sts.config.AppConfig;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.time.Instant;
+import java.util.Objects;
 
 import static net.whydah.sso.session.WhydahApplicationSession.createThreat;
 import static net.whydah.sts.health.HealthResource.getRunningSince;
@@ -68,7 +70,9 @@ public class ApplicationAuthenticationUASClient {
     }
 
 
-    public static ApplicationToken addApplicationTagsFromUAS(ApplicationToken applicationToken, ApplicationToken uasApplicationToken) {
+    public static ApplicationToken addApplicationTagsFromUAS(ApplicationToken applicationToken, UserToken adminUserToken) {
+        Objects.requireNonNull(applicationToken);
+        Objects.requireNonNull(adminUserToken);
 
 
         String useradminservice = appConfig.getProperty("useradminservice");
@@ -76,7 +80,7 @@ public class ApplicationAuthenticationUASClient {
         try {
             ApplicationToken stsToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
             Application application = ApplicationMapper.fromJson(
-                    new CommandGetApplicationById(URI.create(useradminservice), stsToken.getApplicationTokenId(), uasApplicationToken.getApplicationTokenId(), applicationToken.getApplicationID()).execute());
+                    new CommandGetApplicationById(URI.create(useradminservice), stsToken.getApplicationTokenId(), adminUserToken.getUserTokenId(), applicationToken.getApplicationID()).execute());
             log.debug("CommandGetApplicationById returned: {}", application);
             if (application != null) {
                 applicationToken.setTags(ApplicationTagMapper.getTagList(application.getTags()));
