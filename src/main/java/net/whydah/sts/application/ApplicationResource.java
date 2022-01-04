@@ -169,8 +169,10 @@ public class ApplicationResource {
             applicationToken.setBaseuri(appConfig.getProperty("myuri"));
             applicationToken.setExpires(String.valueOf(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * AuthenticatedApplicationTokenRepository.APP_TOKEN_MULTIPLIER).getValue()));
             AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); // add application-token without tags first to ensure that application-token-id is valid when check from UAS comes
-            applicationToken = updateWithTags(applicationToken); // TODO more than just updating tags could be done here as we are fetching full application xml
-            AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); // add updated application-token with tags
+            if(!"2210,2212,2215".contains(applicationToken.getApplicationID())) {
+            	applicationToken = updateWithTags(applicationToken); // TODO more than just updating tags could be done here as we are fetching full application xml
+            	AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); // add updated application-token with tags
+            }
             String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
             log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
             return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
