@@ -49,12 +49,16 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
         }
 
-        //UserToken uToken = AuthenticatedUserTokenRepository.getUserTokenByUserName(userCredential.getUserName(), applicationTokenId);
-        // if(uToken==null) {
-        UserToken uToken = new CommandVerifyUserCredential(useradminservice, appTokenXml, applicationTokenId, userCredentialXml).execute();
-            return AuthenticatedUserTokenRepository.addUserToken(uToken, applicationTokenId, "usertokenid");
-        // }
-        // return uToken;
+        UserToken uToken = AuthenticatedUserTokenRepository.getUserTokenByUserName(userCredential.getUserName(), applicationTokenId);
+        if(uToken==null || !uToken.isValid()) {
+        	uToken = new CommandVerifyUserCredential(useradminservice, appTokenXml, applicationTokenId, userCredentialXml).execute();
+        	if(uToken!=null) {
+        		return AuthenticatedUserTokenRepository.addUserToken(uToken, applicationTokenId, "usertokenid");
+        	} else {
+        		throw new AuthenticationFailedException(String.format("Authentication failed for user: %s, appTokenId: %s", userCredentialXml, applicationTokenId));
+        	}
+        }
+        return uToken;
 
 	}
 

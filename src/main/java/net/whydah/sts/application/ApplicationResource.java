@@ -514,10 +514,9 @@ public class ApplicationResource {
 
     private ApplicationToken updateWithTags(ApplicationToken applicationToken) {
         String user = appConfig.getProperty("whydah.adminuser.username");
-        UserToken whydahUserAdminUserToken = AuthenticatedUserTokenRepository.getUserTokenByUserName(user, applicationToken.getApplicationTokenId());
+        ApplicationToken stsApplicationToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
+        UserToken whydahUserAdminUserToken = AuthenticatedUserTokenRepository.getUserTokenByUserName(user, stsApplicationToken.getApplicationTokenId());
         if (whydahUserAdminUserToken == null) {
-            // Whydah admin user was not already logged in, perform logon now
-            ApplicationToken stsApplicationToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
             String password = appConfig.getProperty("whydah.adminuser.password");
             UserCredential userCredential = new UserCredential(user, password);
             whydahUserAdminUserToken = userAuthenticator.logonUser(stsApplicationToken.getApplicationTokenId(), ApplicationTokenMapper.toXML(stsApplicationToken), userCredential.toXML());
