@@ -170,8 +170,12 @@ public class ApplicationResource {
             applicationToken.setExpires(String.valueOf(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * AuthenticatedApplicationTokenRepository.APP_TOKEN_MULTIPLIER).getValue()));
             AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); // add application-token without tags first to ensure that application-token-id is valid when check from UAS comes
             if(!"2210,2212,2215".contains(applicationToken.getApplicationID())) {
-            	applicationToken = updateWithTags(applicationToken); // TODO more than just updating tags could be done here as we are fetching full application xml
-            	AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); // add updated application-token with tags
+            	
+            	//TODO: look into CommandVerifyUserCredential, it keeps failing to authenticate useradmin
+            	//why do we need useradmin credential to get its application tags?
+            	
+            	//applicationToken = updateWithTags(applicationToken); // TODO more than just updating tags could be done here as we are fetching full application xml
+            	//AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); // add updated application-token with tags
             } else {
             	log.debug("Application {} is logging on.", applicationToken.getApplicationName());
             }
