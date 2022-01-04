@@ -79,12 +79,17 @@ public class ApplicationAuthenticationUASClient {
 
         try {
             ApplicationToken stsToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
-            Application application = ApplicationMapper.fromJson(
-                    new CommandGetApplicationById(URI.create(useradminservice), stsToken.getApplicationTokenId(), adminUserToken.getUserTokenId(), applicationToken.getApplicationID()).execute());
-            log.debug("CommandGetApplicationById returned: {}", application);
-            if (application != null) {
-                applicationToken.setTags(ApplicationTagMapper.getTagList(application.getTags()));
-                return applicationToken;
+            
+            String json = new CommandGetApplicationById(URI.create(useradminservice), stsToken.getApplicationTokenId(), adminUserToken.getUserTokenId(), applicationToken.getApplicationID()).execute();
+            if(json!=null) {
+            	Application application = ApplicationMapper.fromJson(json);
+            	log.debug("CommandGetApplicationById returned: {}", application);
+            	if (application != null) {
+            		applicationToken.setTags(ApplicationTagMapper.getTagList(application.getTags()));
+            		return applicationToken;
+            	}
+            } else {
+            	log.warn("Cannot set tags for apptoken {}, appid {}, appname {}. CommandGetApplicationById failed to execute", applicationToken.getApplicationTokenId(), applicationToken.getApplicationID(), applicationToken.getApplicationName());
             }
         } catch (Exception e) {
             log.info("Unable to access UAS by Command", e);

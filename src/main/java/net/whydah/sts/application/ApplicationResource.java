@@ -172,6 +172,8 @@ public class ApplicationResource {
             if(!"2210,2212,2215".contains(applicationToken.getApplicationID())) {
             	applicationToken = updateWithTags(applicationToken); // TODO more than just updating tags could be done here as we are fetching full application xml
             	AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); // add updated application-token with tags
+            } else {
+            	log.debug("Application {} is logging on.", applicationToken.getApplicationName());
             }
             String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
             log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
@@ -518,7 +520,7 @@ public class ApplicationResource {
         String user = appConfig.getProperty("whydah.adminuser.username");
         ApplicationToken stsApplicationToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
         UserToken whydahUserAdminUserToken = AuthenticatedUserTokenRepository.getUserTokenByUserName(user, stsApplicationToken.getApplicationTokenId());
-        if (whydahUserAdminUserToken == null) {
+        if (whydahUserAdminUserToken == null || !whydahUserAdminUserToken.isValid()) {
             String password = appConfig.getProperty("whydah.adminuser.password");
             UserCredential userCredential = new UserCredential(user, password);
             whydahUserAdminUserToken = userAuthenticator.logonUser(stsApplicationToken.getApplicationTokenId(), ApplicationTokenMapper.toXML(stsApplicationToken), userCredential.toXML());
