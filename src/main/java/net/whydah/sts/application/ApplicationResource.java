@@ -22,6 +22,7 @@ import net.whydah.sts.application.authentication.ApplicationAuthenticationUASCli
 import net.whydah.sts.config.AppConfig;
 import net.whydah.sts.errorhandling.AppException;
 import net.whydah.sts.errorhandling.AppExceptionCode;
+import net.whydah.sts.errorhandling.AuthenticationFailedException;
 import net.whydah.sts.user.AuthenticatedUserTokenRepository;
 import net.whydah.sts.user.authentication.UserAuthenticator;
 import org.slf4j.Logger;
@@ -53,6 +54,7 @@ public class ApplicationResource {
 
     private final static Set<String> encryptionEnabledApplicationIDs = new HashSet<>(Arrays.asList("9999", "99999"));
     private final static ObjectMapper mapper = new ObjectMapper();
+    
 
     @Inject
     private AppConfig appConfig;
@@ -169,12 +171,14 @@ public class ApplicationResource {
             applicationToken.setBaseuri(appConfig.getProperty("myuri"));
             applicationToken.setExpires(String.valueOf(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * AuthenticatedApplicationTokenRepository.APP_TOKEN_MULTIPLIER).getValue()));
             AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); // add application-token without tags first to ensure that application-token-id is valid when check from UAS comes
-            if(!"2210,2212,2215".contains(applicationToken.getApplicationID())) {
+            
+            //only do update tags if we have UAS activated
+            if(AuthenticatedApplicationTokenRepository.getUASApplicationToken()!=null) {
+            	log.info("UAS activated. Prepareing to Update tags for app {}", applicationToken.getApplicationName() );
             	applicationToken = updateWithTags(applicationToken); // TODO more than just updating tags could be done here as we are fetching full application xml
             	AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); // add updated application-token with tags
-            } else {
-            	log.debug("Application {} is logging on.", applicationToken.getApplicationName());
             }
+            
             String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
             log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
             return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
@@ -523,10 +527,14 @@ public class ApplicationResource {
         if (whydahUserAdminUserToken == null || !whydahUserAdminUserToken.isValid()) {
             String password = appConfig.getProperty("whydah.adminuser.password");
             UserCredential userCredential = new UserCredential(user, password);
-            whydahUserAdminUserToken = userAuthenticator.logonUser(stsApplicationToken.getApplicationTokenId(), ApplicationTokenMapper.toXML(stsApplicationToken), userCredential.toXML());
-        }
-        if(whydahUserAdminUserToken!=null) {
-        	return ApplicationAuthenticationUASClient.addApplicationTagsFromUAS(applicationToken, whydahUserAdminUserToken);
+            try {
+            	whydahUserAdminUserToken = userAuthenticator.logonUser(stsApplicationToken.getApplicationTokenId(), ApplicationTokenMapper.toXML(stsApplicationToken), userCredential.toXML());
+            	if(whydahUserAdminUserToken!=null) {
+                	return ApplicationAuthenticationUASClient.addApplicationTagsFromUAS(applicationToken, whydahUserAdminUserToken);
+                }
+            } catch(AuthenticationFailedException ex) {
+            	ex.printStackTrace();
+            }
         }
         return applicationToken;
     }
