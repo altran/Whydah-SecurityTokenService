@@ -151,7 +151,7 @@ public class AuthenticatedApplicationTokenRepository {
             applicationCryptoKeyMap.remove(applicationToken.getApplicationTokenId());
             return null;
         }
-        return applicationTokenMap.get(applicationtokenid);
+        return applicationToken;
     }
 
     public static ExchangeableKey getExchangeableKeyForApplicationToken(ApplicationToken applicationToken) {
