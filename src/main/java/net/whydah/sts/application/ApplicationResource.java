@@ -177,7 +177,9 @@ public class ApplicationResource {
             		AuthenticatedApplicationTokenRepository.getUASApplicationToken()!=null && 
             		AuthenticatedApplicationTokenRepository.getUIBApplicationToken()!=null
             		) {
-            	log.info("UAS activated. Prepareing to Update tags for app {}", applicationToken.getApplicationName() );
+            	log.info("UAS activated with app token {}", AuthenticatedApplicationTokenRepository.getUASApplicationToken());
+            	log.info("UIB activated with app token {}", AuthenticatedApplicationTokenRepository.getUIBApplicationToken());
+            	log.info("Preparing update tags for app token {} - app name {}", applicationToken.getApplicationTokenId() , applicationToken.getApplicationName());
             	applicationToken = updateWithTags(applicationToken); // TODO more than just updating tags could be done here as we are fetching full application xml
             	AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); // add updated application-token with tags
             }
