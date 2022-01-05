@@ -1,12 +1,39 @@
 package net.whydah.sts.application;
 
+import static net.whydah.sso.util.LoggerUtil.first50;
+import static net.whydah.sts.application.AuthenticatedApplicationTokenRepository.DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.sun.jersey.api.view.Viewable;
+
 import net.whydah.sso.application.helpers.ApplicationCredentialHelper;
 import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
+import net.whydah.sso.application.mappers.ApplicationTagMapper;
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
+import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.application.types.Tag;
@@ -25,28 +52,6 @@ import net.whydah.sts.errorhandling.AppExceptionCode;
 import net.whydah.sts.errorhandling.AuthenticationFailedException;
 import net.whydah.sts.user.AuthenticatedUserTokenRepository;
 import net.whydah.sts.user.authentication.UserAuthenticator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static net.whydah.sso.util.LoggerUtil.first50;
-import static net.whydah.sts.application.AuthenticatedApplicationTokenRepository.DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS;
 
 @Path("/")
 public class ApplicationResource {
@@ -156,10 +161,7 @@ public class ApplicationResource {
             throw AppExceptionCode.APP_ILLEGAL_7000;
         }
         try {
-            ApplicationToken applicationToken = ApplicationTokenMapper.fromApplicationCredentialXML(appCredentialXml);
-            if (applicationToken.getApplicationName() == null || applicationToken.getApplicationName().length() < 1) {
-                log.warn("Old Whydah ApplicationCredential received, please inform application owner to update the ApplicationCredential. ApplicationCredential:" + appCredentialXml);
-            }
+           
 //            if(appCredentialXml.contains("2215")) {
 //            	applicationToken.setBaseuri(appConfig.getProperty("myuri"));
 //                applicationToken.setExpires(String.valueOf(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000).getValue()));
@@ -168,10 +170,27 @@ public class ApplicationResource {
 //                log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
 //                return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
 //            }
-            applicationToken.setBaseuri(appConfig.getProperty("myuri"));
-            applicationToken.setExpires(String.valueOf(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * AuthenticatedApplicationTokenRepository.APP_TOKEN_MULTIPLIER).getValue()));
-           
-           
+            
+          
+            if(ApplicationModelFacade.getApplicationList().size() ==0) {
+            	throw AppExceptionCode.MISC_INTERNAL_ERROR_PARAMS_9999.addMessageParams("Service is not ready for logon just yet.");
+            } else {
+            	
+            	 ApplicationToken applicationToken = ApplicationTokenMapper.fromApplicationCredentialXML(appCredentialXml);
+                 if (applicationToken.getApplicationName() == null || applicationToken.getApplicationName().length() < 1) {
+                     log.warn("Old Whydah ApplicationCredential received, please inform application owner to update the ApplicationCredential. ApplicationCredential:" + appCredentialXml);
+                 }
+                 applicationToken.setBaseuri(appConfig.getProperty("myuri"));
+                 applicationToken.setExpires(String.valueOf(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * AuthenticatedApplicationTokenRepository.APP_TOKEN_MULTIPLIER).getValue()));
+                 AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); 
+                 Application app = ApplicationModelFacade.getApplication(applicationToken.getApplicationID());
+                 applicationToken.setTags(ApplicationTagMapper.getTagList(app.getTags()));
+                 String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
+                 log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
+                 return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            }
+            
+            /*
             //only do update tags if we have UAS/UIB activated
             if( AuthenticatedApplicationTokenRepository.getUASApplicationToken()!=null && 
             		AuthenticatedApplicationTokenRepository.getUIBApplicationToken()!=null
@@ -195,10 +214,12 @@ public class ApplicationResource {
             		throw AppExceptionCode.MISC_INTERNAL_ERROR_PARAMS_9999.addMessageParams("Service is not ready for logon just yet.");
             	}
             }
+            */
             
-            String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
-            log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
-            return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+            
+            
+            
+            
         } catch (Exception e) {
             log.error("Something went really wrong here", e);
         }
