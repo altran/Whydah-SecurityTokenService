@@ -171,24 +171,25 @@ public class ApplicationResource {
 //                return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
 //            }
             
-          
-            if(ApplicationModelFacade.getApplicationList().size() ==0) {
-            	throw AppExceptionCode.MISC_INTERNAL_ERROR_PARAMS_9999.addMessageParams("Service is not ready for logon just yet.");
-            } else {
-            	
-            	 ApplicationToken applicationToken = ApplicationTokenMapper.fromApplicationCredentialXML(appCredentialXml);
-                 if (applicationToken.getApplicationName() == null || applicationToken.getApplicationName().length() < 1) {
-                     log.warn("Old Whydah ApplicationCredential received, please inform application owner to update the ApplicationCredential. ApplicationCredential:" + appCredentialXml);
-                 }
-                 applicationToken.setBaseuri(appConfig.getProperty("myuri"));
-                 applicationToken.setExpires(String.valueOf(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * AuthenticatedApplicationTokenRepository.APP_TOKEN_MULTIPLIER).getValue()));
-                 AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); 
-                 Application app = ApplicationModelFacade.getApplication(applicationToken.getApplicationID());
-                 applicationToken.setTags(ApplicationTagMapper.getTagList(app.getTags()));
-                 String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
-                 log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
-                 return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
-            }
+        	 ApplicationToken applicationToken = ApplicationTokenMapper.fromApplicationCredentialXML(appCredentialXml);
+        	 if (applicationToken.getApplicationName() == null || applicationToken.getApplicationName().length() < 1) {
+                 log.warn("Old Whydah ApplicationCredential received, please inform application owner to update the ApplicationCredential. ApplicationCredential:" + appCredentialXml);
+             }
+             applicationToken.setBaseuri(appConfig.getProperty("myuri"));
+             applicationToken.setExpires(String.valueOf(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * AuthenticatedApplicationTokenRepository.APP_TOKEN_MULTIPLIER).getValue()));
+             AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); 
+             
+             Application app = ApplicationModelFacade.getApplication(applicationToken.getApplicationID());
+             if(app!=null) {
+            	 log.info("Set tag {} for app {}" + app.getTags(), applicationToken.getApplicationName());
+            	 applicationToken.setTags(ApplicationTagMapper.getTagList(app.getTags()));
+             } else {
+            	log.warn("Application tag has not been set for app {}", applicationToken.getApplicationName());
+             }
+             String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
+             log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
+             return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
+        
             
             /*
             //only do update tags if we have UAS/UIB activated
