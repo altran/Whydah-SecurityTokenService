@@ -522,13 +522,14 @@ public class ApplicationResource {
 
     private ApplicationToken updateWithTags(ApplicationToken applicationToken) {
         String user = appConfig.getProperty("whydah.adminuser.username");
-        ApplicationToken stsApplicationToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
-        UserToken whydahUserAdminUserToken = AuthenticatedUserTokenRepository.getUserTokenByUserName(user, stsApplicationToken.getApplicationTokenId());
+        //ApplicationToken stsApplicationToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
+        ApplicationToken uasApplicationToken = AuthenticatedApplicationTokenRepository.getUASApplicationToken();
+        UserToken whydahUserAdminUserToken = AuthenticatedUserTokenRepository.getUserTokenByUserName(user, uasApplicationToken.getApplicationTokenId());
         if (whydahUserAdminUserToken == null || !whydahUserAdminUserToken.isValid()) {
             String password = appConfig.getProperty("whydah.adminuser.password");
             UserCredential userCredential = new UserCredential(user, password);
             try {
-            	whydahUserAdminUserToken = userAuthenticator.logonUser(stsApplicationToken.getApplicationTokenId(), ApplicationTokenMapper.toXML(stsApplicationToken), userCredential.toXML());
+            	whydahUserAdminUserToken = userAuthenticator.logonUser(uasApplicationToken.getApplicationTokenId(), ApplicationTokenMapper.toXML(uasApplicationToken), userCredential.toXML());
             	if(whydahUserAdminUserToken!=null) {
                 	return ApplicationAuthenticationUASClient.addApplicationTagsFromUAS(applicationToken, whydahUserAdminUserToken);
                 }
