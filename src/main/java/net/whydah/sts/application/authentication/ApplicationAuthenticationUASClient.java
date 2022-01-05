@@ -5,7 +5,9 @@ import net.whydah.sso.application.mappers.ApplicationTagMapper;
 import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
+import net.whydah.sso.commands.adminapi.application.CommandGetApplication;
 import net.whydah.sso.commands.adminapi.application.CommandGetApplicationById;
+import net.whydah.sso.commands.appauth.CommandGetApplicationIdFromApplicationTokenId;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.sts.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.sts.application.authentication.commands.CommandCheckApplicationCredentialInUAS;
@@ -80,16 +82,16 @@ public class ApplicationAuthenticationUASClient {
         try {
             ApplicationToken stsToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
             
-            String json = new CommandGetApplicationById(URI.create(useradminservice), stsToken.getApplicationTokenId(), adminUserToken.getUserTokenId(), applicationToken.getApplicationID()).execute();
+            String json = new CommandGetApplication(URI.create(useradminservice), stsToken.getApplicationTokenId(), adminUserToken.getUserTokenId(), applicationToken.getApplicationID()).execute();
             if(json!=null) {
             	Application application = ApplicationMapper.fromJson(json);
-            	log.debug("CommandGetApplicationById returned: {}", application);
+            	log.debug("CommandGetApplication returned: {}", application);
             	if (application != null) {
             		applicationToken.setTags(ApplicationTagMapper.getTagList(application.getTags()));
             		return applicationToken;
             	}
             } else {
-            	log.warn("Cannot set tags for apptoken {}, appid {}, appname {}. CommandGetApplicationById failed to execute", applicationToken.getApplicationTokenId(), applicationToken.getApplicationID(), applicationToken.getApplicationName());
+            	log.warn("Cannot set tags for apptoken {}, appid {}, appname {}. CommandGetApplication failed to execute", applicationToken.getApplicationTokenId(), applicationToken.getApplicationID(), applicationToken.getApplicationName());
             }
         } catch (Exception e) {
             log.info("Unable to access UAS by Command", e);
