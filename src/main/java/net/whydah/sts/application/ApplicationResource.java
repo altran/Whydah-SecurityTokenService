@@ -179,10 +179,15 @@ public class ApplicationResource {
              applicationToken.setExpires(String.valueOf(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * AuthenticatedApplicationTokenRepository.APP_TOKEN_MULTIPLIER).getValue()));
              AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); 
              
-             Application app = ApplicationModelFacade.getApplication(applicationToken.getApplicationID());
-             if(app!=null) {
-            	 log.info("Set tag {} for app {}" + app.getTags(), applicationToken.getApplicationName());
-            	 applicationToken.setTags(ApplicationTagMapper.getTagList(app.getTags()));
+             
+             if(ApplicationModelFacade.getApplicationList().size()>0) {
+            	 Application app = ApplicationModelFacade.getApplication(applicationToken.getApplicationID());
+            	 if(app!=null) {
+            		 log.info("Set tag {} for app {}" + app.getTags(), applicationToken.getApplicationName());
+            		 applicationToken.setTags(ApplicationTagMapper.getTagList(app.getTags()));
+            	 } else {
+            		 log.warn("ApplicationList is available but application tag has not been set for app {}", applicationToken.getApplicationName());
+            	 }
              } else {
             	log.warn("Application tag has not been set for app {}", applicationToken.getApplicationName());
              }
