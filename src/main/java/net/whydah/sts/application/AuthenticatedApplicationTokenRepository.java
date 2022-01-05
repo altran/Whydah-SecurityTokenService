@@ -35,6 +35,7 @@ public class AuthenticatedApplicationTokenRepository {
     private static String mySTSApplicationTokenId = "";
     private static ApplicationToken mySTSApplicationToken;
     private static ApplicationToken uasApplicationToken;
+    private static ApplicationToken uibApplicationToken;
     private static ObjectMapper mapper = new ObjectMapper();
 
     private static final Map<String, ApplicationToken> applicationTokenMap;
@@ -96,6 +97,10 @@ public class AuthenticatedApplicationTokenRepository {
         return uasApplicationToken;
     }
 
+    public static ApplicationToken getUIBApplicationToken() {
+        return uibApplicationToken;
+    }
+    
     public static void addApplicationToken(ApplicationToken applicationToken) {
 
         long remainingSecs = (Long.parseLong(applicationToken.getExpires()) - System.currentTimeMillis()) / 1000;
@@ -103,7 +108,10 @@ public class AuthenticatedApplicationTokenRepository {
         applicationTokenMap.put(applicationToken.getApplicationTokenId(), applicationToken);
         if (applicationToken.getApplicationID().equalsIgnoreCase("2212")) {
             uasApplicationToken = applicationToken;
+        } else if (applicationToken.getApplicationID().equalsIgnoreCase("2210")) {
+            uibApplicationToken = applicationToken;
         }
+
 
         if (applicationCryptoKeyMap.containsKey(applicationToken.getApplicationTokenId())) {
             // Maybe update key here...
@@ -188,6 +196,8 @@ public class AuthenticatedApplicationTokenRepository {
             applicationTokenMap.put(renewApplicationToken.getApplicationTokenId(), renewApplicationToken);
             if (renewApplicationToken.getApplicationID().equalsIgnoreCase("2212")) {
                 uasApplicationToken = renewApplicationToken;
+            } else if (renewApplicationToken.getApplicationID().equalsIgnoreCase("2210")) {
+                uibApplicationToken = renewApplicationToken;
             }
 
             log.debug("updating cryptokey for applicationId: {} with applicationTokenId:{}", renewApplicationToken.getApplicationID(), renewApplicationToken.getApplicationTokenId());

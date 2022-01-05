@@ -173,7 +173,10 @@ public class ApplicationResource {
             AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); // add application-token without tags first to ensure that application-token-id is valid when check from UAS comes
             
             //only do update tags if we have UAS activated
-            if(AuthenticatedApplicationTokenRepository.getUASApplicationToken()!=null) {
+            if(!"2212, 2210".contains( applicationToken.getApplicationID()) && 
+            		AuthenticatedApplicationTokenRepository.getUASApplicationToken()!=null && 
+            		AuthenticatedApplicationTokenRepository.getUIBApplicationToken()!=null
+            		) {
             	log.info("UAS activated. Prepareing to Update tags for app {}", applicationToken.getApplicationName() );
             	applicationToken = updateWithTags(applicationToken); // TODO more than just updating tags could be done here as we are fetching full application xml
             	AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); // add updated application-token with tags
