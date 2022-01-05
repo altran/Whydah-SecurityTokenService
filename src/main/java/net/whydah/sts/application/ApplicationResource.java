@@ -183,7 +183,7 @@ public class ApplicationResource {
              if(ApplicationModelFacade.getApplicationList().size()>0) {
             	 Application app = ApplicationModelFacade.getApplication(applicationToken.getApplicationID());
             	 if(app!=null) {
-            		 log.info("Set tag {} for app {}" + app.getTags(), applicationToken.getApplicationName());
+            		 log.info("Set tag {} for app {}", app.getTags(), applicationToken.getApplicationName());
             		 applicationToken.setTags(ApplicationTagMapper.getTagList(app.getTags()));
             	 } else {
             		 log.warn("ApplicationList is available but application tag has not been set for app {}", applicationToken.getApplicationName());
