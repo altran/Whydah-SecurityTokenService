@@ -72,4 +72,7 @@ public class AppException extends Exception {
 		return this;
 	}
 	
+	public AppException addMessageParams(Object... params) {
+		return new AppException(status, code, String.format(this.getMessage(), params), developerMessage, link);
+	}
 }

@@ -170,18 +170,30 @@ public class ApplicationResource {
 //            }
             applicationToken.setBaseuri(appConfig.getProperty("myuri"));
             applicationToken.setExpires(String.valueOf(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * AuthenticatedApplicationTokenRepository.APP_TOKEN_MULTIPLIER).getValue()));
-            AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); // add application-token without tags first to ensure that application-token-id is valid when check from UAS comes
-            
-            //only do update tags if we have UAS activated
-            if(!"2212, 2210".contains( applicationToken.getApplicationID()) && 
-            		AuthenticatedApplicationTokenRepository.getUASApplicationToken()!=null && 
+           
+           
+            //only do update tags if we have UAS/UIB activated
+            if( AuthenticatedApplicationTokenRepository.getUASApplicationToken()!=null && 
             		AuthenticatedApplicationTokenRepository.getUIBApplicationToken()!=null
             		) {
-            	log.info("UAS activated with app token {}", AuthenticatedApplicationTokenRepository.getUASApplicationToken());
-            	log.info("UIB activated with app token {}", AuthenticatedApplicationTokenRepository.getUIBApplicationToken());
-            	log.info("Preparing update tags for app token {} - app name {}", applicationToken.getApplicationTokenId() , applicationToken.getApplicationName());
-            	applicationToken = updateWithTags(applicationToken); // TODO more than just updating tags could be done here as we are fetching full application xml
-            	AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); // add updated application-token with tags
+            	//add application token since UIB/UIB activated
+            	AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); 
+            	//update tags for apps except UAS/UIB
+            	if(!"2212, 2210".contains( applicationToken.getApplicationID())) {
+            		log.info("UAS activated with app token {}", AuthenticatedApplicationTokenRepository.getUASApplicationToken());
+            		log.info("UIB activated with app token {}", AuthenticatedApplicationTokenRepository.getUIBApplicationToken());
+            		log.info("Preparing update tags for app token {} - app name {}", applicationToken.getApplicationTokenId() , applicationToken.getApplicationName());
+            		applicationToken = updateWithTags(applicationToken); // TODO more than just updating tags could be done here as we are fetching full application xml
+            		AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); // add updated application-token with tags
+            	}
+            } else {
+            	if("2212, 2210".contains( applicationToken.getApplicationID())) {
+            		 AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); 
+            	} else {
+            		//will fail because UAS/UIB has not activated just yet
+            		log.warn("Logon called for app {} but UAS/UIB has not etablished yet.", applicationToken);
+            		throw AppExceptionCode.MISC_INTERNAL_ERROR_PARAMS_9999.addMessageParams("Service is not ready for logon just yet.");
+            	}
             }
             
             String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
@@ -527,14 +539,14 @@ public class ApplicationResource {
 
     private ApplicationToken updateWithTags(ApplicationToken applicationToken) {
         String user = appConfig.getProperty("whydah.adminuser.username");
-        //ApplicationToken stsApplicationToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
-        ApplicationToken uasApplicationToken = AuthenticatedApplicationTokenRepository.getUASApplicationToken();
-        UserToken whydahUserAdminUserToken = AuthenticatedUserTokenRepository.getUserTokenByUserName(user, uasApplicationToken.getApplicationTokenId());
+        ApplicationToken stsApplicationToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
+        //ApplicationToken uasApplicationToken = AuthenticatedApplicationTokenRepository.getUASApplicationToken();
+        UserToken whydahUserAdminUserToken = AuthenticatedUserTokenRepository.getUserTokenByUserName(user, stsApplicationToken.getApplicationTokenId());
         if (whydahUserAdminUserToken == null || !whydahUserAdminUserToken.isValid()) {
             String password = appConfig.getProperty("whydah.adminuser.password");
             UserCredential userCredential = new UserCredential(user, password);
             try {
-            	whydahUserAdminUserToken = userAuthenticator.logonUser(uasApplicationToken.getApplicationTokenId(), ApplicationTokenMapper.toXML(uasApplicationToken), userCredential.toXML());
+            	whydahUserAdminUserToken = userAuthenticator.logonUser(stsApplicationToken.getApplicationTokenId(), ApplicationTokenMapper.toXML(stsApplicationToken), userCredential.toXML());
             	if(whydahUserAdminUserToken!=null) {
                 	return ApplicationAuthenticationUASClient.addApplicationTagsFromUAS(applicationToken, whydahUserAdminUserToken);
                 }

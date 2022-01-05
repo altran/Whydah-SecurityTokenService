@@ -21,8 +21,7 @@ public class AppExceptionCode {
 	
 	//MISC
 	public static final AppException MISC_MISSING_PARAMS_9998 = new AppException(Status.BAD_REQUEST, 9998, "Missing required parameters", "Missing required parameters", "");
-	
-	
-	
+	public static final AppException MISC_INTERNAL_ERROR_PARAMS_9999 = new AppException(Status.INTERNAL_SERVER_ERROR, 9999, "Internal server exception: %s", "", "");
+
 	
 }
