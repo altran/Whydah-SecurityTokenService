@@ -68,7 +68,7 @@ public class ApplicationModelFacade {
     }
 
     public static List<Application> getApplicationList() {
-    	
+    	/*
     	try {
 			TimeLimitedCodeBlock.runWithTimeout(new Runnable() {
 				@Override
@@ -85,7 +85,7 @@ public class ApplicationModelFacade {
 			}, 20, TimeUnit.SECONDS);
 		} catch (Exception e1) {
 			e1.printStackTrace();
-		}
+		}*/
         return ApplicationModelUtil.getApplicationList();
     }
 
