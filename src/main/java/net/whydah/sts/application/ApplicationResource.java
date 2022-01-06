@@ -547,7 +547,22 @@ public class ApplicationResource {
                 }
             }
             if (!applicationCredential.getApplicationSecret().equalsIgnoreCase(expectedAppSecret)) {
-                log.info("Incoming applicationSecret does not match applicationSecret from property file. - Trying UAS/UIB");
+                
+            	
+            	//Huy: improve checking from the internal list instead of calling UIB/UAS
+            	if(ApplicationModelFacade.getApplicationList().size()>0) {
+            		//we can check from the internal list if available     
+            		Application app = ApplicationModelFacade.getApplication(applicationCredential.getApplicationID());
+            		if(app!=null) {
+            			log.info("Check incoming applicationSecret from the internal app list");
+            			if(app.getSecurity().getSecret().equalsIgnoreCase(applicationCredential.getApplicationSecret())) {
+            				return true;
+            			}
+            		}
+            	}
+            	
+            	log.info("Incoming applicationSecret does not match applicationSecret from property file or internal application list. - Trying UAS/UIB");
+             
                 if (ApplicationAuthenticationUASClient.checkAppsecretFromUAS(applicationCredential)) {
                     log.info("Application authentication(local mismatch fallback) OK for appId:{}, applicationName: {} from UAS", applicationCredential.getApplicationID(), applicationCredential.getApplicationName());
                     return true;
