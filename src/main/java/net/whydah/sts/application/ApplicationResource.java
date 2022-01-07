@@ -1,34 +1,9 @@
 package net.whydah.sts.application;
 
-import static net.whydah.sso.util.LoggerUtil.first50;
-import static net.whydah.sts.application.AuthenticatedApplicationTokenRepository.DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.sun.jersey.api.view.Viewable;
-
 import net.whydah.sso.application.helpers.ApplicationCredentialHelper;
 import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
 import net.whydah.sso.application.mappers.ApplicationTagMapper;
@@ -52,6 +27,28 @@ import net.whydah.sts.errorhandling.AppExceptionCode;
 import net.whydah.sts.errorhandling.AuthenticationFailedException;
 import net.whydah.sts.user.AuthenticatedUserTokenRepository;
 import net.whydah.sts.user.authentication.UserAuthenticator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static net.whydah.sso.util.LoggerUtil.first50;
+import static net.whydah.sts.application.AuthenticatedApplicationTokenRepository.DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS;
 
 @Path("/")
 public class ApplicationResource {
@@ -177,8 +174,7 @@ public class ApplicationResource {
              }
              applicationToken.setBaseuri(appConfig.getProperty("myuri"));
              applicationToken.setExpires(String.valueOf(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * AuthenticatedApplicationTokenRepository.APP_TOKEN_MULTIPLIER).getValue()));
-             AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken); 
-             
+
              
              if(ApplicationModelFacade.getApplicationList().size()>0) {
             	 Application app = ApplicationModelFacade.getApplication(applicationToken.getApplicationID());
@@ -191,7 +187,8 @@ public class ApplicationResource {
              } else {
             	log.warn("Application tag has not been set for app {}", applicationToken.getApplicationName());
              }
-             String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
+            AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken);
+            String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
              log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
              return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         
