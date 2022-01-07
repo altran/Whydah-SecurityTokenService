@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -42,15 +41,6 @@ public class ApplicationModelFacade {
 
     public static Application getApplication(String applicationID) {
         Application app = ApplicationModelUtil.getApplication(applicationID);
-        if (app == null) {
-            try {
-                Future<?> future = app_update_scheduler.submit(ApplicationModelFacade::doUpdateApplicationListTask);
-                future.get(20, TimeUnit.SECONDS);
-                return ApplicationModelUtil.getApplication(applicationID);
-            } catch (Exception e) {
-                log.warn("", e);
-            }
-        }
         return app;
     }
 
