@@ -6,9 +6,12 @@ import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.HazelcastInstance;
 import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
+import net.whydah.sso.application.mappers.ApplicationTagMapper;
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
+import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
+import net.whydah.sso.application.types.Tag;
 import net.whydah.sso.ddd.model.application.ApplicationTokenExpires;
 import net.whydah.sso.session.WhydahApplicationSession;
 import net.whydah.sso.session.baseclasses.ExchangeableKey;
@@ -20,7 +23,10 @@ import javax.crypto.spec.IvParameterSpec;
 import java.io.FileNotFoundException;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 
@@ -95,7 +101,7 @@ public class AuthenticatedApplicationTokenRepository {
     public static ApplicationToken getUIBApplicationToken() {
         return uibApplicationToken;
     }
-    
+
     public static void addApplicationToken(ApplicationToken applicationToken) {
 
         long remainingSecs = (Long.parseLong(applicationToken.getExpires()) - System.currentTimeMillis()) / 1000;
@@ -135,6 +141,41 @@ public class AuthenticatedApplicationTokenRepository {
         }
     }
 
+    public static boolean updateApplicationTokenWithDetailsFromApplication(ApplicationToken applicationToken, Application application) {
+        if (applicationToken == null) {
+            return false;
+        }
+        if (application == null) {
+            return false;
+        }
+        boolean tokenChanged = false;
+        {
+            // update application name if changed
+            if (!applicationToken.getApplicationName().equals(application.getName())) {
+                applicationToken.setApplicationName(application.getName());
+                tokenChanged = true;
+            }
+        }
+        {
+            // update application secret if changed
+            if (!applicationToken.getApplicationSecret().equals(application.getSecurity().getSecret())) {
+                applicationToken.setApplicationSecret(application.getSecurity().getSecret());
+                tokenChanged = true;
+            }
+        }
+        {
+            // update tags if changed
+            Set<Tag> tokenTagSet = new LinkedHashSet<>(applicationToken.getTags());
+            List<Tag> applicationTagList = ApplicationTagMapper.getTagList(application.getTags());
+            Set<Tag> applicationTagSet = new LinkedHashSet<>(applicationTagList);
+            if (!tokenTagSet.equals(applicationTagSet)) {
+                applicationToken.setTags(applicationTagList);
+                tokenChanged = true;
+            }
+        }
+        return tokenChanged;
+    }
+
     public static ApplicationToken getApplicationToken(String applicationtokenid) {
         ApplicationToken applicationToken = applicationTokenMap.get(applicationtokenid);
         if (applicationToken == null) {
@@ -145,6 +186,10 @@ public class AuthenticatedApplicationTokenRepository {
             applicationTokenMap.remove(applicationToken.getApplicationTokenId());
             applicationCryptoKeyMap.remove(applicationToken.getApplicationTokenId());
             return null;
+        }
+        Application application = ApplicationModelFacade.getApplication(applicationToken.getApplicationID());
+        if (updateApplicationTokenWithDetailsFromApplication(applicationToken, application)) {
+            updateApplicationToken(applicationToken);
         }
         return applicationToken;
     }
@@ -206,6 +251,10 @@ public class AuthenticatedApplicationTokenRepository {
                 log.warn("Unable to create cryotokey for applicationId: {}, re-using old", renewApplicationToken.getApplicationID());
                 applicationCryptoKeyMap.put(renewApplicationToken.getApplicationTokenId(), exchangeableKey);
             }
+            Application application = ApplicationModelFacade.getApplication(renewApplicationToken.getApplicationID());
+            if (updateApplicationTokenWithDetailsFromApplication(renewApplicationToken, application)) {
+                updateApplicationToken(renewApplicationToken);
+            }
             return renewApplicationToken;
         }
         return null;
@@ -222,7 +271,7 @@ public class AuthenticatedApplicationTokenRepository {
     }
 
     public static String getApplicationNameFromApplicationTokenID(String applicationtokenid) {
-        ApplicationToken applicationToken = applicationTokenMap.get(applicationtokenid);
+        ApplicationToken applicationToken = getApplicationToken(applicationtokenid);
         if (applicationToken != null) {
             return applicationToken.getApplicationName();
         }
@@ -306,10 +355,14 @@ public class AuthenticatedApplicationTokenRepository {
             mySTSApplicationToken = ApplicationTokenMapper.fromApplicationCredentialXML(ApplicationCredentialMapper.toXML(ac));
             mySTSApplicationToken.setExpires(String.valueOf(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000L * STS_TOKEN_MULTIPLIER).getValue()));  // 100 times the default
             mySTSApplicationTokenId = mySTSApplicationToken.getApplicationTokenId();
+            Application application = ApplicationModelFacade.getApplication(applicationId);
+            updateApplicationTokenWithDetailsFromApplication(mySTSApplicationToken, application);
             addApplicationToken(mySTSApplicationToken);
         } else {  // update expires
             mySTSApplicationToken = applicationTokenMap.get(mySTSApplicationTokenId);
             mySTSApplicationToken.setExpires(String.valueOf(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000L * STS_TOKEN_MULTIPLIER).getValue()));  // 100 times the default
+            Application application = ApplicationModelFacade.getApplication(applicationId);
+            updateApplicationTokenWithDetailsFromApplication(mySTSApplicationToken, application);
             //very costly to generate key every time, just update
             //addApplicationToken(mySTSApplicationToken);
             updateApplicationToken(mySTSApplicationToken);

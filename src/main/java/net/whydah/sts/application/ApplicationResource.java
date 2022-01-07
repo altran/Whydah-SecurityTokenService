@@ -175,20 +175,16 @@ public class ApplicationResource {
              applicationToken.setBaseuri(appConfig.getProperty("myuri"));
              applicationToken.setExpires(String.valueOf(new ApplicationTokenExpires(DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 1000 * AuthenticatedApplicationTokenRepository.APP_TOKEN_MULTIPLIER).getValue()));
 
-             
-             if(ApplicationModelFacade.getApplicationList().size()>0) {
-            	 Application app = ApplicationModelFacade.getApplication(applicationToken.getApplicationID());
-            	 if(app!=null) {
-            		 log.info("Set tag {} for app {}", app.getTags(), applicationToken.getApplicationName());
-            		 applicationToken.setTags(ApplicationTagMapper.getTagList(app.getTags()));
-            	 } else {
-            		 log.warn("ApplicationList is available but application tag has not been set for app {}", applicationToken.getApplicationName());
-            	 }
+             Application app = ApplicationModelFacade.getApplication(applicationToken.getApplicationID());
+             if (AuthenticatedApplicationTokenRepository.updateApplicationTokenWithDetailsFromApplication(applicationToken, app)) {
+                 log.info("ApplicationToken updated with details from application-list. Application.name: {}, tags: {}", applicationToken.getApplicationName(), app.getTags());
              } else {
-            	log.warn("Application tag has not been set for app {}", applicationToken.getApplicationName());
+                 log.warn("ApplicationToken NOT updated with any details from application-list. Application.name: {}", applicationToken.getApplicationName());
              }
-            AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken);
-            String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
+
+             AuthenticatedApplicationTokenRepository.addApplicationToken(applicationToken);
+
+             String applicationTokenXml = ApplicationTokenMapper.toXML(applicationToken);
              log.trace("logonApplication returns applicationTokenXml={}", applicationTokenXml);
              return Response.ok().entity(applicationTokenXml).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").build();
         
@@ -443,6 +439,15 @@ public class ApplicationResource {
         } else {
             log.debug("ApplicationTokenId valid");
             List<Tag> tags = new ArrayList<>(applicationToken.getTags());
+            Application application = ApplicationModelFacade.getApplication(applicationToken.getApplicationID());
+            if (application != null) {
+                List<Tag> tagsFromApplicationList = ApplicationTagMapper.getTagList(application.getTags());
+                for (Tag tag : tagsFromApplicationList) {
+                    if (!tags.contains(tag)) {
+                        tags.add(tag);
+                    }
+                }
+            }
             if (tagNamePrefixFilter != null || tagNameFilter != null || tagValuePrefixFilter != null || tagValueFilter != null) {
                 // tag filtering requested, allow all tags that passes any of the filters
                 tags.removeIf(tag -> !(
