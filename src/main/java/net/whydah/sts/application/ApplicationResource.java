@@ -6,7 +6,6 @@ import com.google.inject.Inject;
 import com.sun.jersey.api.view.Viewable;
 import net.whydah.sso.application.helpers.ApplicationCredentialHelper;
 import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
-import net.whydah.sso.application.mappers.ApplicationTagMapper;
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
 import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationCredential;
@@ -439,15 +438,6 @@ public class ApplicationResource {
         } else {
             log.debug("ApplicationTokenId valid");
             List<Tag> tags = new ArrayList<>(applicationToken.getTags());
-            Application application = ApplicationModelFacade.getApplication(applicationToken.getApplicationID());
-            if (application != null) {
-                List<Tag> tagsFromApplicationList = ApplicationTagMapper.getTagList(application.getTags());
-                for (Tag tag : tagsFromApplicationList) {
-                    if (!tags.contains(tag)) {
-                        tags.add(tag);
-                    }
-                }
-            }
             if (tagNamePrefixFilter != null || tagNameFilter != null || tagValuePrefixFilter != null || tagValueFilter != null) {
                 // tag filtering requested, allow all tags that passes any of the filters
                 tags.removeIf(tag -> !(
