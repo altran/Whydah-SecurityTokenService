@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
-import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import net.whydah.sso.application.mappers.ApplicationCredentialMapper;
 import net.whydah.sso.application.mappers.ApplicationTokenMapper;
@@ -40,8 +39,8 @@ public class AuthenticatedApplicationTokenRepository {
 
     private static final Map<String, ApplicationToken> applicationTokenMap;
     private static final Map<String, String> applicationCryptoKeyMap;
-    private static Base64.Decoder decoder = Base64.getDecoder();
-    static HazelcastInstance hazelcastInstance;
+    private static final Base64.Decoder decoder = Base64.getDecoder();
+    final static HazelcastInstance hazelcastInstance;
 
     static {
         AppConfig appConfig = new AppConfig();
@@ -61,11 +60,7 @@ public class AuthenticatedApplicationTokenRepository {
         }
         //hazelcastConfig.getGroupConfig().setName("STS_HAZELCAST");
         hazelcastConfig.setProperty("hazelcast.logging.type", "slf4j");
-        try {
-            hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
-        } catch (Exception ex) {
-            hazelcastInstance = Hazelcast.newHazelcastInstance();
-        }
+        hazelcastInstance = HazelcastUtils.initWithConfigWithFallbackToDefault(hazelcastConfig);
         applicationTokenMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "_authenticated_applicationtokens");
         log.info("Connecting to map {} - map size: {}", appConfig.getProperty("gridprefix") + "_authenticated_applicationtokens", getMapSize());
 
