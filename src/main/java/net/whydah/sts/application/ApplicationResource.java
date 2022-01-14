@@ -29,22 +29,12 @@ import net.whydah.sts.user.authentication.UserAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.Instant;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static net.whydah.sso.util.LoggerUtil.first50;
 import static net.whydah.sts.application.AuthenticatedApplicationTokenRepository.DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS;
@@ -55,8 +45,9 @@ public class ApplicationResource {
 
     private final static Set<String> encryptionEnabledApplicationIDs = new HashSet<>(Arrays.asList("9999", "99999"));
     private final static ObjectMapper mapper = new ObjectMapper();
-    
 
+
+    private final static Map<String, Instant> appAuthProcessingMap = new ConcurrentHashMap<>();
     @Inject
     private AppConfig appConfig;
 
@@ -500,6 +491,7 @@ public class ApplicationResource {
     }
 
     private boolean verifyApplicationCredentialAgainstLocalAndUAS_UIB(String appCredential) {
+
         try {
             if (!ApplicationCredential.isValid(appCredential)) {
                 log.trace("verifyApplicationCredentialAgainstLocalAndUAS_UIB - suspicious XML received, rejected.");
@@ -527,14 +519,22 @@ public class ApplicationResource {
             log.trace("verifyApplicationCredentialAgainstLocalAndUAS_UIB: appid={}, appSecret={}, expectedAppSecret={}", applicationCredential.getApplicationID(), applicationCredential.getApplicationSecret(), expectedAppSecret);
 
 
+            // DDoS protection for application logon
+            if (appAuthProcessingMap.size() > 200) {
+                return false;
+            }
+
             // Check non-local configured applications
-            if (expectedAppSecret == null || expectedAppSecret.length() < 2) {
+            if (expectedAppSecret == null || expectedAppSecret.length() < 2 && appAuthProcessingMap.get(applicationCredential.getApplicationID()) == null) {
+                appAuthProcessingMap.put(applicationCredential.getApplicationID(), Instant.now());
                 log.debug("No application secret in property file for applicationId={} - applicationName: {} - Trying UAS/UIB", applicationCredential.getApplicationID(), applicationCredential.getApplicationName());
                 if (ApplicationAuthenticationUASClient.checkAppsecretFromUAS(applicationCredential)) {
                     log.info("Application authentication(no local) OK for appId:{}, applicationName: {} from UAS", applicationCredential.getApplicationID(), applicationCredential.getApplicationName());
+                    appAuthProcessingMap.remove(applicationCredential.getApplicationID());
                     return true;
                 } else {
                     log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret in UIB");
+                    appAuthProcessingMap.remove(applicationCredential.getApplicationID());
                     return false;
                 }
             }
