@@ -10,8 +10,12 @@ import net.whydah.sts.config.SecurityTokenServiceModule;
 import net.whydah.sts.user.AuthenticatedUserTokenRepository;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
+import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
+import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.servlet.ServletRegistration;
 import org.glassfish.grizzly.servlet.WebappContext;
+import org.glassfish.grizzly.strategies.WorkerThreadIOStrategy;
+import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -80,16 +84,15 @@ public class ServiceStarter {
         try {
             String reporterHost = appConfig.getProperty("valuereporter.host");
             String reporterPort = appConfig.getProperty("valuereporter.port");
-            String prefix = appConfig.getProperty("applicationname").replace(" ","");
+            String prefix = appConfig.getProperty("applicationname").replace(" ", "");
             int cacheSize = Integer.parseInt(appConfig.getProperty("valuereporter.activity.batchsize"));
             int forwardInterval = Integer.parseInt(appConfig.getProperty("valuereporter.activity.postintervalms"));
             new Thread(ObservedActivityDistributer.getInstance(reporterHost, reporterPort, prefix, cacheSize, forwardInterval)).start();
-            log.info("Started ObservedActivityDistributer({},{},{},{},{})",reporterHost, reporterPort, prefix, cacheSize, forwardInterval);
+            log.info("Started ObservedActivityDistributer({},{},{},{},{})", reporterHost, reporterPort, prefix, cacheSize, forwardInterval);
 
         } catch (Exception e) {
             log.warn("Error in valueReporter property configuration - unable to start ObservedActivityDistributer");
         }
-        
 
 
         final WebappContext context = new WebappContext("grizzly", CONTEXTPATH);
@@ -110,11 +113,32 @@ public class ServiceStarter {
         //ServerConfiguration serverconfig = httpServer.getServerConfiguration();
         //serverconfig.addHttpHandler(handler, "/");
         NetworkListener listener = new NetworkListener("grizzly server", NetworkListener.DEFAULT_NETWORK_HOST, webappPort);
+
+        TCPNIOTransportBuilder builder = TCPNIOTransportBuilder.newInstance();
+        builder.setIOStrategy(WorkerThreadIOStrategy.getInstance());
+        builder.setTcpNoDelay(true);
+        int selectorCorePoolSize = Runtime.getRuntime().availableProcessors();
+        builder.setSelectorThreadPoolConfig(ThreadPoolConfig.defaultConfig()
+                .setPoolName("Grizzly-selector")
+                .setCorePoolSize(selectorCorePoolSize)
+                .setMaxPoolSize(selectorCorePoolSize)
+                .setMemoryManager(builder.getMemoryManager())
+        );
+        builder.setWorkerThreadPoolConfig(ThreadPoolConfig.defaultConfig()
+                .setPoolName("Grizzly-worker")
+                .setCorePoolSize(50)
+                .setMaxPoolSize(300)
+                .setMemoryManager(builder.getMemoryManager())
+        );
+        TCPNIOTransport transport = builder.build();
+        listener.setTransport(transport);
+
+
         httpServer.addListener(listener);
-        
-       
+
+
         context.deploy(httpServer);
-        
+
         httpServer.start();
 
 
