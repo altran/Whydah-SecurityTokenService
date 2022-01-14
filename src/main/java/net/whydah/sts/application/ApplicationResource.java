@@ -524,6 +524,13 @@ public class ApplicationResource {
                 return false;
             }
 
+            // Remove processing after 2 minutes
+            if (appAuthProcessingMap.get(applicationCredential.getApplicationID()) != null) {
+                Instant old = appAuthProcessingMap.get(applicationCredential.getApplicationID());
+                if (Instant.now().minusMillis(2 * 60 * 1000).isBefore(old)) {
+                    appAuthProcessingMap.remove(applicationCredential.getApplicationID());
+                }
+            }
             // Check non-local configured applications
             if (expectedAppSecret == null || expectedAppSecret.length() < 2 && appAuthProcessingMap.get(applicationCredential.getApplicationID()) == null) {
                 appAuthProcessingMap.put(applicationCredential.getApplicationID(), Instant.now());
