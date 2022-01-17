@@ -532,7 +532,7 @@ public class ApplicationResource {
                 }
             }
             // Check non-local configured applications
-            if (expectedAppSecret == null || expectedAppSecret.length() < 2 && appAuthProcessingMap.get(applicationCredential.getApplicationID()) == null) {
+            if ((expectedAppSecret == null || expectedAppSecret.length() < 2) && appAuthProcessingMap.get(applicationCredential.getApplicationID()) == null) {
                 appAuthProcessingMap.put(applicationCredential.getApplicationID(), Instant.now());
                 log.debug("No application secret in property file for applicationId={} - applicationName: {} - Trying UAS/UIB", applicationCredential.getApplicationID(), applicationCredential.getApplicationName());
                 if (ApplicationAuthenticationUASClient.checkAppsecretFromUAS(applicationCredential)) {
@@ -545,32 +545,37 @@ public class ApplicationResource {
                     return false;
                 }
             }
-            if (!applicationCredential.getApplicationSecret().equalsIgnoreCase(expectedAppSecret)) {
-                
-            	
-            	//Huy: improve checking from the internal list instead of calling UIB/UAS
-            	if(ApplicationModelFacade.getApplicationList().size()>0) {
-            		//we can check from the internal list if available     
-            		Application app = ApplicationModelFacade.getApplication(applicationCredential.getApplicationID());
-            		if(app!=null) {
-            			log.info("Check incoming applicationSecret from the internal app list");
-            			if(app.getSecurity().getSecret().equalsIgnoreCase(applicationCredential.getApplicationSecret())) {
-            				return true;
-            			}
-            		}
-            	}
-            	
-            	log.info("Incoming applicationSecret does not match applicationSecret from property file or internal application list. - Trying UAS/UIB");
-             
+            if (!applicationCredential.getApplicationSecret().equalsIgnoreCase(expectedAppSecret) && appAuthProcessingMap.get(applicationCredential.getApplicationID()) == null) {
+
+                //Huy: improve checking from the internal list instead of calling UIB/UAS
+                if (ApplicationModelFacade.getApplicationList().size() > 0) {
+                    //we can check from the internal list if available
+                    Application app = ApplicationModelFacade.getApplication(applicationCredential.getApplicationID());
+                    if (app != null) {
+                        log.info("Check incoming applicationSecret from the internal app list");
+                        if (app.getSecurity().getSecret().equalsIgnoreCase(applicationCredential.getApplicationSecret())) {
+                            return true;
+                        }
+                    }
+                }
+
+                log.info("Incoming applicationSecret does not match applicationSecret from property file or internal application list. - Trying UAS/UIB");
+
+                appAuthProcessingMap.put(applicationCredential.getApplicationID(), Instant.now());
                 if (ApplicationAuthenticationUASClient.checkAppsecretFromUAS(applicationCredential)) {
                     log.info("Application authentication(local mismatch fallback) OK for appId:{}, applicationName: {} from UAS", applicationCredential.getApplicationID(), applicationCredential.getApplicationName());
+                    appAuthProcessingMap.remove(applicationCredential.getApplicationID());
                     return true;
                 } else {
                     log.warn("Application authentication failed. Incoming applicationSecret does not match applicationSecret in UIB");
+                    appAuthProcessingMap.remove(applicationCredential.getApplicationID());
                     return false;
                 }
-            } else {  // Everything is in order in UIB
+            } else if (applicationCredential.getApplicationSecret().equalsIgnoreCase(expectedAppSecret)) {  // Everything is in order in UIB
+
                 return true;
+            } else {
+                return false;
             }
         } catch (Exception e) {
             log.error("Error in verifyApplicationCredentialAgainstLocalAndUAS_UIB.", e);

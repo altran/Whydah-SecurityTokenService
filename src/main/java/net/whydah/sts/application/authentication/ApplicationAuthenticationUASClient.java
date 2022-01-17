@@ -6,8 +6,6 @@ import net.whydah.sso.application.types.Application;
 import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.commands.adminapi.application.CommandGetApplication;
-import net.whydah.sso.commands.adminapi.application.CommandGetApplicationById;
-import net.whydah.sso.commands.appauth.CommandGetApplicationIdFromApplicationTokenId;
 import net.whydah.sso.user.types.UserToken;
 import net.whydah.sts.application.AuthenticatedApplicationTokenRepository;
 import net.whydah.sts.application.authentication.commands.CommandCheckApplicationCredentialInUAS;
@@ -37,19 +35,19 @@ public class ApplicationAuthenticationUASClient {
 
     public static boolean checkAppsecretFromUAS(ApplicationCredential applicationCredential) {
 
-    	if(System.currentTimeMillis() - lastChecked < WAITING_TIME_TO_CHECK_IN_SECONDS*1000) {
-    		return true;
-    	}
-    	lastChecked = System.currentTimeMillis();
+        //if(System.currentTimeMillis() - lastChecked < WAITING_TIME_TO_CHECK_IN_SECONDS*1000) {
+        //	return true;
+        //}
+        //lastChecked = System.currentTimeMillis();
         String useradminservice = appConfig.getProperty("useradminservice");
-        
+
         //HUY fix the start-up problem here
         //should bypass request from UAS/UIB if the credential is found correct
         String secret = appConfig.getProperty(applicationCredential.getApplicationID());
-        if(secret!=null && applicationCredential.getApplicationSecret().equals(secret)) {
-        	return true;
+        if (secret != null && applicationCredential.getApplicationSecret().equals(secret)) {
+            return true;
         }
-        
+
         /**
          * Command version of UAS auth call
          */
