@@ -13,7 +13,6 @@ import net.whydah.sso.application.types.ApplicationCredential;
 import net.whydah.sso.application.types.ApplicationToken;
 import net.whydah.sso.application.types.Tag;
 import net.whydah.sso.ddd.model.application.ApplicationTokenExpires;
-import net.whydah.sso.session.WhydahApplicationSession;
 import net.whydah.sso.session.baseclasses.ExchangeableKey;
 import net.whydah.sts.config.AppConfig;
 import org.slf4j.Logger;
@@ -21,12 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.crypto.spec.IvParameterSpec;
 import java.io.FileNotFoundException;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 
@@ -34,6 +28,9 @@ public class AuthenticatedApplicationTokenRepository {
     private final static Logger log = LoggerFactory.getLogger(AuthenticatedApplicationTokenRepository.class);
 
     public static final long DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS;
+    public static final int APPLICATION_SESSION_CHECK_INTERVAL_IN_SECONDS = 10;  // Check every 30 seconds to adapt quickly
+    public static final int APPLICATION_UPDATE_CHECK_INTERVAL_IN_SECONDS = 10;
+    public static final int APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = 50;
     public static final int STS_TOKEN_MULTIPLIER = 50;
     public static final int APP_TOKEN_MULTIPLIER = 50;
     private static AppConfig appConfig = new AppConfig();
@@ -77,14 +74,14 @@ public class AuthenticatedApplicationTokenRepository {
         String applicationDefaultTimeout = appConfig.getProperty("application.session.timeout");
         log.info("Read DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS from properties " + applicationDefaultTimeout);
         if (applicationDefaultTimeout != null && (Integer.parseInt(applicationDefaultTimeout) > 0)) {
-            if (Integer.parseInt(applicationDefaultTimeout) < WhydahApplicationSession.APPLICATION_SESSION_CHECK_INTERVAL_IN_SECONDS * 10) {
-                log.warn("Attempt to set application.session.timeout to low, overriding with WhydahApplicationSession.APPLICATION_SESSION_CHECK_INTERVAL_IN_SECONDS*10: {} ", WhydahApplicationSession.APPLICATION_SESSION_CHECK_INTERVAL_IN_SECONDS * 10);
-                DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = WhydahApplicationSession.APPLICATION_SESSION_CHECK_INTERVAL_IN_SECONDS * 10;
+            if (Integer.parseInt(applicationDefaultTimeout) < APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS * 10) {
+                log.warn("Attempt to set application.session.timeout to low, overriding with WhydahApplicationSession.APPLICATION_SESSION_CHECK_INTERVAL_IN_SECONDS*10: {} ", APPLICATION_SESSION_CHECK_INTERVAL_IN_SECONDS * 10);
+                DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = APPLICATION_SESSION_CHECK_INTERVAL_IN_SECONDS * 10;
             } else {
                 DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = Integer.parseInt(applicationDefaultTimeout);
             }
         } else {
-            DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = WhydahApplicationSession.APPLICATION_SESSION_CHECK_INTERVAL_IN_SECONDS * 10; //One minute = 60 seconds //2400;
+            DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS = APPLICATION_SESSION_CHECK_INTERVAL_IN_SECONDS * 10; //One minute = 60 seconds //2400;
         }
         log.info("Set DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS to " + DEFAULT_APPLICATION_SESSION_EXTENSION_TIME_IN_SECONDS);
 
