@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -78,13 +79,17 @@ public class FreemarkerViewProcessor implements ViewProcessor<Template> {
     private Configuration getConfig() {
         if (freemarkerConfig == null) {
             Configuration config = new Configuration();
-            config.setTemplateLoader(new ClassTemplateLoader(getClass(), "/templates"));
+            config.setEncoding(Locale.getDefault(), "UTF-8");
             config.setDefaultEncoding("UTF-8");
             config.setOutputEncoding("UTF-8");
+            
+            config.setTemplateLoader(new ClassTemplateLoader(getClass(), "/templates"));
+            
             // don't always put a ',' in numbers (e.g., id=2000 vs id=2,000)
             config.setNumberFormat("0");
             config.setLocalizedLookup(false);
             config.setTemplateUpdateDelay(3600);
+            
             freemarkerConfig = config;
         }
         return freemarkerConfig;
