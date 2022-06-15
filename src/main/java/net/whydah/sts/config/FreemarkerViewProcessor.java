@@ -111,6 +111,9 @@ public class FreemarkerViewProcessor implements ViewProcessor<Template> {
 
     @SuppressWarnings("unchecked")
     public void writeTo(Template template, Viewable viewable, OutputStream out) throws IOException {
+    	
+    	template.setEncoding("UTF-8");
+    	template.setOutputEncoding("UTF-8");
         out.flush(); // send status + headers
 
         Object model = viewable.getModel();
@@ -136,6 +139,9 @@ public class FreemarkerViewProcessor implements ViewProcessor<Template> {
 
     @SuppressWarnings("unchecked")
     public void writeTo(Template template, Viewable viewable, Map m, OutputStream out) throws IOException {
+    	template.setEncoding("UTF-8");
+    	template.setOutputEncoding("UTF-8");
+    	
         out.flush(); // send status + headers
 
         Object model = viewable.getModel();
