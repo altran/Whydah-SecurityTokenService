@@ -257,6 +257,9 @@ public class AuthenticatedUserTokenRepository {
              log.error("Error: UserToken has no valid usertokenid, generating new userTokenId");
              userToken.setUserTokenId(generateID());
          }
+    	 if(authType.equalsIgnoreCase("pin")) {
+    		 userToken.setSecurityLevel("0");
+    	 }
     	 if(!useExistingLifespan) {
     		 try {
 
