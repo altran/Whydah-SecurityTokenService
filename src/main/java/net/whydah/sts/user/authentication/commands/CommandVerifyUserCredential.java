@@ -40,7 +40,7 @@ public class CommandVerifyUserCredential extends BaseHttpPostHystrixCommand<User
             }
 
             UserToken userToken = UserTokenMapper.fromUserAggregateXml(response);
-            userToken.setSecurityLevel("1");  // UserIdentity as source = securitylevel=0
+            userToken.setSecurityLevel("0");  // UserIdentity as source = securitylevel=0
             userToken.setUserTokenId(UUID.randomUUID().toString());
             userToken.setDefcon(ThreatResource.getDEFCON());
             userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
