@@ -49,18 +49,11 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
         }
 
-		// TODO Do NOT re-use a user-token just because it exists for the username, we must also always check that the credentials match
-        UserToken uToken = AuthenticatedUserTokenRepository.getUserTokenByUserName(userCredential.getUserName(), applicationTokenId);
-        if(uToken==null || !uToken.isValid()) {
-        	uToken = new CommandVerifyUserCredential(useradminservice, appTokenXml, applicationTokenId, userCredentialXml).execute();
-        	if(uToken!=null) {
-        		return AuthenticatedUserTokenRepository.addUserToken(uToken, applicationTokenId, "usertokenid");
-        	} else {
-        		throw new AuthenticationFailedException(String.format("Authentication failed for user: %s, appTokenId: %s", userCredentialXml, applicationTokenId));
-        	}
-        }
-        return uToken;
-
+		UserToken uToken = new CommandVerifyUserCredential(useradminservice, appTokenXml, applicationTokenId, userCredentialXml).execute();
+		if(uToken==null) {
+			throw new AuthenticationFailedException(String.format("Authentication failed for user: %s, appTokenId: %s", userCredentialXml, applicationTokenId));
+		}
+		return AuthenticatedUserTokenRepository.addUserToken(uToken, applicationTokenId, "usertokenid");
 	}
 
 	@Override
