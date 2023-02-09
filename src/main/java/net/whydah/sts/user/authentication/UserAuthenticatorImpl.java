@@ -26,21 +26,21 @@ import java.util.List;
 import java.util.UUID;
 
 public class UserAuthenticatorImpl implements UserAuthenticator {
-	private static final Logger log = LoggerFactory.getLogger(UserAuthenticatorImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(UserAuthenticatorImpl.class);
 
 
-	private URI useradminservice;
-	private final AppConfig appConfig;
+    private URI useradminservice;
+    private final AppConfig appConfig;
 
 
-	@Inject
-	public UserAuthenticatorImpl(@Named("useradminservice") URI useradminservice, UserTokenFactory userTokenFactory, AppConfig appConfig) {
-		this.useradminservice = useradminservice;
-		this.appConfig = appConfig;
-	}
+    @Inject
+    public UserAuthenticatorImpl(@Named("useradminservice") URI useradminservice, UserTokenFactory userTokenFactory, AppConfig appConfig) {
+        this.useradminservice = useradminservice;
+        this.appConfig = appConfig;
+    }
 
-	@Override
-	public UserToken logonUser(String applicationTokenId, String appTokenXml, final String userCredentialXml) throws AuthenticationFailedException {
+    @Override
+    public UserToken logonUser(String applicationTokenId, String appTokenXml, final String userCredentialXml) throws AuthenticationFailedException {
         UserCredential userCredential = UserCredentialMapper.fromXml(userCredentialXml);
         if (userCredential != null) {
             log.trace("logonUser - Calling UserAdminService at " + useradminservice + " appTokenXml:" + appTokenXml + " userCredentialSafeXml:" + userCredential.toSafeXML());
@@ -49,25 +49,33 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
 
         }
 
-		UserToken uToken = new CommandVerifyUserCredential(useradminservice, appTokenXml, applicationTokenId, userCredentialXml).execute();
-		if(uToken==null) {
-			throw new AuthenticationFailedException(String.format("Authentication failed for user: %s, appTokenId: %s", userCredentialXml, applicationTokenId));
-		}
-		return AuthenticatedUserTokenRepository.addUserToken(uToken, applicationTokenId, "usertokenid");
-	}
+        UserToken uToken = new CommandVerifyUserCredential(useradminservice, appTokenXml, applicationTokenId, userCredentialXml).execute();
+        if (uToken == null) {
+            throw new AuthenticationFailedException(String.format("Authentication failed for user: %s, appTokenId: %s", userCredentialXml, applicationTokenId));
+        }
+        // credential check success
+        UserToken existingUserToken = AuthenticatedUserTokenRepository.getUserTokenByUserName(userCredential.getUserName(), applicationTokenId);
+        if (existingUserToken != null && existingUserToken.isValid()) {
+            // re-use id from existing user-token in order to avoid invaliding existing sessions
+            uToken.setUserTokenId(existingUserToken.getUserTokenId());
+            // TODO figure out whether more fields should be copied from existing user-token, or whether we should just
+            //  re-use and refresh existing token and throw away the one created from credential check.
+        }
+        return AuthenticatedUserTokenRepository.addUserToken(uToken, applicationTokenId, "usertokenid");
+    }
 
-	@Override
+    @Override
     public UserToken createAndLogonUser(String applicationTokenId, String appTokenXml, String userCredentialXml, String thirdpartyUserXML) throws AuthenticationFailedException {
-		log.trace("createAndLogonUser - Calling UserAdminService at with appTokenXml:\n" + appTokenXml + "userCredentialXml:\n" + userCredentialXml + "thirdpartyUserXML:\n" + thirdpartyUserXML);
+        log.trace("createAndLogonUser - Calling UserAdminService at with appTokenXml:\n" + appTokenXml + "userCredentialXml:\n" + userCredentialXml + "thirdpartyUserXML:\n" + thirdpartyUserXML);
         UserToken userToken = new CommandCreateFBUser(useradminservice, appTokenXml, applicationTokenId, thirdpartyUserXML).execute();
         return AuthenticatedUserTokenRepository.addUserToken(userToken, applicationTokenId, "usertokenid");
-	}
+    }
 
 
-	@Override
+    @Override
     public UserToken createAndLogonPinUser(String applicationTokenId, String appTokenXml, String adminUserTokenId, String cellPhone, String pin, String userJson) {
-		if (ActivePinRepository.usePin(cellPhone, pin)) {
-			try {
+        if (ActivePinRepository.usePin(cellPhone, pin)) {
+            try {
                 UserToken userToken = new CommandCreatePinUser(useradminservice, appTokenXml, applicationTokenId, adminUserTokenId, userJson).execute();
                 if (userToken == null) {
                     throw new AuthenticationFailedException("Pin authentication failed. Status code ");
@@ -75,15 +83,15 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
                 } else {
                     return AuthenticatedUserTokenRepository.addUserToken(userToken, applicationTokenId, "pin");
                 }
-			} catch (Exception e) {
-				log.error(String.format("createAndLogonPinUser - Problems connecting to %s", useradminservice), e);
-				throw e;
-			}
-		}
+            } catch (Exception e) {
+                log.error(String.format("createAndLogonPinUser - Problems connecting to %s", useradminservice), e);
+                throw e;
+            }
+        }
         throw new AuthenticationFailedException("Pin authentication failed. Status code ");
-	}
+    }
 
-	public UserToken getRefreshedUserToken(String usertokenid) {
+    public UserToken getRefreshedUserToken(String usertokenid) {
         try {
             ApplicationToken stsApplicationToken = AuthenticatedApplicationTokenRepository.getSTSApplicationToken();
             String user = appConfig.getProperty("whydah.adminuser.username");
@@ -107,78 +115,77 @@ public class UserAuthenticatorImpl implements UserAuthenticator {
         }
         return null;
 
-	}
+    }
 
-	@Override
-	public UserToken logonPinUser(String applicationtokenid, String appTokenXml, String adminUserTokenId, String cellPhone, String pin) {
-		log.info("logonPinUser() called with " + "applicationtokenid = [" + applicationtokenid + "], appTokenXml = [" + appTokenXml + "], cellPhone = [" + cellPhone + "], pin = [" + pin + "]");
-		if (ActivePinRepository.usePin(cellPhone, pin)) {
-			String usersQuery = cellPhone;
-			// produserer userJson. denne kan inneholde fler users dette er json av
-			String usersJson = new CommandListUsers(useradminservice, applicationtokenid, adminUserTokenId, usersQuery).execute();
-			log.info("CommandListUsers for query {} found users {}", usersQuery, usersJson);
-			UserToken userTokenIdentity = getFirstMatch(usersJson, usersQuery);
-			if (userTokenIdentity != null) {
-				log.info("Found matching UserIdentity {}", userTokenIdentity);
+    @Override
+    public UserToken logonPinUser(String applicationtokenid, String appTokenXml, String adminUserTokenId, String cellPhone, String pin) {
+        log.info("logonPinUser() called with " + "applicationtokenid = [" + applicationtokenid + "], appTokenXml = [" + appTokenXml + "], cellPhone = [" + cellPhone + "], pin = [" + pin + "]");
+        if (ActivePinRepository.usePin(cellPhone, pin)) {
+            String usersQuery = cellPhone;
+            // produserer userJson. denne kan inneholde fler users dette er json av
+            String usersJson = new CommandListUsers(useradminservice, applicationtokenid, adminUserTokenId, usersQuery).execute();
+            log.info("CommandListUsers for query {} found users {}", usersQuery, usersJson);
+            UserToken userTokenIdentity = getFirstMatch(usersJson, usersQuery);
+            if (userTokenIdentity != null) {
+                log.info("Found matching UserIdentity {}", userTokenIdentity);
 
-				String userAggregateJson = new CommandGetUserAggregate(useradminservice, applicationtokenid, adminUserTokenId, userTokenIdentity.getUid()).execute();
+                String userAggregateJson = new CommandGetUserAggregate(useradminservice, applicationtokenid, adminUserTokenId, userTokenIdentity.getUid()).execute();
 
-				UserToken userToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
-				userToken.setSecurityLevel("0");  // UserIdentity as source = securitylevel=0
-				userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
+                UserToken userToken = UserTokenMapper.fromUserAggregateJson(userAggregateJson);
+                userToken.setSecurityLevel("0");  // UserIdentity as source = securitylevel=0
+                userToken.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
                 return AuthenticatedUserTokenRepository.addUserToken(userToken, applicationtokenid, "pin");
 
-			} else {
-				log.error("Unable to find a user matching the given phonenumber.");
-				throw new AuthenticationFailedException("Unable to find a user matching the given phonenumber.");
-			}
-		} else {
-			log.warn("logonPinUser, illegal pin attempted - pin not registered");
-			throw new AuthenticationFailedException("Pin authentication failed. Status code ");
-		}
+            } else {
+                log.error("Unable to find a user matching the given phonenumber.");
+                throw new AuthenticationFailedException("Unable to find a user matching the given phonenumber.");
+            }
+        } else {
+            log.warn("logonPinUser, illegal pin attempted - pin not registered");
+            throw new AuthenticationFailedException("Pin authentication failed. Status code ");
+        }
 
-	}
+    }
 
 
-	/**
-	 * Method to enable pin-logon for whydah users
-	 * Implements the following prioritizing
-	 * a)  userName+cellPhone = number
-	 * b)  userName = number
-	 * c)  cellPhone=number
-	 *
-	 * @param usersJson
-	 * @param cellPhone
-	 * @return
-	 */
-	private UserToken getFirstMatch(String usersJson, String cellPhone) {
-		log.info("Searching for: ", cellPhone);
-		log.info("Searching in: ", usersJson);
-		List<UserToken> userTokens = UserTokenFactory.fromUsersIdentityJson(usersJson);
-		// First lets find complete matches
-		for (UserToken userIdentity : userTokens) {
-			if (cellPhone.equals(userIdentity.getCellPhone()) && cellPhone.equals(userIdentity.getUserName())) {
-				return userIdentity;
-			}
-		}
-		// The prioritize userName
-		for (UserToken userIdentity : userTokens) {
-			log.info("getFirstMatch: getUserName: " + userIdentity.getUserName());
-			if (cellPhone.equals(userIdentity.getUserName())) {
-				return userIdentity;
-			}
-		}
-		// The and finally cellPhone users
-		for (UserToken userIdentity : userTokens) {
-			log.info("getFirstMatch: cellPhone: " + userIdentity.getCellPhone());
-			if (cellPhone.equals(userIdentity.getCellPhone())) {
-				return userIdentity;
-			}
-		}
-		return null;
-	}
-
+    /**
+     * Method to enable pin-logon for whydah users
+     * Implements the following prioritizing
+     * a)  userName+cellPhone = number
+     * b)  userName = number
+     * c)  cellPhone=number
+     *
+     * @param usersJson
+     * @param cellPhone
+     * @return
+     */
+    private UserToken getFirstMatch(String usersJson, String cellPhone) {
+        log.info("Searching for: ", cellPhone);
+        log.info("Searching in: ", usersJson);
+        List<UserToken> userTokens = UserTokenFactory.fromUsersIdentityJson(usersJson);
+        // First lets find complete matches
+        for (UserToken userIdentity : userTokens) {
+            if (cellPhone.equals(userIdentity.getCellPhone()) && cellPhone.equals(userIdentity.getUserName())) {
+                return userIdentity;
+            }
+        }
+        // The prioritize userName
+        for (UserToken userIdentity : userTokens) {
+            log.info("getFirstMatch: getUserName: " + userIdentity.getUserName());
+            if (cellPhone.equals(userIdentity.getUserName())) {
+                return userIdentity;
+            }
+        }
+        // The and finally cellPhone users
+        for (UserToken userIdentity : userTokens) {
+            log.info("getFirstMatch: cellPhone: " + userIdentity.getCellPhone());
+            if (cellPhone.equals(userIdentity.getCellPhone())) {
+                return userIdentity;
+            }
+        }
+        return null;
+    }
 
 
     private static String generateID() {
