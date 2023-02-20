@@ -1,7 +1,7 @@
 SecurityTokenService
 ====================
 
-![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/Cantara/Whydah-SecurityTokenService) ![Build Status](https://jenkins.quadim.ai/buildStatus/icon?job=Whydah-SecurityTokenService) ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Cantara/Whydah-SecurityTokenService) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)  [![Known Vulnerabilities](https://snyk.io/test/github/Cantara/Whydah-SecurityTokenService/badge.svg)](https://snyk.io/test/github/Cantara/Whydah-SecurityTokenService)
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/Cantara/Whydah-SecurityTokenService) ![Build Status](https://jenkins.cantara.no/buildStatus/icon?job=Whydah-SecurityTokenService) ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Cantara/Whydah-SecurityTokenService) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)  [![Known Vulnerabilities](https://snyk.io/test/github/Cantara/Whydah-SecurityTokenService/badge.svg)](https://snyk.io/test/github/Cantara/Whydah-SecurityTokenService)
 
 
 
