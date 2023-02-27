@@ -27,6 +27,7 @@
         <jetty.plugin.version>9.4.50.v20221201</jetty.plugin.version>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <additionalparam>-Xdoclint:none</additionalparam>
     </properties>
 
