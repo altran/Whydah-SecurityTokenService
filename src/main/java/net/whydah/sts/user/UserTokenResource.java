@@ -28,13 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.valuereporter.activity.ObservedActivity;
 import org.valuereporter.client.MonitorReporter;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -586,7 +580,7 @@ public class UserTokenResource {
 	 * &lt;hash type="MD5"&gt;57755c9efa6337dc9739fe5cb719a9b4&lt;/hash&gt;
 	 * &lt;/usertoken&gt;
 	 * @apiError 403/7000 Application is invalid.
-	 * @apiError 406/6002 Attempt to access with non acceptable usertokenid.
+	 * @apiError 406/6002 Attempt to access with non-acceptable usertokenid.
 	 * @apiError 500/9999 A generic exception or an unexpected error
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 403 Forbidden
@@ -610,24 +604,25 @@ public class UserTokenResource {
 		if (ApplicationMode.getApplicationMode().equals(ApplicationMode.DEV)) {
 			return DevModeHelper.return_DEV_MODE_ExampleUserToken(1);
 		}
-		if (failinguserTokenMap.get(userTokenId) != null) {
-			log.warn("getUserTokenByUserTokenId - repetedly attempt to access with non acceptable usertokenid={}", userTokenId);
-			//return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
-			throw AppExceptionCode.USER_INVALID_USERTOKENID_6002.setDeveloperMessage("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid=" + userTokenId);
-		}
-
 		if (!UserTokenFactory.verifyApplicationToken(applicationtokenid, appTokenXml)) {
 			log.warn("getUserTokenByUserTokenId - attempt to access from invalid application. applicationtokenid={}", applicationtokenid);
 			//return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
 			throw AppExceptionCode.APP_ILLEGAL_7000;
 		}
+
+		if (failinguserTokenMap.get(userTokenId) != null) {
+			log.warn("getUserTokenByUserTokenId - repetedly attempt to access with non-acceptable usertokenid={}", userTokenId);
+			//return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
+			throw AppExceptionCode.USER_INVALID_USERTOKENID_6002.setDeveloperMessage("getUserTokenByUserTokenId - blacklisted - attempt to access with non acceptable usertokenid=" + userTokenId);
+		}
+
 		final UserToken userToken = AuthenticatedUserTokenRepository.getUserToken(userTokenId, applicationtokenid);
 		//final UserToken userToken = refreshAndGetThisUser(userTokenId, applicationtokenid);
 		if (userToken == null) {
-			log.warn("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid={}", userTokenId);
+			log.warn("getUserTokenByUserTokenId - attempt to access with non-acceptable usertokenid={}", userTokenId);
 			//return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
 			failinguserTokenMap.put(userTokenId, userTokenId);
-			throw AppExceptionCode.USER_INVALID_USERTOKENID_6002.setDeveloperMessage("getUserTokenByUserTokenId - attempt to access with non acceptable usertokenid=" + userTokenId);
+			throw AppExceptionCode.USER_INVALID_USERTOKENID_6002.setDeveloperMessage("getUserTokenByUserTokenId - initial attempt to access with non-acceptable usertokenid=" + userTokenId);
 		}
 		log.info("getUserTokenByUserTokenId - valid session found for {} ", userTokenId);
 
