@@ -52,6 +52,7 @@ public class UserTokenResource {
 	private static Map userticketmap = new HashMap();
 	//private static Map applicationtokenidmap = new HashMap();
 	private static final LRUMap<String, String> failinguserTokenMap = new LRUMap<String, String>(20, 20);
+	private static String failingUserTokenId = null;
 	private static java.util.Random generator = new SecureRandom();
 
 	private static final String SMS_GW_SERVICE_URL;
@@ -621,7 +622,14 @@ public class UserTokenResource {
 		if (userToken == null) {
 			log.warn("getUserTokenByUserTokenId - attempt to access with non-acceptable usertokenid={}", userTokenId);
 			//return Response.status(Response.Status.NOT_ACCEPTABLE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
-			failinguserTokenMap.put(userTokenId, userTokenId);
+
+			// make it a bit more robust in terms of requiring two consewuitive attempts before being blacklisted.
+			if (failingUserTokenId != null && failingUserTokenId.equalsIgnoreCase(userTokenId)) {
+				failinguserTokenMap.put(userTokenId, userTokenId);
+				failingUserTokenId = null;
+			} else {
+				failingUserTokenId = userTokenId;
+			}
 			throw AppExceptionCode.USER_INVALID_USERTOKENID_6002.setDeveloperMessage("getUserTokenByUserTokenId - initial attempt to access with non-acceptable usertokenid=" + userTokenId);
 		}
 		log.info("getUserTokenByUserTokenId - valid session found for {} ", userTokenId);
