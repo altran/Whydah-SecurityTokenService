@@ -23,11 +23,7 @@ import org.valuereporter.activity.ObservedActivity;
 import org.valuereporter.client.MonitorReporter;
 
 import java.io.FileNotFoundException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class AuthenticatedUserTokenRepository {
     private final static Logger log = LoggerFactory.getLogger(AuthenticatedUserTokenRepository.class);
@@ -68,11 +64,11 @@ public class AuthenticatedUserTokenRepository {
         active_username_usertokenids_map = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "active_username_usertokenids_map");
 
         log.info("Connecting to map {} - size: {}", appConfig.getProperty("gridprefix") + "activeusertokensmap", getMapSize());
-        log.info("Connecting to map {} - size: {}", appConfig.getProperty("gridprefix") + "active_username_usertokenids_map", getMapSize());
+        log.info("Connecting to map {} - size: {}", appConfig.getProperty("gridprefix") + "active_username_usertokenids_map", getActiveUsernameMapSize());
 
         lastSeenMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix") + "lastSeenMap");
         log.info("Connecting to map {} - size: {}", appConfig.getProperty("gridprefix") + "lastSeenMap", getLastSeenMapSize());
-        Set<Member> clusterMembers = hazelcastInstance.getCluster().getMembers();
+        //Set<Member> clusterMembers = hazelcastInstance.getCluster().getMembers();
         DEFAULT_USER_SESSION_EXTENSION_TIME_IN_MILLISECONDS = updateDefaultUserSessionExtensionTime(appConfig);
 
     }
@@ -320,6 +316,11 @@ public class AuthenticatedUserTokenRepository {
     public static int getMapSize() {
         logUserTokenMap();
         return activeusertokensmap.size();
+    }
+
+    public static int getActiveUsernameMapSize() {
+        logUserTokenMap();
+        return active_username_usertokenids_map.size();
     }
 
     public static void logUserTokenMap() {
