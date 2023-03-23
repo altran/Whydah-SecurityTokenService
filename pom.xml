@@ -294,7 +294,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>appassembler-maven-plugin</artifactId>
-                <version>1.8.1</version>    <!-- TODO: parent use 1.10. Test if 1.10 works and remove version here -->
+                <version>1.10</version>    <!-- TODO: parent use 1.10. Test if 1.10 works and remove version here -->
                 <configuration>
                     <repositoryLayout>flat</repositoryLayout>
                     <includeConfigurationDirectoryInClasspath>false</includeConfigurationDirectoryInClasspath>
