@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.whydah.token</groupId>
     <artifactId>SecurityTokenService</artifactId>
@@ -21,7 +22,7 @@
         <whydah.admin.sdk.version>2.19.5</whydah.admin.sdk.version>
         <org.valuereporter.agent>1.10.2</org.valuereporter.agent>
         <jersey-version>1.19.4</jersey-version>
-        <grizzy-version>2.4.4</grizzy-version>
+        <grizzy-version>2.3.33</grizzy-version>
         <guice-version>5.1.0</guice-version>
         <slf4j.version>1.7.36</slf4j.version>
         <jetty.plugin.version>9.4.51.v20230217</jetty.plugin.version>
@@ -83,29 +84,35 @@
             <artifactId>valuereporter-agent</artifactId>
             <version>${org.valuereporter.agent}</version>
         </dependency>
-	
-		<!--grizzly -->
-		<dependency>
+
+        <!--grizzly -->
+        <dependency>
             <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-http</artifactId>
             <version>${grizzy-version}</version>
         </dependency>
-		 <dependency>
+        <dependency>
             <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-framework</artifactId>
             <version>${grizzy-version}</version>
         </dependency>
-		<dependency>
-	        <groupId>org.glassfish.grizzly</groupId>
-	        <artifactId>grizzly-http-server</artifactId>
-	        <version>${grizzy-version}</version>
-    	</dependency>
-		<dependency>
+        <dependency>
+            <groupId>org.glassfish.grizzly</groupId>
+            <artifactId>grizzly-http-server</artifactId>
+            <version>${grizzy-version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-http-servlet</artifactId>
             <version>${grizzy-version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        <!-- Thanks for using https://jar-download.com -->
 
         <dependency>
             <groupId>org.glassfish</groupId>
@@ -113,7 +120,7 @@
             <version>3.1.1</version>
         </dependency>
         <!--jersey -->
-		<dependency>
+        <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-server</artifactId>
             <version>${jersey-version}</version>
@@ -147,7 +154,7 @@
             <artifactId>guice-servlet</artifactId>
             <version>${guice-version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
@@ -155,12 +162,11 @@
             <scope>provided</scope>
         </dependency>
 
-         <dependency>
+        <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
             <version>2.3.32</version>
         </dependency>
-        
 
 
         <dependency>
@@ -200,10 +206,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-	    <groupId>javax.ws.rs</groupId>
-	    <artifactId>javax.ws.rs-api</artifactId>
-	    <version>2.1.1</version>
-	</dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.1.1</version>
+        </dependency>
         <dependency>
             <groupId>com.sun.jersey.contribs</groupId>
             <artifactId>jersey-apache-client</artifactId>
@@ -283,8 +289,10 @@
                                 </filter>
                             </filters>
                             <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ComponentsXmlResourceTransformer" />
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ComponentsXmlResourceTransformer"/>
                             </transformers>
                         </configuration>
                     </execution>
@@ -415,8 +423,7 @@
             </plugin>
         </plugins>
     </build>
-	
-	
+
 
     <repositories>
         <!-- Needed for parent  -->
