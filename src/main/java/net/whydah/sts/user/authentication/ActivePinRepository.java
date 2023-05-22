@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 public class ActivePinRepository {
@@ -57,10 +59,29 @@ public class ActivePinRepository {
         pin = paddPin(pin);
         log.debug("Adding pin:{}  to phone:{} ", pin, phoneNr);
         log.debug("SMS log for " + phoneNr + ": "+ smsResponse);
-        pinMap.put(phoneNr, pin);
+        pinMap.put(phoneNr, pin + ":" + Instant.now().toEpochMilli());
         if(smsResponse!=null){
         	smsResponseLogMap.put(phoneNr, smsResponse);
         }
+    }
+    
+    public static boolean isPinSent(String phoneNr) {
+    	
+    	String storedPin = pinMap.get(phoneNr);
+    	if(storedPin !=null && storedPin.contains(":")) {
+    		String[] parts = storedPin.split(":");
+    		String datetime = parts[1];
+    		Instant inst = Instant.ofEpochMilli(Long.valueOf(datetime));
+    		if(Instant.now().isAfter(inst.plus(5, ChronoUnit.MINUTES))) {
+    			pinMap.remove(phoneNr);
+    			return false;
+    		} else {
+    			return true;
+    		}
+    	} else {
+    		return false;
+    	}
+      
     }
 
     public static boolean usePin(String phoneNr, String pin) {
@@ -68,6 +89,7 @@ public class ActivePinRepository {
         log.debug("usePin - Trying pin {} for phone {}: ", pin, phoneNr);
         if (isValidPin(phoneNr, pin)) {
             log.info("usePin - Used pin:{} for phone: {}", pin, phoneNr);
+            //remove after used
             //pinMap.remove(phoneNr);
             smsResponseLogMap.remove(phoneNr);
             return true;
@@ -86,9 +108,24 @@ public class ActivePinRepository {
     private static boolean isValidPin(String phoneNr, String pin) {
         pin = paddPin(pin);
         String storedPin = pinMap.get(phoneNr);
-        log.debug("isValidPin on pin:{},  storedpin:{}, phone:{}", pin, storedPin, phoneNr);
-        if (storedPin != null && storedPin.equals(pin)) {
-            return true;
+        if(storedPin.contains(":")) {
+        	String[] parts = storedPin.split(":");
+        	storedPin = parts[0];
+			String datetime = parts[1];
+			Instant inst = Instant.ofEpochMilli(Long.valueOf(datetime));
+			if(Instant.now().isAfter(inst.plus(5, ChronoUnit.MINUTES))) {
+				pinMap.remove(phoneNr);
+				log.warn("Pin expired : {} - {}", phoneNr, pin);
+				return false;
+			}
+        }
+        if(!storedPin.contains("|")) {
+        	log.debug("isValidPin on pin:{},  storedpin:{}, phone:{}", pin, storedPin, phoneNr);
+        	if (storedPin != null && storedPin.equals(pin)) {
+        		return true;
+        	}
+        } else {
+        	
         }
         log.warn("Illegal pin logon attempted. phone: {} invalid pin attempted:{}", phoneNr, pin);
         return false;
