@@ -1,18 +1,20 @@
 package net.whydah.sts.user.authentication;
 
 
-import com.hazelcast.config.Config;
-import com.hazelcast.config.XmlConfigBuilder;
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
-import net.whydah.sts.config.AppConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.FileNotFoundException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.hazelcast.config.Config;
+import com.hazelcast.config.XmlConfigBuilder;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
+
+import net.whydah.sts.config.AppConfig;
 
 public class ActivePinRepository {
     private final static Logger log = LoggerFactory.getLogger(ActivePinRepository.class);
@@ -52,7 +54,7 @@ public class ActivePinRepository {
         smsResponseLogMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"smsResponseLogMap");
         log.info("Connecting to map {}",appConfig.getProperty("gridprefix")+"pinMap");
         log.info("Loaded pin-Map size=" + pinMap.size());
-
+    
     }
 
     public static void setPin(String phoneNr, String pin, String smsResponse) {
@@ -65,21 +67,22 @@ public class ActivePinRepository {
         }
     }
     
-    public static boolean isPinSent(String phoneNr) {
+    public static String getPinSentIfAny(String phoneNr) {
     	
     	String storedPin = pinMap.get(phoneNr);
     	if(storedPin !=null && storedPin.contains(":")) {
     		String[] parts = storedPin.split(":");
+    		
     		String datetime = parts[1];
     		Instant inst = Instant.ofEpochMilli(Long.valueOf(datetime));
     		if(Instant.now().isAfter(inst.plus(5, ChronoUnit.MINUTES))) {
     			pinMap.remove(phoneNr);
-    			return false;
+    			return null;
     		} else {
-    			return true;
+    			return storedPin;
     		}
     	} else {
-    		return false;
+    		return storedPin;
     	}
       
     }
@@ -119,14 +122,12 @@ public class ActivePinRepository {
 				return false;
 			}
         }
-        if(!storedPin.contains("|")) {
-        	log.debug("isValidPin on pin:{},  storedpin:{}, phone:{}", pin, storedPin, phoneNr);
-        	if (storedPin != null && storedPin.equals(pin)) {
-        		return true;
-        	}
-        } else {
-        	
+
+        log.debug("isValidPin on pin:{},  storedpin:{}, phone:{}", pin, storedPin, phoneNr);
+        if (storedPin != null && storedPin.equals(pin)) {
+        	return true;
         }
+
         log.warn("Illegal pin logon attempted. phone: {} invalid pin attempted:{}", phoneNr, pin);
         return false;
     }

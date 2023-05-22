@@ -1281,12 +1281,12 @@ public class UserTokenResource {
 			//return Response.status(Response.Status.FORBIDDEN).entity(ILLEGAL_APPLICATION_FOR_THIS_SERVICE).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
 			throw AppExceptionCode.APP_ILLEGAL_7000;
 		}
-		if(!ActivePinRepository.isPinSent(phoneNo)) {
-			log.trace("CommandSendSMSToUser - ({}, {}, {}, {}, {}, {}, {})", SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin);
-			String response = new CommandSendSMSToUser(SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin).execute();
-			log.debug("Answer from smsgw: " + response);
-			ActivePinRepository.setPin(phoneNo, smsPin, response);
-		}
+		
+		log.trace("CommandSendSMSToUser - ({}, {}, {}, {}, {}, {}, {})", SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin);
+		String response = new CommandSendSMSToUser(SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin).execute();
+		log.debug("Answer from smsgw: " + response);
+		ActivePinRepository.setPin(phoneNo, smsPin, response);
+
 
 		
 		return Response.ok("{\"result\": \"true\"}").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
@@ -1340,25 +1340,30 @@ public class UserTokenResource {
 			throw AppExceptionCode.APP_ILLEGAL_7000;
 		}
 		
+		String pinFound = ActivePinRepository.getPinSentIfAny(phoneNo);
+		String smsPin = generatePin();
+		boolean setPin = pinFound == null;
+		if(pinFound!=null) {
+			smsPin = pinFound;
+		}
+		if(msg==null || !msg.contains("{}")) {
+			msg = smsPin;
+		} else {
+			msg = msg.replace("{}", smsPin);
+		}
 		
-		if(!ActivePinRepository.isPinSent(phoneNo)) {
-			String smsPin = generatePin();
-			if(msg==null || !msg.contains("{}")) {
-				msg = smsPin;
-			} else {
-				msg = msg.replace("{}", smsPin);
-			}
-			String response = null;
-			try{
-				log.trace("CommandSendSMSToUser - ({}, {}, {}, {}, {}, {}, {})", SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin);
-				response = new CommandSendSMSToUser(SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, msg).execute();
-				log.trace("Answer from smsgw: " + response);
-			} catch(Exception ex){
-				ex.printStackTrace();
-			}
-			
+		String response = null;
+		try{
+			log.trace("CommandSendSMSToUser - ({}, {}, {}, {}, {}, {}, {})", SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, smsPin);
+			response = new CommandSendSMSToUser(SMS_GW_SERVICE_URL, SMS_GW_SERVICE_ACCOUNT, SMS_GW_USERNAME, SMS_GW_PASSWORD, SMS_GW_QUERY_PARAM, phoneNo, msg).execute();
+			log.trace("Answer from smsgw: " + response);
+		} catch(Exception ex){
+			ex.printStackTrace();
+		}
+		if(setPin) {
 			ActivePinRepository.setPin(phoneNo, smsPin, response);
 		}
+		
 		
 		
 		return Response.ok("{\"result\": \"true\"}").header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(ACCESS_CONTROL_ALLOW_METHODS, GET_POST_DELETE_PUT).build();
