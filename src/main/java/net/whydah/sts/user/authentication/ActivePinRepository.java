@@ -88,7 +88,8 @@ public class ActivePinRepository {
     			return pin;
     		}
     	} else {
-    		return storedPin;
+    		//return storedPin;
+    		return null;
     	}
       
     }
