@@ -54,6 +54,12 @@ public class ActivePinRepository {
         smsResponseLogMap = hazelcastInstance.getMap(appConfig.getProperty("gridprefix")+"smsResponseLogMap");
         log.info("Connecting to map {}",appConfig.getProperty("gridprefix")+"pinMap");
         log.info("Loaded pin-Map size=" + pinMap.size());
+        
+        pinMap.keySet().forEach(keySet -> {
+        	if(!pinMap.get(keySet).contains(":")) {
+        		pinMap.remove(keySet);
+        	}
+        });
     
     }
 
@@ -93,7 +99,7 @@ public class ActivePinRepository {
         if (isValidPin(phoneNr, pin)) {
             log.info("usePin - Used pin:{} for phone: {}", pin, phoneNr);
             //remove after used
-            //pinMap.remove(phoneNr);
+            pinMap.remove(phoneNr);
             smsResponseLogMap.remove(phoneNr);
             return true;
         }
