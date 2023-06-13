@@ -1891,7 +1891,7 @@ public class UserTokenResource {
 
 			UserToken admin = AuthenticatedUserTokenRepository.getUserToken(adminUserTokenId, applicationtokenid);
 			if (admin != null && admin.getUserName().equals(appConfig.getProperty("whydah.adminuser.username"))) {
-				String pin = ActivePinRepository.getPinMap().get(phoneno);
+				String pin = ActivePinRepository.getPinSentIfAny(phoneno);
 				if (pin == null) {
 					pin = "";
 				}

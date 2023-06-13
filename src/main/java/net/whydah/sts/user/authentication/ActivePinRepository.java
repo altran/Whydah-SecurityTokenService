@@ -72,14 +72,14 @@ public class ActivePinRepository {
     	String storedPin = pinMap.get(phoneNr);
     	if(storedPin !=null && storedPin.contains(":")) {
     		String[] parts = storedPin.split(":");
-    		
+    		String pin = parts[0];
     		String datetime = parts[1];
     		Instant inst = Instant.ofEpochMilli(Long.valueOf(datetime));
     		if(Instant.now().isAfter(inst.plus(5, ChronoUnit.MINUTES))) {
     			pinMap.remove(phoneNr);
     			return null;
     		} else {
-    			return storedPin;
+    			return pin;
     		}
     	} else {
     		return storedPin;
