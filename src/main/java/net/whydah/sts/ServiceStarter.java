@@ -94,7 +94,7 @@ public class ServiceStarter {
             log.info("Started ObservedActivityDistributer({},{},{},{},{})", reporterHost, reporterPort, prefix, cacheSize, forwardInterval);
 
         } catch (Exception e) {
-            log.warn("Error in valueReporter property configuration - unable to start ObservedActivityDistributer");
+            log.warn("Error in valueReporter property configuration - unable to start ObservedActivityDistributer", e);
         }
 
 
