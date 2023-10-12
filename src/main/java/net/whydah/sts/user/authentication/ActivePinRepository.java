@@ -114,26 +114,31 @@ public class ActivePinRepository {
     }
 
     private static boolean isValidPin(String phoneNr, String pin) {
-        pin = paddPin(pin);
-        String storedPin = pinMap.get(phoneNr);
-        if (storedPin != null && storedPin.contains(":")) {
-        	String[] parts = storedPin.split(":");
-        	storedPin = parts[0];
-			String datetime = parts[1];
-			Instant inst = Instant.ofEpochMilli(Long.valueOf(datetime));
-			if(Instant.now().isAfter(inst.plus(5, ChronoUnit.MINUTES))) {
-				pinMap.remove(phoneNr);
-				log.warn("Pin expired : {} - {}", phoneNr, pin);
-				return false;
-			}
-        }
+        try {
+            pin = paddPin(pin);
+            String storedPin = pinMap.get(phoneNr);
+            if (storedPin != null && storedPin.contains(":")) {
+                String[] parts = storedPin.split(":");
+                storedPin = parts[0];
+                String datetime = parts[1];
+                Instant inst = Instant.ofEpochMilli(Long.valueOf(datetime));
+                if (Instant.now().isAfter(inst.plus(5, ChronoUnit.MINUTES))) {
+                    pinMap.remove(phoneNr);
+                    log.warn("Pin expired : {} - {}", phoneNr, pin);
+                    return false;
+                }
+            }
 
-        log.debug("isValidPin on pin:{},  storedpin:{}, phone:{}", pin, storedPin, phoneNr);
-        if (storedPin != null && storedPin.equals(pin)) {
-        	return true;
-        }
+            log.debug("isValidPin on pin:{},  storedpin:{}, phone:{}", pin, storedPin, phoneNr);
+            if (storedPin != null && storedPin.equals(pin)) {
+                return true;
+            }
 
-        log.warn("Illegal pin logon attempted. phone: {} invalid pin attempted:{}", phoneNr, pin);
+            log.warn("Illegal pin logon attempted. phone: {} invalid pin attempted:{}", phoneNr, pin);
+            return false;
+        } catch (Exception e) {
+            log.error("Exception in isValidPin.  phoneNo:" + phoneNr + "-pin:" + pin, e);
+        }
         return false;
     }
 
