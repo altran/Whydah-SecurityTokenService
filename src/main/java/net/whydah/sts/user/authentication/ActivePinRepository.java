@@ -65,7 +65,7 @@ public class ActivePinRepository {
         pin = paddPin(pin);
         log.debug("Adding pin:{}  to phone:{} ", pin, phoneNr);
         log.debug("SMS log for " + phoneNr + ": "+ smsResponse);
-        String paddedPin = pin + ":" + Instant.now().toEpochMilli()
+        String paddedPin = pin + ":" + Instant.now().toEpochMilli();
         pinMap.put(phoneNr, paddedPin);
         log.debug("added pin:{}  to phone:{} ", paddedPin, phoneNr);
         if(smsResponse!=null){
