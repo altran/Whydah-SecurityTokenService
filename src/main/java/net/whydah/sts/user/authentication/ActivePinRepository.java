@@ -65,7 +65,9 @@ public class ActivePinRepository {
         pin = paddPin(pin);
         log.debug("Adding pin:{}  to phone:{} ", pin, phoneNr);
         log.debug("SMS log for " + phoneNr + ": "+ smsResponse);
-        pinMap.put(phoneNr, pin + ":" + Instant.now().toEpochMilli());
+        String paddedPin = pin + ":" + Instant.now().toEpochMilli()
+        pinMap.put(phoneNr, paddedPin);
+        log.debug("added pin:{}  to phone:{} ", paddedPin, phoneNr);
         if(smsResponse!=null){
         	smsResponseLogMap.put(phoneNr, smsResponse);
         }
@@ -81,11 +83,14 @@ public class ActivePinRepository {
     		Instant inst = Instant.ofEpochMilli(Long.valueOf(datetime));
     		if(Instant.now().isAfter(inst.plus(5, ChronoUnit.MINUTES))) {
     			pinMap.remove(phoneNr);
+                log.debug("Removed pin for phoneNr:" + phoneNr);
     			return null;
     		} else {
+                log.debug("Found pin:" + pin + " for phoneNr:" + phoneNr);
     			return pin;
     		}
     	} else {
+            log.debug("Found empty pin:" + storedPin + " for phoneNr:" + phoneNr);
     		//return storedPin;
     		return null;
     	}
@@ -96,7 +101,7 @@ public class ActivePinRepository {
         pin = paddPin(pin);
         log.debug("usePin - Trying pin {} for phone {}: ", pin, phoneNr);
         if (isValidPin(phoneNr, pin)) {
-            log.info("usePin - Used pin:{} for phone: {}", pin, phoneNr);
+            log.info("usePin - Used pin:{} for phone: {} - removed", pin, phoneNr);
             //remove after used
             pinMap.remove(phoneNr);
             smsResponseLogMap.remove(phoneNr);
@@ -117,6 +122,7 @@ public class ActivePinRepository {
         try {
             pin = paddPin(pin);
             String storedPin = pinMap.get(phoneNr);
+            log.debug("isValidPin on lookup returned storedpin:{}, for phone:{}", storedPin, phoneNr);
             if (storedPin != null && storedPin.contains(":")) {
                 String[] parts = storedPin.split(":");
                 storedPin = parts[0];
@@ -131,6 +137,7 @@ public class ActivePinRepository {
 
             log.debug("isValidPin on pin:{},  storedpin:{}, phone:{}", pin, storedPin, phoneNr);
             if (storedPin != null && storedPin.equals(pin)) {
+                log.debug("isValidPin on pin:{},  storedpin:{}, phone:{} success", pin, storedPin, phoneNr);
                 return true;
             }
 
