@@ -18,13 +18,13 @@
     </scm>
     <properties>
         <service.name>Whydah-SecurityTokenService</service.name>
-        <whydah.admin.sdk.version>2.21.1</whydah.admin.sdk.version>
+        <whydah.admin.sdk.version>2.22.0</whydah.admin.sdk.version>
         <org.valuereporter.agent>1.10.2</org.valuereporter.agent>
         <jersey-version>1.19.4</jersey-version>
         <grizzy-version>2.3.33</grizzy-version>
         <guice-version>5.1.0</guice-version>
         <slf4j.version>1.7.36</slf4j.version>
-        <jetty.plugin.version>9.4.52.v20230823</jetty.plugin.version>
+        <jetty.plugin.version>9.4.53.v20231009</jetty.plugin.version>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
