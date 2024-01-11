@@ -17,9 +17,9 @@ fi
 
 # If IAM_CONFIG not set, use embedded
 if [ -z "$IAM_CONFIG" ]; then
-  nohup /usr/bin/java -DIAM_MODE=$IAM_MODE -Dhazelcast.config=hazelcast.xml -jar  $Version &
+  nohup /usr/bin/java --illegal-access=warn --add-modules java.se --add-exports java.base/jdk.internal.ref=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.management/sun.management=ALL-UNNAMED --add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED -DIAM_MODE=PROD -DIAM_MODE=$IAM_MODE -Dhazelcast.config=hazelcast.xml -jar  $Version &
 else  
-  nohup /usr/bin/java -DIAM_MODE=$IAM_MODE -Dhazelcast.config=hazelcast.xml -DIAM_CONFIG=$IAM_CONFIG -jar  $Version &
+  nohup /usr/bin/java --illegal-access=warn --add-modules java.se --add-exports java.base/jdk.internal.ref=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.management/sun.management=ALL-UNNAMED --add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED -DIAM_MODE=PROD -DIAM_MODE=$IAM_MODE -Dhazelcast.config=hazelcast.xml -DIAM_CONFIG=$IAM_CONFIG -jar  $Version &
 fi
 
 

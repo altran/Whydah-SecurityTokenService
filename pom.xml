@@ -21,12 +21,14 @@
         <whydah.admin.sdk.version>2.22.0</whydah.admin.sdk.version>
         <org.valuereporter.agent>1.10.2</org.valuereporter.agent>
         <jersey-version>1.19.4</jersey-version>
-        <grizzy-version>2.3.33</grizzy-version>
+        <grizzy-version>2.4.4</grizzy-version>
         <guice-version>5.1.0</guice-version>
         <slf4j.version>1.7.36</slf4j.version>
         <jetty.plugin.version>9.4.53.v20231009</jetty.plugin.version>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.release>11</maven.compiler.release>
+        <java.version>11</java.version>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <additionalparam>-Xdoclint:none</additionalparam>
     </properties>
@@ -263,6 +265,11 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
+                        --add-modules java.se --add-exports java.base/jdk.internal.ref=ALL-UNNAMED --add-opens
+                        java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens
+                        java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.management/sun.management=ALL-UNNAMED
+                        --add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED
+
                     </archive>
                 </configuration>
             </plugin>
