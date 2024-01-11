@@ -2,8 +2,6 @@ package net.whydah.sts;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.servlet.GuiceFilter;
-import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import net.whydah.sso.config.ApplicationMode;
 import net.whydah.sts.config.AppConfig;
 import net.whydah.sts.config.SecurityTokenServiceModule;
@@ -98,13 +96,18 @@ public class ServiceStarter {
         }
 
 
-        final WebappContext context = new WebappContext("grizzly", CONTEXTPATH);
-        GuiceContainer container = new GuiceContainer(injector);
-        final ServletRegistration servletRegistration = context.addServlet("ServletContainer", container);
+        //final WebappContext context = new WebappContext("grizzly", CONTEXTPATH);
+        //GuiceContainer container = new GuiceContainer(injector);
+        final WebappContext context2 = new WebappContext("WebappContext", CONTEXTPATH);
+        final ServletRegistration servletRegistration = context2.addServlet("ServletContainer", CONTEXTPATH);
+        //final ServletRegistration servletRegistration = container.
+        //context.addServlet("ServletContainer", (Servlet) container.getServletContext().getServlets().nextElement());
+//                .addServlet("ServletContainer", container);
         servletRegistration.addMapping("/*");
         servletRegistration.setInitParameter("com.sun.jersey.config.property.packages", "net.whydah");
         servletRegistration.setInitParameter("com.sun.jersey.api.json.POJOMappingFeature", "true");
-        context.addFilter("guiceFilter", GuiceFilter.class);
+        context2.addFilter("guiceFilter", "GuiceFilter.class");
+        //.addFilter("guiceFilter", GuiceFilter.class);
 
 
         try {
@@ -140,7 +143,7 @@ public class ServiceStarter {
         httpServer.addListener(listener);
 
 
-        context.deploy(httpServer);
+        context2.deploy(httpServer);
 
         httpServer.start();
 
@@ -165,7 +168,7 @@ public class ServiceStarter {
 
     public void stop() {
         if (httpServer != null) {
-            httpServer.stop();
+            httpServer.shutdown();//.stop();
         }
     }
 }
