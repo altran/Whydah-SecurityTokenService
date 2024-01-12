@@ -1,38 +1,46 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<configuration>
+<configuration scan="true" scanPeriod="60 seconds">
+    <property name="LOG_DIR" value="logs/"/>
+    <property name="appName" value="SecurityTokenService"/>
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
+        </layout>
     </appender>
+
 
     <!--Daily rolling file appender -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>logs/SecurityTokenService.log</File>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <FileNamePattern>logs/SecurityTokenService-%d{yyyy-MM-dd}.log</FileNamePattern>
-            <maxHistory>5</maxHistory>
-        </rollingPolicy>
-
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
+          <File>${LOG_DIR}${appName}.log</File>
+    	  <!--Each file should be at most 50MB, keep 5 days worth of history, but at most 3GB -->
+    	  <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+		        <fileNamePattern>${LOG_DIR}${appName}-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+		        <maxHistory>5</maxHistory> 
+		        <totalSizeCap>3GB</totalSizeCap>
+		        <maxFileSize>50MB</maxFileSize>          
+		   </rollingPolicy>	   
+	        <encoder>
+	            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg%n</pattern>
+	        </encoder>
     </appender>
 
 
-    <logger name="com.hazelcast" level="INFO" />
+    <logger name="com.hazelcast" level="INFO"/>
+    <logger name="com.sun.jersey.api.client" level="INFO" />
+    <logger name="httpclient.wire" level="WARN" />
+    <logger name="org.apache.commons.httpclient" level="WARN" />
 
+    <logger name="net.whydah.sts.file.StaticFiles" level="INFO"/>
+    <logger name="net.whydah.sts.config.FreemarkerViewProcessor" level="WARN"/>
+    <logger name="net.whydah.sts.file.StaticFileViewProcessor" level="INFO"/>
+    <logger name="net.whydah.sts.application.ApplicationToken" level="DEBUG"/>
+    <logger name="org.valuereporter.agent.activity" level="WARN"/>
 
+    <logger name="net.whydah" level="DEBUG"/>
 
-    <logger name="net.whydah.token.file.StaticFiles" level="INFO" />
-    <logger name="net.whydah.token.config.FreemarkerViewProcessor" level="INFO" />
-    <logger name="net.whydah.token.file.StaticFileViewProcessor" level="INFO" />
-    <logger name="net.whydah.token.application.ApplicationToken" level="INFO" />
-
-    <logger name="net.whydah" level="TRACE" />
-
-    <root level="TRACE">
-        <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
+    <root level="DEBUG">
+        <!-- <appender-ref ref="STDOUT" />  -->
+        <appender-ref ref="FILE"/>
     </root>
 </configuration>

@@ -17,9 +17,9 @@
 <h1>SecurityTokenService</h1>
 
 <p>
-This is the testpage for Security Token Service. Any misuse will be prosecuted.<br>
-The service description (WADL) is available <a href="application.wadl">here</a><br><br>
-<strong>Usage:</strong>1. Autenticate application, 2. Authenticate user, 3. Fetch usertoken<br>
+    This is the testpage for Security Token Service. Any misuse will be prosecuted.<br/>
+    The service description (WADL) is available <a href="application.wadl">here</a><br/><br/>
+    <strong>Usage:</strong>1. Autenticate application, 2. Authenticate user, 3. Fetch usertoken<br/>
 You may update the application credential or test user credential before pushing the button.
 </p>
 

@@ -6,13 +6,13 @@
         <lifespan>647832</lifespan>
         <issuer>Whydah</issuer>
         <securitylevel>0</securitylevel>
-        <DEFCON>5</DEFCON>
+        <DEFCON>DEFCON5</DEFCON>
         <username>leon</username>
         <cellPhone>123456</cellPhone>
         <email>leon.ho@test.com</email>
         <firstname>Leon</firstname>
         <lastname>Ho</lastname>
-        <personRef>1</personRef>
+        <personref>1</personref>
         <UID>leon.ho@test.com</UID>
     </identity>
     <applications>

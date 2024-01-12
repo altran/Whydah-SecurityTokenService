@@ -1,6 +1,10 @@
 SecurityTokenService
 ====================
 
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/Cantara/Whydah-SecurityTokenService) ![Build Status](https://jenkins.cantara.no/buildStatus/icon?job=Whydah-SecurityTokenService) ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Cantara/Whydah-SecurityTokenService) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)  [![Known Vulnerabilities](https://snyk.io/test/github/Cantara/Whydah-SecurityTokenService/badge.svg)](https://snyk.io/test/github/Cantara/Whydah-SecurityTokenService)
+
+
+
 The UserToken and ApplicationToken generator and security session manager for the Whydah system
 
 If you are planning on integrating, you might want to run SecurityTokenService in DEV mode. This shortcuts the authentication.
@@ -90,7 +94,7 @@ applicationsecret=secretq986Ep6By7B9J46m96D
 
 myuri=https://sso.whydah.net/tokenservice/
 service.port=9998
-useridentitybackend=https://sso.whydah.net/uib/
+useradminservice=https://sso.whydah.net/uib/useradminservice/
 testpage=enabled
 
 # Temporary provisioning of applications secret in wait for UAS/UIB support
@@ -129,7 +133,7 @@ Configuration and Integration
 |-------- | -------------- | -----------| 
 |*myuri*|http://myserver.net/tokenservice/ | The URI to this instance of STS |
 |*service.port*|9998| Port for this service |
-|*useridentitybackend*| http://myservice/uib/ | URL to useridentitybackend |
+|*useradminservice*| http://myservice/useradminservice/ | URL to useridentitybackend |
 |*testpage*|disabled| Whether or not to enable the testpage. The url is printed when you start the service with it enabled. |
 |*logourl*|http://stocklogos.com/somelogo.png | A logo to display for the kicks of it | 
 
@@ -174,8 +178,9 @@ UIB should typically be behind a tight firewall.
         ProxyPreserveHost on
                 ProxyPass /sso http://localhost:9997/sso
                 ProxyPass /uib http://localhost:9995/uib
+                ProxyPass /useradminservice http://localhost:9992/useradminservice
                 ProxyPass /tokenservice http://localhost:9998/tokenservice
-                ProxyPass /useradmin http://localhost:9996/useradmin
+                ProxyPass /useradmin http://localhost:9996/useradminser
                 ProxyPass /test http://localhost:9990/test/
 </VirtualHost>
 ```

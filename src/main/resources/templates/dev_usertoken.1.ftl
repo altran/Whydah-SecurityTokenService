@@ -1,22 +1,22 @@
 <usertoken xmlns:ns2="http://www.w3.org/1999/xhtml" id="ca544816-cdec-4cde-b2c3-fee8d283ac30">
-    <uid></uid>
+    <uid>useradmin</uid>
     <timestamp></timestamp>
     <lifespan>3600000</lifespan>
     <issuer>/token/issuer/tokenverifier</issuer>
     <securitylevel>0</securitylevel>
-    <DEFCON>5</DEFCON>
-    <username></username>
+    <DEFCON>DEFCON5</DEFCON>
+    <username>useradmin</username>
     <firstname>Olav</firstname>
     <lastname>Nordmann</lastname>
     <email></email>
-    <personRef></personRef>
+    <personref></personref>
     <application ID="2349785543">
-        <applicationName>Whydah.net</applicationName>
+        <applicationName>Whydah.no</applicationName>
         <organizationName>Customer 3</organizationName>
         <role name="CEO" value=""/>
     </application>
     <application ID="appa">
-        <applicationName>whydag.org</applicationName>
+        <applicationName>getwhydah.org</applicationName>
         <organizationName>Customer 1</organizationName>
         <role name="COO" value="Valla"/>
     </application>
