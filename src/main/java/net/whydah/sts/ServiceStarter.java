@@ -26,6 +26,8 @@ import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
+import com.google.inject.servlet.GuiceFilter;
+import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 
 public class ServiceStarter {
     private static final Logger log = LoggerFactory.getLogger(ServiceStarter.class);
@@ -95,7 +97,7 @@ public class ServiceStarter {
             log.warn("Error in valueReporter property configuration - unable to start ObservedActivityDistributer", e);
         }
 
-
+        /*
         //final WebappContext context = new WebappContext("grizzly", CONTEXTPATH);
         //GuiceContainer container = new GuiceContainer(injector);
         final WebappContext context2 = new WebappContext("WebappContext", CONTEXTPATH);
@@ -108,7 +110,17 @@ public class ServiceStarter {
         servletRegistration.setInitParameter("com.sun.jersey.api.json.POJOMappingFeature", "true");
         context2.addFilter("guiceFilter", "GuiceFilter.class");
         //.addFilter("guiceFilter", GuiceFilter.class);
+*/
+        final WebappContext context = new WebappContext("grizzly", CONTEXTPATH);
+        GuiceContainer container = new GuiceContainer(injector);
+        final ServletRegistration servletRegistration = context.addServlet("ServletContainer", container);
+        servletRegistration.addMapping("/*");
+        servletRegistration.setInitParameter("com.sun.jersey.config.property.packages", "net.whydah");
+        servletRegistration.setInitParameter("com.sun.jersey.api.json.POJOMappingFeature", "true");
+        context.addFilter("guiceFilter", GuiceFilter.class);
 
+
+        
 
         try {
             webappPort = Integer.valueOf(appConfig.getProperty("service.port"));
@@ -143,7 +155,7 @@ public class ServiceStarter {
         httpServer.addListener(listener);
 
 
-        context2.deploy(httpServer);
+        context.deploy(httpServer);
 
         httpServer.start();
 
@@ -168,7 +180,7 @@ public class ServiceStarter {
 
     public void stop() {
         if (httpServer != null) {
-            httpServer.shutdown();//.stop();
+            httpServer.stop();//.stop();
         }
     }
 }
