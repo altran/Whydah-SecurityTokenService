@@ -1,10 +1,9 @@
 package net.whydah.sts.file;
 
-import com.sun.jersey.api.view.Viewable;
-import com.sun.jersey.spi.template.ViewProcessor;
+import jakarta.ws.rs.ext.Provider;
+import org.glassfish.jersey.server.mvc.Viewable;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.ext.Provider;
 import java.io.*;
 
 /**
